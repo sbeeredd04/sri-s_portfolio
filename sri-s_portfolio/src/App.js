@@ -1,32 +1,46 @@
 import './App.css';
-import {BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from '/workspaces/sri-s_portfolio/sri-s_portfolio/src/Home.js';
 import AboutMe from '/workspaces/sri-s_portfolio/sri-s_portfolio/src/AboutMe.js';
+import Skills from '/workspaces/sri-s_portfolio/sri-s_portfolio/src/skills.js';
+import Projects from './projects.js';
+import Contact from './contact.js';
 
 function App() {
   return (
     <>
-      <nav>
-        <ul>
-          <li>
+      <header className='header'>
+        <a href="/" className="logo">
+          <h4>Portfolio</h4>
+        </a>
+        <nav className='navbar'>
+          <ul>
             <a href="/">Home</a>
             <a href="/aboutme">About Me</a>
-          </li>
-        </ul>
-      </nav>
+            <a href="/skills">Skills</a>
+            <a href="/projects">Projects</a>
+            <a href="/contact">Contact</a>
+          </ul>
 
-    <Router>
+        </nav>
+      </header>
 
-      <div className="App">
+      <Router>
 
-        <Routes>
+        <div className="App">
 
-          <Route path="/" element={<Home />} />
-          <Route path="/aboutme" element={<AboutMe />} />
+          <Routes>
 
-        </Routes>
-      </div>
-    </Router>
+            <Route path="/" element={<Home />} />
+            <Route path="/aboutme" element={<AboutMe />} />
+            <Route path="/skills" element={<Skills />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/contact" element={<Contact />} />
+
+
+          </Routes>
+        </div>
+      </Router>
     </>
   );
 }
