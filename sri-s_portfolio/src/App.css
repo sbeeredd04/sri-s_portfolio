@@ -55,6 +55,26 @@
    padding: 0;
 }
 
+.Skills { 
+  /*adjusting according to screen size*/
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 110vh;
+  /*fitting image to entire screen*/
+  background-image: url('/workspaces/sri-s_portfolio/sri-s_portfolio/src/Images/background home.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  font-size: calc(10px + 2vmin);
+  text-align: center;
+  margin: 0;
+  padding: 0;
+
+}
+
 .header {
   position: fixed;
   top: 0;
@@ -541,3 +561,204 @@ button:hover .button-text {
   }
 }
 
+
+.main-skills {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  color: white;
+}
+
+.main-skills-container { 
+  /*rounded edges*/
+  border-radius: 5%;
+  margin: 5%;
+  /*tranparent with 40% black*/
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height:90%;
+  margin: 5%;
+  margin-top: 8%;
+  padding: 20px;
+}
+
+.card {
+  overflow: visible;
+  width: 25vh;
+  height: 50vh;
+  border-radius: 5% !important;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 300ms;
+  box-shadow: 0px 0px 10px 1px #000000ee;
+  border-radius: 5px;
+}
+
+.front, .back-card {
+  background-color: #000;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.back-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.back-card::before {
+  position: absolute;
+  content: ' ';
+  display: block;
+  width: 25vh;
+  height: 160%;
+  background: linear-gradient(90deg, transparent, #7DF9FF, transparent);
+  animation: rotation_481 5000ms infinite linear;
+}
+
+.back-card-content {
+  position: absolute;
+  width: 98%;
+  height: 99%;
+  background-color: #000;
+  border-radius: 5px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.card:hover .content {
+  transform: rotateY(180deg);
+}
+
+@keyframes rotation_481 {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+.front {
+  transform: rotateY(180deg);
+  color: white;
+}
+
+.front .front-content {
+  position: absolute;
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.front-content .badge {
+  background-color: #00000055;
+  padding: 10px;
+  border-radius: 10px;
+  backdrop-filter: blur(2px);
+  width: fit-content;
+  margin: 20px
+}
+
+.description {
+  box-shadow: 0px 0px 10px 5px #00000088;
+  width: 90%;
+  padding: 10px;
+  background-color: #00000099;
+  backdrop-filter: blur(5px);
+  border-radius: 5px;
+  margin: 10px;
+}
+
+.title {
+  font-size: 5px;
+  max-width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.title p {
+  width: 50%;
+}
+
+.card-footer {
+  color: #ffffff88;
+  margin-top: 5px;
+  font-size: 8px;
+}
+
+.front .img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: #7DF9FF;
+  position: relative;
+  filter: blur(15px);
+  animation: floating 2600ms infinite linear;
+}
+
+#bottom {
+  background-color: #d6249f;
+  left: 50px;
+  top: 0px;
+  width: 150px;
+  height: 150px;
+  animation-delay: -800ms;
+}
+
+#right {
+  background-color: #285AEB;
+  left: 160px;
+  top: -80px;
+  width: 30px;
+  height: 30px;
+  animation-delay: -1800ms;
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.description li { 
+  font-size: 32px;
+}
