@@ -3,64 +3,64 @@ import { cn } from "../lib/utils";
 import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useEffect, useState} from "react";
 
-export const FloatingDock = ({
-  items,
-  desktopClassName,
-  mobileClassName
-}) => {
-  return (
-    <>
-      <FloatingDockDesktop items={items} className={desktopClassName} />
-      <FloatingDockMobile items={items} className={mobileClassName} />
-    </>
+
+// FloatingDock component updated to switch between desktop and mobile views based on screen size
+export const FloatingDock = ({ items, desktopClassName, mobileClassName }) => {
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768); // Adjust breakpoint as per your requirement
+    };
+    handleResize(); // Set initial value
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return isDesktop ? (
+    <FloatingDockDesktop items={items} className={desktopClassName} />
+  ) : (
+    <FloatingDockMobile items={items} className={mobileClassName} />
   );
 };
 
-// Update FloatingDockMobile as required
-const FloatingDockMobile = ({
-  items,
-  className
-}) => {
+// Updated FloatingDockMobile to manage toggle button appearance and prevent it from looking like an extra icon
+const FloatingDockMobile = ({ items, className }) => {
   const [open, setOpen] = useState(false);
+
   return (
-    <div className={cn("relative block md:hidden", className)}>
-      <AnimatePresence>
-        {open && (
+    <div className={cn("fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-center", className)}>
+      {/* Icons row, conditionally rendered based on `open` state */}
+      <div className={`flex ${open ? 'gap-4' : 'gap-2'} items-center`}>
+        {items.map((item, idx) => (
           <motion.div
-            layoutId="nav"
-            className="absolute left-full ml-2 inset-y-0 flex flex-col gap-4">
-            {items.map((item, idx) => (
+            key={item.title}
+            initial={{ opacity: 0.8 }}
+            animate={{
+              opacity: open ? 1 : 0.8,
+              y: open ? 0 : 10,
+            }}
+            transition={{ delay: idx * 0.05 }}
+          >
+            <Link href={item.href} className="h-12 w-12 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center">
               <motion.div
-                key={item.title}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  x: -10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
-                }}
-                transition={{ delay: (items.length - 1 - idx) * 0.05 }}>
-                <Link
-                  href={item.href}
-                  key={item.title}
-                  className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center">
-                  <div className="h-4 w-4">{item.icon}</div>
-                </Link>
+                whileHover={{ scale: 1.1 }}
+                className="h-6 w-6"
+              >
+                {item.icon}
               </motion.div>
-            ))}
+            </Link>
           </motion.div>
-        )}
-      </AnimatePresence>
+        ))}
+      </div>
+
+      {/* Toggle button to open/close icons */}
       <button
         onClick={() => setOpen(!open)}
-        className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-800 flex items-center justify-center fixed left-4 bottom-4">
+        className={`h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-800 flex items-center justify-center ml-4 ${open ? '' : 'hidden'}`}
+      >
         <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
       </button>
     </div>

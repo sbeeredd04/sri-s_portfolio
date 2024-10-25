@@ -154,13 +154,24 @@ export default function Home() {
       setShowResumePreview(false);
     }
   };
+ // Detect screen size to toggle FloatingDock position
+ const [isMobile, setIsMobile] = useState(false);
 
-  return (
-    <div className="grid grid-cols-[100px_1fr] h-screen overflow-hidden relative">
-      {/* Left: Floating Dock */}
-      <div className="relative z-50 opacity-90">
-        <FloatingDock items={items} />
-      </div>
+ useEffect(() => {
+   const handleResize = () => {
+     setIsMobile(window.innerWidth < 768);
+   };
+   handleResize(); // Set initial value
+   window.addEventListener("resize", handleResize);
+   return () => window.removeEventListener("resize", handleResize);
+ }, []);
+
+ return (
+   <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative">
+     {/* Floating Dock Position */}
+     <div className={`relative z-50 opacity-90 ${isMobile ? 'fixed bottom-0 w-full' : 'left-0'}`}>
+       <FloatingDock items={items} />
+     </div>
 
       {/* Right: Main Content */}
       <div className="relative overflow-y-auto overflow-x-hidden p-4">
