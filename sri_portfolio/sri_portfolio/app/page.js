@@ -53,8 +53,8 @@ function Globe() {
   return (
     <canvas
       ref={canvasRef}
-      style={{ width: 600, height: 600, maxWidth: "100%", aspectRatio: 1 }}
-      className="globe-canvas"
+      style={{ width: '100%', height: 'auto', maxWidth: "600px", aspectRatio: 1 }}
+      className="globe-canvas mx-auto"
     />
   );
 }
@@ -118,25 +118,25 @@ export default function Home() {
       title: "Amano",
       description: "Emotion-Based Song Recommendation System that provides personalized song suggestions using Reinforcement Learning and Spotify's API.",
       href: "https://github.com/sbeeredd04/Amano",
-      image: "/p (1).jpg",  // Make sure to correctly reference your image location
+      image: "/p (1).jpg",
     },
     {
       title: "Image Insight",
       description: "A web-based tool designed for postdoctoral researchers to automate complex data analysis tasks, significantly increasing research productivity.",
       href: "https://github.com/sbeeredd04/CSDNA",
-      image: "/p (2).jpg",  // Use the correct image path
+      image: "/p (2).jpg",
     },
     {
       title: "Mine Alliance",
       description: "Fullstack platform that integrates ChatGPT-4 for sustainable mining site impact assessments, reducing response times by 40%.",
       href: "https://github.com/LuaanNguyen/Mine-Alliance",
-      image: "/p (3).jpg",  // Update with the correct path
+      image: "/p (3).jpg",
     },
     {
       title: "Avisol",
       description: "An automated air traffic pathfinding system that utilizes algorithm optimization to reduce computation time for managing autonomous vehicles.",
       href: "https://github.com/sbeeredd04/AviSol",
-      image: "/p (4).jpg",  // Make sure to use the right image
+      image: "/p (4).jpg",
     },
   ];
 
@@ -178,11 +178,10 @@ export default function Home() {
 
         {/* Sticky Resume Button */}
         <Link href="/my_resume.pdf" download>
-          <button className="sticky top-4 float-right px-6 py-3 bg-gradient-to-r from-cyan-400 to-blue-400 text-black font-semibold rounded-lg shadow-md hover:bg-gradient-to-r hover:from-blue-500 hover:to-emerald-500 transition-all z-50">
+          <button className="fixed top-4 right-4 px-6 py-3 bg-gradient-to-r from-cyan-400 to-blue-400 text-black font-semibold rounded-lg shadow-md hover:bg-gradient-to-r hover:from-blue-500 hover:to-emerald-500 transition-all z-[1000]">
             Resume
           </button>
         </Link>
-
 
 
         {/* Home Section */}
@@ -204,10 +203,10 @@ export default function Home() {
                       backgroundPosition: "center",
                     }}
                   >
-                    <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex flex-col items-center justify-center text-white text-center rounded-xl">
-                      <h2 className="text-5xl font-bold mb-4">{slide.title}</h2>
-                      <p className="text-lg mb-4">{slide.description}</p>
-                      <Link href={slide.link} className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+                    <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex flex-col items-center justify-center text-white text-center rounded-xl p-4 md:p-8">
+                      <h2 className="text-4xl md:text-5xl font-bold mb-4">{slide.title}</h2>
+                      <p className="text-md md:text-lg mb-4">{slide.description}</p>
+                      <Link href={slide.link} className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
                         Learn More
                       </Link>
                     </div>
@@ -227,25 +226,25 @@ export default function Home() {
 
        {/* About Me Section */}
        <section id="about" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
-        <div className="w-full p-8 bg-transparent rounded-xl flex flex-row gap-8">
+        <div className="w-full p-4 md:p-8 bg-transparent rounded-xl flex flex-col md:flex-row gap-8">
           {/* Left div with text */}
-          <div className="w-1/2 text-left">
-            <h2 className="text-4xl font-bold mb-4">About Me</h2>
-            <p className="text-lg mb-4">
+          <div className="w-full md:w-1/2 text-left">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
+            <p className="text-md md:text-lg mb-4">
               Hello! I’m a Junior studying Computer Science with a focus on Software Engineering. I love solving problems, learning new things, and finding creative ways to use technology. Right now, I’m excited about growing my skills in software development, machine learning, and data analysis.
               My goal is to keep improving, whether it’s through collaboration or tackling new challenges. I’m excited about the future and can’t wait to see where my passion for tech takes me!
             </p>
 
             {/* Button to download resume */}
             <Link href="/my_resume.pdf" download>
-              <button className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+              <button className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
                 Download Resume
               </button>
             </Link>
 
             {/* Button to open resume preview */}
             <button
-              className="ml-4 px-6 py-3 bg-transparent border-2 border-transparent bg-clip-border border-gradient-to-r from-cyan-400 to-blue-400 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-emerald-500 transition-all"
+              className="ml-0 md:ml-4 mt-4 md:mt-0 px-4 md:px-6 py-2 md:py-3 bg-transparent border-2 border-transparent bg-clip-border border-gradient-to-r from-cyan-400 to-blue-400 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-emerald-500 transition-all"
               onClick={() => setShowResumePreview(true)}
             >
               View Resume
@@ -255,10 +254,10 @@ export default function Home() {
             {showResumePreview && (
               <div
                 id="resume-modal-overlay"
-                className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+                className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[1000]"
                 onClick={handleClickOutside}
               >
-                <div className="bg-white rounded-lg w-[90vw] h-[85vh] relative">
+                <div className="bg-white rounded-lg w-[90vw] h-[85vh] relative z-[1200]">
                   <iframe
                     src="/my_resume.pdf"
                     className="w-full h-full"
@@ -268,7 +267,7 @@ export default function Home() {
 
                 {/* Close button outside the modal */}
                 <button
-                  className="absolute top-8 right-8 text-white bg-gray-700 hover:bg-gray-600 rounded-full p-3"
+                  className="absolute top-8 right-8 text-white bg-red-700 hover:bg-blue-600 rounded-full p-3 z-[1300]"
                   onClick={() => setShowResumePreview(false)}
                 >
                   Close
@@ -278,7 +277,7 @@ export default function Home() {
           </div>
 
           {/* Right div with globe */}
-          <div className="w-1/2 flex items-center justify-center">
+          <div className="w-full md:w-1/2 flex items-center justify-center">
             <Globe />
           </div>
 
@@ -286,9 +285,9 @@ export default function Home() {
       </section>
 
         {/* Projects Section */}
-        <section id="projects" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
-          <div className="w-full p-8 bg-transparent rounded-xl">
-            <h2 className="text-4xl font-bold text-center">Featured Projects</h2>
+        <section id="projects" className="h-screen w-full bg-transparent flex items-center justify-center">
+          <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
+            <h2 className="text-3xl md:text-4xl font-bold text-center">Featured Projects</h2>
             <Carousel
               items={projects.map((project, index) => (
                 <PinContainer
@@ -296,18 +295,18 @@ export default function Home() {
                   title={project.title}
                   href={project.href}
                   className="text-white"
-                  containerClassName="h-[350px] w-[300px]"
+                  containerClassName="h-[300px] w-[300px] md:h-[400px] md:w-[350px]"
                 >
                   <img
                     src={project.image}
                     alt={project.title}
-                    className="h-40 w-full object-cover rounded-md mb-4"
+                    className="h-32 md:h-40 w-full object-cover rounded-md mb-4"
                   />
                   {/* Project Title with Gradient */}
-                  <h3 className="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-emerald-400">
+                  <h3 className="text-lg md:text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-emerald-400">
                     {project.title}
                   </h3>
-                  <p className="text-sm text-gray-200">{project.description}</p>
+                  <p className="text-xs md:text-sm text-gray-200">{project.description}</p>
                 </PinContainer>
               ))}
             />
@@ -316,18 +315,18 @@ export default function Home() {
 
       {/* Blog Section with CardSpotlight */}
         <section id="blog" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
-          <div className="w-full p-8 bg-transparent rounded-xl">
-            <h2 className="text-4xl font-bold text-center mb-10">Featured Blog Posts</h2>
+          <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Featured Blog Posts</h2>
             <Carousel
               items={blogPosts.map((post, index) => (
-                <CardSpotlight key={index} className="h-[500px] w-[350px]">  {/* Custom size for the card */}
-                  <h3 className="text-2xl font-bold relative z-20 mt-2 text-white">
+                <CardSpotlight key={index} className="h-[400px] w-[300px] md:h-[500px] md:w-[350px]">  {/* Custom size for the card */}
+                  <h3 className="text-xl md:text-2xl font-bold relative z-20 mt-2 text-white">
                     {post.title}
                   </h3>
-                  <p className="text-neutral-200 mt-4 relative z-20">
+                  <p className="text-neutral-200 mt-2 md:mt-4 relative z-20 text-sm md:text-base">
                     {post.content}
                   </p>
-                  <p className="text-neutral-300 mt-4 relative z-20 text-sm">
+                  <p className="text-neutral-300 mt-2 md:mt-4 relative z-20 text-xs md:text-sm">
                     Category: {post.category}
                   </p>
                 </CardSpotlight>
@@ -336,18 +335,17 @@ export default function Home() {
           </div>
         </section>
 
-
         {/* Contact Section */}
         <section id="contact" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
-          <div className="w-full p-8 bg-transparent rounded-xl">
-            <h2 className="text-4xl font-bold text-center">Contact Me</h2>
-            <div className="mt-8 text-center">
-              <p className="text-lg">Feel free to reach out for collaborations or inquiries.</p>
+          <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
+            <h2 className="text-3xl md:text-4xl font-bold text-center">Contact Me</h2>
+            <div className="mt-4 md:mt-8 text-center">
+              <p className="text-md md:text-lg">Feel free to reach out for collaborations or inquiries.</p>
               <form className="mt-6 space-y-4">
-                <input type="text" placeholder="Your Name" className="w-full p-4 bg-gray-100 rounded-md" />
-                <input type="email" placeholder="Your Email" className="w-full p-4 bg-gray-100 rounded-md" />
-                <textarea placeholder="Your Message" className="w-full p-4 bg-gray-100 rounded-md h-40"></textarea>
-                <button type="submit" className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+                <input type="text" placeholder="Your Name" className="w-full p-3 md:p-4 bg-gray-100 rounded-md" />
+                <input type="email" placeholder="Your Email" className="w-full p-3 md:p-4 bg-gray-100 rounded-md" />
+                <textarea placeholder="Your Message" className="w-full p-3 md:p-4 bg-gray-100 rounded-md h-32 md:h-40"></textarea>
+                <button type="submit" className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
                   Send Message
                 </button>
               </form>
