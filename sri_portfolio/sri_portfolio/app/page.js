@@ -169,7 +169,7 @@ export default function Home() {
  return (
    <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative">
      {/* Floating Dock Position */}
-     <div className={`relative z-50 opacity-90 ${isMobile ? 'fixed bottom-0 w-full' : 'left-0'}`}>
+     <div className={`relative z-50 opacity-90 ${isMobile ? 'fixed bottom-0 w-full z[9999]' : 'left-0 z-[9999]'} opacity-100`}>
        <FloatingDock items={items} />
      </div>
 
@@ -226,90 +226,93 @@ export default function Home() {
 
        {/* About Me Section */}
        <section id="about" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
-        <div className="w-full p-4 md:p-8 bg-transparent rounded-xl flex flex-col md:flex-row gap-8">
-          {/* Left div with text */}
-          <div className="w-full md:w-1/2 text-left">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
-            <p className="text-md md:text-lg mb-4">
-              Hello! I’m a Junior studying Computer Science with a focus on Software Engineering. I love solving problems, learning new things, and finding creative ways to use technology. Right now, I’m excited about growing my skills in software development, machine learning, and data analysis.
-              My goal is to keep improving, whether it’s through collaboration or tackling new challenges. I’m excited about the future and can’t wait to see where my passion for tech takes me!
-            </p>
+        <div className="h-full w-full p-4 md:p-8 bg-transparent rounded-xl flex flex-col md:flex-row gap-8 flex items-center justify-center">
+          <div className="w-full p-4 md:p-8 bg-transparent rounded-xl flex flex-col md:flex-row gap-8">
+            {/* Left div with text */}
+            <div className="w-full md:w-1/2 text-left">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
+              <p className="text-md md:text-lg mb-4">
+                Hello! I’m a Junior studying Computer Science with a focus on Software Engineering. I love solving problems, learning new things, and finding creative ways to use technology. Right now, I’m excited about growing my skills in software development, machine learning, and data analysis.
+                My goal is to keep improving, whether it’s through collaboration or tackling new challenges. I’m excited about the future and can’t wait to see where my passion for tech takes me!
+              </p>
 
-            {/* Button to download resume */}
-            <Link href="/my_resume.pdf" download>
-              <button className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
-                Download Resume
-              </button>
-            </Link>
-
-            {/* Button to open resume preview */}
-            <button
-              className="ml-0 md:ml-4 mt-4 md:mt-0 px-4 md:px-6 py-2 md:py-3 bg-transparent border-2 border-transparent bg-clip-border border-gradient-to-r from-cyan-400 to-blue-400 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-emerald-500 transition-all"
-              onClick={() => setShowResumePreview(true)}
-            >
-              View Resume
-            </button>
-
-            {/* Modal for Resume Preview */}
-            {showResumePreview && (
-              <div
-                id="resume-modal-overlay"
-                className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[1000]"
-                onClick={handleClickOutside}
-              >
-                <div className="bg-white rounded-lg w-[90vw] h-[85vh] relative z-[1200]">
-                  <iframe
-                    src="/my_resume.pdf"
-                    className="w-full h-full"
-                    frameBorder="0"
-                  />
-                </div>
-
-                {/* Close button outside the modal */}
-                <button
-                  className="absolute top-8 right-8 text-white bg-red-700 hover:bg-blue-600 rounded-full p-3 z-[1300]"
-                  onClick={() => setShowResumePreview(false)}
-                >
-                  Close
+              {/* Button to download resume */}
+              <Link href="/my_resume.pdf" download>
+                <button className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+                  Download Resume
                 </button>
-              </div>
-            )}
-          </div>
+              </Link>
 
-          {/* Right div with globe */}
-          <div className="w-full md:w-1/2 flex items-center justify-center">
-            <Globe />
-          </div>
+              {/* Button to open resume preview */}
+              <button
+                className="ml-0 md:ml-4 mt-4 md:mt-0 px-4 md:px-6 py-2 md:py-3 bg-transparent border-2 border-transparent bg-clip-border border-gradient-to-r from-cyan-400 to-blue-400 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-emerald-500 transition-all"
+                onClick={() => setShowResumePreview(true)}
+              >
+                View Resume
+              </button>
 
+              {/* Modal for Resume Preview */}
+              {showResumePreview && (
+                <div
+                  id="resume-modal-overlay"
+                  className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[1000]"
+                  onClick={handleClickOutside}
+                >
+                  <div className="bg-white rounded-lg w-[90vw] h-[85vh] relative z-[1200]">
+                    <iframe
+                      src="/my_resume.pdf"
+                      className="w-full h-full"
+                      frameBorder="0"
+                    />
+                  </div>
+
+                  {/* Close button outside the modal */}
+                  <button
+                    className="absolute top-8 right-8 text-white bg-red-700 hover:bg-blue-600 rounded-full p-3 z-[1300]"
+                    onClick={() => setShowResumePreview(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Right div with globe */}
+            <div className="w-full md:w-1/2 flex items-center justify-center">
+              <Globe />
+            </div>
+          </div>
         </div>
       </section>
 
         {/* Projects Section */}
-        <section id="projects" className="h-screen w-full bg-transparent flex items-center justify-center">
-          <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-center">Featured Projects</h2>
-            <Carousel
-              items={projects.map((project, index) => (
-                <PinContainer
-                  key={index}
-                  title={project.title}
-                  href={project.href}
-                  className="text-white"
-                  containerClassName="h-[300px] w-[300px] md:h-[400px] md:w-[350px]"
-                >
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="h-32 md:h-40 w-full object-cover rounded-md mb-4"
-                  />
-                  {/* Project Title with Gradient */}
-                  <h3 className="text-lg md:text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-emerald-400">
-                    {project.title}
-                  </h3>
-                  <p className="text-xs md:text-sm text-gray-200">{project.description}</p>
-                </PinContainer>
-              ))}
-            />
+        <section id="projects" className="h-screen w-full bg-transparent flex items-center justify-center mt-20">
+          <div className="h-screen w-full p-4 md:p-8 bg-transparent rounded-xl flex items-center justify-center">
+            <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
+              <h2 className="text-3xl md:text-4xl font-bold text-center">Featured Projects</h2>
+              <Carousel
+                items={projects.map((project, index) => (
+                  <PinContainer
+                    key={index}
+                    title={project.title}
+                    href={project.href}
+                    className="text-white"
+                    containerClassName="h-[300px] w-[300px] md:h-[400px] md:w-[350px]"
+                  >
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="h-32 md:h-40 w-full object-cover rounded-md mb-4"
+                    />
+                    {/* Project Title with Gradient */}
+                    <h3 className="text-lg md:text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-emerald-400">
+                      {project.title}
+                    </h3>
+                    <p className="text-xs md:text-sm text-gray-200">{project.description}</p>
+                  </PinContainer>
+                ))}
+              />
+            </div>
           </div>
         </section>
 
