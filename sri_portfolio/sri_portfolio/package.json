@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "vercel-build": "npm run prepare && next build"
+    "vercel-build": "next build"
   },
   "dependencies": {
     "@tabler/icons-react": "^2.47.0",
