@@ -10,10 +10,13 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^2.47.0",
+    "clsx": "^2.1.1",
+    "cobe": "^0.6.3",
     "framer-motion": "^6.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "sri_portfolio": "file:"
+    "sri_portfolio": "file:",
+    "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
     "postcss": "^8",
