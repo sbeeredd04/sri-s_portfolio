@@ -26,33 +26,27 @@ export const FloatingDock = ({ items, desktopClassName, mobileClassName }) => {
   );
 };
 
-// Updated FloatingDockMobile to manage toggle button appearance and prevent it from looking like an extra icon
+// Mobile FloatingDock with icon enlargement on hover
 const FloatingDockMobile = ({ items, className }) => {
   const [open, setOpen] = useState(false);
+  let mouseX = useMotionValue(Infinity);
 
   return (
-    <div className={cn("fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-center", className)}>
-      {/* Icons row, conditionally rendered based on `open` state */}
+    <div
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 p-4 flex justify-center z-[900]",
+        className
+      )}
+      onMouseMove={(e) => mouseX.set(e.pageX)}
+      onMouseLeave={() => mouseX.set(Infinity)}
+    >
       <div className={`flex ${open ? 'gap-4' : 'gap-2'} items-center`}>
-        {items.map((item, idx) => (
-          <motion.div
+        {items.map((item) => (
+          <IconContainerMobile
             key={item.title}
-            initial={{ opacity: 0.8 }}
-            animate={{
-              opacity: open ? 1 : 0.8,
-              y: open ? 0 : 10,
-            }}
-            transition={{ delay: idx * 0.05 }}
-          >
-            <Link href={item.href} className="h-12 w-12 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                className="h-6 w-6"
-              >
-                {item.icon}
-              </motion.div>
-            </Link>
-          </motion.div>
+            mouseX={mouseX}
+            {...item}
+          />
         ))}
       </div>
 
@@ -66,6 +60,49 @@ const FloatingDockMobile = ({ items, className }) => {
     </div>
   );
 };
+
+// Mobile-specific IconContainer with enlarging animation based on horizontal mouse movement
+const IconContainerMobile = ({ mouseX, title, icon, href }) => {
+  const ref = useRef(null);
+
+  // Calculate the distance of the icon from the mouse's X position
+  const distance = useTransform(mouseX, (val) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+    return val - bounds.x - bounds.width / 2;
+  });
+
+  const widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
+  const heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
+
+  const widthIcon = useSpring(widthTransform, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
+  });
+  const heightIcon = useSpring(heightTransform, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
+  });
+
+  return (
+    <Link href={href}>
+      <motion.div
+        ref={ref}
+        style={{ width: widthIcon, height: heightIcon }}
+        className="aspect-square rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center relative"
+      >
+        <motion.div
+          className="flex items-center justify-center"
+          style={{ width: widthIcon, height: heightIcon }}
+        >
+          {icon}
+        </motion.div>
+      </motion.div>
+    </Link>
+  );
+};
+
 
 // Updated FloatingDockDesktop to fix position on left side
 const FloatingDockDesktop = ({ items, className }) => {
