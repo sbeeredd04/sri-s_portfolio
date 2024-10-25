@@ -9,11 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "15.0.1",
-    "react": "19.0.0-rc-69d4b800-20241021",
-    "react-dom": "19.0.0-rc-69d4b800-20241021",
-    "@tabler/icons-react": "^2.0.0",
-    "framer-motion": "^9.0.0"
+    "@tabler/icons-react": "^2.47.0",
+    "framer-motion": "^6.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "sri_portfolio": "file:"
   },
   "devDependencies": {
     "postcss": "^8",
