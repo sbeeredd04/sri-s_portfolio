@@ -1,53 +1,50 @@
-// card-spotlight.jsx
-import { useMotionValue, motion, useMotionTemplate } from "framer-motion";
+import { motion, useMotionValue } from "framer-motion";
 import React, { useState } from "react";
 import { cn } from "../lib/utils";
 
 export const CardSpotlight = ({
   children,
-  radius = 350,
-  color = "#262626",
+  radius = 50, // Default spotlight radius
+  spotlightColor = "#ffffff88", // Spotlight color with transparency
+  backgroundColor = "#262626", // Card background color
   className,
   ...props
 }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  function handleMouseMove({ currentTarget, clientX, clientY }) {
-    let { left, top } = currentTarget.getBoundingClientRect();
 
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
+  // Handle mouse movement to update spotlight position
+  const handleMouseMove = (event) => {
+    const { left, top } = event.currentTarget.getBoundingClientRect();
+    mouseX.set(event.clientX - left);
+    mouseY.set(event.clientY - top);
+  };
 
+  // State to track if the card is being hovered
   const [isHovering, setIsHovering] = useState(false);
-  const handleMouseEnter = () => setIsHovering(true);
-  const handleMouseLeave = () => setIsHovering(false);
 
   return (
     <div
       className={cn(
-        "group/spotlight p-10 rounded-md relative border border-neutral-800 bg-black dark:border-neutral-800",
+        "group relative p-8 rounded-lg border border-gray-800 bg-black overflow-hidden", // Tailwind CSS for styling
         className
       )}
       onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      {...props}>
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      {...props}
+    >
+      {/* Spotlight effect */}
       <motion.div
-        className="pointer-events-none absolute z-0 -inset-px rounded-md opacity-0 transition duration-300 group-hover/spotlight:opacity-100"
+        className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-300"
         style={{
-          backgroundColor: color,
-          maskImage: useMotionTemplate`
-            radial-gradient(
-              ${radius}px circle at ${mouseX}px ${mouseY}px,
-              white,
-              transparent 80%
-            )
-          `,
-        }}>
-        {/* Remove CanvasRevealEffect for now */}
-      </motion.div>
-      {children}
+          background: `radial-gradient(circle at ${mouseX.get()}px ${mouseY.get()}px, ${spotlightColor} ${radius}px, ${backgroundColor} 100%)`,
+          opacity: isHovering ? 1 : 0,
+        }}
+      />
+
+      {/* Foreground content */}
+      <div className="relative z-10">{children}</div>
     </div>
   );
 };
