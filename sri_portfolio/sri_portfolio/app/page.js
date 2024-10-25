@@ -8,6 +8,7 @@ import { IconHome, IconUser, IconBriefcase, IconNotebook, IconMail } from "@tabl
 import { PinContainer } from "./components/3d-pin"; // Import 3D Pin Container for projects
 import { Carousel } from "./components/apple-cards-carousel"; // Import Carousel for projects and blog posts
 import createGlobe from "cobe"; // Import cobe to create the globe
+import { CardSpotlight } from "./components/card-spotlight";
 
 // Slider duration in milliseconds
 const SLIDE_DURATION = 5000;
@@ -302,20 +303,28 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Blog Section */}
+      {/* Blog Section with CardSpotlight */}
         <section id="blog" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
           <div className="w-full p-8 bg-transparent rounded-xl">
-            <h2 className="text-4xl font-bold text-center">Featured Blog Posts</h2>
+            <h2 className="text-4xl font-bold text-center mb-10">Featured Blog Posts</h2>
             <Carousel
-              items={blogPosts.map((post) => (
-                <div key={post.title} className="p-4 bg-gray-100 rounded-lg shadow-lg">
-                  <h3 className="text-2xl font-semibold mb-2">{post.title}</h3>
-                  <p className="text-sm text-gray-700">{post.content}</p>
-                </div>
+              items={blogPosts.map((post, index) => (
+                <CardSpotlight key={index} className="h-[500px] w-[350px]">  {/* Custom size for the card */}
+                  <h3 className="text-2xl font-bold relative z-20 mt-2 text-white">
+                    {post.title}
+                  </h3>
+                  <p className="text-neutral-200 mt-4 relative z-20">
+                    {post.content}
+                  </p>
+                  <p className="text-neutral-300 mt-4 relative z-20 text-sm">
+                    Category: {post.category}
+                  </p>
+                </CardSpotlight>
               ))}
             />
           </div>
         </section>
+
 
         {/* Contact Section */}
         <section id="contact" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
