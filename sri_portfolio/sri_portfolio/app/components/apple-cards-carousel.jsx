@@ -92,7 +92,7 @@ export const Carousel = ({
 
           <div
             className={cn(
-              "flex flex-row justify-start gap-4 pl-4",
+              "flex flex-row justify-start gap-2 pl-4",
               // remove max-w-4xl if you want the carousel to span the full width of its container
               "max-w-7xl mx-auto"
             )}>
@@ -113,7 +113,7 @@ export const Carousel = ({
                   },
                 }}
                 key={"card" + index}
-                className="last:pr-[5%] md:last:pr-[33%]  rounded-3xl">
+                className="rounded-3xl">
                 {item}
               </motion.div>
             ))}
