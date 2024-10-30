@@ -4,11 +4,23 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { FloatingDock } from "./components/FloatingDock";
-import { IconHome, IconUser, IconBriefcase, IconNotebook, IconMail } from "@tabler/icons-react";
+import { 
+  IconHome, 
+  IconUser, 
+  IconBriefcase, 
+  IconBook, 
+  IconMail, 
+  IconTools, 
+  IconBulb 
+} from "@tabler/icons-react"; // Import relevant icons
 import { PinContainer } from "./components/3d-pin"; // Import 3D Pin Container for projects
 import { Carousel } from "./components/apple-cards-carousel"; // Import Carousel for projects and blog posts
 import createGlobe from "cobe"; // Import cobe to create the globe
 import { CardSpotlight } from "./components/card-spotlight";
+import { Card, ExCarousel } from "./components/ExpandableCard";
+import { InfiniteMovingCards } from "./components/infinite-moving-cards";
+import { Timeline} from "./components/timeline";
+import { TimelineDemo } from "./timeline";
 
 // Slider duration in milliseconds
 const SLIDE_DURATION = 5000;
@@ -62,10 +74,12 @@ function Globe() {
 export default function Home() {
   // Navigation Items for the Floating Dock
   const items = [
-    { title: "Home", icon: <IconHome />, href: "#home" }, // Link to the Home section
+    { title: "Home", icon: <IconHome />, href: "#home" },
     { title: "About Me", icon: <IconUser />, href: "#about" },
-    { title: "Projects", icon: <IconBriefcase />, href: "#projects" },
-    { title: "Blog", icon: <IconNotebook />, href: "#blog" },
+    { title: "Experience", icon: <IconBriefcase />, href: "#experience" },
+    { title: "Projects", icon: <IconBulb />, href: "#projects" }, // Lightbulb icon for projects/ideas
+    { title: "Skills", icon: <IconTools />, href: "#skills" },
+    { title: "Blog", icon: <IconBook />, href: "#blog" }, // Book icon for blog
     { title: "Contact", icon: <IconMail />, href: "#contact" },
   ];
 
@@ -146,6 +160,48 @@ export default function Home() {
     { title: "Blog Post 2", category: "Tech", content: "This is the content for blog post 2" },
     { title: "Blog Post 3", category: "Tech", content: "This is the content for blog post 3" },
     { title: "Blog Post 4", category: "Tech", content: "This is the content for blog post 4" },
+  ];
+
+  const skillsSections = [
+    {
+      category: "Programming Languages",
+      skills: [
+        { icon: "https://img.shields.io/badge/c-%2300599C.svg?style=for-the-badge&logo=c&logoColor=white" },
+        { icon: "https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white" },
+        { icon: "https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white" },
+        { icon: "https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" },
+        { icon: "https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" },
+        { icon: "https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" },
+      ],
+    },
+    {
+      category: "Frameworks & Libraries",
+      skills: [
+        { icon: "https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" },
+        { icon: "https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white" },
+        { icon: "https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white" },
+        { icon: "https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=for-the-badge&logo=TensorFlow&logoColor=white" },
+        { icon: "https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" },
+      ],
+    },
+    {
+      category: "Software Tools & Environments",
+      skills: [
+        { icon: "https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" },
+        { icon: "https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white" },
+        { icon: "https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white" },
+        { icon: "https://img.shields.io/badge/VS%20Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" },
+        { icon: "https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" },
+      ],
+    },
+    {
+      category: "Design & UX Tools",
+      skills: [
+        { icon: "https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white" },
+        { icon: "https://img.shields.io/badge/Canva-%2300C4CC.svg?style=for-the-badge&logo=Canva&logoColor=white" },
+        { icon: "https://img.shields.io/badge/adobe%20illustrator-%23FF9A00.svg?style=for-the-badge&logo=adobe%20illustrator&logoColor=white" },
+      ],
+    },
   ];
 
   // Handle outside click for closing resume modal
@@ -285,6 +341,16 @@ export default function Home() {
         </div>
       </section>
 
+        {/* Experience Section */}
+        <section id="experience" className="w-full bg-transparent py-20 my-20 mb-40">
+          <div className="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12">
+            <h2 className="text-4xl font-bold text-center text-white mb-12">Experience</h2>
+            <div className="bg-transparent rounded-xl p-8">
+              <TimelineDemo /> {/* Use TimelineDemo here */}
+            </div>
+          </div>
+        </section>
+
         {/* Projects Section */}
         <section id="projects" className="h-screen w-full bg-transparent flex items-center justify-center mt-20">
           <div className="h-screen w-full p-4 md:p-8 bg-transparent rounded-xl flex items-center justify-center">
@@ -314,29 +380,46 @@ export default function Home() {
               />
             </div>
           </div>
+        </section>  
+
+        {/* Skills Section */}
+        <section id="skills" className="w-full bg-transparent py-20 my-20 mb-40">
+          <div className="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12">
+            <h2 className="text-4xl font-bold text-center text-white mb-12">Skills</h2>
+            <div className="bg-transparent rounded-xl p-8"> {/* Styled container */}
+              <InfiniteMovingCards
+                sections={skillsSections}
+                direction="left"
+                speed="normal"
+                pauseOnHover={true}
+                className="mx-auto"
+              />
+            </div>
+          </div>
         </section>
 
-      {/* Blog Section with CardSpotlight */}
-        <section id="blog" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
+        {/* Blog Section with Expandable Cards */}
+        <section id="blog" className="h-screen w-full bg-transparent mx-4 my-20 flex items-center justify-center">
           <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Featured Blog Posts</h2>
-            <Carousel
+            <ExCarousel
               items={blogPosts.map((post, index) => (
-                <CardSpotlight key={index} className="h-[400px] w-[300px] md:h-[500px] md:w-[350px]">  {/* Custom size for the card */}
-                  <h3 className="text-xl md:text-2xl font-bold relative z-20 mt-2 text-white">
-                    {post.title}
-                  </h3>
-                  <p className="text-neutral-200 mt-2 md:mt-4 relative z-20 text-sm md:text-base">
-                    {post.content}
-                  </p>
-                  <p className="text-neutral-300 mt-2 md:mt-4 relative z-20 text-xs md:text-sm">
-                    Category: {post.category}
-                  </p>
-                </CardSpotlight>
+                <Card
+                  key={index}
+                  index={index}
+                  card={{
+                    title: post.title,
+                    content: post.content,
+                    category: post.category,
+                    src: `/${index + 1}.jpg`, 
+                  }}
+                />
               ))}
             />
           </div>
         </section>
+
+
 
         {/* Contact Section */}
         <section id="contact" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
