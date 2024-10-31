@@ -4,27 +4,27 @@ import Image from "next/image";
 import React from "react";
 import { Timeline } from "./components/timeline";
 
-export function TimelineDemo() {
+export function AchievementTimelineDemo() {
   const data = [
     {
-      title: "Research Data Analyst",
+      title: "Discovering Programming",
       content: (
         <div>
-          <h2 className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-semibold mb-4">BIONCS Lab</h2>
+          <h2 className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-semibold mb-4">2022 - Introduction to Coding</h2>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-8">
-            During my time at the research lab, I optimized imaging analysis workflows, significantly reducing error rates. This experience introduced me to data analysis, preparing me for more complex technical roles.
+            Two years ago, I began my coding journey with Java. This was my first experience with programming, and I quickly became passionate about learning and creating solutions.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
-              src="/home1.jpg"
-              alt="Research Lab Experience"
+              src="/home1.jpg" // Replace with your actual image path if available
+              alt="Learning Java"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
             <Image
               src="/home1.jpg"
-              alt="Imaging Analysis"
+              alt="Early Coding Days"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
@@ -34,24 +34,24 @@ export function TimelineDemo() {
       ),
     },
     {
-      title: "Software Developer at SoDA",
+      title: "Devil's Invent Hackathon",
       content: (
         <div>
-          <h2 className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-semibold mb-4">Software Developers Association</h2>
+          <h2 className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-semibold mb-4">2023 - Hackathon Success</h2>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-8">
-            Starting as an intern and progressing to a Software Developer position, I created tools that streamlined internal processes, improved engagement, and supported club operations.
+            In Spring 2023, my team won the Devil's Invent Hackathon, where we developed an innovative solution to a real-world problem. This experience taught me a lot about teamwork, rapid development, and problem-solving under pressure.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
               src="/home1.jpg"
-              alt="SoDA Internship"
+              alt="Hackathon Victory"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
             <Image
               src="/home1.jpg"
-              alt="Club Operations"
+              alt="Team Celebration"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
@@ -61,24 +61,24 @@ export function TimelineDemo() {
       ),
     },
     {
-      title: "Lead Software Engineer",
+      title: "Growing in Machine Learning",
       content: (
         <div>
-          <h2 className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-semibold mb-4">Mesa Interactive Exhibit</h2>
+          <h2 className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-semibold mb-4">2023 - Exploring Machine Learning</h2>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-8">
-            As the Lead Software Engineer, I lead a team in creating software for interactive museum exhibits, enhancing user engagement through innovative design and development.
+            I continued my growth by learning machine learning through various courses and small projects. This experience helped me develop a strong foundation in data analysis and predictive modeling.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
               src="/home1.jpg"
-              alt="Lead Software Engineer"
+              alt="Machine Learning Journey"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
             <Image
               src="/home1.jpg"
-              alt="Mesa Interactive Exhibit"
+              alt="Learning and Projects"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"

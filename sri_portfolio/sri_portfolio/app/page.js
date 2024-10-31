@@ -21,6 +21,7 @@ import { Card, ExCarousel } from "./components/ExpandableCard";
 import { InfiniteMovingCards } from "./components/infinite-moving-cards";
 import { Timeline} from "./components/timeline";
 import { TimelineDemo } from "./timeline";
+import { AchievementTimelineDemo } from "./AcheivementTimeline";
 
 // Slider duration in milliseconds
 const SLIDE_DURATION = 5000;
@@ -86,6 +87,8 @@ export default function Home() {
   // Header Slider Data
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showResumePreview, setShowResumePreview] = useState(false); // Modal state for resume preview
+  const [activeTimeline, setActiveTimeline] = useState("experience");
+
 
   const slides = [
     {
@@ -341,15 +344,70 @@ export default function Home() {
         </div>
       </section>
 
-        {/* Experience Section */}
-        <section id="experience" className="w-full bg-transparent py-20 my-20 mb-40">
-          <div className="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12">
-            <h2 className="text-4xl font-bold text-center text-white mb-12">Experience</h2>
-            <div className="bg-transparent rounded-xl p-8">
-              <TimelineDemo /> {/* Use TimelineDemo here */}
+       {/* Experience Section with Toggle */}
+       <section id="experience" className="w-full bg-transparent py-20 my-20 mb-40">
+            <div className="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12">
+              <div className="flex justify-center gap-8 mb-12">
+                {/* Professional Experience Button */}
+                <button
+                  className={`relative text-4xl font-bold ${
+                    activeTimeline === "experience" ? "text-white" : "text-gray-400"
+                  }`}
+                  onClick={() => setActiveTimeline("experience")}
+                >
+                  Professional Experience
+                  {activeTimeline === "experience" && (
+                    <motion.div
+                      layoutId="underline"
+                      className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-purple-500 shadow-md rounded-lg"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    />
+                  )}
+                </button>
+
+                {/* Achievements & Coding Journey Button */}
+                <button
+                  className={`relative text-4xl font-bold ${
+                    activeTimeline === "achievements" ? "text-white" : "text-gray-400"
+                  }`}
+                  onClick={() => setActiveTimeline("achievements")}
+                >
+                  Achievements & Coding Journey
+                  {activeTimeline === "achievements" && (
+                    <motion.div
+                      layoutId="underline"
+                      className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-teal-500 shadow-md rounded-lg"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    />
+                  )}
+                </button>
+              </div>
+
+              {/* Content Transition Animation */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTimeline} // Different keys for different sections
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-transparent rounded-xl p-8"
+                >
+                  {activeTimeline === "experience" ? (
+                    <TimelineDemo /> // Professional Experience Timeline
+                  ) : (
+                    <AchievementTimelineDemo /> // Achievements & Coding Journey Timeline
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </div>
-          </div>
-        </section>
+          </section>
 
         {/* Projects Section */}
         <section id="projects" className="h-screen w-full bg-transparent flex items-center justify-center mt-20">
