@@ -11,8 +11,14 @@ import {
   IconBook, 
   IconMail, 
   IconTools, 
-  IconBulb 
-} from "@tabler/icons-react"; // Import relevant icons
+  IconBulb, 
+  IconBrandGithub,
+  IconBrandInstagram,
+  IconBrandLinkedin,
+  IconBrandSpotify,
+} 
+
+from "@tabler/icons-react"; // Import relevant icons
 import { PinContainer } from "./components/3d-pin"; // Import 3D Pin Container for projects
 import { Carousel } from "./components/apple-cards-carousel"; // Import Carousel for projects and blog posts
 import createGlobe from "cobe"; // Import cobe to create the globe
@@ -95,27 +101,46 @@ export default function Home() {
       title: "Welcome to My Portfolio",
       description: "Discover my work and skills.",
       image: "/home1.jpg",
+      link: "#home",
+    },
+    {
+      title: "About Me",
+      description: "Learn more about me.",
+      image: "/home2.jpg",
       link: "#about",
     },
     {
+      title: "Professional Experience",
+      description: "Explore my professional background.",
+      image: "/experience.jpg",
+      link: "#experience",
+    },
+    {
       title: "Featured Projects",
-      description: "Explore my latest projects.",
-      image: "/home2.jpg",
+      description: "See my latest projects.",
+      image: "/projects.jpg",
       link: "#projects",
+    },
+    {
+      title: "Technical Skills",
+      description: "Check out my technical skills.",
+      image: "/skills.jpg",
+      link: "#skills",
     },
     {
       title: "Blog Insights",
       description: "Read my latest articles.",
-      image: "/home4.jpg",
+      image: "/blog.jpg",
       link: "#blog",
     },
     {
-      title: "Contact Me",
-      description: "Get in touch.",
-      image: "/home3.jpg",
+      title: "Get in Touch",
+      description: "Contact me for collaborations.",
+      image: "/contact.jpg",
       link: "#contact",
     },
   ];
+
 
   // Auto slide effect for the header slides
   useEffect(() => {
@@ -175,16 +200,31 @@ export default function Home() {
         { icon: "https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" },
         { icon: "https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" },
         { icon: "https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" },
+        { icon: "https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" },
+        { icon: "https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white" },
+        { icon: "https://img.shields.io/badge/powershell-%235391FE.svg?style=for-the-badge&logo=powershell&logoColor=white" },
+        { icon: "https://img.shields.io/badge/shell_script-%23121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white" }
       ],
     },
     {
       category: "Frameworks & Libraries",
       skills: [
         { icon: "https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" },
-        { icon: "https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white" },
         { icon: "https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white" },
-        { icon: "https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=for-the-badge&logo=TensorFlow&logoColor=white" },
-        { icon: "https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" },
+        { icon: "https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white" },
+        { icon: "https://img.shields.io/badge/fastapi-005571?style=for-the-badge&logo=fastapi" },
+        { icon: "https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white" },
+        { icon: "https://img.shields.io/badge/next.js-black?style=for-the-badge&logo=next.js&logoColor=white" },
+        { icon: "https://img.shields.io/badge/tensorflow-%23FF6F00.svg?style=for-the-badge&logo=tensorflow&logoColor=white" },
+        { icon: "https://img.shields.io/badge/pytorch-%23EE4C2C.svg?style=for-the-badge&logo=pytorch&logoColor=white" },
+        { icon: "https://img.shields.io/badge/opencv-%23white.svg?style=for-the-badge&logo=opencv&logoColor=white" },
+        { icon: "https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white" },
+        { icon: "https://img.shields.io/badge/matplotlib-%23ffffff.svg?style=for-the-badge&logo=matplotlib&logoColor=black" },
+        { icon: "https://img.shields.io/badge/numpy-%23013243.svg?style=for-the-badge&logo=numpy&logoColor=white" },
+        { icon: "https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white" },
+        { icon: "https://img.shields.io/badge/plotly-%233F4F75.svg?style=for-the-badge&logo=plotly&logoColor=white" },
+        { icon: "https://img.shields.io/badge/selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white" },
+        { icon: "https://img.shields.io/badge/flutter-%2302569B.svg?style=for-the-badge&logo=flutter&logoColor=white" }
       ],
     },
     {
@@ -192,20 +232,33 @@ export default function Home() {
       skills: [
         { icon: "https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" },
         { icon: "https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white" },
-        { icon: "https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white" },
-        { icon: "https://img.shields.io/badge/VS%20Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" },
-        { icon: "https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" },
+        { icon: "https://img.shields.io/badge/aws-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white" },
+        { icon: "https://img.shields.io/badge/azure-%230072C6.svg?style=for-the-badge&logo=microsoftazure&logoColor=white" },
+        { icon: "https://img.shields.io/badge/google_cloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white" },
+        { icon: "https://img.shields.io/badge/vs_code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" },
+        { icon: "https://img.shields.io/badge/jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white" },
+        { icon: "https://img.shields.io/badge/eclipse-2C2255?style=for-the-badge&logo=eclipse&logoColor=white" },
+        { icon: "https://img.shields.io/badge/excel-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white" },
+        { icon: "https://img.shields.io/badge/linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" }
       ],
     },
     {
       category: "Design & UX Tools",
       skills: [
         { icon: "https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white" },
-        { icon: "https://img.shields.io/badge/Canva-%2300C4CC.svg?style=for-the-badge&logo=Canva&logoColor=white" },
-        { icon: "https://img.shields.io/badge/adobe%20illustrator-%23FF9A00.svg?style=for-the-badge&logo=adobe%20illustrator&logoColor=white" },
+        { icon: "https://img.shields.io/badge/adobe_illustrator-%23FF9A00.svg?style=for-the-badge&logo=adobe-illustrator&logoColor=white" },
+        { icon: "https://img.shields.io/badge/adobe_photoshop-31A8FF.svg?style=for-the-badge&logo=adobe-photoshop&logoColor=white" },
+        { icon: "https://img.shields.io/badge/canva-%2300C4CC.svg?style=for-the-badge&logo=canva&logoColor=white" }
       ],
     },
+    {
+      category: "Hardware & Embedded Systems",
+      skills: [
+        { icon: "https://img.shields.io/badge/raspberry_pi-C51A4A?style=for-the-badge&logo=raspberry-pi&logoColor=white" }
+      ],
+    }
   ];
+  
 
   // Handle outside click for closing resume modal
   const handleClickOutside = (e) => {
@@ -235,12 +288,51 @@ export default function Home() {
       {/* Right: Main Content */}
       <div className="relative overflow-y-auto overflow-x-hidden p-4">
 
-        {/* Sticky Resume Button */}
+
+      {/* Custom Top-Right Navbar */}
+      <div
+        className={`fixed top-4 ${
+          isMobile ? "left-1/2 transform -translate-x-1/2 px-6" : "right-4"
+        } flex items-center space-x-4 bg-black bg-opacity-60 rounded-2xl shadow-lg z-[1000] py-2 px-3 md:px-4`}
+        style={{
+          paddingLeft: isMobile ? "1.5rem" : "1rem",
+          paddingRight: isMobile ? "1.5rem" : "1rem",
+        }}
+      >
+        <Link href="https://github.com/" target="_blank">
+          <IconBrandGithub
+            className="text-white hover:text-gray-400 mx-1"
+            size={24}
+          />
+        </Link>
+        <Link href="https://instagram.com/" target="_blank">
+          <IconBrandInstagram
+            className="text-pink-500 hover:text-pink-400 mx-1"
+            size={24}
+          />
+        </Link>
+        <Link href="https://linkedin.com/" target="_blank">
+          <IconBrandLinkedin
+            className="text-blue-700 hover:text-blue-500 mx-1"
+            size={24}
+          />
+        </Link>
+        <Link href="mailto:your-email@example.com" target="_blank">
+          <IconMail className="text-red-500 hover:text-red-400 mx-1" size={24} />
+        </Link>
+        <Link href="https://open.spotify.com/" target="_blank">
+          <IconBrandSpotify
+            className="text-green-500 hover:text-green-400 mx-1"
+            size={24}
+          />
+        </Link>
         <Link href="/my_resume.pdf" download>
-          <button className="fixed top-4 right-4 px-6 py-3 bg-gradient-to-r from-cyan-400 to-blue-400 text-black font-semibold rounded-lg shadow-md hover:bg-gradient-to-r hover:from-blue-500 hover:to-emerald-500 transition-all z-[1000]">
+          <button className="px-4 py-2 border border-whites-400 text-white-400 font-semibold rounded-md shadow-md hover:border-emerald-500 hover:text-emerald-500 transition-all mx-1 bg-transparent">
             Resume
           </button>
         </Link>
+      </div>
+
 
 
         {/* Home Section */}
@@ -345,100 +437,106 @@ export default function Home() {
       </section>
 
        {/* Experience Section with Toggle */}
-       <section id="experience" className="w-full bg-transparent py-20 my-20 mb-40">
-            <div className="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12">
-              <div className="flex justify-center gap-8 mb-12">
-                {/* Professional Experience Button */}
-                <button
-                  className={`relative text-4xl font-bold ${
-                    activeTimeline === "experience" ? "text-white" : "text-gray-400"
-                  }`}
-                  onClick={() => setActiveTimeline("experience")}
-                >
-                  Professional Experience
-                  {activeTimeline === "experience" && (
-                    <motion.div
-                      layoutId="underline"
-                      className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-purple-500 shadow-md rounded-lg"
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 5 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    />
-                  )}
-                </button>
+        <section id="experience" className="w-full bg-transparent py-10 md:py-20 my-10 md:my-20 mb-20 md:mb-40">
+          <div className="w-full max-w-4xl mx-auto px-4 md:px-8 lg:px-12">
+            <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-8 mb-6 md:mb-12">
+              {/* Professional Experience Button */}
+              <button
+                className={`relative text-2xl md:text-4xl font-bold ${
+                  activeTimeline === "experience" ? "text-white" : "text-gray-400"
+                }`}
+                onClick={() => setActiveTimeline("experience")}
+              >
+                Professional Experience
+                {activeTimeline === "experience" && (
+                  <motion.div
+                    layoutId="underline"
+                    className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-purple-500 shadow-md rounded-lg"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  />
+                )}
+              </button>
 
-                {/* Achievements & Coding Journey Button */}
-                <button
-                  className={`relative text-4xl font-bold ${
-                    activeTimeline === "achievements" ? "text-white" : "text-gray-400"
-                  }`}
-                  onClick={() => setActiveTimeline("achievements")}
-                >
-                  Achievements & Coding Journey
-                  {activeTimeline === "achievements" && (
-                    <motion.div
-                      layoutId="underline"
-                      className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-teal-500 shadow-md rounded-lg"
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 5 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    />
-                  )}
-                </button>
-              </div>
-
-              {/* Content Transition Animation */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTimeline} // Different keys for different sections
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 10 }}
-                  transition={{ duration: 0.4 }}
-                  className="bg-transparent rounded-xl p-8"
-                >
-                  {activeTimeline === "experience" ? (
-                    <TimelineDemo /> // Professional Experience Timeline
-                  ) : (
-                    <AchievementTimelineDemo /> // Achievements & Coding Journey Timeline
-                  )}
-                </motion.div>
-              </AnimatePresence>
+              {/* Achievements & Coding Journey Button */}
+              <button
+                className={`relative text-2xl md:text-4xl font-bold ${
+                  activeTimeline === "achievements" ? "text-white" : "text-gray-400"
+                }`}
+                onClick={() => setActiveTimeline("achievements")}
+              >
+                Achievements & Coding Journey
+                {activeTimeline === "achievements" && (
+                  <motion.div
+                    layoutId="underline"
+                    className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-teal-500 shadow-md rounded-lg"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  />
+                )}
+              </button>
             </div>
-          </section>
+
+            {/* Content Transition Animation */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTimeline} // Different keys for different sections
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.4 }}
+                className="bg-transparent rounded-xl p-4 md:p-8"
+              >
+                {activeTimeline === "experience" ? (
+                  <TimelineDemo /> // Professional Experience Timeline
+                ) : (
+                  <AchievementTimelineDemo /> // Achievements & Coding Journey Timeline
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </section>
 
         {/* Projects Section */}
-        <section id="projects" className="h-screen w-full bg-transparent flex items-center justify-center mt-20">
-          <div className="h-screen w-full p-4 md:p-8 bg-transparent rounded-xl flex items-center justify-center">
-            <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
-              <h2 className="text-3xl md:text-4xl font-bold text-center">Featured Projects</h2>
-              <Carousel
-                items={projects.map((project, index) => (
-                  <PinContainer
-                    key={index}
-                    title={project.title}
-                    href={project.href}
-                    className="text-white"
-                    containerClassName="h-[300px] w-[300px] md:h-[400px] md:w-[350px]"
-                  >
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="h-32 md:h-40 w-full object-cover rounded-md mb-4"
-                    />
-                    {/* Project Title with Gradient */}
-                    <h3 className="text-lg md:text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-emerald-400">
-                      {project.title}
-                    </h3>
-                    <p className="text-xs md:text-sm text-gray-200">{project.description}</p>
-                  </PinContainer>
-                ))}
-              />
-            </div>
+        <section id="projects" className="w-full bg-transparent py-10 md:py-20">
+          <div className="w-full max-w-8xl mx-auto px-4 md:px-8 lg:px-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Featured Projects</h2>
+            <Carousel
+              items={projects.map((project, index) => (
+                <PinContainer
+                  key={index}
+                  title={project.title}
+                  href={project.href}
+                  image={project.image} // Pass the image path here
+                  className="text-white"
+                  containerClassName="flex flex-col items-center justify-center w-[90%] sm:w-[20rem] h-auto md:w-[25rem] p-4"
+                >
+                  {/* Image Section */}
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-32 sm:h-36 md:h-40 object-cover rounded-lg mb-4 transition-transform duration-300 ease-in-out hover:scale-105"
+                  />
+
+                  {/* Text Section */}
+                  <div className="flex flex-col items-start w-full text-left">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 mb-2">{project.title}</h3>
+                    <p className="text-sm sm:text-base font-normal text-white">
+                      {project.description}
+                    </p>
+                  </div>
+                </PinContainer>
+              ))}
+            />
           </div>
-        </section>  
+        </section>
+
+
+
 
         {/* Skills Section */}
         <section id="skills" className="w-full bg-transparent py-20 my-20 mb-40">
