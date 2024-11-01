@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { cn } from "../lib/utils";
 
 export const InfiniteMovingCards = ({
@@ -10,75 +10,100 @@ export const InfiniteMovingCards = ({
   pauseOnHover = true,
   className,
 }) => {
-  const containerRef = useRef(null);
   const scrollerRef = useRef(null);
 
   useEffect(() => {
-    setupScrollLoop();
-  }, []);
+    const interval = setInterval(() => {
+      if (scrollerRef.current) {
+        scrollerRef.current.scrollLeft += direction === "left" ? 1 : -1;
+        handleManualScroll();
+      }
+    }, speed === "veryFast" ? 10 : speed === "fast" ? 20 : 30);
 
-  const setupScrollLoop = () => {
-    if (scrollerRef.current) {
-      scrollerRef.current.scrollLeft = scrollerRef.current.offsetWidth;
-    }
-  };
+    return () => clearInterval(interval);
+  }, []);
 
   const handleManualScroll = () => {
     if (scrollerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollerRef.current;
-      const maxScrollLeft = scrollWidth - clientWidth;
+      const halfwayPoint = scrollWidth / 2;
 
-      if (scrollLeft >= maxScrollLeft - 1) {
-        scrollerRef.current.scrollLeft = clientWidth;
-      } else if (scrollLeft <= 1) {
-        scrollerRef.current.scrollLeft = maxScrollLeft - clientWidth;
+      if (scrollLeft >= scrollWidth - clientWidth) {
+        scrollerRef.current.scrollLeft = halfwayPoint - clientWidth;
       }
     }
   };
 
   return (
     <div
-      ref={containerRef}
       className={cn(
-        "scroller relative z-20 max-w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]",
+        "scroller relative z-20 max-w-full overflow-hidden",
         className
       )}
     >
       <div
         ref={scrollerRef}
         onScroll={handleManualScroll}
-        className="scroll-wrapper max-w-full overflow-x-auto overflow-y-hidden whitespace-nowrap"
+        className="scroll-wrapper max-w-full overflow-x-auto overflow-y-hidden whitespace-nowrap no-scrollbar"
       >
         <ul
           className={cn(
-            "flex min-w-full shrink-0 gap-4 md:gap-8 py-4 md:py-8 w-max flex-nowrap",
+            "animate-scroll flex min-w-full shrink-0 gap-3 md:gap-5 py-2 md:py-4 w-max flex-nowrap",
             pauseOnHover && "hover:[animation-play-state:paused]"
           )}
+          style={{
+            animation: `scroll linear infinite ${speed === "veryFast" ? "60s" : speed === "fast" ? "90s" : "120s"}`,
+          }}
         >
-          {[...sections, ...sections, ...sections].map((section, idx) => {
-            const cardWidth = Math.max(300, Math.min(section.skills.length * 60, 250));
+          {[...sections, ...sections].map((section, idx) => {
+            const dynamicWidth = Math.max(250, section.skills.length * 40); // Adjust width based on content
+
+            // Distribute skills cyclically across four rows
+            const rows = [[], [], [], []];
+            section.skills.forEach((skill, index) => {
+              rows[index % 4].push(skill);
+            });
 
             return (
               <li
                 key={idx}
-                style={{ width: `${cardWidth}px`, minHeight: "250px" }}
-                className="bg-transparent border border-white shadow-lg p-3 md:p-6 rounded-2xl flex-shrink-0 mx-2 overflow-hidden" // Changed to overflow-hidden
+                style={{
+                  minWidth: dynamicWidth,
+                  height: "320px", // Fixed card height for uniformity
+                }}
+                className="p-4 md:p-5 rounded-xl flex-shrink-0 mx-2 overflow-hidden flex flex-col justify-center items-center text-center"
               >
-                <h3 className="text-lg md:text-xl font-semibold text-cyan-400 mb-2 md:mb-4 text-center">
+                <h3 className="text-lg md:text-xl font-semibold text-cyan-400 mb-3">
                   {section.category}
                 </h3>
-                <div className="flex flex-wrap gap-2 md:gap-2 justify-center">
-                  {section.skills.map((skill, skillIdx) => (
+                <div
+                  className="flex flex-col gap-2 items-center justify-center"
+                  style={{
+                    width: "100%",
+                    maxHeight: "200px",
+                    overflow: "hidden",
+                  }}
+                >
+                  {rows.map((row, rowIndex) => (
                     <div
-                      key={skillIdx}
-                      className="flex items-center p-1"
-                      style={{ width: "auto" }}
+                      key={rowIndex}
+                      className="flex gap-2 justify-center flex-wrap"
+                      style={{
+                        width: "100%",
+                      }}
                     >
-                      <img
-                        src={skill.icon}
-                        alt=""
-                        className="h-8 md:h-10 object-contain"
-                      />
+                      {row.map((skill, skillIdx) => (
+                        <div
+                          key={skillIdx}
+                          className="flex items-center justify-center p-1"
+                        >
+                          <img
+                            src={skill.icon}
+                            alt=""
+                            className="h-8 md:h-10 object-contain"
+                          />
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
@@ -95,7 +120,7 @@ export const InfiniteMovingCards = ({
 <style jsx global>{`
   .animate-scroll {
     display: flex;
-    animation: scroll infinite var(--animation-duration, 5s) linear var(--animation-direction, normal);
+    animation: scroll linear infinite;
   }
 
   .scroll-wrapper::-webkit-scrollbar {
@@ -108,6 +133,22 @@ export const InfiniteMovingCards = ({
     }
     100% {
       transform: translateX(-50%);
+    }
+  }
+
+  /* Mobile styling adjustments */
+  @media (max-width: 768px) {
+    .scroll-wrapper {
+      padding: 1rem;
+    }
+
+    .animate-scroll li {
+      min-width: 200px;
+      padding: 1rem;
+    }
+
+    .animate-scroll h3 {
+      font-size: 1.25rem;
     }
   }
 `}</style>
