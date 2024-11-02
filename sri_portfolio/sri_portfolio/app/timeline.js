@@ -1,30 +1,41 @@
-"use client";
+import React from 'react';
+import Image from 'next/image';
+import { Timeline } from './components/timeline';
 
-import Image from "next/image";
-import React from "react";
-import { Timeline } from "./components/timeline";
-
-export function TimelineDemo() {
+export function TimelineDemo({ theme }) {
   const data = [
     {
-      title: "Research Data Analyst",
+      title: "Lead Software Engineer",
       content: (
         <div>
-          <h2 className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-semibold mb-4">BIONCS Lab</h2>
-          <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-8">
-            During my time at the research lab, I optimized imaging analysis workflows, significantly reducing error rates. This experience introduced me to data analysis, preparing me for more complex technical roles.
+          <h2 className="text-lg md:text-xl font-semibold mb-4">Mesa Interactive Exhibit</h2>
+          <p className="text-xs md:text-sm font-normal mb-8">
+            As the Lead Software Engineer, I led a team in creating software for interactive museum exhibits, enhancing user engagement through innovative design and development.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
-              src="/home1.jpg"
-              alt="Research Lab Experience"
+              src="/ex (1).webp"
+              alt="Lead Software Engineer"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
             />
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Machine Learning Intern",
+      content: (
+        <div>
+          <h2 className="text-lg md:text-xl font-semibold mb-4">Geometric Media Lab</h2>
+          <p className="text-xs md:text-sm font-normal mb-8">
+            Increased gunshot detection accuracy from 10% to 80% by implementing unsupervised machine learning models on limited data, and developed expertise in Generative AI through advanced machine learning applications in multimedia.
+          </p>
+          <div className="grid grid-cols-2 gap-4">
             <Image
-              src="/home1.jpg"
-              alt="Imaging Analysis"
+              src="/ex (4).webp"
+              alt="Machine Learning Intern"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
@@ -37,21 +48,14 @@ export function TimelineDemo() {
       title: "Software Developer at SoDA",
       content: (
         <div>
-          <h2 className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-semibold mb-4">Software Developers Association</h2>
-          <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-8">
+          <h2 className="text-lg md:text-xl font-semibold mb-4">Software Developers Association</h2>
+          <p className="text-xs md:text-sm font-normal mb-8">
             Starting as an intern and progressing to a Software Developer position, I created tools that streamlined internal processes, improved engagement, and supported club operations.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
-              src="/home1.jpg"
+              src="/ex (3).webp"
               alt="SoDA Internship"
-              width={500}
-              height={500}
-              className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
-            />
-            <Image
-              src="/home1.jpg"
-              alt="Club Operations"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
@@ -61,24 +65,17 @@ export function TimelineDemo() {
       ),
     },
     {
-      title: "Lead Software Engineer",
+      title: "Research Data Analyst",
       content: (
         <div>
-          <h2 className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-semibold mb-4">Mesa Interactive Exhibit</h2>
-          <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-8">
-            As the Lead Software Engineer, I lead a team in creating software for interactive museum exhibits, enhancing user engagement through innovative design and development.
+          <h2 className="text-lg md:text-xl font-semibold mb-4">BIONICS Lab</h2>
+          <p className="text-xs md:text-sm font-normal mb-8">
+            Reduced imaging error rates by 40% by automating analysis protocols for DNA-PAINT Images, cutting processing time from 4 hours to 10 minutes for over 2000 entities in a single image.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
-              src="/home1.jpg"
-              alt="Lead Software Engineer"
-              width={500}
-              height={500}
-              className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
-            />
-            <Image
-              src="/home1.jpg"
-              alt="Mesa Interactive Exhibit"
+              src="/ex (2).webp"
+              alt="Research Lab Experience"
               width={500}
               height={500}
               className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
@@ -91,7 +88,7 @@ export function TimelineDemo() {
 
   return (
     <div className="w-full">
-      <Timeline data={data} />
+      <Timeline data={data} theme={theme} />
     </div>
   );
 }
