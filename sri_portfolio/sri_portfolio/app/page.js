@@ -28,6 +28,7 @@ import { InfiniteMovingCards } from "./components/infinite-moving-cards";
 import { Timeline} from "./components/timeline";
 import { TimelineDemo } from "./timeline";
 import { AchievementTimelineDemo } from "./AcheivementTimeline";
+import { Cover } from "./components/cover";
 
 // Slider duration in milliseconds
 const SLIDE_DURATION = 5000;
@@ -94,6 +95,7 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showResumePreview, setShowResumePreview] = useState(false); // Modal state for resume preview
   const [activeTimeline, setActiveTimeline] = useState("experience");
+  const [showName, setShowName] = useState(true);
 
 
   const slides = [
@@ -112,31 +114,31 @@ export default function Home() {
     {
       title: "Professional Experience",
       description: "Explore my professional background.",
-      image: "/experience.jpg",
+      image: "/home3.jpg",
       link: "#experience",
     },
     {
       title: "Featured Projects",
       description: "See my latest projects.",
-      image: "/projects.jpg",
+      image: "/home4.jpg",
       link: "#projects",
     },
     {
       title: "Technical Skills",
       description: "Check out my technical skills.",
-      image: "/skills.jpg",
+      image: "/home5.jpg",
       link: "#skills",
     },
     {
       title: "Blog Insights",
       description: "Read my latest articles.",
-      image: "/blog.jpg",
+      image: "/home6.jpg",
       link: "#blog",
     },
     {
       title: "Get in Touch",
       description: "Contact me for collaborations.",
-      image: "/contact.jpg",
+      image: "/home7.jpg",
       link: "#contact",
     },
   ];
@@ -154,31 +156,69 @@ export default function Home() {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
+
+  useEffect(() => {
+    const handleScroll = () => {
+      console.log("Scroll detected in main-content container or fallback"); // Debugging statement
+      setShowName(false);  // Hide name on scroll
+  
+      // If scroll is back to top, show name
+      if (contentContainer.scrollTop === 0) {
+        setShowName(true);
+      }
+    };
+  
+    // Attempt to find the main content container by ID
+    let contentContainer = document.getElementById("main-content");
+  
+    // If main-content is not found, use the first existing container as a fallback
+    if (!contentContainer) {
+      console.log("main-content container not found, using fallback container");
+      contentContainer = document.querySelector(".relative.overflow-y-auto.overflow-x-hidden.p-4");
+    } else {
+      console.log("main-content container found, adding scroll event listener");
+    }
+  
+    // Attach the event listener to the found container
+    if (contentContainer) {
+      contentContainer.addEventListener("scroll", handleScroll);
+    }
+  
+    // Cleanup the scroll event listener on component unmount
+    return () => {
+      if (contentContainer) {
+        console.log("Removing scroll event listener from main-content or fallback container");
+        contentContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+  
+
   // Placeholder data for Projects
   const projects = [
     {
       title: "Amano",
       description: "Emotion-Based Song Recommendation System that provides personalized song suggestions using Reinforcement Learning and Spotify's API.",
       href: "https://github.com/sbeeredd04/Amano",
-      image: "/p (1).jpg",
+      image: "/p (2).webp",
     },
     {
       title: "Image Insight",
       description: "A web-based tool designed for postdoctoral researchers to automate complex data analysis tasks, significantly increasing research productivity.",
       href: "https://github.com/sbeeredd04/CSDNA",
-      image: "/p (2).jpg",
+      image: "/p (3).webp",
     },
     {
       title: "Mine Alliance",
       description: "Fullstack platform that integrates ChatGPT-4 for sustainable mining site impact assessments, reducing response times by 40%.",
       href: "https://github.com/LuaanNguyen/Mine-Alliance",
-      image: "/p (3).jpg",
+      image: "/p (4).webp",
     },
     {
       title: "Avisol",
       description: "An automated air traffic pathfinding system that utilizes algorithm optimization to reduce computation time for managing autonomous vehicles.",
       href: "https://github.com/sbeeredd04/AviSol",
-      image: "/p (4).jpg",
+      image: "/p (1).webp",
     },
   ];
 
@@ -285,6 +325,20 @@ export default function Home() {
        <FloatingDock items={items} />
      </div>
 
+       {/* Top Left Corner Name with Conditional Visibility */}
+       {showName && (
+        <motion.div
+          className="fixed top-4 left-4 z-50"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: showName ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Cover className="text-2xl font-semibold font-mono text-white">
+            Sri Ujjwal Reddy Beereddy
+          </Cover>
+        </motion.div>
+      )}
+
       {/* Right: Main Content */}
       <div className="relative overflow-y-auto overflow-x-hidden p-4">
 
@@ -299,7 +353,7 @@ export default function Home() {
           paddingRight: isMobile ? "1.5rem" : "1rem",
         }}
       >
-        <Link href="https://github.com/" target="_blank">
+        <Link href="https://github.com/sbeeredd04" target="_blank">
           <IconBrandGithub
             className="text-white hover:text-gray-400 mx-1"
             size={24}
@@ -311,16 +365,16 @@ export default function Home() {
             size={24}
           />
         </Link>
-        <Link href="https://linkedin.com/" target="_blank">
+        <Link href="https://www.linkedin.com/in/sriujjwal/" target="_blank">
           <IconBrandLinkedin
             className="text-blue-700 hover:text-blue-500 mx-1"
             size={24}
           />
         </Link>
-        <Link href="mailto:your-email@example.com" target="_blank">
+        <Link href="mailto:srisubspace@gmail.com" target="_blank">
           <IconMail className="text-red-500 hover:text-red-400 mx-1" size={24} />
         </Link>
-        <Link href="https://open.spotify.com/" target="_blank">
+        <Link href="https://open.spotify.com/user/31qr3j45nvoqp4lfh6vuabmlwguq?si=2c62fb75bef644f6" target="_blank">
           <IconBrandSpotify
             className="text-green-500 hover:text-green-400 mx-1"
             size={24}
@@ -492,9 +546,9 @@ export default function Home() {
                 className="bg-transparent rounded-xl p-4 md:p-8"
               >
                 {activeTimeline === "experience" ? (
-                  <TimelineDemo /> // Professional Experience Timeline
+                  <TimelineDemo theme="experience" /> // Pass theme explicitly here
                 ) : (
-                  <AchievementTimelineDemo /> // Achievements & Coding Journey Timeline
+                  <AchievementTimelineDemo theme="achievements" /> // Also, pass theme explicitly here if needed
                 )}
               </motion.div>
             </AnimatePresence>
@@ -540,19 +594,23 @@ export default function Home() {
 
         {/* Skills Section */}
         <section id="skills" className="w-full bg-transparent py-20 my-20 mb-40">
-          <div className="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12">
+          <div className="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12 scroll-hide">
             <h2 className="text-4xl font-bold text-center text-white mb-12">Skills</h2>
-            <div className="bg-transparent rounded-xl p-8"> {/* Styled container */}
-              <InfiniteMovingCards
-                sections={skillsSections}
-                direction="left"
-                speed="normal"
-                pauseOnHover={true}
-                className="mx-auto"
-              />
+            <div className="bg-transparent rounded-xl p-8 overflow-hidden">
+              {/* Apply styles to hide scrollbar */}
+              <div className="skills-scroll-container overflow-x-auto whitespace-nowrap scroll-hide">
+                <InfiniteMovingCards
+                  sections={skillsSections}
+                  direction="left"
+                  speed="normal"
+                  pauseOnHover={true}
+                  className="mx-auto"
+                />
+              </div>
             </div>
           </div>
         </section>
+
 
         {/* Blog Section with Expandable Cards */}
         <section id="blog" className="h-screen w-full bg-transparent mx-4 my-20 flex items-center justify-center">
