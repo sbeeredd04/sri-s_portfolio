@@ -10,7 +10,9 @@ export function TimelineDemo({ theme }) {
         <div>
           <h2 className="text-lg md:text-xl font-semibold mb-4">Mesa Interactive Exhibit</h2>
           <p className="text-xs md:text-sm font-normal mb-8">
-            As the Lead Software Engineer, I led a team in creating software for interactive museum exhibits, enhancing user engagement through innovative design and development.
+            As the Lead Software Engineer, I led a team in creating software for interactive museum exhibits, 
+            enhancing user engagement through innovative design and development. Integrated <strong>Three.js</strong> for 3D interactions, 
+            and implemented a <strong>scalable database</strong> for content management.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
@@ -30,7 +32,8 @@ export function TimelineDemo({ theme }) {
         <div>
           <h2 className="text-lg md:text-xl font-semibold mb-4">Geometric Media Lab</h2>
           <p className="text-xs md:text-sm font-normal mb-8">
-            Increased gunshot detection accuracy from 10% to 80% by implementing unsupervised machine learning models on limited data, and developed expertise in Generative AI through advanced machine learning applications in multimedia.
+            Increased gunshot detection accuracy from 10% to 80% by implementing unsupervised machine learning models on limited data. 
+            Leveraged <strong>Generative AI</strong> techniques to optimize multimedia analysis.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
@@ -50,7 +53,8 @@ export function TimelineDemo({ theme }) {
         <div>
           <h2 className="text-lg md:text-xl font-semibold mb-4">Software Developers Association</h2>
           <p className="text-xs md:text-sm font-normal mb-8">
-            Starting as an intern and progressing to a Software Developer position, I created tools that streamlined internal processes, improved engagement, and supported club operations.
+            Starting as an intern and progressing to a Software Developer, I created <strong>automation tools</strong> 
+            for process optimization, improving engagement and supporting club operations effectively.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
@@ -65,12 +69,13 @@ export function TimelineDemo({ theme }) {
       ),
     },
     {
-      title: "Research Data Analyst",
+      title: "Data Research Analyst",
       content: (
         <div>
           <h2 className="text-lg md:text-xl font-semibold mb-4">BIONICS Lab</h2>
           <p className="text-xs md:text-sm font-normal mb-8">
-            Reduced imaging error rates by 40% by automating analysis protocols for DNA-PAINT Images, cutting processing time from 4 hours to 10 minutes for over 2000 entities in a single image.
+            Reduced imaging error rates by 40% by automating analysis protocols for DNA-PAINT Images. Cut processing time 
+            from 4 hours to 10 minutes for analyzing over 2000 entities in a single image, using <strong>Python</strong> and <strong>OpenCV</strong>.
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
@@ -85,6 +90,7 @@ export function TimelineDemo({ theme }) {
       ),
     },
   ];
+  
 
   return (
     <div className="w-full">

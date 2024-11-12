@@ -19,3 +19,21 @@ background-color: var(--background);
    --foreground: #ededed;
  }
 }
+
+/* styles/globals.css (or wherever your global CSS is) */
+
+.blog-content h2 {
+  @apply text-lg md:text-xl font-semibold mt-4 mb-2;
+}
+
+.blog-content p {
+  @apply text-base md:text-lg leading-relaxed mb-4;
+}
+
+.blog-content i {
+  @apply italic;
+}
+
+.blog-content strong {
+  @apply font-bold;
+}
