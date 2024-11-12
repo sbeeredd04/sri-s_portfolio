@@ -386,18 +386,19 @@ export default function Home() {
      </div>
 
        {/* Top Left Corner Name with Conditional Visibility */}
-       {showName && (
-        <motion.div
-          className="fixed top-4 left-4 z-50"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: showName ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Cover className="text-2xl font-semibold font-mono text-white">
-            Sri Ujjwal Reddy Beereddy
-          </Cover>
-        </motion.div>
-      )}
+        {showName && (
+          <motion.div
+            className={`fixed ${isMobile ? 'top-20 left-1/2 transform -translate-x-1/2 w-full flex justify-center px-4' : 'top-4 left-4'} z-50`}
+            initial={{ opacity: 1 }}
+            animate={{ opacity: showName ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Cover className="text-2xl font-semibold font-mono text-white text-center">
+              Sri Ujjwal Reddy Beereddy
+            </Cover>
+          </motion.div>
+        )}
+
 
       {/* Right: Main Content */}
       <div className="relative overflow-y-auto overflow-x-hidden p-4">
@@ -552,7 +553,7 @@ export default function Home() {
 
        {/* Experience Section with Toggle */}
         <section id="experience" className="w-full bg-transparent py-10 md:py-20 my-10 md:my-20 mb-20 md:mb-40">
-          <div className="w-full max-w-4xl mx-auto px-4 md:px-8 lg:px-12">
+          <div className="w-full max-w-8xl mx-auto px-4 md:px-8 lg:px-12">
             <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-8 mb-6 md:mb-12">
               {/* Professional Experience Button */}
               <button
@@ -691,9 +692,9 @@ export default function Home() {
 
         {/* Skills Section */}
         <section id="skills" className="w-full bg-transparent py-20 my-20 mb-40">
-          <div className="w-full max-w-6xl mx-auto px-4 md:px-8 lg:px-12 scroll-hide">
+          <div className="w-full max-w-8xl mx-auto px-4 md:px-8 lg:px-12 scroll-hide">
             <h2 className="text-4xl font-bold text-center text-white mb-12">Skills</h2>
-            <div className="bg-transparent rounded-xl p-8 overflow-hidden">
+            <div className="bg-transparent rounded-xl p-8 md:px-4 overflow-hidden">
               {/* Apply styles to hide scrollbar */}
               <div className="skills-scroll-container overflow-x-auto whitespace-nowrap scroll-hide">
                 <InfiniteMovingCards
