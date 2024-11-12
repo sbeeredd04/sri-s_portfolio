@@ -92,9 +92,9 @@ export const Carousel = ({
 
           <div
             className={cn(
-              "flex flex-row justify-start gap-3 pl-2",
+              "flex flex-row justify-start gap-3",
               "min-w-[240px] md:min-w-[360px]",
-              "max-w-7xl mx-auto"
+              "max-w-8xl mx-auto"
             )}>
             {items.map((item, index) => (
               <motion.div
