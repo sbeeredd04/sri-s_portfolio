@@ -96,7 +96,9 @@ export default function Home() {
   const [showResumePreview, setShowResumePreview] = useState(false); // Modal state for resume preview
   const [activeTimeline, setActiveTimeline] = useState("experience");
   const [showName, setShowName] = useState(true);
-
+  const [showProjectPreview, setShowProjectPreview] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
+  
 
   const slides = [
     {
@@ -220,16 +222,74 @@ export default function Home() {
       href: "https://github.com/sbeeredd04/AviSol",
       image: "/p (1).webp",
     },
+
+    {
+      title: "SafeSide",
+      description: "A personal safety app designed for active shooter emergencies, providing real-time location tracking, monitored updates, and tailored evacuation routes using BLE beacons and Google Maps.",
+      href: "/SafeSide.pdf", 
+      image: "/p (5).webp", 
+    },
+    
+    {
+      title: "Heat Wave",
+      description: "A responsive web app designed to help users stay safe during heat waves by providing real-time weather alerts, safety guidelines, nearby hospital locations, and emergency contact options.",
+      href: "https://github.com/Fido27/heat-wave", 
+      image: "/p (6).webp", 
+    }    
+
   ];
 
   // Placeholder data for Blog Posts
   const blogPosts = [
-    { title: "Blog Post 1", category: "Tech", content: "This is the content for blog post 1" },
+    {
+      title: "Imagine Life as a Website: If Existence Ran on HTTP Requests",
+      category: "Tech",
+      content: `
+  <p>Imagine our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements. Each one of us is like a unique URL endpoint. Life’s “server” sends requests, handles responses, and sometimes… well, sometimes you just get a <i>404</i> error. 😆</p>
+  
+  <p>Here's a deep dive into life if it were structured like a modern web application:</p>
+  
+  <h2>1. The Signup Page</h2>
+  <p>Birth? That’s like the “sign-up” page—where we hit “Submit” (or, maybe someone else did?), and suddenly, here we are! We get our user ID (a.k.a. name) and begin our <i>session</i>.</p>
+  
+  <h2>2. Loading, Loading...</h2>
+  <p>Ever feel like you're waiting for something that never arrives? Life’s loading bars are basically our day-to-day anticipation—waiting for dreams to process. Sometimes we get the data we requested, sometimes we get a <i>504 Gateway Timeout</i>. 😬</p>
+  
+  <h2>3. API Calls and Relationships</h2>
+  <p>When you meet someone, it's like calling an API endpoint. You send a GET request, hoping for a JSON response with mutual understanding and maybe a few interesting properties. Or, you might get a <i>403 Forbidden</i>—access denied to someone’s personal data!</p>
+  
+  <h2>4. Daily Data Refreshes</h2>
+  <p>Every morning, you refresh your “page” with coffee or exercise. You’ve got new cookies (or bad ones) stored, new “sessions” ready to go. Life is constantly refreshing and re-rendering.</p>
+  
+  <h2>5. Security Tokens & Trust Issues</h2>
+  <p>Trust? It’s like a security token—sometimes it gets validated, other times it expires without notice. And yes, those who betray you? That’s basically a CSRF attack on your well-being. 😂</p>
+  
+  <h2>6. The "Terms & Conditions"</h2>
+  <p>Ah, the life agreements! We agree to things we might never have read the fine print on, but, hey, we’re all “logged in” now, right? Just click “Accept All” and hope for the best.</p>
+  
+  <h2>7. The Debugging Process</h2>
+  <p>Every time you make a mistake, it’s like throwing an error in the console. Except, there’s no debugger in life. We just try to interpret the cryptic message (“SyntaxError: Can’t find happiness”) and go on anyway.</p>
+  
+  <h2>8. 404: Purpose Not Found</h2>
+  <p>Sometimes we hit a <i>404 Page Not Found</i> in our journey, wondering if we’re on the right URL. Maybe it’s a career that’s just not loading or relationships stuck in a loop. Good thing we’ve got “refresh” and plenty of re-routing options!</p>
+  
+  <h2>9. Scheduled Maintenance (Sleep)</h2>
+  <p>Every night, we log off for maintenance. If only there were patch notes every morning, letting us know what life’s server team fixed overnight. Maybe a few bugs squashed or minor “optimizations” applied?</p>
+  
+  <h2>10. Redirects and Major Life Changes</h2>
+  <p>A new job, a relationship, a move—these are like 301 Redirects. You’re still “you,” but now you’re located somewhere new on the server, with a fresh HTML and CSS setup.</p>
+  
+  <h2>11. User Engagement and Feedback Loops</h2>
+  <p>What’s life without a bit of engagement? Whether it’s friends, followers, or family, our “backend” runs on constant feedback loops. And yes, sometimes we go viral for all the wrong reasons. But in the end, it’s about how you respond to the response.</p>
+  
+  <p><strong>In closing</strong>, life as a website might have its quirks and errors, but with every refresh, new opportunities load. Just remember: when life throws you a <i>403 Forbidden</i>, there’s always a way to reroute. And if you’re ever feeling lost? Sometimes all you need is a hard refresh and a little faith that your server is still up and running.</p>
+      `
+    },
     { title: "Blog Post 2", category: "Tech", content: "This is the content for blog post 2" },
     { title: "Blog Post 3", category: "Tech", content: "This is the content for blog post 3" },
-    { title: "Blog Post 4", category: "Tech", content: "This is the content for blog post 4" },
-  ];
-
+    { title: "Blog Post 4", category: "Tech", content: "This is the content for blog post 4" }
+  ];  
+  
   const skillsSections = [
     {
       category: "Programming Languages",
@@ -559,26 +619,28 @@ export default function Home() {
         <section id="projects" className="w-full bg-transparent py-10 md:py-20">
           <div className="w-full max-w-8xl mx-auto px-4 md:px-8 lg:px-12">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Featured Projects</h2>
+            
             <Carousel
               items={projects.map((project, index) => (
                 <PinContainer
                   key={index}
                   title={project.title}
-                  href={project.href}
-                  image={project.image} // Pass the image path here
-                  className="text-white"
+                  href={project.href} // Pass href to PinContainer
                   containerClassName="flex flex-col items-center justify-center w-[90%] sm:w-[20rem] h-auto md:w-[25rem] p-4"
+                  onClick={() => {
+                    setPreviewUrl(project.href);
+                    setShowProjectPreview(true);
+                  }}
                 >
-                  {/* Image Section */}
                   <img
                     src={project.image}
                     alt={project.title}
                     className="w-full h-32 sm:h-36 md:h-40 object-cover rounded-lg mb-4 transition-transform duration-300 ease-in-out hover:scale-105"
                   />
-
-                  {/* Text Section */}
                   <div className="flex flex-col items-start w-full text-left">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 mb-2">{project.title}</h3>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 mb-2">
+                      {project.title}
+                    </h3>
                     <p className="text-sm sm:text-base font-normal text-white">
                       {project.description}
                     </p>
@@ -587,10 +649,45 @@ export default function Home() {
               ))}
             />
           </div>
+
+          {/* Modal for Project Preview */}
+          {showProjectPreview && (
+            <div
+              id="project-modal-overlay"
+              className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[1000]"
+              onClick={() => setShowProjectPreview(false)} // Close modal on overlay click
+            >
+              <div className="bg-white rounded-lg w-[90vw] h-[85vh] relative z-[1200]">
+                {previewUrl.includes("github.com") ? (
+                  // Open GitHub links in a new tab since they can't be embedded
+                  <div className="flex flex-col items-center justify-center w-full h-full text-center p-8">
+                    <p className="text-lg font-semibold mb-4">This project is hosted on GitHub.</p>
+                    <a
+                      href={previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition"
+                    >
+                      Open in GitHub
+                    </a>
+                  </div>
+                ) : (
+                  <iframe
+                    src={previewUrl}
+                    className="w-full h-full"
+                    frameBorder="0"
+                  />
+                )}
+              </div>
+              <button
+                className="absolute top-8 right-8 text-white bg-red-700 hover:bg-red-500 rounded-full p-3 z-[1300]"
+                onClick={() => setShowProjectPreview(false)}
+              >
+                Close
+              </button>
+            </div>
+          )}
         </section>
-
-
-
 
         {/* Skills Section */}
         <section id="skills" className="w-full bg-transparent py-20 my-20 mb-40">
