@@ -29,6 +29,7 @@ import { Timeline} from "./components/timeline";
 import { TimelineDemo } from "./timeline";
 import { AchievementTimelineDemo } from "./AcheivementTimeline";
 import { Cover } from "./components/cover";
+import emailjs from '@emailjs/browser';
 
 // Slider duration in milliseconds
 const SLIDE_DURATION = 5000;
@@ -303,7 +304,9 @@ export default function Home() {
         { icon: "https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" },
         { icon: "https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white" },
         { icon: "https://img.shields.io/badge/powershell-%235391FE.svg?style=for-the-badge&logo=powershell&logoColor=white" },
-        { icon: "https://img.shields.io/badge/shell_script-%23121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white" }
+        { icon: "https://img.shields.io/badge/shell_script-%23121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white" },
+        { icon: "https://img.shields.io/badge/c%23-%23239120.svg?style=for-the-badge&logo=csharp&logoColor=white" },
+        { icon: "https://img.shields.io/badge/matlab-%230076A8.svg?style=for-the-badge&logo=matrix&logoColor=white" }
       ],
     },
     {
@@ -324,7 +327,12 @@ export default function Home() {
         { icon: "https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white" },
         { icon: "https://img.shields.io/badge/plotly-%233F4F75.svg?style=for-the-badge&logo=plotly&logoColor=white" },
         { icon: "https://img.shields.io/badge/selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white" },
-        { icon: "https://img.shields.io/badge/flutter-%2302569B.svg?style=for-the-badge&logo=flutter&logoColor=white" }
+        { icon: "https://img.shields.io/badge/flutter-%2302569B.svg?style=for-the-badge&logo=flutter&logoColor=white" },
+        { icon: "https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" },
+        { icon: "https://img.shields.io/badge/Google_Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white" },
+        { icon: "https://img.shields.io/badge/stable_baselines3-%23FF6F00.svg?style=for-the-badge&logo=python&logoColor=white" },
+        { icon: "https://img.shields.io/badge/gymnasium-%23FF6F00.svg?style=for-the-badge&logo=python&logoColor=white" },
+        { icon: "https://img.shields.io/badge/ray-%23028CF0.svg?style=for-the-badge&logo=python&logoColor=white" }
       ],
     },
     {
@@ -339,7 +347,9 @@ export default function Home() {
         { icon: "https://img.shields.io/badge/jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white" },
         { icon: "https://img.shields.io/badge/eclipse-2C2255?style=for-the-badge&logo=eclipse&logoColor=white" },
         { icon: "https://img.shields.io/badge/excel-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white" },
-        { icon: "https://img.shields.io/badge/linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" }
+        { icon: "https://img.shields.io/badge/linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" },
+        { icon: "https://img.shields.io/badge/Unix-FCC624?style=for-the-badge&logo=unix&logoColor=black" },
+        { icon: "https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white" }
       ],
     },
     {
@@ -377,6 +387,42 @@ export default function Home() {
    window.addEventListener("resize", handleResize);
    return () => window.removeEventListener("resize", handleResize);
  }, []);
+
+ // Add this function before the return statement
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  
+  try {
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Sending...';
+
+    const formData = new FormData(form);
+    formData.append('service_id', 'service_5g2m4xh'); // Your EmailJS service ID
+    formData.append('template_id', 'template_wl8ymvl'); // Your EmailJS template ID
+    formData.append('user_id', 'RLJxuFXWF45rA7V4o'); // Your EmailJS public key
+    formData.append('subject', 'WEBSITE CONTACT'); // Add subject to formData
+
+    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send-form', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert('Message sent successfully!');
+      form.reset();
+    } else {
+      throw new Error('Failed to send message');
+    }
+  } catch (error) {
+    console.error('Email error:', error);
+    alert('Failed to send message. Please try again.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerText = 'Send Message';
+  }
+};
 
  return (
    <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative">
@@ -738,15 +784,71 @@ export default function Home() {
           <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
             <h2 className="text-3xl md:text-4xl font-bold text-center">Contact Me</h2>
             <div className="mt-4 md:mt-8 text-center">
-              <p className="text-md md:text-lg">Feel free to reach out for collaborations or inquiries.</p>
-              <form className="mt-6 space-y-4">
-                <input type="text" placeholder="Your Name" className="w-full p-3 md:p-4 bg-gray-100 rounded-md" />
-                <input type="email" placeholder="Your Email" className="w-full p-3 md:p-4 bg-gray-100 rounded-md" />
-                <textarea placeholder="Your Message" className="w-full p-3 md:p-4 bg-gray-100 rounded-md h-32 md:h-40"></textarea>
-                <button type="submit" className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+              <p className="text-md md:text-lg mb-6">Feel free to reach out for collaborations or inquiries.</p>
+              <form onSubmit={handleSubmit} className="mt-6 space-y-4 max-w-2xl mx-auto">
+                <input 
+                  type="text" 
+                  name="from_name"
+                  placeholder="Your Name" 
+                  required
+                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                />
+                <input 
+                  type="email" 
+                  name="from_email"
+                  placeholder="Your Email" 
+                  required
+                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                />
+                <input 
+                  type="hidden" 
+                  name="subject"
+                  value="WEBSITE CONTACT"
+                />
+                <textarea 
+                  name="message"
+                  placeholder="Your Message" 
+                  required
+                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-32 md:h-40"
+                ></textarea>
+                <button 
+                  type="submit" 
+                  className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                >
                   Send Message
                 </button>
               </form>
+              <div className="mt-6 flex flex-col items-center justify-center space-y-4">
+                <div className="text-sm text-gray-500">or connect with me on</div>
+                <div className="flex space-x-4">
+                  <a 
+                    href="https://www.linkedin.com/in/sriujjwal/" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-600"
+                  >
+                    LinkedIn
+                  </a>
+                  <span className="text-gray-500">•</span>
+                  <a 
+                    href="https://github.com/sbeeredd04" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-gray-400"
+                  >
+                    GitHub
+                  </a>
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                Or email me directly at{' '}
+                <a 
+                  href="mailto:srisubspace@gmail.com?subject=WEBSITE CONTACT" 
+                  className="text-blue-500 hover:text-blue-600 underline"
+                >
+                  srisubspace@gmail.com
+                </a>
+              </p>
             </div>
           </div>
         </section>
