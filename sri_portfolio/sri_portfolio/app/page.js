@@ -685,64 +685,64 @@ export default function Home() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="flex flex-col gap-8 p-8 h-full w-full"
+                          className="flex flex-col gap-4 md:gap-8 p-4 md:p-8 h-full w-full"
                         >
                           {/* Top Section - Education Details */}
-                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-white/10">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                               {/* Logo and Title */}
-                              <div className="flex items-center gap-6 md:col-span-3">
+                              <div className="flex items-center gap-4 md:gap-6 md:col-span-3">
                                 <img 
                                   src="/asulogo.png" 
                                   alt="ASU Logo" 
-                                  className="w-16 h-16 object-contain"
+                                  className="w-12 h-12 md:w-16 md:h-16 object-contain"
                                 />
                                 <div>
-                                  <h2 className="text-4xl font-bold text-white">Education</h2>
-                                  <p className="text-lg text-emerald-400">2022 - 2026</p>
+                                  <h2 className="text-2xl md:text-4xl font-bold text-white">Education</h2>
+                                  <p className="text-base md:text-lg text-emerald-400">2022 - 2026</p>
                                 </div>
-                  </div>
+                              </div>
 
                               {/* University Info */}
                               <div className="md:col-span-1">
-                                <h3 className="text-2xl font-semibold text-cyan-400">Arizona State University</h3>
-                                <p className="text-lg text-white/80 mt-2">Bachelor of Science in Computer Science</p>
-                                <p className="text-md text-white/60">Software Engineering Track</p>
-                                <div className="mt-4 px-4 py-2 bg-emerald-500/20 rounded-lg border border-emerald-500/30">
+                                <h3 className="text-xl md:text-2xl font-semibold text-cyan-400">Arizona State University</h3>
+                                <p className="text-base md:text-lg text-white/80 mt-2">Bachelor of Science in Computer Science</p>
+                                <p className="text-sm md:text-md text-white/60">Software Engineering Track</p>
+                                <div className="mt-4 px-3 md:px-4 py-2 bg-emerald-500/20 rounded-lg border border-emerald-500/30">
                                   <div className="flex items-center justify-between">
-                                    <span className="text-white/80">GPA</span>
-                                    <span className="text-2xl font-bold text-emerald-400">4.0/4.0</span>
-                </div>
+                                    <span className="text-sm md:text-base text-white/80">GPA</span>
+                                    <span className="text-xl md:text-2xl font-bold text-emerald-400">4.0/4.0</span>
+                                  </div>
                                 </div>
-            </div>
+                              </div>
 
                               {/* Academic Achievements */}
-                              <div className="md:col-span-1 ml-8">
-                                <h4 className="text-xl font-semibold text-white/90">Academic Achievements</h4>
-                                <div className="mt-2 space-y-3">
-                                    <p className="text-md text-white/80">• Dean's List (All Semesters)</p>
-                                    <p className="text-md text-white/80">• New American University Scholar</p>
-                                    <p className="text-md text-white/80">• Minor in Entrepreneurship</p>
-            </div>
-          </div>
+                              <div className="md:col-span-1 md:ml-8">
+                                <h4 className="text-lg md:text-xl font-semibold text-white/90 mt-4 md:mt-0">Academic Achievements</h4>
+                                <div className="mt-2 space-y-2 md:space-y-3">
+                                  <p className="text-sm md:text-md text-white/80">• Dean's List (All Semesters)</p>
+                                  <p className="text-sm md:text-md text-white/80">• New American University Scholar</p>
+                                  <p className="text-sm md:text-md text-white/80">• Minor in Entrepreneurship</p>
+                                </div>
+                              </div>
 
                               {/* Location */}
                               <div className="md:col-span-1">
-                                <h4 className="text-xl font-semibold text-white/90">Location</h4>
-                                <p className="text-md text-white/60 mt-2">Tempe, Arizona</p>
-                                <p className="text-md text-white/60">United States</p>
-        </div>
+                                <h4 className="text-lg md:text-xl font-semibold text-white/90 mt-4 md:mt-0">Location</h4>
+                                <p className="text-sm md:text-md text-white/60 mt-2">Tempe, Arizona</p>
+                                <p className="text-sm md:text-md text-white/60">United States</p>
+                              </div>
                             </div>
                           </div>
 
                           {/* Bottom Section - Coursework Grid */}
-                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-                            <h3 className="text-2xl font-semibold text-cyan-400 mb-6">Key Coursework</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[calc(100vh-400px)] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-white/10">
+                            <h3 className="text-xl md:text-2xl font-semibold text-cyan-400 mb-4 md:mb-6">Key Coursework</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-h-[calc(100vh-400px)] overflow-y-auto pr-2 md:pr-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                               {/* CS Core */}
-                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
-                                <h4 className="text-lg font-semibold text-white/90 mb-3">Computer Science Core</h4>
-                                <ul className="space-y-2 text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
+                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Computer Science Core</h4>
+                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
                                   <li>• Data Structures and Algorithms</li>
                                   <li>• Operating Systems</li>
                                   <li>• Computer Organization & Assembly</li>
@@ -755,9 +755,9 @@ export default function Home() {
                               </div>
 
                               {/* Software Engineering Track */}
-                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
-                                <h4 className="text-lg font-semibold text-white/90 mb-3">Software Engineering Track</h4>
-                                <ul className="space-y-2 text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
+                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Software Engineering Track</h4>
+                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
                                   <li>• Software Analysis and Design</li>
                                   <li>• Software QA and Testing</li>
                                   <li>• Distributed Software Development</li>
@@ -766,9 +766,9 @@ export default function Home() {
                               </div>
 
                               {/* Mathematics & Theory */}
-                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
-                                <h4 className="text-lg font-semibold text-white/90 mb-3">Mathematics & Theory</h4>
-                                <ul className="space-y-2 text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
+                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Mathematics & Theory</h4>
+                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
                                   <li>• Discrete Mathematics</li>
                                   <li>• Calculus for Engineers I, II, III</li>
                                   <li>• Applied Linear Algebra</li>
@@ -777,9 +777,9 @@ export default function Home() {
                               </div>
 
                               {/* Entrepreneurship Minor */}
-                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
-                                <h4 className="text-lg font-semibold text-white/90 mb-3">Entrepreneurship Minor</h4>
-                                <ul className="space-y-2 text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
+                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Entrepreneurship Minor</h4>
+                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
                                   <li>• Principles of Entrepreneurship</li>
                                   <li>• Creativity and Innovation</li>
                                   <li>• Entrepreneurship & Value Creation</li>
@@ -787,9 +787,9 @@ export default function Home() {
                               </div>
 
                               {/* Projects & Practice */}
-                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
-                                <h4 className="text-lg font-semibold text-white/90 mb-3">Projects & Practice</h4>
-                                <ul className="space-y-2 text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
+                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Projects & Practice</h4>
+                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
                                   <li>• EPICS Gold Program</li>
                                   <li>• Computer Science Capstone</li>
                                   <li>• Grand Challenge Scholars Program</li>
