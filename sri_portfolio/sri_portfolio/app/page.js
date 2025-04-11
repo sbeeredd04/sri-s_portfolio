@@ -27,6 +27,7 @@ import {
   IconPalette,
   IconChevronDown,
   IconDownload,
+  IconSearch,
 } from "@tabler/icons-react"; // Import relevant icons
 import { PinContainer } from "./components/3d-pin"; // Import 3D Pin Container for projects
 import { Carousel } from "./components/apple-cards-carousel"; // Import Carousel for projects and blog posts
@@ -464,13 +465,13 @@ export default function Home() {
         )}
 
         {/* Top Margin */}
-        <div className="h-[7.5vh]" />
+        <div className="h-[10vh] md:h-[7.5vh]" />
 
         {/* Browser Toolbar */}
         <div className="h-[5vh] mx-6">
-          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center px-6">
+          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center px-4 md:px-6">
             {/* Navigation Controls */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               <button 
                 className={`text-neutral-400 hover:text-white transition-colors
                   ${currentHistoryIndex > 0 
@@ -479,7 +480,8 @@ export default function Home() {
                 onClick={goBack}
                 disabled={currentHistoryIndex <= 0}
               >
-                <IconArrowLeft size={24} stroke={3} />
+                <IconArrowLeft size={20} stroke={3} className="md:hidden" />
+                <IconArrowLeft size={24} stroke={3} className="hidden md:block" />
               </button>
               <button 
                 className={`text-neutral-400 hover:text-white transition-colors
@@ -489,19 +491,30 @@ export default function Home() {
                 onClick={goForward}
                 disabled={currentHistoryIndex >= navigationHistory.length - 1}
               >
-                <IconArrowRight size={24} stroke={3} />
+                <IconArrowRight size={20} stroke={3} className="md:hidden" />
+                <IconArrowRight size={24} stroke={3} className="hidden md:block" />
               </button>
               <button 
                 className="text-neutral-400 hover:text-white transition-colors"
                 onClick={() => window.location.reload()}
               >
-                <IconRefresh size={24} stroke={3} />
+                <IconRefresh size={20} stroke={3} className="md:hidden" />
+                <IconRefresh size={24} stroke={3} className="hidden md:block" />
               </button>
             </div>
 
-            {/* Search/URL Bar */}
-            <div className="flex-1 mx-6">
-              <div className="flex items-center gap-2 px-4 py-2 bg-neutral-700/20 rounded-lg border border-white/5">
+            {/* Search/URL Bar - Different for mobile and desktop */}
+            <div className="flex-1 mx-2 md:mx-6">
+              {/* Mobile Search Bar */}
+              <div className="flex items-center gap-1 px-2 py-1.5 bg-neutral-700/20 rounded-lg border border-white/5 md:hidden">
+                <IconSearch size={14} className="text-neutral-500" />
+                <span className="text-xs text-neutral-400 font-mono truncate">
+                  {activeSection}
+                </span>
+              </div>
+              
+              {/* Desktop Search Bar */}
+              <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-neutral-700/20 rounded-lg border border-white/5">
                 <IconLock size={18} className="text-neutral-500" />
                 <span className="text-sm text-neutral-400 font-mono truncate">
                   sriujjwalreddy.com/{activeSection}
@@ -511,24 +524,27 @@ export default function Home() {
             </div>
 
             {/* Browser Controls */}
-            <div className="flex items-center gap-4">
-              <div className="w-8 h-8 rounded-full bg-neutral-700/50 border border-white/10 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-neutral-500 to-neutral-700 flex items-center justify-center text-white text-sm font-medium">
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-neutral-700/50 border border-white/10 overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-neutral-500 to-neutral-700 flex items-center justify-center text-white text-xs md:text-sm font-medium">
                   SR
                 </div>
               </div>
               <button className="text-neutral-400 hover:text-white transition-colors">
-                <IconShare size={24} stroke={3} />
+                <IconShare size={20} stroke={3} className="md:hidden" />
+                <IconShare size={24} stroke={3} className="hidden md:block" />
               </button>
               <button className="text-neutral-400 hover:text-white transition-colors">
-                <IconCopy size={24} stroke={3} />
+                <IconCopy size={20} stroke={3} className="md:hidden" />
+                <IconCopy size={24} stroke={3} className="hidden md:block" />
               </button>
               <button
                 onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10"
+                className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10"
               >
-                <IconPalette size={24} stroke={3} />
-                <span className="text-sm font-medium">Theme</span>
+                <IconPalette size={20} stroke={3} className="md:hidden" />
+                <IconPalette size={24} stroke={3} className="hidden md:block" />
+                <span className="text-xs md:text-sm font-medium hidden md:inline">Theme</span>
               </button>
             </div>
           </div>
@@ -553,7 +569,7 @@ export default function Home() {
         )}
 
         {/* Spacing */}
-        <div className="h-[2.5vh]" />
+        <div className="h-[1vh] md:h-[2.5vh]" />
 
         {/* Main Content Area */}
         <div className="h-[70vh] mx-6">
@@ -871,33 +887,62 @@ export default function Home() {
                       {activeTab === "all" ? "Featured Projects" : "Deployed Projects"}
                     </h2>
                     <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto scrollbar-none">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 pb-8">
-                        {activeTab === "all" ? (
-                          projects.map((project, index) => (
-                            <ProjectCard
-                              key={index}
-                              title={project.title}
-                              description={project.description}
-                              imageUrl={project.image}
-                              techStack={project.technologies || ["React", "Next.js", "TailwindCSS"]}
-                              projectUrl={project.href}
-                              githubUrl={project.github}
-                            />
-                          ))
-                        ) : (
-                          deployedProjects.map((project, index) => (
-                            <ProjectCard
-                              key={index}
-                              title={project.title}
-                              description={project.description}
-                              imageUrl={project.image}
-                              techStack={project.technologies || ["React", "Next.js", "TailwindCSS"]}
-                              projectUrl={project.href}
-                              githubUrl={project.github}
-                            />
-                          ))
-                        )}
-                      </div>
+                      <AnimatePresence mode="wait">
+                        <motion.div 
+                          key={activeTab}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="grid grid-cols-1 md:grid-cols-2 gap-16 pb-8"
+                        >
+                          {activeTab === "all" ? (
+                            projects.map((project, index) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ 
+                                  duration: 0.5, 
+                                  delay: index * 0.1,
+                                  ease: [0.25, 0.1, 0.25, 1]
+                                }}
+                              >
+                                <ProjectCard
+                                  title={project.title}
+                                  description={project.description}
+                                  imageUrl={project.image}
+                                  techStack={project.technologies || ["React", "Next.js", "TailwindCSS"]}
+                                  projectUrl={project.href}
+                                  githubUrl={project.github}
+                                />
+                              </motion.div>
+                            ))
+                          ) : (
+                            deployedProjects.map((project, index) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ 
+                                  duration: 0.5, 
+                                  delay: index * 0.1,
+                                  ease: [0.25, 0.1, 0.25, 1]
+                                }}
+                              >
+                                <ProjectCard
+                                  title={project.title}
+                                  description={project.description}
+                                  imageUrl={project.image}
+                                  techStack={project.technologies || ["React", "Next.js", "TailwindCSS"]}
+                                  projectUrl={project.href}
+                                  githubUrl={project.github}
+                                />
+                              </motion.div>
+                            ))
+                          )}
+                        </motion.div>
+                      </AnimatePresence>
                     </div>
                   </section>
                 )}
@@ -1023,7 +1068,7 @@ export default function Home() {
         </div>
 
         {/* 5% Margin */}
-        <div className="h-[5vh]" />
+        <div className="h-[1vh] md:h-[5vh]" />
 
         {/* Bottom Tabs Container - Floating */}
         <div className="h-[5vh] mx-6">
@@ -1214,7 +1259,7 @@ export default function Home() {
         </div>
 
         {/* Bottom 10% Margin */}
-        <div className="h-[5vh]" />
+        <div className="h-[10vh] md:h-[5vh]" />
       </div>
     </div>
   );
