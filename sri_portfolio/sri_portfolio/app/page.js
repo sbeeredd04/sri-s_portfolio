@@ -26,6 +26,7 @@ import {
   IconPlus,
   IconPalette,
   IconChevronDown,
+  IconDownload,
 } from "@tabler/icons-react"; // Import relevant icons
 import { PinContainer } from "./components/3d-pin"; // Import 3D Pin Container for projects
 import { Carousel } from "./components/apple-cards-carousel"; // Import Carousel for projects and blog posts
@@ -38,6 +39,11 @@ import { TimelineDemo } from "./timeline";
 import { AchievementTimelineDemo } from "./AcheivementTimeline";
 import { Cover } from "./components/cover";
 import emailjs from '@emailjs/browser';
+import projects from "./json/projects.json";
+import slides from "./json/slides.json";
+import { ProjectCard } from "./components/ProjectCard";
+import deployedProjects from "./json/deployed.json";
+
 
 // Slider duration in milliseconds
 const SLIDE_DURATION = 5000;
@@ -89,80 +95,37 @@ function Globe() {
 }
 
 export default function Home() {
-  // Add state for active section
+  // Add these state variables at the top of the component
   const [activeSection, setActiveSection] = useState("home");
-  
-  // Navigation Items for the Floating Dock - modify to include setActiveSection
-  const items = [
-    { title: "Home", icon: <IconHome />, onClick: () => setActiveSection("home"), href: "#" },
-    { title: "About Me", icon: <IconUser />, onClick: () => setActiveSection("about"), href: "#" },
-    { title: "Experience", icon: <IconBriefcase />, onClick: () => setActiveSection("experience"), href: "#" },
-    { title: "Projects", icon: <IconBulb />, onClick: () => setActiveSection("projects"), href: "#" },
-    { title: "Skills", icon: <IconTools />, onClick: () => setActiveSection("skills"), href: "#" },
-    { title: "Blog", icon: <IconBook />, onClick: () => setActiveSection("blog"), href: "#" },
-    { title: "Contact", icon: <IconMail />, onClick: () => setActiveSection("contact"), href: "#" },
-  ];
-
-  // Header Slider Data
+  const [activeTab, setActiveTab] = useState("profile"); // Set default tab to profile
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [showResumePreview, setShowResumePreview] = useState(false); // Modal state for resume preview
+  const [showResumePreview, setShowResumePreview] = useState(false);
   const [activeTimeline, setActiveTimeline] = useState("experience");
   const [showName, setShowName] = useState(true);
   const [showProjectPreview, setShowProjectPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
-  
+  const [isMobile, setIsMobile] = useState(false);
 
-  const slides = [
-    {
-      title: "Welcome to My Portfolio",
-      description: "Discover my work and skills.",
-      image: "/home1.jpg",
-      link: "#",
-      section: "home"
-    },
-    {
-      title: "About Me",
-      description: "Learn more about me.",
-      image: "/home2.jpg",
-      link: "#about",
-      section: "about"
-    },
-    {
-      title: "Professional Experience",
-      description: "Explore my professional background.",
-      image: "/home3.jpg",
-      link: "#experience",
-      section: "experience"
-    },
-    {
-      title: "Featured Projects",
-      description: "See my latest projects.",
-      image: "/home4.jpg",
-      link: "#projects",
-      section: "projects"
-    },
-    {
-      title: "Technical Skills",
-      description: "Check out my technical skills.",
-      image: "/home5.jpg",
-      link: "#skills",
-      section: "skills"
-    },
-    {
-      title: "Blog Insights",
-      description: "Read my latest articles.",
-      image: "/home6.jpg",
-      link: "#blog",
-      section: "blog"
-    },
-    {
-      title: "Get in Touch",
-      description: "Contact me for collaborations.",
-      image: "/home7.jpg",
-      link: "#contact",
-      section: "contact"
-    },
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize(); // Set initial value
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Navigation Items for the Floating Dock
+  const items = [
+    { title: "Home", icon: <IconHome />, onClick: () => navigateToSection("home"), href: "#" },
+    { title: "About Me", icon: <IconUser />, onClick: () => navigateToSection("about"), href: "#" },
+    { title: "Experience", icon: <IconBriefcase />, onClick: () => navigateToSection("experience"), href: "#" },
+    { title: "Projects", icon: <IconBulb />, onClick: () => navigateToSection("projects"), href: "#" },
+    { title: "Skills", icon: <IconTools />, onClick: () => navigateToSection("skills"), href: "#" },
+    { title: "Blog", icon: <IconBook />, onClick: () => navigateToSection("blog"), href: "#" },
+    { title: "Contact", icon: <IconMail />, onClick: () => navigateToSection("contact"), href: "#" },
   ];
+
 
 
   // Auto slide effect for the header slides
@@ -214,49 +177,6 @@ export default function Home() {
     };
   }, []);
   
-
-  // Placeholder data for Projects
-  const projects = [
-    {
-      title: "Amano",
-      description: "Emotion-Based Song Recommendation System that provides personalized song suggestions using Reinforcement Learning and Spotify's API.",
-      href: "https://github.com/sbeeredd04/Amano",
-      image: "/p (2).webp",
-    },
-    {
-      title: "Image Insight",
-      description: "A web-based tool designed for postdoctoral researchers to automate complex data analysis tasks, significantly increasing research productivity.",
-      href: "https://github.com/sbeeredd04/CSDNA",
-      image: "/p (3).webp",
-    },
-    {
-      title: "Mine Alliance",
-      description: "Fullstack platform that integrates ChatGPT-4 for sustainable mining site impact assessments, reducing response times by 40%.",
-      href: "https://github.com/LuaanNguyen/Mine-Alliance",
-      image: "/p (4).webp",
-    },
-    {
-      title: "Avisol",
-      description: "An automated air traffic pathfinding system that utilizes algorithm optimization to reduce computation time for managing autonomous vehicles.",
-      href: "https://github.com/sbeeredd04/AviSol",
-      image: "/p (1).webp",
-    },
-
-    {
-      title: "SafeSide",
-      description: "A personal safety app designed for active shooter emergencies, providing real-time location tracking, monitored updates, and tailored evacuation routes using BLE beacons and Google Maps.",
-      href: "/SafeSide.pdf", 
-      image: "/p (5).webp", 
-    },
-    
-    {
-      title: "Heat Wave",
-      description: "A responsive web app designed to help users stay safe during heat waves by providing real-time weather alerts, safety guidelines, nearby hospital locations, and emergency contact options.",
-      href: "https://github.com/Fido27/heat-wave", 
-      image: "/p (6).webp", 
-    }    
-
-  ];
 
   // Placeholder data for Blog Posts
   const blogPosts = [
@@ -394,17 +314,6 @@ export default function Home() {
       setShowResumePreview(false);
     }
   };
- // Detect screen size to toggle FloatingDock position
- const [isMobile, setIsMobile] = useState(false);
-
- useEffect(() => {
-   const handleResize = () => {
-     setIsMobile(window.innerWidth < 768);
-   };
-   handleResize(); // Set initial value
-   window.addEventListener("resize", handleResize);
-   return () => window.removeEventListener("resize", handleResize);
- }, []);
 
  // Add this function before the return statement
  const handleSubmit = async (e) => {
@@ -442,546 +351,871 @@ export default function Home() {
   }
 };
 
- // Add this state for tab management
- const [activeTab, setActiveTab] = useState('living-room');
+  // Add these state variables at the top of the component
+  const [navigationHistory, setNavigationHistory] = useState([]);
+  const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
 
- // Add these state variables at the top of the component
- const [navigationHistory, setNavigationHistory] = useState([]);
- const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
+  // Add navigation functions
+  const navigateToSection = (section, addToHistory = true) => {
+    setActiveSection(section);
+    
+    // Set default active tab based on the section
+    switch (section) {
+      case "experience":
+        setActiveTab("experience");
+        break;
+      case "about":
+        setActiveTab("profile");
+        break;
+      case "projects":
+        setActiveTab("all");
+        break;
+      case "skills":
+      case "blog":
+      case "contact":
+      case "home":
+        // These sections don't have tabs, so we don't need to set a default tab
+        break;
+      default:
+        // For any other section, keep the current active tab
+        break;
+    }
+    
+    if (addToHistory) {
+      const newHistory = [...navigationHistory.slice(0, currentHistoryIndex + 1), section];
+      setNavigationHistory(newHistory);
+      setCurrentHistoryIndex(newHistory.length - 1);
+    }
+  };
 
- // Add navigation functions
- const navigateToSection = (section, addToHistory = true) => {
-   setActiveSection(section);
-   if (addToHistory) {
-     const newHistory = [...navigationHistory.slice(0, currentHistoryIndex + 1), section];
-     setNavigationHistory(newHistory);
-     setCurrentHistoryIndex(newHistory.length - 1);
-   }
- };
+  const goBack = () => {
+    if (currentHistoryIndex > 0) {
+      setCurrentHistoryIndex(currentHistoryIndex - 1);
+      navigateToSection(navigationHistory[currentHistoryIndex - 1], false);
+    }
+  };
 
- const goBack = () => {
-   if (currentHistoryIndex > 0) {
-     setCurrentHistoryIndex(currentHistoryIndex - 1);
-     navigateToSection(navigationHistory[currentHistoryIndex - 1], false);
-   }
- };
+  const goForward = () => {
+    if (currentHistoryIndex < navigationHistory.length - 1) {
+      setCurrentHistoryIndex(currentHistoryIndex + 1);
+      navigateToSection(navigationHistory[currentHistoryIndex + 1], false);
+    }
+  };
 
- const goForward = () => {
-   if (currentHistoryIndex < navigationHistory.length - 1) {
-     setCurrentHistoryIndex(currentHistoryIndex + 1);
-     navigateToSection(navigationHistory[currentHistoryIndex + 1], false);
-   }
- };
+  const [currentBackground, setCurrentBackground] = useState("/background/homeEnv.jpg");
+  const [isBackgroundMenuOpen, setIsBackgroundMenuOpen] = useState(false);
+  const backgroundMenuRef = useRef(null);
 
- const [currentBackground, setCurrentBackground] = useState("/background/homeEnv.jpg");
- const [isBackgroundMenuOpen, setIsBackgroundMenuOpen] = useState(false);
- const backgroundMenuRef = useRef(null);
+  const backgrounds = [
+    { name: "Default", path: "/background/homeEnv.jpg" },
+    { name: "Background 1", path: "/background/bg1.jpg" },
+    { name: "Background 2", path: "/background/bg2.jpg" },
+  ];
 
- const backgrounds = [
-   { name: "Default", path: "/background/homeEnv.jpg" },
-   { name: "Background 1", path: "/background/bg1.jpg" },
-   { name: "Background 2", path: "/background/bg2.jpg" },
- ];
-
- useEffect(() => {
-   function handleClickOutside(event) {
-     if (backgroundMenuRef.current && !backgroundMenuRef.current.contains(event.target)) {
-       setIsBackgroundMenuOpen(false);
-     }
-   }
-   document.addEventListener("mousedown", handleClickOutside);
-   return () => document.removeEventListener("mousedown", handleClickOutside);
- }, []);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (backgroundMenuRef.current && !backgroundMenuRef.current.contains(event.target)) {
+        setIsBackgroundMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
  return (
-   <div 
-     className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:inset-0 before:bg-black/50" 
-     style={{ backgroundImage: `url(${currentBackground})` }}
-   >
-     {/* Floating Dock */}
+    <div 
+      className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:inset-0 before:bg-black/50" 
+      style={{ backgroundImage: `url(${currentBackground})` }}
+    >
+      {/* Floating Dock */}
      <div className={`relative z-50 opacity-90 ${isMobile ? 'fixed bottom-0 w-full z[9999]' : 'left-0 z-[9999]'} opacity-100`}>
        <FloatingDock items={items} />
      </div>
 
-     {/* Top Left Corner Name */}
-     {showName && (
-       <motion.div
-         className={`fixed ${isMobile ? 'top-20 left-1/2 transform -translate-x-1/2 w-full flex justify-center px-4' : 'top-4 left-4'} z-50`}
-         initial={{ opacity: 1 }}
-         animate={{ opacity: showName ? 1 : 0 }}
-         transition={{ duration: 0.3 }}
-       >
-         <Cover className="text-2xl font-semibold font-mono text-white text-center">
-           Sri Ujjwal Reddy Beereddy
-         </Cover>
-       </motion.div>
-     )}
+      {/* Main Content */}
+      <div className="relative h-screen w-full">
 
-     {/* Main Content */}
-     <div className="relative h-screen w-full">
-       {/* Top Margin */}
-       <div className="h-[7.5vh]" />
+        {/* Custom Top-Right Navbar - Only visible on mobile */}
+        {isMobile && (
+          <div
+            className="fixed top-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 bg-black bg-opacity-60 rounded-2xl shadow-lg z-[1000] py-2 px-4"
+      >
+        <Link href="https://github.com/sbeeredd04" target="_blank">
+              <IconBrandGithub className="text-white hover:text-gray-400 mx-1" size={24} />
+        </Link>
+            <Link href="https://www.instagram.com/sriujjwalreddy/" target="_blank">
+              <IconBrandInstagram className="text-pink-500 hover:text-pink-400 mx-1" size={24} />
+        </Link>
+        <Link href="https://www.linkedin.com/in/sriujjwal/" target="_blank">
+              <IconBrandLinkedin className="text-blue-700 hover:text-blue-500 mx-1" size={24} />
+        </Link>
+        <Link href="mailto:srisubspace@gmail.com" target="_blank">
+          <IconMail className="text-red-500 hover:text-red-400 mx-1" size={24} />
+        </Link>
+        <Link href="https://open.spotify.com/user/31qr3j45nvoqp4lfh6vuabmlwguq?si=2c62fb75bef644f6" target="_blank">
+              <IconBrandSpotify className="text-green-500 hover:text-green-400 mx-1" size={24} />
+        </Link>
+        <Link href="/my_resume.pdf" download>
+              <button className="px-4 py-2 border border-white/40 text-white font-semibold rounded-md shadow-md hover:border-emerald-500 hover:text-emerald-500 transition-all mx-1 bg-transparent">
+            Resume
+          </button>
+        </Link>
+      </div>
+        )}
 
-       {/* Browser Toolbar */}
-       <div className="h-[5vh] mx-6">
-         <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center px-6">
-           {/* Navigation Controls */}
-           <div className="flex items-center gap-4">
-             <button 
-               className={`text-neutral-400 hover:text-white transition-colors
-                 ${currentHistoryIndex > 0 
-                   ? 'cursor-pointer' 
-                   : 'opacity-50 cursor-not-allowed'}`}
-               onClick={goBack}
-               disabled={currentHistoryIndex <= 0}
-             >
-               <IconArrowLeft size={20} stroke={3} />
-             </button>
-             <button 
-               className={`text-neutral-400 hover:text-white transition-colors
-                 ${currentHistoryIndex < navigationHistory.length - 1 
-                   ? 'cursor-pointer' 
-                   : 'opacity-50 cursor-not-allowed'}`}
-               onClick={goForward}
-               disabled={currentHistoryIndex >= navigationHistory.length - 1}
-             >
-               <IconArrowRight size={20} stroke={3} />
-             </button>
-             <button 
-               className="text-neutral-400 hover:text-white transition-colors"
-               onClick={() => window.location.reload()}
-             >
-               <IconRefresh size={20} stroke={3} />
-             </button>
-           </div>
+        {/* Top Margin */}
+        <div className="h-[7.5vh]" />
 
-           {/* Search/URL Bar */}
-           <div className="flex-1 mx-6">
-             <div className="flex items-center gap-2 px-4 py-2 bg-neutral-700/20 rounded-lg border border-white/5">
-               <IconLock size={16} className="text-neutral-500" />
-               <span className="text-sm text-neutral-400 font-mono truncate">
-                 sriujjwalreddy.com/{activeSection}
-                 {activeSection === 'experience' && `/${activeTimeline}`}
-               </span>
-             </div>
-           </div>
+        {/* Browser Toolbar */}
+        <div className="h-[5vh] mx-6">
+          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center px-6">
+            {/* Navigation Controls */}
+            <div className="flex items-center gap-4">
+              <button 
+                className={`text-neutral-400 hover:text-white transition-colors
+                  ${currentHistoryIndex > 0 
+                    ? 'cursor-pointer' 
+                    : 'opacity-50 cursor-not-allowed'}`}
+                onClick={goBack}
+                disabled={currentHistoryIndex <= 0}
+              >
+                <IconArrowLeft size={24} stroke={3} />
+              </button>
+              <button 
+                className={`text-neutral-400 hover:text-white transition-colors
+                  ${currentHistoryIndex < navigationHistory.length - 1 
+                    ? 'cursor-pointer' 
+                    : 'opacity-50 cursor-not-allowed'}`}
+                onClick={goForward}
+                disabled={currentHistoryIndex >= navigationHistory.length - 1}
+              >
+                <IconArrowRight size={24} stroke={3} />
+              </button>
+              <button 
+                className="text-neutral-400 hover:text-white transition-colors"
+                onClick={() => window.location.reload()}
+              >
+                <IconRefresh size={24} stroke={3} />
+              </button>
+            </div>
 
-           {/* Browser Controls */}
-           <div className="flex items-center gap-4">
-             <button className="text-neutral-400 hover:text-white transition-colors">
-               <IconLetterA size={20} stroke={3} />
-             </button>
-             <button className="text-neutral-400 hover:text-white transition-colors">
-               <IconShare size={20} stroke={3} />
-             </button>
-             <button className="text-neutral-400 hover:text-white transition-colors">
-               <IconCopy size={20} stroke={3} />
-             </button>
-             <button
-               onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
-               className="text-neutral-400 hover:text-white transition-colors"
-             >
-               <IconPalette size={20} stroke={3} />
-             </button>
-           </div>
-         </div>
-       </div>
+            {/* Search/URL Bar */}
+            <div className="flex-1 mx-6">
+              <div className="flex items-center gap-2 px-4 py-2 bg-neutral-700/20 rounded-lg border border-white/5">
+                <IconLock size={18} className="text-neutral-500" />
+                <span className="text-sm text-neutral-400 font-mono truncate">
+                  sriujjwalreddy.com/{activeSection}
+                  {activeSection === 'experience' && `/${activeTimeline}`}
+                </span>
+              </div>
+            </div>
 
-       {/* Theme Switcher Dropdown */}
-       {isBackgroundMenuOpen && (
-         <div className="absolute top-[12.5vh] right-6 mt-2 w-48 rounded-xl bg-neutral-800/60 backdrop-blur-2xl border border-white/10 overflow-hidden z-50">
-           {backgrounds.map((bg, index) => (
-             <button
-               key={index}
-               onClick={() => {
-                 setCurrentBackground(bg.path);
-                 setIsBackgroundMenuOpen(false);
-               }}
-               className="w-full px-4 py-2 text-left text-white hover:bg-neutral-700/60 transition-all text-sm"
-             >
-               {bg.name}
-             </button>
-           ))}
-         </div>
-       )}
+            {/* Browser Controls */}
+            <div className="flex items-center gap-4">
+              <div className="w-8 h-8 rounded-full bg-neutral-700/50 border border-white/10 overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-neutral-500 to-neutral-700 flex items-center justify-center text-white text-sm font-medium">
+                  SR
+                </div>
+              </div>
+              <button className="text-neutral-400 hover:text-white transition-colors">
+                <IconShare size={24} stroke={3} />
+              </button>
+              <button className="text-neutral-400 hover:text-white transition-colors">
+                <IconCopy size={24} stroke={3} />
+              </button>
+              <button
+                onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10"
+              >
+                <IconPalette size={24} stroke={3} />
+                <span className="text-sm font-medium">Theme</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-       {/* Spacing */}
-       <div className="h-[2.5vh]" />
+        {/* Theme Switcher Dropdown */}
+        {isBackgroundMenuOpen && (
+          <div className="absolute top-[12.5vh] right-6 mt-2 w-48 rounded-xl bg-neutral-800/60 backdrop-blur-2xl border border-white/10 overflow-hidden z-50">
+            {backgrounds.map((bg, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setCurrentBackground(bg.path);
+                  setIsBackgroundMenuOpen(false);
+                }}
+                className="w-full px-4 py-2 text-left text-white hover:bg-neutral-700/60 transition-all text-sm"
+              >
+                {bg.name}
+              </button>
+            ))}
+          </div>
+        )}
 
-       {/* Main Content Area */}
-       <div className="h-[70vh] mx-6">
-         <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg overflow-hidden">
-           <AnimatePresence mode="wait">
-             <motion.div
-               key={activeSection}
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               exit={{ opacity: 0, y: -20 }}
-               transition={{ duration: 0.3 }}
-               className="h-full overflow-y-auto overflow-x-hidden px-6 py-6 scrollbar-none"
-             >
-               {/* Home Section */}
-               {activeSection === "home" && (
-                 <section className="w-full h-full">
-                   <div className="relative w-full h-full">
-                     <AnimatePresence mode="wait">
-                       {slides.map((slide, index) =>
-                         currentSlide === index ? (
-                           <motion.div
-                             key={slide.title}
-                             initial={{ opacity: 0, x: 100 }}
-                             animate={{ opacity: 1, x: 0 }}
-                             exit={{ opacity: 0, x: -100 }}
-                             transition={{ duration: 0.6 }}
-                             className="absolute inset-0 rounded-xl overflow-hidden"
-                             style={{
-                               backgroundImage: `url(${slide.image})`,
-                               backgroundSize: "cover",
-                               backgroundPosition: "center",
-                             }}
-                           >
-                             <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-md flex flex-col items-center justify-center text-white text-center p-4 md:p-8">
-                               <h2 className="text-4xl md:text-5xl font-bold mb-4">{slide.title}</h2>
-                               <p className="text-md md:text-lg mb-4">{slide.description}</p>
-                               <button 
-                                 onClick={() => navigateToSection(slide.section)}
-                                 className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all"
-                               >
-                                 Learn More
-                               </button>
-                             </div>
-                           </motion.div>
-                         ) : null
-                       )}
-                     </AnimatePresence>
+        {/* Spacing */}
+        <div className="h-[2.5vh]" />
 
-                     <button 
-                       onClick={prevSlide} 
-                       className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
-                     >
-                       <IconArrowLeft className="w-6 h-6" />
-                     </button>
-                     <button 
-                       onClick={nextSlide} 
-                       className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
-                     >
-                       <IconArrowRight className="w-6 h-6" />
-                     </button>
-                   </div>
-                 </section>
-               )}
+        {/* Main Content Area */}
+        <div className="h-[70vh] mx-6">
+          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeSection}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="h-full overflow-y-auto overflow-x-hidden px-6 py-6 scrollbar-none"
+              >
+        {/* Home Section */}
+                {activeSection === "home" && (
+                  <section className="w-full h-full">
+                    <div className="relative w-full h-full">
+                      <AnimatePresence mode="wait">
+              {slides.map((slide, index) =>
+                currentSlide === index ? (
+                  <motion.div
+                    key={slide.title}
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: 0.6 }}
+                    className="absolute inset-0 rounded-xl overflow-hidden"
+                    style={{
+                      backgroundImage: `url(${slide.image})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  >
+                              <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-md flex flex-col items-center justify-center text-white text-center p-4 md:p-8">
+                      <h2 className="text-4xl md:text-5xl font-bold mb-4">{slide.title}</h2>
+                      <p className="text-md md:text-lg mb-4">{slide.description}</p>
+                                <button 
+                                  onClick={() => navigateToSection(slide.section)}
+                                  className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all"
+                                >
+                        Learn More
+                                </button>
+                    </div>
+                  </motion.div>
+                ) : null
+              )}
+            </AnimatePresence>
 
-               {activeSection === "about" && (
-                 <section className="w-full h-full">
-                   <div className="w-full flex flex-col md:flex-row items-center gap-8 bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-8">
-                     <div className="w-full md:w-1/2 text-left">
-                       <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
-                       <p className="text-md md:text-lg mb-4">
-                         Hello! I'm a Junior studying Computer Science with a focus on Software Engineering. I love solving problems, learning new things, and finding creative ways to use technology. Right now, I'm excited about growing my skills in software development, machine learning, and data analysis. My goal is to keep improving, whether it's through collaboration or tackling new challenges. I'm excited about the future and can't wait to see where my passion for tech takes me!
-                       </p>
-                       <div className="flex flex-col md:flex-row gap-4">
-                         <Link href="/my_resume.pdf" download>
-                           <button className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
-                             Download Resume
-                           </button>
-                         </Link>
-                         <button 
-                           onClick={() => setShowResumePreview(true)}
-                           className="w-full md:w-auto px-6 py-3 bg-transparent border border-white/10 hover:bg-white/5 text-white font-semibold rounded-lg transition-all"
-                         >
-                           View Resume
-                         </button>
-                       </div>
-                     </div>
-                     <div className="w-full md:w-1/2 flex items-center justify-center">
-                       <Globe />
-                     </div>
-                   </div>
-                 </section>
-               )}
+                      <button 
+                        onClick={prevSlide} 
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
+                      >
+                        <IconArrowLeft className="w-6 h-6" />
+            </button>
+                      <button 
+                        onClick={nextSlide} 
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
+                      >
+                        <IconArrowRight className="w-6 h-6" />
+            </button>
+          </div>
+        </section>
+                )}
 
-               {activeSection === "experience" && (
-                 <section className="w-full h-full">
-                   <div className="flex-1 overflow-y-auto bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-6">
-                     {activeTab === "experience" ? (
-                       <TimelineDemo theme="experience" />
-                     ) : (
-                       <AchievementTimelineDemo theme="achievements" />
-                     )}
-                   </div>
-                 </section>
-               )}
+                {activeSection === "about" && (
+                  <section className="w-full h-full flex flex-col">
+                    <AnimatePresence mode="wait">
+                      {activeTab === "profile" && (
+                        <motion.div
+                          key="profile"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ duration: 0.3 }}
+                          className="flex flex-col md:flex-row items-center justify-center gap-8 p-8 h-full"
+                        >
+                          <div className="w-full md:w-1/2 flex flex-col items-start justify-center">
+                            <h2 className="text-4xl font-bold mb-6 text-white">About Me</h2>
+                            <p className="text-lg text-white/80 mb-8 leading-relaxed">
+                              Hello! I'm a Junior studying Computer Science with a focus on Software Engineering. I love solving problems, learning new things, and finding creative ways to use technology. Right now, I'm excited about growing my skills in software development, machine learning, and data analysis. My goal is to keep improving, whether it's through collaboration or tackling new challenges. I'm excited about the future and can't wait to see where my passion for tech takes me!
+                            </p>
+                            <div className="flex flex-col md:flex-row gap-4 mt-auto">
+              <Link href="/my_resume.pdf" download>
+                                <button className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+                  Download Resume
+                </button>
+              </Link>
+              <button
+                                className="w-full md:w-auto px-6 py-3 bg-transparent border-2 border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-all"
+                onClick={() => setShowResumePreview(true)}
+              >
+                View Resume
+              </button>
+                            </div>
+                          </div>
+                          <div className="w-full md:w-1/2 flex items-center justify-center">
+                            <Globe />
+                          </div>
+                        </motion.div>
+                      )}
 
-               {activeSection === "projects" && (
-                 <section className="w-full h-full">
-                   <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">Featured Projects</h2>
-                   <div className="flex-1 w-full overflow-hidden">
-                     <div className="w-full h-full px-4">
-                       <Carousel 
-                         items={projects.map((project, index) => (
-                           <PinContainer
-                             key={index}
-                             title={project.title}
-                             href={project.href}
-                             containerClassName="w-full max-w-[300px] md:max-w-[400px] aspect-[4/3] mx-auto"
-                           >
-                             <div className="w-full h-full flex flex-col">
-                               <img
-                                 src={project.image}
-                                 alt={project.title}
-                                 className="w-full h-48 object-cover rounded-lg mb-4"
-                               />
-                               <div className="flex flex-col flex-1">
-                                 <h3 className="text-xl font-bold text-cyan-400 mb-2">
-                                   {project.title}
-                                 </h3>
-                                 <p className="text-sm text-white/80">
-                                   {project.description}
-                                 </p>
-                               </div>
-                             </div>
-                           </PinContainer>
-                         ))}
-                         className="w-full h-full"
-                       />
-                     </div>
-                   </div>
-                 </section>
-               )}
+                      {activeTab === "education" && (
+                        <motion.div
+                          key="education"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ duration: 0.3 }}
+                          className="flex flex-col gap-8 p-8 h-full w-full"
+                        >
+                          {/* Top Section - Education Details */}
+                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                              {/* Logo and Title */}
+                              <div className="flex items-center gap-6 md:col-span-3">
+                                <img 
+                                  src="/asulogo.png" 
+                                  alt="ASU Logo" 
+                                  className="w-16 h-16 object-contain"
+                                />
+                                <div>
+                                  <h2 className="text-4xl font-bold text-white">Education</h2>
+                                  <p className="text-lg text-emerald-400">2022 - 2026</p>
+                                </div>
+                  </div>
 
-               {activeSection === "skills" && (
-                 <section className="w-full h-full">
-                   <div className="flex-1 w-full overflow-hidden bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-6 flex items-center justify-center">
-                     <div className="w-full relative">
-                       <InfiniteMovingCards
-                         sections={skillsSections}
-                         direction="left"
-                         speed="normal"
-                         pauseOnHover={true}
-                         className="w-full"
-                       />
-                     </div>
-                   </div>
-                 </section>
-               )}
+                              {/* University Info */}
+                              <div className="md:col-span-1">
+                                <h3 className="text-2xl font-semibold text-cyan-400">Arizona State University</h3>
+                                <p className="text-lg text-white/80 mt-2">Bachelor of Science in Computer Science</p>
+                                <p className="text-md text-white/60">Software Engineering Track</p>
+                                <div className="mt-4 px-4 py-2 bg-emerald-500/20 rounded-lg border border-emerald-500/30">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-white/80">GPA</span>
+                                    <span className="text-2xl font-bold text-emerald-400">4.0/4.0</span>
+                </div>
+                                </div>
+            </div>
 
-               {activeSection === "blog" && (
-                 <section className="w-full h-full">
-                   <div className="flex-1 w-full overflow-hidden">
-                     <div className="w-full h-full relative px-4">
-                       <ExCarousel
-                         items={blogPosts.map((post, index) => (
-                           <Card
-                             key={index}
-                             index={index}
-                             card={{
-                               title: post.title,
-                               content: post.content,
-                               category: post.category,
-                               src: `/${index + 1}.jpg`,
-                             }}
-                             className="max-w-[90%] mx-auto"
-                           />
-                         ))}
-                         className="w-full h-full"
-                       />
-                     </div>
-                   </div>
-                 </section>
-               )}
+                              {/* Academic Achievements */}
+                              <div className="md:col-span-1 ml-8">
+                                <h4 className="text-xl font-semibold text-white/90">Academic Achievements</h4>
+                                <div className="mt-2 space-y-3">
+                                    <p className="text-md text-white/80">• Dean's List (All Semesters)</p>
+                                    <p className="text-md text-white/80">• New American University Scholar</p>
+                                    <p className="text-md text-white/80">• Minor in Entrepreneurship</p>
+            </div>
+          </div>
 
-               {activeSection === "contact" && (
-                 <section className="w-full h-full">
-                   <div className="w-full bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-8">
-                     <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">Contact Me</h2>
-                     <div className="mt-4 md:mt-8 text-center">
-                       <p className="text-md md:text-lg mb-6">Feel free to reach out for collaborations or inquiries.</p>
-                       <form onSubmit={handleSubmit} className="mt-6 space-y-4 max-w-2xl mx-auto">
-                         <input 
-                           type="text" 
-                           name="from_name"
-                           placeholder="Your Name" 
-                           required
-                           className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
-                         />
-                         <input 
-                           type="email" 
-                           name="from_email"
-                           placeholder="Your Email" 
-                           required
-                           className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
-                         />
-                         <input 
-                           type="hidden" 
-                           name="subject"
-                           value="WEBSITE CONTACT"
-                         />
-                         <textarea 
-                           name="message"
-                           placeholder="Your Message" 
-                           required
-                           className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-32 md:h-40"
-                         ></textarea>
-                         <button 
-                           type="submit" 
-                           className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-                         >
-                           Send Message
-                         </button>
-                       </form>
-                       <div className="mt-6 flex flex-col items-center justify-center space-y-4">
-                         <div className="text-sm text-gray-500">or connect with me on</div>
-                         <div className="flex space-x-4">
-                           <a 
-                             href="https://www.linkedin.com/in/sriujjwal/" 
-                             target="_blank"
-                             rel="noopener noreferrer"
-                             className="text-blue-500 hover:text-blue-600"
-                           >
-                             LinkedIn
-                           </a>
-                           <span className="text-gray-500">•</span>
-                           <a 
-                             href="https://github.com/sbeeredd04" 
-                             target="_blank"
-                             rel="noopener noreferrer"
-                             className="text-gray-500 hover:text-gray-400"
-                           >
-                             GitHub
-                           </a>
-                         </div>
-                       </div>
-                       <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                         Or email me directly at{' '}
-                         <a 
-                           href="mailto:srisubspace@gmail.com?subject=WEBSITE CONTACT" 
-                           className="text-blue-500 hover:text-blue-600 underline"
-                         >
-                           srisubspace@gmail.com
-                         </a>
-                       </p>
-                     </div>
-                   </div>
-                 </section>
-               )}
-             </motion.div>
-           </AnimatePresence>
-         </div>
-       </div>
+                              {/* Location */}
+                              <div className="md:col-span-1">
+                                <h4 className="text-xl font-semibold text-white/90">Location</h4>
+                                <p className="text-md text-white/60 mt-2">Tempe, Arizona</p>
+                                <p className="text-md text-white/60">United States</p>
+        </div>
+                            </div>
+                          </div>
+
+                          {/* Bottom Section - Coursework Grid */}
+                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+                            <h3 className="text-2xl font-semibold text-cyan-400 mb-6">Key Coursework</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[calc(100vh-400px)] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                              {/* CS Core */}
+                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
+                                <h4 className="text-lg font-semibold text-white/90 mb-3">Computer Science Core</h4>
+                                <ul className="space-y-2 text-white/60">
+                                  <li>• Data Structures and Algorithms</li>
+                                  <li>• Operating Systems</li>
+                                  <li>• Computer Organization & Assembly</li>
+                                  <li>• Theoretical Computer Science</li>
+                                  <li>• Software Engineering</li>
+                                  <li>• Object-Oriented Programming</li>
+                                  <li>• Programming Language Principles</li>
+                                  <li>• Digital Design Fundamentals</li>
+                                </ul>
+                              </div>
+
+                              {/* Software Engineering Track */}
+                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
+                                <h4 className="text-lg font-semibold text-white/90 mb-3">Software Engineering Track</h4>
+                                <ul className="space-y-2 text-white/60">
+                                  <li>• Software Analysis and Design</li>
+                                  <li>• Software QA and Testing</li>
+                                  <li>• Distributed Software Development</li>
+                                  <li>• Information Assurance</li>
+                                </ul>
+                              </div>
+
+                              {/* Mathematics & Theory */}
+                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
+                                <h4 className="text-lg font-semibold text-white/90 mb-3">Mathematics & Theory</h4>
+                                <ul className="space-y-2 text-white/60">
+                                  <li>• Discrete Mathematics</li>
+                                  <li>• Calculus for Engineers I, II, III</li>
+                                  <li>• Applied Linear Algebra</li>
+                                  <li>• Engineering Statistics</li>
+                                </ul>
+                              </div>
+
+                              {/* Entrepreneurship Minor */}
+                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
+                                <h4 className="text-lg font-semibold text-white/90 mb-3">Entrepreneurship Minor</h4>
+                                <ul className="space-y-2 text-white/60">
+                                  <li>• Principles of Entrepreneurship</li>
+                                  <li>• Creativity and Innovation</li>
+                                  <li>• Entrepreneurship & Value Creation</li>
+                                </ul>
+                              </div>
+
+                              {/* Projects & Practice */}
+                              <div className="bg-neutral-700/20 rounded-xl p-6 border border-white/5">
+                                <h4 className="text-lg font-semibold text-white/90 mb-3">Projects & Practice</h4>
+                                <ul className="space-y-2 text-white/60">
+                                  <li>• EPICS Gold Program</li>
+                                  <li>• Computer Science Capstone</li>
+                                  <li>• Grand Challenge Scholars Program</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {activeTab === "hobbies" && (
+                        <motion.div
+                          key="hobbies"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ duration: 0.3 }}
+                          className="flex items-center justify-center p-8 h-full"
+                        >
+                          <div className="text-2xl text-white/60">Hobbies content coming soon...</div>
+                        </motion.div>
+                      )}
+
+                      {activeTab === "side-quests" && (
+                  <motion.div
+                          key="side-quests"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ duration: 0.3 }}
+                          className="flex items-center justify-center p-8 h-full"
+                        >
+                          <div className="text-2xl text-white/60">Side Quests content coming soon...</div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Resume Preview Modal */}
+                    {showResumePreview && (
+                      <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+                        onClick={(e) => {
+                          if (e.target === e.currentTarget) {
+                            setShowResumePreview(false);
+                          }
+                        }}
+                      >
+                        <div className="w-[90%] h-[90%] bg-white rounded-xl shadow-2xl overflow-hidden">
+                          <div className="absolute top-4 right-4 flex items-center gap-2">
+                            <Link 
+                              href="/my_resume.pdf" 
+                              download
+                              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Download
+                            </Link>
+              <button
+                              className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                              onClick={() => setShowResumePreview(false)}
+                            >
+                              <IconPlus className="rotate-45" size={24} />
+              </button>
+            </div>
+                          <iframe
+                            src="/my_resume.pdf#view=FitH"
+                            className="w-full h-full"
+                            style={{ background: 'white' }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                {activeSection === "experience" && (
+                  <section className="w-full h-full">
+                    <div className="w-full h-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                          key={activeTab}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                          className="w-full h-full"
+                        >
+                          {activeTab === "experience" ? (
+                            <TimelineDemo theme="experience" />
+                          ) : (
+                            <AchievementTimelineDemo theme="achievements" />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </section>
+                )}
+
+                {activeSection === "projects" && (
+                  <section className="w-full h-full p-8">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white/90 mb-8">
+                      {activeTab === "all" ? "Featured Projects" : "Deployed Projects"}
+                    </h2>
+                    <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto scrollbar-none">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 pb-8">
+                        {activeTab === "all" ? (
+                          projects.map((project, index) => (
+                            <ProjectCard
+                              key={index}
+                              title={project.title}
+                              description={project.description}
+                              imageUrl={project.image}
+                              techStack={project.technologies || ["React", "Next.js", "TailwindCSS"]}
+                              projectUrl={project.href}
+                              githubUrl={project.github}
+                            />
+                          ))
+                        ) : (
+                          deployedProjects.map((project, index) => (
+                            <ProjectCard
+                              key={index}
+                              title={project.title}
+                              description={project.description}
+                              imageUrl={project.image}
+                              techStack={project.technologies || ["React", "Next.js", "TailwindCSS"]}
+                              projectUrl={project.href}
+                              githubUrl={project.github}
+                            />
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </section>
+                )}
+
+                {activeSection === "skills" && (
+                  <section className="w-full h-full">
+                    <div className="flex-1 w-full overflow-hidden bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-6 flex items-center justify-center">
+                      <div className="w-full relative">
+                <InfiniteMovingCards
+                  sections={skillsSections}
+                  direction="left"
+                  speed="normal"
+                  pauseOnHover={true}
+                          className="w-full"
+                />
+            </div>
+          </div>
+        </section>
+                )}
+
+                {activeSection === "blog" && (
+                  <section className="w-full h-full">
+                    <div className="flex-1 w-full overflow-hidden">
+                      <div className="w-full h-full relative px-4">
+            <ExCarousel
+              items={blogPosts.map((post, index) => (
+                <Card
+                  key={index}
+                  index={index}
+                  card={{
+                    title: post.title,
+                    content: post.content,
+                    category: post.category,
+                    src: `/${index + 1}.jpg`, 
+                  }}
+                              className="max-w-[90%] mx-auto"
+                />
+              ))}
+                          className="w-full h-full"
+            />
+                      </div>
+          </div>
+        </section>
+                )}
+
+                {activeSection === "contact" && (
+                  <section className="w-full h-full">
+                    <div className="w-full bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-8">
+                      <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">Contact Me</h2>
+            <div className="mt-4 md:mt-8 text-center">
+              <p className="text-md md:text-lg mb-6">Feel free to reach out for collaborations or inquiries.</p>
+              <form onSubmit={handleSubmit} className="mt-6 space-y-4 max-w-2xl mx-auto">
+                <input 
+                  type="text" 
+                  name="from_name"
+                  placeholder="Your Name" 
+                  required
+                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                />
+                <input 
+                  type="email" 
+                  name="from_email"
+                  placeholder="Your Email" 
+                  required
+                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                />
+                <input 
+                  type="hidden" 
+                  name="subject"
+                  value="WEBSITE CONTACT"
+                />
+                <textarea 
+                  name="message"
+                  placeholder="Your Message" 
+                  required
+                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-32 md:h-40"
+                ></textarea>
+                <button 
+                  type="submit" 
+                  className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  Send Message
+                </button>
+              </form>
+              <div className="mt-6 flex flex-col items-center justify-center space-y-4">
+                <div className="text-sm text-gray-500">or connect with me on</div>
+                <div className="flex space-x-4">
+                  <a 
+                    href="https://www.linkedin.com/in/sriujjwal/" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-600"
+                  >
+                    LinkedIn
+                  </a>
+                  <span className="text-gray-500">•</span>
+                  <a 
+                    href="https://github.com/sbeeredd04" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-gray-400"
+                  >
+                    GitHub
+                  </a>
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                Or email me directly at{' '}
+                <a 
+                  href="mailto:srisubspace@gmail.com?subject=WEBSITE CONTACT" 
+                  className="text-blue-500 hover:text-blue-600 underline"
+                >
+                  srisubspace@gmail.com
+                </a>
+              </p>
+            </div>
+          </div>
+        </section>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
 
         {/* 5% Margin */}
         <div className="h-[5vh]" />
 
-       {/* Bottom Tabs Container - Floating */}
-       <div className="h-[5vh] mx-6">
-         <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center px-4">
-           {/* Dynamic Tabs based on active section */}
-           <div className="flex-1 flex items-center gap-2">
-             {activeSection === "home" && (
-               <>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                   Welcome
-                 </button>
-               </>
-             )}
+        {/* Bottom Tabs Container - Floating */}
+        <div className="h-[5vh] mx-6">
+          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center justify-between px-4 md:px-6">
+            {/* Dynamic Tabs based on active section */}
+            <div className="flex items-center gap-2 md:gap-4 overflow-x-auto scrollbar-none">
+              {activeSection === "about" && (
+                <>
+                  <button
+                    onClick={() => setActiveTab("profile")}
+                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                      activeTab === "profile"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("education")}
+                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                      activeTab === "education"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                  >
+                    Education
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("hobbies")}
+                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                      activeTab === "hobbies"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                  >
+                    Hobbies
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("side-quests")}
+                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                      activeTab === "side-quests"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                  >
+                    Side Quests
+                  </button>
+                </>
+              )}
 
-             {activeSection === "about" && (
-               <>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                   Profile
-                 </button>
-               </>
-             )}
+              {activeSection === "experience" && (
+                <>
+                  <button
+                    className={`px-6 py-1.5 rounded-lg text-lg font-medium transition-all ${
+                      activeTab === "experience"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                    onClick={() => setActiveTab("experience")}
+                  >
+                    Experience
+                  </button>
+                  <button
+                    className={`px-6 py-1.5 rounded-lg text-lg font-medium transition-all ${
+                      activeTab === "achievements"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                    onClick={() => setActiveTab("achievements")}
+                  >
+                    Achievements
+                  </button>
+                </>
+              )}
 
-             {activeSection === "experience" && (
-               <>
-                 <button
-                   className={`px-5 py-1 rounded-lg text-sm font-medium transition-all ${
-                     activeTab === "experience"
-                       ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                       : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5"
-                   }`}
-                   onClick={() => setActiveTab("experience")}
-                 >
-                   Experience
-                 </button>
-                 <button
-                   className={`px-5 py-1 rounded-lg text-sm font-medium transition-all ${
-                     activeTab === "achievements"
-                       ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                       : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5"
-                   }`}
-                   onClick={() => setActiveTab("achievements")}
-                 >
-                   Achievements
-                 </button>
-               </>
-             )}
+              {activeSection === "projects" && (
+                <>
+                  <button 
+                    className={`px-5 py-1 rounded-lg text-sm font-medium ${
+                      activeTab === "all"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                    onClick={() => setActiveTab("all")}
+                  >
+                    All Projects
+                  </button>
+                  <button 
+                    className={`px-5 py-1 rounded-lg text-sm font-medium ${
+                      activeTab === "deployed"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                    onClick={() => setActiveTab("deployed")}
+                  >
+                    Deployed Projects
+                  </button>
+                </>
+              )}
 
-             {activeSection === "projects" && (
-               <>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                   All Projects
-                 </button>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
-                   Web Apps
-                 </button>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
-                   ML Projects
-                 </button>
-               </>
-             )}
+              {activeSection === "skills" && (
+                <>
+                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    All Skills
+                  </button>
+                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                    Languages
+                  </button>
+                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                    Frameworks
+                  </button>
+                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                    Tools
+                  </button>
+                </>
+              )}
 
-             {activeSection === "skills" && (
-               <>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                   All Skills
-                 </button>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
-                   Languages
-                 </button>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
-                   Frameworks
-                 </button>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
-                   Tools
-                 </button>
-               </>
-             )}
+              {activeSection === "blog" && (
+                <>
+                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    All Posts
+                  </button>
+                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                    Tech
+                  </button>
+                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                    Tutorials
+                  </button>
+                </>
+              )}
 
-             {activeSection === "blog" && (
-               <>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                   All Posts
-                 </button>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
-                   Tech
-                 </button>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
-                   Tutorials
-                 </button>
-               </>
-             )}
+              {activeSection === "contact" && (
+                <>
+                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    Contact Form
+                  </button>
+                </>
+              )}
+            </div>
 
-             {activeSection === "contact" && (
-               <>
-                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                   Contact Form
-                 </button>
-               </>
-             )}
-           </div>
+            {/* Social Links - Only visible on desktop */}
+            {!isMobile && (
+              <div className="hidden md:flex items-center gap-4">
+                <Link 
+                  href="https://github.com/sbeeredd04" 
+                  target="_blank"
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-white/80 hover:text-white hover:bg-neutral-700/30 transition-all"
+                >
+                  <IconBrandGithub size={20} />
+                  <span className="text-sm font-medium">GitHub</span>
+                </Link>
+                <Link 
+                  href="https://www.linkedin.com/in/sriujjwal/" 
+                  target="_blank"
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-blue-400 hover:text-blue-300 hover:bg-neutral-700/30 transition-all"
+                >
+                  <IconBrandLinkedin size={20} />
+                  <span className="text-sm font-medium">LinkedIn</span>
+                </Link>
+                <Link 
+                  href="mailto:srisubspace@gmail.com" 
+                  target="_blank"
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-neutral-700/30 transition-all"
+                >
+                  <IconMail size={20} />
+                  <span className="text-sm font-medium">Email</span>
+                </Link>
+                <Link 
+                  href="https://open.spotify.com/user/31qr3j45nvoqp4lfh6vuabmlwguq?si=2c62fb75bef644f6" 
+                  target="_blank"
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-green-400 hover:text-green-300 hover:bg-neutral-700/30 transition-all"
+                >
+                  <IconBrandSpotify size={20} />
+                  <span className="text-sm font-medium">Spotify</span>
+                </Link>
+                <Link 
+                  href="/my_resume.pdf" 
+                  download
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300 transition-all border border-emerald-500/30"
+                >
+                  <IconDownload size={20} />
+                  <span className="text-sm font-medium">Resume</span>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
 
-           {/* Add Tab Button */}
-           <button className="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-700/30 text-neutral-400 hover:bg-neutral-600/30 transition-colors border border-white/5 ml-2">
-             <IconPlus size={14} />
-           </button>
-         </div>
-       </div>
-
-       {/* Bottom 10% Margin */}
-       <div className="h-[5vh]" />
-     </div>
-   </div>
- );
+        {/* Bottom 10% Margin */}
+        <div className="h-[5vh]" />
+      </div>
+    </div>
+  );
 }
