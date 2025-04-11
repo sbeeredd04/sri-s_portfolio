@@ -44,6 +44,8 @@ import projects from "./json/projects.json";
 import slides from "./json/slides.json";
 import { ProjectCard } from "./components/ProjectCard";
 import deployedProjects from "./json/deployed.json";
+import { StickyScroll } from "./components/sticky-scroll-reveal";
+import aboutMeContent from "./json/aboutme.json";
 
 
 // Slider duration in milliseconds
@@ -644,29 +646,27 @@ export default function Home() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="flex flex-col md:flex-row items-center justify-center gap-8 p-8 h-full"
+                          className="h-full relative"
                         >
-                          <div className="w-full md:w-1/2 flex flex-col items-start justify-center">
-                            <h2 className="text-4xl font-bold mb-6 text-white">About Me</h2>
-                            <p className="text-lg text-white/80 mb-8 leading-relaxed">
-                              Hello! I'm a Junior studying Computer Science with a focus on Software Engineering. I love solving problems, learning new things, and finding creative ways to use technology. Right now, I'm excited about growing my skills in software development, machine learning, and data analysis. My goal is to keep improving, whether it's through collaboration or tackling new challenges. I'm excited about the future and can't wait to see where my passion for tech takes me!
-                            </p>
-                            <div className="flex flex-col md:flex-row gap-4 mt-auto">
-              <Link href="/my_resume.pdf" download>
-                                <button className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
-                  Download Resume
-                </button>
-              </Link>
-              <button
-                                className="w-full md:w-auto px-6 py-3 bg-transparent border-2 border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-all"
-                onClick={() => setShowResumePreview(true)}
-              >
-                View Resume
-              </button>
+                          <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+                            <div className="w-full max-w-[90%]">
+                              <StickyScroll content={aboutMeContent} />
                             </div>
                           </div>
-                          <div className="w-full md:w-1/2 flex items-center justify-center">
-                            <Globe />
+                          
+                          {/* Resume Buttons */}
+                          <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-4 px-4 z-50">
+                            <Link href="/my_resume.pdf" download>
+                              <button className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+                                Download Resume
+                              </button>
+                            </Link>
+                            <button
+                              className="px-6 py-3 bg-neutral-800/50 backdrop-blur-sm border-2 border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-all"
+                              onClick={() => setShowResumePreview(true)}
+                            >
+                              View Resume
+                            </button>
                           </div>
                         </motion.div>
                       )}
@@ -1221,7 +1221,7 @@ export default function Home() {
                   target="_blank"
                   className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-white/80 hover:text-white hover:bg-neutral-700/30 transition-all"
                 >
-                  <IconBrandGithub size={20} />
+                  <IconBrandGithub size={32} stroke={1.25} />
                   <span className="text-sm font-medium">GitHub</span>
                 </Link>
                 <Link 
@@ -1229,7 +1229,7 @@ export default function Home() {
                   target="_blank"
                   className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-blue-400 hover:text-blue-300 hover:bg-neutral-700/30 transition-all"
                 >
-                  <IconBrandLinkedin size={20} />
+                  <IconBrandLinkedin size={32} stroke={1.25} />
                   <span className="text-sm font-medium">LinkedIn</span>
                 </Link>
                 <Link 
@@ -1237,7 +1237,7 @@ export default function Home() {
                   target="_blank"
                   className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-neutral-700/30 transition-all"
                 >
-                  <IconMail size={20} />
+                  <IconMail size={32} stroke={1.25} />
                   <span className="text-sm font-medium">Email</span>
                 </Link>
                 <Link 
@@ -1245,7 +1245,7 @@ export default function Home() {
                   target="_blank"
                   className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-green-400 hover:text-green-300 hover:bg-neutral-700/30 transition-all"
                 >
-                  <IconBrandSpotify size={20} />
+                  <IconBrandSpotify size={32} stroke={1.25} />
                   <span className="text-sm font-medium">Spotify</span>
                 </Link>
                 <Link 
@@ -1253,7 +1253,7 @@ export default function Home() {
                   download
                   className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300 transition-all border border-emerald-500/30"
                 >
-                  <IconDownload size={20} />
+                  <IconDownload size={32} stroke={1.25} />
                   <span className="text-sm font-medium">Resume</span>
                 </Link>
               </div>
