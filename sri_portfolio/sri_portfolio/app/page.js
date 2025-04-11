@@ -411,8 +411,15 @@ export default function Home() {
 
   const backgrounds = [
     { name: "Default", path: "/background/homeEnv.jpg" },
-    { name: "Background 1", path: "/background/bg1.jpg" },
-    { name: "Background 2", path: "/background/bg2.jpg" },
+    { name: "catimatos", path: "/background/catimatos.jpg" },
+    { name: "PineForest", path: "/background/bg2.jpg" },
+    { name: "Moon", path: "/background/moon.jpg" },
+    { name: "Antelope Canyon", path: "/background/antelope.jpg" },
+    { name: "Bridge", path: "/background/bridge.jpg" },
+    { name: "House", path: "/background/house.jpg" },
+    { name: "Leaves", path: "background/leaves.jpg"},
+    { name: "Stars", path: "background/purpleStars.jpg"},
+    { name: "Stars-2", path: "background/stars.jpg"},
   ];
 
   useEffect(() => {
@@ -655,14 +662,14 @@ export default function Home() {
                           </div>
                           
                           {/* Resume Buttons */}
-                          <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-4 px-4 z-50">
+                          <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 md:gap-4 px-4 z-50">
                             <Link href="/my_resume.pdf" download>
-                              <button className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+                              <button className="px-3 md:px-6 py-2 md:py-3 text-sm md:text-base bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
                                 Download Resume
                               </button>
                             </Link>
                             <button
-                              className="px-6 py-3 bg-neutral-800/50 backdrop-blur-sm border-2 border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-all"
+                              className="px-3 md:px-6 py-2 md:py-3 text-sm md:text-base bg-neutral-800/50 backdrop-blur-sm border-2 border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-all"
                               onClick={() => setShowResumePreview(true)}
                             >
                               View Resume
