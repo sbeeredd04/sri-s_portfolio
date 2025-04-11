@@ -948,19 +948,22 @@ export default function Home() {
                 )}
 
                 {activeSection === "skills" && (
-                  <section className="w-full h-full">
-                    <div className="flex-1 w-full overflow-hidden bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-6 flex items-center justify-center">
-                      <div className="w-full relative">
-                <InfiniteMovingCards
-                  sections={skillsSections}
-                  direction="left"
-                  speed="normal"
-                  pauseOnHover={true}
-                          className="w-full"
-                />
-            </div>
-          </div>
-        </section>
+                  <section className="w-full h-full flex flex-col items-center justify-center">
+                    <div className="w-full max-w-7xl mx-auto px-4">
+                      <h2 className="text-3xl md:text-4xl font-bold text-white/90 mb-8 text-center">Technical Skills</h2>
+                      <div className="w-full overflow-y-auto max-h-[calc(100vh-16rem)] rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 p-6">
+                        <div className="w-full relative">
+                          <InfiniteMovingCards
+                            sections={skillsSections}
+                            direction="left"
+                            speed="normal"
+                            pauseOnHover={true}
+                            className="w-full"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </section>
                 )}
 
                 {activeSection === "blog" && (
@@ -1148,7 +1151,7 @@ export default function Home() {
               {activeSection === "projects" && (
                 <>
                   <button 
-                    className={`px-5 py-1 rounded-lg text-sm font-medium ${
+                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
                       activeTab === "all"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1158,7 +1161,7 @@ export default function Home() {
                     All Projects
                   </button>
                   <button 
-                    className={`px-5 py-1 rounded-lg text-sm font-medium ${
+                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
                       activeTab === "deployed"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1172,16 +1175,16 @@ export default function Home() {
 
               {activeSection === "skills" && (
                 <>
-                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30">
                     All Skills
                   </button>
-                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
                     Languages
                   </button>
-                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
                     Frameworks
                   </button>
-                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
                     Tools
                   </button>
                 </>
@@ -1189,13 +1192,13 @@ export default function Home() {
 
               {activeSection === "blog" && (
                 <>
-                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30">
                     All Posts
                   </button>
-                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
                     Tech
                   </button>
-                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
                     Tutorials
                   </button>
                 </>
@@ -1203,7 +1206,7 @@ export default function Home() {
 
               {activeSection === "contact" && (
                 <>
-                  <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30">
                     Contact Form
                   </button>
                 </>

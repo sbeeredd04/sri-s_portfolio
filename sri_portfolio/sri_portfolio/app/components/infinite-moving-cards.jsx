@@ -37,18 +37,18 @@ export const InfiniteMovingCards = ({
   return (
     <div
       className={cn(
-        "scroller relative z-20 max-w-full overflow-hidden",
+        "scroller relative z-20 w-full overflow-hidden",
         className
       )}
     >
       <div
         ref={scrollerRef}
         onScroll={handleManualScroll}
-        className="scroll-wrapper max-w-full overflow-x-auto overflow-y-hidden whitespace-nowrap no-scrollbar"
+        className="scroll-wrapper w-full overflow-hidden whitespace-nowrap"
       >
         <ul
           className={cn(
-            "animate-scroll flex min-w-full shrink-0 gap-3 md:gap-5 py-2 md:py-4 w-max flex-nowrap",
+            "animate-scroll flex w-full shrink-0 gap-2 py-2 flex-nowrap",
             pauseOnHover && "hover:[animation-play-state:paused]"
           )}
           style={{
@@ -56,7 +56,7 @@ export const InfiniteMovingCards = ({
           }}
         >
           {[...sections, ...sections].map((section, idx) => {
-            const dynamicWidth = Math.max(250, section.skills.length * 40); // Adjust width based on content
+            const dynamicWidth = Math.max(200, section.skills.length * 35); // Adjusted for better spacing
 
             // Distribute skills cyclically across four rows
             const rows = [[], [], [], []];
@@ -69,9 +69,9 @@ export const InfiniteMovingCards = ({
                 key={idx}
                 style={{
                   minWidth: dynamicWidth,
-                  height: "320px", // Fixed card height for uniformity
+                  height: "300px", // Slightly reduced height
                 }}
-                className="p-4 md:p-5 rounded-xl flex-shrink-0 mx-2 overflow-hidden flex flex-col justify-center items-center text-center"
+                className="p-3 rounded-xl flex-shrink-0 mx-1 overflow-hidden flex flex-col justify-center items-center text-center"
               >
                 <h3 className="text-lg md:text-xl font-semibold text-cyan-400 mb-3">
                   {section.category}
@@ -121,10 +121,16 @@ export const InfiniteMovingCards = ({
   .animate-scroll {
     display: flex;
     animation: scroll linear infinite;
+    width: 100%;
+  }
+
+  .scroll-wrapper {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .scroll-wrapper::-webkit-scrollbar {
-    display: none; /* Hide scrollbar */
+    display: none;
   }
 
   @keyframes scroll {
@@ -139,16 +145,16 @@ export const InfiniteMovingCards = ({
   /* Mobile styling adjustments */
   @media (max-width: 768px) {
     .scroll-wrapper {
-      padding: 1rem;
+      padding: 0.5rem;
     }
 
     .animate-scroll li {
-      min-width: 200px;
-      padding: 1rem;
+      min-width: 180px;
+      padding: 0.75rem;
     }
 
     .animate-scroll h3 {
-      font-size: 1.25rem;
+      font-size: 1.1rem;
     }
   }
 `}</style>
