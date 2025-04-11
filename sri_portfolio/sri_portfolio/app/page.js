@@ -16,9 +16,17 @@ import {
   IconBrandInstagram,
   IconBrandLinkedin,
   IconBrandSpotify,
-} 
-
-from "@tabler/icons-react"; // Import relevant icons
+  IconArrowLeft, 
+  IconArrowRight, 
+  IconRefresh, 
+  IconLock, 
+  IconLetterA,
+  IconShare,
+  IconCopy,
+  IconPlus,
+  IconPalette,
+  IconChevronDown,
+} from "@tabler/icons-react"; // Import relevant icons
 import { PinContainer } from "./components/3d-pin"; // Import 3D Pin Container for projects
 import { Carousel } from "./components/apple-cards-carousel"; // Import Carousel for projects and blog posts
 import createGlobe from "cobe"; // Import cobe to create the globe
@@ -81,15 +89,18 @@ function Globe() {
 }
 
 export default function Home() {
-  // Navigation Items for the Floating Dock
+  // Add state for active section
+  const [activeSection, setActiveSection] = useState("home");
+  
+  // Navigation Items for the Floating Dock - modify to include setActiveSection
   const items = [
-    { title: "Home", icon: <IconHome />, href: "#home" },
-    { title: "About Me", icon: <IconUser />, href: "#about" },
-    { title: "Experience", icon: <IconBriefcase />, href: "#experience" },
-    { title: "Projects", icon: <IconBulb />, href: "#projects" }, // Lightbulb icon for projects/ideas
-    { title: "Skills", icon: <IconTools />, href: "#skills" },
-    { title: "Blog", icon: <IconBook />, href: "#blog" }, // Book icon for blog
-    { title: "Contact", icon: <IconMail />, href: "#contact" },
+    { title: "Home", icon: <IconHome />, onClick: () => setActiveSection("home"), href: "#" },
+    { title: "About Me", icon: <IconUser />, onClick: () => setActiveSection("about"), href: "#" },
+    { title: "Experience", icon: <IconBriefcase />, onClick: () => setActiveSection("experience"), href: "#" },
+    { title: "Projects", icon: <IconBulb />, onClick: () => setActiveSection("projects"), href: "#" },
+    { title: "Skills", icon: <IconTools />, onClick: () => setActiveSection("skills"), href: "#" },
+    { title: "Blog", icon: <IconBook />, onClick: () => setActiveSection("blog"), href: "#" },
+    { title: "Contact", icon: <IconMail />, onClick: () => setActiveSection("contact"), href: "#" },
   ];
 
   // Header Slider Data
@@ -106,43 +117,50 @@ export default function Home() {
       title: "Welcome to My Portfolio",
       description: "Discover my work and skills.",
       image: "/home1.jpg",
-      link: "#home",
+      link: "#",
+      section: "home"
     },
     {
       title: "About Me",
       description: "Learn more about me.",
       image: "/home2.jpg",
       link: "#about",
+      section: "about"
     },
     {
       title: "Professional Experience",
       description: "Explore my professional background.",
       image: "/home3.jpg",
       link: "#experience",
+      section: "experience"
     },
     {
       title: "Featured Projects",
       description: "See my latest projects.",
       image: "/home4.jpg",
       link: "#projects",
+      section: "projects"
     },
     {
       title: "Technical Skills",
       description: "Check out my technical skills.",
       image: "/home5.jpg",
       link: "#skills",
+      section: "skills"
     },
     {
       title: "Blog Insights",
       description: "Read my latest articles.",
       image: "/home6.jpg",
       link: "#blog",
+      section: "blog"
     },
     {
       title: "Get in Touch",
       description: "Contact me for collaborations.",
       image: "/home7.jpg",
       link: "#contact",
+      section: "contact"
     },
   ];
 
@@ -246,44 +264,44 @@ export default function Home() {
       title: "Imagine Life as a Website: If Existence Ran on HTTP Requests",
       category: "Tech",
       content: `
-  <p>Imagine our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements. Each one of us is like a unique URL endpoint. Life’s “server” sends requests, handles responses, and sometimes… well, sometimes you just get a <i>404</i> error. 😆</p>
+  <p>Imagine our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements. Each one of us is like a unique URL endpoint. Life's "server" sends requests, handles responses, and sometimes… well, sometimes you just get a <i>404</i> error. 😆</p>
   
   <p>Here's a deep dive into life if it were structured like a modern web application:</p>
   
   <h2>1. The Signup Page</h2>
-  <p>Birth? That’s like the “sign-up” page—where we hit “Submit” (or, maybe someone else did?), and suddenly, here we are! We get our user ID (a.k.a. name) and begin our <i>session</i>.</p>
+  <p>Birth? That's like the "sign-up" page—where we hit "Submit" (or, maybe someone else did?), and suddenly, here we are! We get our user ID (a.k.a. name) and begin our <i>session</i>.</p>
   
   <h2>2. Loading, Loading...</h2>
-  <p>Ever feel like you're waiting for something that never arrives? Life’s loading bars are basically our day-to-day anticipation—waiting for dreams to process. Sometimes we get the data we requested, sometimes we get a <i>504 Gateway Timeout</i>. 😬</p>
+  <p>Ever feel like you're waiting for something that never arrives? Life's loading bars are basically our day-to-day anticipation—waiting for dreams to process. Sometimes we get the data we requested, sometimes we get a <i>504 Gateway Timeout</i>. 😬</p>
   
   <h2>3. API Calls and Relationships</h2>
-  <p>When you meet someone, it's like calling an API endpoint. You send a GET request, hoping for a JSON response with mutual understanding and maybe a few interesting properties. Or, you might get a <i>403 Forbidden</i>—access denied to someone’s personal data!</p>
+  <p>When you meet someone, it's like calling an API endpoint. You send a GET request, hoping for a JSON response with mutual understanding and maybe a few interesting properties. Or, you might get a <i>403 Forbidden</i>—access denied to someone's personal data!</p>
   
   <h2>4. Daily Data Refreshes</h2>
-  <p>Every morning, you refresh your “page” with coffee or exercise. You’ve got new cookies (or bad ones) stored, new “sessions” ready to go. Life is constantly refreshing and re-rendering.</p>
+  <p>Every morning, you refresh your "page" with coffee or exercise. You've got new cookies (or bad ones) stored, new "sessions" ready to go. Life is constantly refreshing and re-rendering.</p>
   
   <h2>5. Security Tokens & Trust Issues</h2>
-  <p>Trust? It’s like a security token—sometimes it gets validated, other times it expires without notice. And yes, those who betray you? That’s basically a CSRF attack on your well-being. 😂</p>
+  <p>Trust? It's like a security token—sometimes it gets validated, other times it expires without notice. And yes, those who betray you? That's basically a CSRF attack on your well-being. 😂</p>
   
   <h2>6. The "Terms & Conditions"</h2>
-  <p>Ah, the life agreements! We agree to things we might never have read the fine print on, but, hey, we’re all “logged in” now, right? Just click “Accept All” and hope for the best.</p>
+  <p>Ah, the life agreements! We agree to things we might never have read the fine print on, but, hey, we're all "logged in" now, right? Just click "Accept All" and hope for the best.</p>
   
   <h2>7. The Debugging Process</h2>
-  <p>Every time you make a mistake, it’s like throwing an error in the console. Except, there’s no debugger in life. We just try to interpret the cryptic message (“SyntaxError: Can’t find happiness”) and go on anyway.</p>
+  <p>Every time you make a mistake, it's like throwing an error in the console. Except, there's no debugger in life. We just try to interpret the cryptic message ("SyntaxError: Can't find happiness") and go on anyway.</p>
   
   <h2>8. 404: Purpose Not Found</h2>
-  <p>Sometimes we hit a <i>404 Page Not Found</i> in our journey, wondering if we’re on the right URL. Maybe it’s a career that’s just not loading or relationships stuck in a loop. Good thing we’ve got “refresh” and plenty of re-routing options!</p>
+  <p>Sometimes we hit a <i>404 Page Not Found</i> in our journey, wondering if we're on the right URL. Maybe it's a career that's just not loading or relationships stuck in a loop. Good thing we've got "refresh" and plenty of re-routing options!</p>
   
   <h2>9. Scheduled Maintenance (Sleep)</h2>
-  <p>Every night, we log off for maintenance. If only there were patch notes every morning, letting us know what life’s server team fixed overnight. Maybe a few bugs squashed or minor “optimizations” applied?</p>
+  <p>Every night, we log off for maintenance. If only there were patch notes every morning, letting us know what life's server team fixed overnight. Maybe a few bugs squashed or minor "optimizations" applied?</p>
   
   <h2>10. Redirects and Major Life Changes</h2>
-  <p>A new job, a relationship, a move—these are like 301 Redirects. You’re still “you,” but now you’re located somewhere new on the server, with a fresh HTML and CSS setup.</p>
+  <p>A new job, a relationship, a move—these are like 301 Redirects. You're still "you," but now you're located somewhere new on the server, with a fresh HTML and CSS setup.</p>
   
   <h2>11. User Engagement and Feedback Loops</h2>
-  <p>What’s life without a bit of engagement? Whether it’s friends, followers, or family, our “backend” runs on constant feedback loops. And yes, sometimes we go viral for all the wrong reasons. But in the end, it’s about how you respond to the response.</p>
+  <p>What's life without a bit of engagement? Whether it's friends, followers, or family, our "backend" runs on constant feedback loops. And yes, sometimes we go viral for all the wrong reasons. But in the end, it's about how you respond to the response.</p>
   
-  <p><strong>In closing</strong>, life as a website might have its quirks and errors, but with every refresh, new opportunities load. Just remember: when life throws you a <i>403 Forbidden</i>, there’s always a way to reroute. And if you’re ever feeling lost? Sometimes all you need is a hard refresh and a little faith that your server is still up and running.</p>
+  <p><strong>In closing</strong>, life as a website might have its quirks and errors, but with every refresh, new opportunities load. Just remember: when life throws you a <i>403 Forbidden</i>, there's always a way to reroute. And if you're ever feeling lost? Sometimes all you need is a hard refresh and a little faith that your server is still up and running.</p>
       `
     },
     { title: "Blog Post 2", category: "Tech", content: "This is the content for blog post 2" },
@@ -424,435 +442,546 @@ export default function Home() {
   }
 };
 
+ // Add this state for tab management
+ const [activeTab, setActiveTab] = useState('living-room');
+
+ // Add these state variables at the top of the component
+ const [navigationHistory, setNavigationHistory] = useState([]);
+ const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
+
+ // Add navigation functions
+ const navigateToSection = (section, addToHistory = true) => {
+   setActiveSection(section);
+   if (addToHistory) {
+     const newHistory = [...navigationHistory.slice(0, currentHistoryIndex + 1), section];
+     setNavigationHistory(newHistory);
+     setCurrentHistoryIndex(newHistory.length - 1);
+   }
+ };
+
+ const goBack = () => {
+   if (currentHistoryIndex > 0) {
+     setCurrentHistoryIndex(currentHistoryIndex - 1);
+     navigateToSection(navigationHistory[currentHistoryIndex - 1], false);
+   }
+ };
+
+ const goForward = () => {
+   if (currentHistoryIndex < navigationHistory.length - 1) {
+     setCurrentHistoryIndex(currentHistoryIndex + 1);
+     navigateToSection(navigationHistory[currentHistoryIndex + 1], false);
+   }
+ };
+
+ const [currentBackground, setCurrentBackground] = useState("/background/homeEnv.jpg");
+ const [isBackgroundMenuOpen, setIsBackgroundMenuOpen] = useState(false);
+ const backgroundMenuRef = useRef(null);
+
+ const backgrounds = [
+   { name: "Default", path: "/background/homeEnv.jpg" },
+   { name: "Background 1", path: "/background/bg1.jpg" },
+   { name: "Background 2", path: "/background/bg2.jpg" },
+ ];
+
+ useEffect(() => {
+   function handleClickOutside(event) {
+     if (backgroundMenuRef.current && !backgroundMenuRef.current.contains(event.target)) {
+       setIsBackgroundMenuOpen(false);
+     }
+   }
+   document.addEventListener("mousedown", handleClickOutside);
+   return () => document.removeEventListener("mousedown", handleClickOutside);
+ }, []);
+
  return (
-   <div className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative">
-     {/* Floating Dock Position */}
+   <div 
+     className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:inset-0 before:bg-black/50" 
+     style={{ backgroundImage: `url(${currentBackground})` }}
+   >
+     {/* Floating Dock */}
      <div className={`relative z-50 opacity-90 ${isMobile ? 'fixed bottom-0 w-full z[9999]' : 'left-0 z-[9999]'} opacity-100`}>
        <FloatingDock items={items} />
      </div>
 
-       {/* Top Left Corner Name with Conditional Visibility */}
-        {showName && (
-          <motion.div
-            className={`fixed ${isMobile ? 'top-20 left-1/2 transform -translate-x-1/2 w-full flex justify-center px-4' : 'top-4 left-4'} z-50`}
-            initial={{ opacity: 1 }}
-            animate={{ opacity: showName ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Cover className="text-2xl font-semibold font-mono text-white text-center">
-              Sri Ujjwal Reddy Beereddy
-            </Cover>
-          </motion.div>
-        )}
+     {/* Top Left Corner Name */}
+     {showName && (
+       <motion.div
+         className={`fixed ${isMobile ? 'top-20 left-1/2 transform -translate-x-1/2 w-full flex justify-center px-4' : 'top-4 left-4'} z-50`}
+         initial={{ opacity: 1 }}
+         animate={{ opacity: showName ? 1 : 0 }}
+         transition={{ duration: 0.3 }}
+       >
+         <Cover className="text-2xl font-semibold font-mono text-white text-center">
+           Sri Ujjwal Reddy Beereddy
+         </Cover>
+       </motion.div>
+     )}
 
+     {/* Main Content */}
+     <div className="relative h-screen w-full">
+       {/* Top Margin */}
+       <div className="h-[7.5vh]" />
 
-      {/* Right: Main Content */}
-      <div className="relative overflow-y-auto overflow-x-hidden p-4">
+       {/* Browser Toolbar */}
+       <div className="h-[5vh] mx-6">
+         <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center px-6">
+           {/* Navigation Controls */}
+           <div className="flex items-center gap-4">
+             <button 
+               className={`text-neutral-400 hover:text-white transition-colors
+                 ${currentHistoryIndex > 0 
+                   ? 'cursor-pointer' 
+                   : 'opacity-50 cursor-not-allowed'}`}
+               onClick={goBack}
+               disabled={currentHistoryIndex <= 0}
+             >
+               <IconArrowLeft size={20} stroke={3} />
+             </button>
+             <button 
+               className={`text-neutral-400 hover:text-white transition-colors
+                 ${currentHistoryIndex < navigationHistory.length - 1 
+                   ? 'cursor-pointer' 
+                   : 'opacity-50 cursor-not-allowed'}`}
+               onClick={goForward}
+               disabled={currentHistoryIndex >= navigationHistory.length - 1}
+             >
+               <IconArrowRight size={20} stroke={3} />
+             </button>
+             <button 
+               className="text-neutral-400 hover:text-white transition-colors"
+               onClick={() => window.location.reload()}
+             >
+               <IconRefresh size={20} stroke={3} />
+             </button>
+           </div>
 
+           {/* Search/URL Bar */}
+           <div className="flex-1 mx-6">
+             <div className="flex items-center gap-2 px-4 py-2 bg-neutral-700/20 rounded-lg border border-white/5">
+               <IconLock size={16} className="text-neutral-500" />
+               <span className="text-sm text-neutral-400 font-mono truncate">
+                 sriujjwalreddy.com/{activeSection}
+                 {activeSection === 'experience' && `/${activeTimeline}`}
+               </span>
+             </div>
+           </div>
 
-      {/* Custom Top-Right Navbar */}
-      <div
-        className={`fixed top-4 ${
-          isMobile ? "left-1/2 transform -translate-x-1/2 px-6" : "right-4"
-        } flex items-center space-x-4 bg-black bg-opacity-60 rounded-2xl shadow-lg z-[1000] py-2 px-3 md:px-4`}
-        style={{
-          paddingLeft: isMobile ? "1.5rem" : "1rem",
-          paddingRight: isMobile ? "1.5rem" : "1rem",
-        }}
-      >
-        <Link href="https://github.com/sbeeredd04" target="_blank">
-          <IconBrandGithub
-            className="text-white hover:text-gray-400 mx-1"
-            size={24}
-          />
-        </Link>
-        <Link href="https://instagram.com/" target="_blank">
-          <IconBrandInstagram
-            className="text-pink-500 hover:text-pink-400 mx-1"
-            size={24}
-          />
-        </Link>
-        <Link href="https://www.linkedin.com/in/sriujjwal/" target="_blank">
-          <IconBrandLinkedin
-            className="text-blue-700 hover:text-blue-500 mx-1"
-            size={24}
-          />
-        </Link>
-        <Link href="mailto:srisubspace@gmail.com" target="_blank">
-          <IconMail className="text-red-500 hover:text-red-400 mx-1" size={24} />
-        </Link>
-        <Link href="https://open.spotify.com/user/31qr3j45nvoqp4lfh6vuabmlwguq?si=2c62fb75bef644f6" target="_blank">
-          <IconBrandSpotify
-            className="text-green-500 hover:text-green-400 mx-1"
-            size={24}
-          />
-        </Link>
-        <Link href="/my_resume.pdf" download>
-          <button className="px-4 py-2 border border-whites-400 text-white-400 font-semibold rounded-md shadow-md hover:border-emerald-500 hover:text-emerald-500 transition-all mx-1 bg-transparent">
-            Resume
-          </button>
-        </Link>
-      </div>
+           {/* Browser Controls */}
+           <div className="flex items-center gap-4">
+             <button className="text-neutral-400 hover:text-white transition-colors">
+               <IconLetterA size={20} stroke={3} />
+             </button>
+             <button className="text-neutral-400 hover:text-white transition-colors">
+               <IconShare size={20} stroke={3} />
+             </button>
+             <button className="text-neutral-400 hover:text-white transition-colors">
+               <IconCopy size={20} stroke={3} />
+             </button>
+             <button
+               onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
+               className="text-neutral-400 hover:text-white transition-colors"
+             >
+               <IconPalette size={20} stroke={3} />
+             </button>
+           </div>
+         </div>
+       </div>
 
+       {/* Theme Switcher Dropdown */}
+       {isBackgroundMenuOpen && (
+         <div className="absolute top-[12.5vh] right-6 mt-2 w-48 rounded-xl bg-neutral-800/60 backdrop-blur-2xl border border-white/10 overflow-hidden z-50">
+           {backgrounds.map((bg, index) => (
+             <button
+               key={index}
+               onClick={() => {
+                 setCurrentBackground(bg.path);
+                 setIsBackgroundMenuOpen(false);
+               }}
+               className="w-full px-4 py-2 text-left text-white hover:bg-neutral-700/60 transition-all text-sm"
+             >
+               {bg.name}
+             </button>
+           ))}
+         </div>
+       )}
 
+       {/* Spacing */}
+       <div className="h-[2.5vh]" />
 
-        {/* Home Section */}
-        <section id="home" className="relative h-screen w-full mb-40">
-          <div className="relative w-full h-full overflow-hidden">
-            <AnimatePresence>
-              {slides.map((slide, index) =>
-                currentSlide === index ? (
-                  <motion.div
-                    key={slide.title}
-                    initial={{ opacity: 0, x: 100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.6 }}
-                    className="absolute inset-0 rounded-xl overflow-hidden"
-                    style={{
-                      backgroundImage: `url(${slide.image})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex flex-col items-center justify-center text-white text-center rounded-xl p-4 md:p-8">
-                      <h2 className="text-4xl md:text-5xl font-bold mb-4">{slide.title}</h2>
-                      <p className="text-md md:text-lg mb-4">{slide.description}</p>
-                      <Link href={slide.link} className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
-                        Learn More
-                      </Link>
-                    </div>
-                  </motion.div>
-                ) : null
-              )}
-            </AnimatePresence>
+       {/* Main Content Area */}
+       <div className="h-[70vh] mx-6">
+         <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg overflow-hidden">
+           <AnimatePresence mode="wait">
+             <motion.div
+               key={activeSection}
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               exit={{ opacity: 0, y: -20 }}
+               transition={{ duration: 0.3 }}
+               className="h-full overflow-y-auto overflow-x-hidden px-6 py-6 scrollbar-none"
+             >
+               {/* Home Section */}
+               {activeSection === "home" && (
+                 <section className="w-full h-full">
+                   <div className="relative w-full h-full">
+                     <AnimatePresence mode="wait">
+                       {slides.map((slide, index) =>
+                         currentSlide === index ? (
+                           <motion.div
+                             key={slide.title}
+                             initial={{ opacity: 0, x: 100 }}
+                             animate={{ opacity: 1, x: 0 }}
+                             exit={{ opacity: 0, x: -100 }}
+                             transition={{ duration: 0.6 }}
+                             className="absolute inset-0 rounded-xl overflow-hidden"
+                             style={{
+                               backgroundImage: `url(${slide.image})`,
+                               backgroundSize: "cover",
+                               backgroundPosition: "center",
+                             }}
+                           >
+                             <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-md flex flex-col items-center justify-center text-white text-center p-4 md:p-8">
+                               <h2 className="text-4xl md:text-5xl font-bold mb-4">{slide.title}</h2>
+                               <p className="text-md md:text-lg mb-4">{slide.description}</p>
+                               <button 
+                                 onClick={() => navigateToSection(slide.section)}
+                                 className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all"
+                               >
+                                 Learn More
+                               </button>
+                             </div>
+                           </motion.div>
+                         ) : null
+                       )}
+                     </AnimatePresence>
 
-            <button onClick={prevSlide} className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 text-white bg-black rounded-full">
-              ‹
-            </button>
-            <button onClick={nextSlide} className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 text-white bg-black rounded-full">
-              ›
-            </button>
-          </div>
-        </section>
+                     <button 
+                       onClick={prevSlide} 
+                       className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
+                     >
+                       <IconArrowLeft className="w-6 h-6" />
+                     </button>
+                     <button 
+                       onClick={nextSlide} 
+                       className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
+                     >
+                       <IconArrowRight className="w-6 h-6" />
+                     </button>
+                   </div>
+                 </section>
+               )}
 
-       {/* About Me Section */}
-       <section id="about" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
-        <div className="h-full w-full p-4 md:p-8 bg-transparent rounded-xl flex flex-col md:flex-row gap-8 flex items-center justify-center">
-          <div className="w-full p-4 md:p-8 bg-transparent rounded-xl flex flex-col md:flex-row gap-8">
-            {/* Left div with text */}
-            <div className="w-full md:w-1/2 text-left">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
-              <p className="text-md md:text-lg mb-4">
-                Hello! I’m a Junior studying Computer Science with a focus on Software Engineering. I love solving problems, learning new things, and finding creative ways to use technology. Right now, I’m excited about growing my skills in software development, machine learning, and data analysis.
-                My goal is to keep improving, whether it’s through collaboration or tackling new challenges. I’m excited about the future and can’t wait to see where my passion for tech takes me!
-              </p>
+               {activeSection === "about" && (
+                 <section className="w-full h-full">
+                   <div className="w-full flex flex-col md:flex-row items-center gap-8 bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-8">
+                     <div className="w-full md:w-1/2 text-left">
+                       <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
+                       <p className="text-md md:text-lg mb-4">
+                         Hello! I'm a Junior studying Computer Science with a focus on Software Engineering. I love solving problems, learning new things, and finding creative ways to use technology. Right now, I'm excited about growing my skills in software development, machine learning, and data analysis. My goal is to keep improving, whether it's through collaboration or tackling new challenges. I'm excited about the future and can't wait to see where my passion for tech takes me!
+                       </p>
+                       <div className="flex flex-col md:flex-row gap-4">
+                         <Link href="/my_resume.pdf" download>
+                           <button className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+                             Download Resume
+                           </button>
+                         </Link>
+                         <button 
+                           onClick={() => setShowResumePreview(true)}
+                           className="w-full md:w-auto px-6 py-3 bg-transparent border border-white/10 hover:bg-white/5 text-white font-semibold rounded-lg transition-all"
+                         >
+                           View Resume
+                         </button>
+                       </div>
+                     </div>
+                     <div className="w-full md:w-1/2 flex items-center justify-center">
+                       <Globe />
+                     </div>
+                   </div>
+                 </section>
+               )}
 
-              {/* Button to download resume */}
-              <Link href="/my_resume.pdf" download>
-                <button className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
-                  Download Resume
-                </button>
-              </Link>
+               {activeSection === "experience" && (
+                 <section className="w-full h-full">
+                   <div className="flex-1 overflow-y-auto bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-6">
+                     {activeTab === "experience" ? (
+                       <TimelineDemo theme="experience" />
+                     ) : (
+                       <AchievementTimelineDemo theme="achievements" />
+                     )}
+                   </div>
+                 </section>
+               )}
 
-              {/* Button to open resume preview */}
-              <button
-                className="ml-0 md:ml-4 mt-4 md:mt-0 px-4 md:px-6 py-2 md:py-3 bg-transparent border-2 border-transparent bg-clip-border border-gradient-to-r from-cyan-400 to-blue-400 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-emerald-500 transition-all"
-                onClick={() => setShowResumePreview(true)}
-              >
-                View Resume
-              </button>
+               {activeSection === "projects" && (
+                 <section className="w-full h-full">
+                   <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">Featured Projects</h2>
+                   <div className="flex-1 w-full overflow-hidden">
+                     <div className="w-full h-full px-4">
+                       <Carousel 
+                         items={projects.map((project, index) => (
+                           <PinContainer
+                             key={index}
+                             title={project.title}
+                             href={project.href}
+                             containerClassName="w-full max-w-[300px] md:max-w-[400px] aspect-[4/3] mx-auto"
+                           >
+                             <div className="w-full h-full flex flex-col">
+                               <img
+                                 src={project.image}
+                                 alt={project.title}
+                                 className="w-full h-48 object-cover rounded-lg mb-4"
+                               />
+                               <div className="flex flex-col flex-1">
+                                 <h3 className="text-xl font-bold text-cyan-400 mb-2">
+                                   {project.title}
+                                 </h3>
+                                 <p className="text-sm text-white/80">
+                                   {project.description}
+                                 </p>
+                               </div>
+                             </div>
+                           </PinContainer>
+                         ))}
+                         className="w-full h-full"
+                       />
+                     </div>
+                   </div>
+                 </section>
+               )}
 
-              {/* Modal for Resume Preview */}
-              {showResumePreview && (
-                <div
-                  id="resume-modal-overlay"
-                  className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[1000]"
-                  onClick={handleClickOutside}
-                >
-                  <div className="bg-white rounded-lg w-[90vw] h-[85vh] relative z-[1200]">
-                    <iframe
-                      src="/my_resume.pdf"
-                      className="w-full h-full"
-                      frameBorder="0"
-                    />
-                  </div>
+               {activeSection === "skills" && (
+                 <section className="w-full h-full">
+                   <div className="flex-1 w-full overflow-hidden bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-6 flex items-center justify-center">
+                     <div className="w-full relative">
+                       <InfiniteMovingCards
+                         sections={skillsSections}
+                         direction="left"
+                         speed="normal"
+                         pauseOnHover={true}
+                         className="w-full"
+                       />
+                     </div>
+                   </div>
+                 </section>
+               )}
 
-                  {/* Close button outside the modal */}
-                  <button
-                    className="absolute top-8 right-8 text-white bg-red-700 hover:bg-blue-600 rounded-full p-3 z-[1300]"
-                    onClick={() => setShowResumePreview(false)}
-                  >
-                    Close
-                  </button>
-                </div>
-              )}
-            </div>
+               {activeSection === "blog" && (
+                 <section className="w-full h-full">
+                   <div className="flex-1 w-full overflow-hidden">
+                     <div className="w-full h-full relative px-4">
+                       <ExCarousel
+                         items={blogPosts.map((post, index) => (
+                           <Card
+                             key={index}
+                             index={index}
+                             card={{
+                               title: post.title,
+                               content: post.content,
+                               category: post.category,
+                               src: `/${index + 1}.jpg`,
+                             }}
+                             className="max-w-[90%] mx-auto"
+                           />
+                         ))}
+                         className="w-full h-full"
+                       />
+                     </div>
+                   </div>
+                 </section>
+               )}
 
-            {/* Right div with globe */}
-            <div className="w-full md:w-1/2 flex items-center justify-center">
-              <Globe />
-            </div>
-          </div>
-        </div>
-      </section>
+               {activeSection === "contact" && (
+                 <section className="w-full h-full">
+                   <div className="w-full bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-8">
+                     <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">Contact Me</h2>
+                     <div className="mt-4 md:mt-8 text-center">
+                       <p className="text-md md:text-lg mb-6">Feel free to reach out for collaborations or inquiries.</p>
+                       <form onSubmit={handleSubmit} className="mt-6 space-y-4 max-w-2xl mx-auto">
+                         <input 
+                           type="text" 
+                           name="from_name"
+                           placeholder="Your Name" 
+                           required
+                           className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                         />
+                         <input 
+                           type="email" 
+                           name="from_email"
+                           placeholder="Your Email" 
+                           required
+                           className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                         />
+                         <input 
+                           type="hidden" 
+                           name="subject"
+                           value="WEBSITE CONTACT"
+                         />
+                         <textarea 
+                           name="message"
+                           placeholder="Your Message" 
+                           required
+                           className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-32 md:h-40"
+                         ></textarea>
+                         <button 
+                           type="submit" 
+                           className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                         >
+                           Send Message
+                         </button>
+                       </form>
+                       <div className="mt-6 flex flex-col items-center justify-center space-y-4">
+                         <div className="text-sm text-gray-500">or connect with me on</div>
+                         <div className="flex space-x-4">
+                           <a 
+                             href="https://www.linkedin.com/in/sriujjwal/" 
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="text-blue-500 hover:text-blue-600"
+                           >
+                             LinkedIn
+                           </a>
+                           <span className="text-gray-500">•</span>
+                           <a 
+                             href="https://github.com/sbeeredd04" 
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="text-gray-500 hover:text-gray-400"
+                           >
+                             GitHub
+                           </a>
+                         </div>
+                       </div>
+                       <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                         Or email me directly at{' '}
+                         <a 
+                           href="mailto:srisubspace@gmail.com?subject=WEBSITE CONTACT" 
+                           className="text-blue-500 hover:text-blue-600 underline"
+                         >
+                           srisubspace@gmail.com
+                         </a>
+                       </p>
+                     </div>
+                   </div>
+                 </section>
+               )}
+             </motion.div>
+           </AnimatePresence>
+         </div>
+       </div>
 
-       {/* Experience Section with Toggle */}
-        <section id="experience" className="w-full bg-transparent py-10 md:py-20 my-10 md:my-20 mb-20 md:mb-40">
-          <div className="w-full max-w-8xl mx-auto px-4 md:px-8 lg:px-12">
-            <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-8 mb-6 md:mb-12">
-              {/* Professional Experience Button */}
-              <button
-                className={`relative text-2xl md:text-4xl font-bold ${
-                  activeTimeline === "experience" ? "text-white" : "text-gray-400"
-                }`}
-                onClick={() => setActiveTimeline("experience")}
-              >
-                Professional Experience
-                {activeTimeline === "experience" && (
-                  <motion.div
-                    layoutId="underline"
-                    className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-purple-500 shadow-md rounded-lg"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  />
-                )}
-              </button>
+        {/* 5% Margin */}
+        <div className="h-[5vh]" />
 
-              {/* Achievements & Coding Journey Button */}
-              <button
-                className={`relative text-2xl md:text-4xl font-bold ${
-                  activeTimeline === "achievements" ? "text-white" : "text-gray-400"
-                }`}
-                onClick={() => setActiveTimeline("achievements")}
-              >
-                Achievements & Coding Journey
-                {activeTimeline === "achievements" && (
-                  <motion.div
-                    layoutId="underline"
-                    className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-teal-500 shadow-md rounded-lg"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  />
-                )}
-              </button>
-            </div>
+       {/* Bottom Tabs Container - Floating */}
+       <div className="h-[5vh] mx-6">
+         <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center px-4">
+           {/* Dynamic Tabs based on active section */}
+           <div className="flex-1 flex items-center gap-2">
+             {activeSection === "home" && (
+               <>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                   Welcome
+                 </button>
+               </>
+             )}
 
-            {/* Content Transition Animation */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTimeline} // Different keys for different sections
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                transition={{ duration: 0.4 }}
-                className="bg-transparent rounded-xl p-4 md:p-8"
-              >
-                {activeTimeline === "experience" ? (
-                  <TimelineDemo theme="experience" /> // Pass theme explicitly here
-                ) : (
-                  <AchievementTimelineDemo theme="achievements" /> // Also, pass theme explicitly here if needed
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </section>
+             {activeSection === "about" && (
+               <>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                   Profile
+                 </button>
+               </>
+             )}
 
-        {/* Projects Section */}
-        <section id="projects" className="w-full bg-transparent py-10 md:py-20">
-          <div className="w-full max-w-8xl mx-auto px-4 md:px-8 lg:px-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Featured Projects</h2>
-            
-            <Carousel
-              items={projects.map((project, index) => (
-                <PinContainer
-                  key={index}
-                  title={project.title}
-                  href={project.href} // Pass href to PinContainer
-                  containerClassName="flex flex-col items-center justify-center w-[90%] sm:w-[20rem] h-auto md:w-[25rem] p-4"
-                  onClick={() => {
-                    setPreviewUrl(project.href);
-                    setShowProjectPreview(true);
-                  }}
-                >
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-32 sm:h-36 md:h-40 object-cover rounded-lg mb-4 transition-transform duration-300 ease-in-out hover:scale-105"
-                  />
-                  <div className="flex flex-col items-start w-full text-left">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 mb-2">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm sm:text-base font-normal text-white">
-                      {project.description}
-                    </p>
-                  </div>
-                </PinContainer>
-              ))}
-            />
-          </div>
+             {activeSection === "experience" && (
+               <>
+                 <button
+                   className={`px-5 py-1 rounded-lg text-sm font-medium transition-all ${
+                     activeTab === "experience"
+                       ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                       : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5"
+                   }`}
+                   onClick={() => setActiveTab("experience")}
+                 >
+                   Experience
+                 </button>
+                 <button
+                   className={`px-5 py-1 rounded-lg text-sm font-medium transition-all ${
+                     activeTab === "achievements"
+                       ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                       : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5"
+                   }`}
+                   onClick={() => setActiveTab("achievements")}
+                 >
+                   Achievements
+                 </button>
+               </>
+             )}
 
-          {/* Modal for Project Preview */}
-          {showProjectPreview && (
-            <div
-              id="project-modal-overlay"
-              className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[1000]"
-              onClick={() => setShowProjectPreview(false)} // Close modal on overlay click
-            >
-              <div className="bg-white rounded-lg w-[90vw] h-[85vh] relative z-[1200]">
-                {previewUrl.includes("github.com") ? (
-                  // Open GitHub links in a new tab since they can't be embedded
-                  <div className="flex flex-col items-center justify-center w-full h-full text-center p-8">
-                    <p className="text-lg font-semibold mb-4">This project is hosted on GitHub.</p>
-                    <a
-                      href={previewUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition"
-                    >
-                      Open in GitHub
-                    </a>
-                  </div>
-                ) : (
-                  <iframe
-                    src={previewUrl}
-                    className="w-full h-full"
-                    frameBorder="0"
-                  />
-                )}
-              </div>
-              <button
-                className="absolute top-8 right-8 text-white bg-red-700 hover:bg-red-500 rounded-full p-3 z-[1300]"
-                onClick={() => setShowProjectPreview(false)}
-              >
-                Close
-              </button>
-            </div>
-          )}
-        </section>
+             {activeSection === "projects" && (
+               <>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                   All Projects
+                 </button>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                   Web Apps
+                 </button>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                   ML Projects
+                 </button>
+               </>
+             )}
 
-        {/* Skills Section */}
-        <section id="skills" className="w-full bg-transparent py-20 my-20 mb-40">
-          <div className="w-full max-w-8xl mx-auto px-4 md:px-8 lg:px-12 scroll-hide">
-            <h2 className="text-4xl font-bold text-center text-white mb-12">Skills</h2>
-            <div className="bg-transparent rounded-xl p-8 md:px-4 overflow-hidden">
-              {/* Apply styles to hide scrollbar */}
-              <div className="skills-scroll-container overflow-x-auto whitespace-nowrap scroll-hide">
-                <InfiniteMovingCards
-                  sections={skillsSections}
-                  direction="left"
-                  speed="normal"
-                  pauseOnHover={true}
-                  className="mx-auto"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+             {activeSection === "skills" && (
+               <>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                   All Skills
+                 </button>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                   Languages
+                 </button>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                   Frameworks
+                 </button>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                   Tools
+                 </button>
+               </>
+             )}
 
+             {activeSection === "blog" && (
+               <>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                   All Posts
+                 </button>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                   Tech
+                 </button>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 border border-white/5">
+                   Tutorials
+                 </button>
+               </>
+             )}
 
-        {/* Blog Section with Expandable Cards */}
-        <section id="blog" className="h-screen w-full bg-transparent mx-4 my-20 flex items-center justify-center">
-          <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Featured Blog Posts</h2>
-            <ExCarousel
-              items={blogPosts.map((post, index) => (
-                <Card
-                  key={index}
-                  index={index}
-                  card={{
-                    title: post.title,
-                    content: post.content,
-                    category: post.category,
-                    src: `/${index + 1}.jpg`, 
-                  }}
-                />
-              ))}
-            />
-          </div>
-        </section>
+             {activeSection === "contact" && (
+               <>
+                 <button className="px-5 py-1 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                   Contact Form
+                 </button>
+               </>
+             )}
+           </div>
 
+           {/* Add Tab Button */}
+           <button className="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-700/30 text-neutral-400 hover:bg-neutral-600/30 transition-colors border border-white/5 ml-2">
+             <IconPlus size={14} />
+           </button>
+         </div>
+       </div>
 
-
-        {/* Contact Section */}
-        <section id="contact" className="h-screen w-full bg-transparent mx-4 flex items-center justify-center">
-          <div className="w-full p-4 md:p-8 bg-transparent rounded-xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-center">Contact Me</h2>
-            <div className="mt-4 md:mt-8 text-center">
-              <p className="text-md md:text-lg mb-6">Feel free to reach out for collaborations or inquiries.</p>
-              <form onSubmit={handleSubmit} className="mt-6 space-y-4 max-w-2xl mx-auto">
-                <input 
-                  type="text" 
-                  name="from_name"
-                  placeholder="Your Name" 
-                  required
-                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
-                />
-                <input 
-                  type="email" 
-                  name="from_email"
-                  placeholder="Your Email" 
-                  required
-                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
-                />
-                <input 
-                  type="hidden" 
-                  name="subject"
-                  value="WEBSITE CONTACT"
-                />
-                <textarea 
-                  name="message"
-                  placeholder="Your Message" 
-                  required
-                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-32 md:h-40"
-                ></textarea>
-                <button 
-                  type="submit" 
-                  className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-                >
-                  Send Message
-                </button>
-              </form>
-              <div className="mt-6 flex flex-col items-center justify-center space-y-4">
-                <div className="text-sm text-gray-500">or connect with me on</div>
-                <div className="flex space-x-4">
-                  <a 
-                    href="https://www.linkedin.com/in/sriujjwal/" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:text-blue-600"
-                  >
-                    LinkedIn
-                  </a>
-                  <span className="text-gray-500">•</span>
-                  <a 
-                    href="https://github.com/sbeeredd04" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-500 hover:text-gray-400"
-                  >
-                    GitHub
-                  </a>
-                </div>
-              </div>
-              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                Or email me directly at{' '}
-                <a 
-                  href="mailto:srisubspace@gmail.com?subject=WEBSITE CONTACT" 
-                  className="text-blue-500 hover:text-blue-600 underline"
-                >
-                  srisubspace@gmail.com
-                </a>
-              </p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-  );
+       {/* Bottom 10% Margin */}
+       <div className="h-[5vh]" />
+     </div>
+   </div>
+ );
 }
