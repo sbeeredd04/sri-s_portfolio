@@ -113,11 +113,11 @@ const FloatingDockDesktop = ({ items, className }) => {
       onMouseMove={(e) => mouseX.set(e.pageY)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "fixed left-4 top-1/2 transform -translate-y-1/2 h-auto w-16 gap-6 items-center rounded-xl bg-neutral-800/60 backdrop-blur-3xl border border-white/10 shadow-lg px-2 py-4",
+        "fixed left-4 top-1/2 transform -translate-y-1/2 h-auto w-16 gap-6 items-center rounded-3xl bg-neutral-800/60 backdrop-blur-xl border border-white/10 shadow-lg px-2 py-4",
         className
       )}
     >
-      <div className="flex flex-col items-center justify-center gap-6">
+      <div className="flex flex-col items-center justify-center gap-6 bac">
         {items.map((item) => (
           <IconContainer mouseX={mouseX} key={item.title} {...item} />
         ))}
