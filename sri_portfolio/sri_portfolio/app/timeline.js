@@ -8,13 +8,13 @@ export function TimelineDemo({ theme }) {
       title: "Software Engineering Intern (Machine Learning)",
       content: (
         <div>
-          <h2 className="text-lg md:text-xl font-semibold mb-4">
+          <h2 className="text-lg md:text-2xl font-semibold mb-4 text-white">
             Geometric Media Lab
           </h2>
-          <p className="text-xs md:text-sm font-normal mb-4">
+          <p className="text-sm md:text-base font-normal mb-4 text-white/60">
             Software Engineering Intern (Machine Learning) | Jul 2024 – Present
           </p>
-          <ul className="list-disc pl-5 text-xs md:text-sm font-normal mb-8">
+          <ul className="list-disc pl-5 text-sm md:text-base font-normal mb-8 text-white/80 space-y-4">
             <li>
               <strong>Engineered a hybrid ML pipeline:</strong> Combined k-means clustering with a supervised neural network for gunshot detection, boosting accuracy from 20% to 80% on 10+ hours of audio data processed via Librosa and iterative model refinement.
             </li>
@@ -25,19 +25,19 @@ export function TimelineDemo({ theme }) {
               <strong>Enhanced model robustness:</strong> Implemented a dynamic feedback loop to continuously refine predictions and improve noise differentiation, securing scalable analysis under diverse conditions.
             </li>
           </ul>
-          <div className="mb-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-            <p className="text-xs md:text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Currently Working:</p>
-            <p className="text-xs md:text-sm text-blue-600 dark:text-blue-300">
+          <div className="mb-8 p-6 bg-blue-500/10 rounded-lg border border-blue-500/20">
+            <p className="text-sm md:text-base font-medium text-blue-400 mb-2">Currently Working:</p>
+            <p className="text-sm md:text-base text-blue-300">
               Looking into video generation models and working on leveraging VLM (Vision Language Models) and scene graph predictions as controls for longer video generation.
             </p>
           </div>
-          <div className="">
+          <div className="w-full">
             <Image
               src="/ex (4).webp"
               alt="Geometric Media Lab ML Intern"
-              width={800}
+              width={1200}
               height={800}
-              className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
+              className="rounded-lg object-cover h-48 md:h-72 lg:h-96 w-full"
             />
           </div>
         </div>
@@ -77,9 +77,9 @@ export function TimelineDemo({ theme }) {
               <Image
                 src="/ex (3).png"
                 alt="SoDA Software Engineer"
-                width={800}
-                height={800}
-                className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-md"
+                width={1200}
+                height={1000}
+                className="rounded-lg object-cover h-64 md:h-96 lg:h-[32rem] w-full"
               />
             </a>
 
@@ -131,7 +131,7 @@ export function TimelineDemo({ theme }) {
 
           <a 
               href="https://github.com/chelsealiannegomez/New-Mesa-Interactive-Exhibit"
-              className="text-blue-500 hover:text-blue-600 underline decoration-2 decoration-blue-500/30 hover:decoration-blue-500/60 transition-all"
+              className="text-blue-500 hover:text-blue-400 underline text-base md:text-lg mt-4 inline-block transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -177,7 +177,7 @@ export function TimelineDemo({ theme }) {
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       <Timeline data={data} theme={theme} />
     </div>
   );

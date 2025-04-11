@@ -1,0 +1,49 @@
+[
+  {
+    "title": "Amano",
+    "description": "Emotion-Based Song Recommendation System that provides personalized song suggestions using Reinforcement Learning and Spotify's API.",
+    "href": "https://github.com/sbeeredd04/Amano",
+    "github": "https://github.com/sbeeredd04/Amano",
+    "image": "/p (2).webp",
+    "technologies": ["Python", "TensorFlow", "Spotify API", "Scikit-learn", "Flask"]
+  },
+  {
+    "title": "Image Insight",
+    "description": "A web-based tool designed for postdoctoral researchers to automate complex data analysis tasks, significantly increasing research productivity.",
+    "href": "https://github.com/sbeeredd04/CSDNA",
+    "github": "https://github.com/sbeeredd04/CSDNA",
+    "image": "/p (3).webp",
+    "technologies": ["Python", "OpenCV", "NumPy", "React", "FastAPI"]
+  },
+  {
+    "title": "Mine Alliance",
+    "description": "Fullstack platform that integrates ChatGPT-4 for sustainable mining site impact assessments, reducing response times by 40%.",
+    "href": "https://github.com/LuaanNguyen/Mine-Alliance",
+    "github": "https://github.com/LuaanNguyen/Mine-Alliance",
+    "image": "/p (4).webp",
+    "technologies": ["Next.js", "OpenAI API", "TailwindCSS", "PostgreSQL", "Prisma"]
+  },
+  {
+    "title": "Avisol",
+    "description": "An automated air traffic pathfinding system that utilizes algorithm optimization to reduce computation time for managing autonomous vehicles.",
+    "href": "https://github.com/sbeeredd04/AviSol",
+    "github": "https://github.com/sbeeredd04/AviSol",
+    "image": "/p (1).webp",
+    "technologies": ["Python", "A* Algorithm", "PyQt", "NumPy", "Matplotlib"]
+  },
+  {
+    "title": "SafeSide",
+    "description": "A personal safety app designed for active shooter emergencies, providing real-time location tracking, monitored updates, and tailored evacuation routes using BLE beacons and Google Maps.",
+    "href": "/SafeSide.pdf",
+    "image": "/p (5).webp",
+    "technologies": ["React Native", "Google Maps API", "Firebase", "BLE", "Node.js"]
+  },
+  {
+    "title": "Heat Wave",
+    "description": "A responsive web app designed to help users stay safe during heat waves by providing real-time weather alerts, safety guidelines, nearby hospital locations, and emergency contact options.",
+    "href": "https://github.com/Fido27/heat-wave",
+    "github": "https://github.com/Fido27/heat-wave",
+    "image": "/p (6).webp",
+    "technologies": ["React", "Weather API", "TailwindCSS", "Express", "MongoDB"]
+  }
+]

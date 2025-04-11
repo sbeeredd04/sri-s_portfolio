@@ -1,0 +1,51 @@
+[
+    {
+      "title": "Welcome to My Portfolio",
+      "description": "Discover my work and skills.",
+      "image": "/home1.jpg",
+      "link": "#",
+      "section": "home"
+    },
+    {
+      "title": "About Me",
+      "description": "Learn more about me.",
+      "image": "/home2.jpg",
+      "link": "#about",
+      "section": "about"
+    },
+    {
+      "title": "Professional Experience",
+      "description": "Explore my professional background.",
+      "image": "/home3.jpg",
+      "link": "#experience",
+      "section": "experience"
+    },
+    {
+      "title": "Featured Projects",
+      "description": "See my latest projects.",
+      "image": "/home4.jpg",
+      "link": "#projects",
+      "section": "projects"
+    },
+    {
+      "title": "Technical Skills",
+      "description": "Check out my technical skills.",
+      "image": "/home5.jpg",
+      "link": "#skills",
+      "section": "skills"
+    },
+    {
+      "title": "Blog Insights",
+      "description": "Read my latest articles.",
+      "image": "/home6.jpg",
+      "link": "#blog",
+      "section": "blog"
+    },
+    {
+      "title": "Get in Touch",
+      "description": "Contact me for collaborations.",
+      "image": "/home7.jpg",
+      "link": "#contact",
+      "section": "contact"
+    }
+  ]
