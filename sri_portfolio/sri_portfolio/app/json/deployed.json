@@ -1,9 +1,27 @@
 [
     {
-        "title": "Amano",
-        "description": "Emotion-Based Song Recommendation System that provides personalized song suggestions using Reinforcement Learning and Spotify's API.",
-        "href": "https://github.com/sbeeredd04/Amano",
-        "github": "https://github.com/sbeeredd04/Amano",
-        "image": "/p (2).webp"
+        "title": "Puter",
+        "description": "Engineered a robust notification management system and made a significant open-source contribution to Puter by implementing advanced notification handling and SQL-based tracking. Improved system performance and user experience for Puter, a free, open-source, self-hostable internet OS with over 30K GitHub stars.",
+        "href": "https://github.com/HeyPuter/puter",
+        "github": "https://github.com/HeyPuter/puter",
+        "image": "/projects/projects (1).jpg"
+    },
+    {
+        "title": "Agentex Resume Editor",
+        "description": "AI-powered Chrome extension that helps instantly tailor LaTeX resumes to match specific job descriptions. Uses advanced AI (Gemini & DeepSeek) to match skills with job requirements while keeping formatting professional and ATS-friendly. Generates customized PDFs with side-by-side preview in under a minute.",
+        "href": "https://chromewebstore.google.com/detail/jmgbilodbfopeidngmbaglaomffpld",
+        "image": "/projects/projects (2).jpg"
+    },
+    {
+        "title": "OctoDoc",
+        "description": "Built an AI-powered documentation generator that automatically creates professional documentation from GitHub repositories. Saves 10+ hours/week per developer with auto-sync on commits, featuring enterprise-grade security and multi-format export options (PDF, Markdown, interactive web).",
+        "href": "https://octodoc.vercel.app/",
+        "image": "/projects/projects (3).jpg"
+    },
+    {
+        "title": "Prom10",
+        "description": "Developed an AI prompt assistant Chrome extension that enhances productivity when working with AI tools. Features intelligent prompt enhancement, rephrasing capabilities, and an AI assistant with contextual suggestions, all accessible through intuitive keyboard shortcuts.",
+        "href": "https://prom10.vercel.app",
+        "image": "/projects/projects (4).jpg"
     }
 ]
