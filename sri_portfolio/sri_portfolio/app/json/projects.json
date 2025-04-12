@@ -1,10 +1,42 @@
 [
   {
+    "title": "Puter",
+    "description": "Engineered a robust notification management system and made a significant open-source contribution to Puter by implementing advanced notification handling and SQL-based tracking. Improved system performance and user experience for Puter, a free, open-source, self-hostable internet OS with over 30K GitHub stars.",
+    "href": "https://github.com/HeyPuter/puter",
+    "github": "https://github.com/HeyPuter/puter",
+    "image": "/projects/projects (1).jpg",
+    "technologies": ["JavaScript", "SQL", "Node.js", "WebSocket", "Docker"]
+  },
+  {
+    "title": "Mine Alliance",
+    "description": "Led development of a comprehensive platform that reduced environmental assessment response times by 40% by integrating the ChatGPT-4 API for mining site impact assessments. Utilized SQLAlchemy, Flask, AWS EC2, and geospatial mapping with Leaflet. Earned a hackathon win and empowered communities to connect with authorities and mining companies to devise sustainable mining practices.",
+    "href": "https://github.com/LuaanNguyen/Mine-Alliance",
+    "github": "https://github.com/LuaanNguyen/Mine-Alliance",
+    "image": "/projects/projects (2).jpg",
+    "technologies": ["Flask", "ChatGPT-4 API", "SQLAlchemy", "AWS EC2", "Leaflet"]
+  },
+  {
+    "title": "PosturePro",
+    "description": "Engineered a robust system that leverages a user's webcam and utilizes MediaPipe, OpenCV, NumPy, and Matplotlib to analyze sitting posture in real time. Empowers programmers to monitor and improve their posture, mitigating long-term health risks associated with prolonged sedentary work.",
+    "href": "https://github.com/sbeeredd04/VoxelCV",
+    "github": "https://github.com/sbeeredd04/VoxelCV",
+    "image": "/projects/projects (3).jpg",
+    "technologies": ["Python", "MediaPipe", "OpenCV", "NumPy", "Matplotlib"]
+  },
+  {
+    "title": "ClassEase",
+    "description": "Engineered an automated solution using Python and Selenium WebDriver (with ChromeDriver) to monitor ASU class availability, log in, and register for classes at the precise moment seats open. Adopted by 15 users, alleviates the stressful early-morning registration rush ensuring students can rest easy and wake up to successful enrollments even when high demand risks website crashes.",
+    "href": "https://github.com/sbeeredd04/ClassEase",
+    "github": "https://github.com/sbeeredd04/ClassEase",
+    "image": "/projects/projects (4).jpg",
+    "technologies": ["Python", "Selenium", "ChromeDriver", "BeautifulSoup", "Requests"]
+  },
+  {
     "title": "Amano",
     "description": "Emotion-Based Song Recommendation System that provides personalized song suggestions using Reinforcement Learning and Spotify's API.",
     "href": "https://github.com/sbeeredd04/Amano",
     "github": "https://github.com/sbeeredd04/Amano",
-    "image": "/p (2).webp",
+    "image": "/projects/projects (5).jpg",
     "technologies": ["Python", "TensorFlow", "Spotify API", "Scikit-learn", "Flask"]
   },
   {
@@ -12,38 +44,30 @@
     "description": "A web-based tool designed for postdoctoral researchers to automate complex data analysis tasks, significantly increasing research productivity.",
     "href": "https://github.com/sbeeredd04/CSDNA",
     "github": "https://github.com/sbeeredd04/CSDNA",
-    "image": "/p (3).webp",
+    "image": "/projects/projects (6).jpg",
     "technologies": ["Python", "OpenCV", "NumPy", "React", "FastAPI"]
   },
   {
-    "title": "Mine Alliance",
-    "description": "Fullstack platform that integrates ChatGPT-4 for sustainable mining site impact assessments, reducing response times by 40%.",
-    "href": "https://github.com/LuaanNguyen/Mine-Alliance",
-    "github": "https://github.com/LuaanNguyen/Mine-Alliance",
-    "image": "/p (4).webp",
-    "technologies": ["Next.js", "OpenAI API", "TailwindCSS", "PostgreSQL", "Prisma"]
+    "title": "SafeSide",
+    "description": "A personal safety app designed for active shooter emergencies, providing real-time location tracking, monitored updates, and tailored evacuation routes using BLE beacons and Google Maps.",
+    "href": "/SafeSide.pdf",
+    "image": "/projects/projects (7).jpg",
+    "technologies": ["React Native", "Google Maps API", "Firebase", "BLE", "Node.js"]
   },
   {
     "title": "Avisol",
     "description": "An automated air traffic pathfinding system that utilizes algorithm optimization to reduce computation time for managing autonomous vehicles.",
     "href": "https://github.com/sbeeredd04/AviSol",
     "github": "https://github.com/sbeeredd04/AviSol",
-    "image": "/p (1).webp",
+    "image": "/projects/projects (8).jpg",
     "technologies": ["Python", "A* Algorithm", "PyQt", "NumPy", "Matplotlib"]
-  },
-  {
-    "title": "SafeSide",
-    "description": "A personal safety app designed for active shooter emergencies, providing real-time location tracking, monitored updates, and tailored evacuation routes using BLE beacons and Google Maps.",
-    "href": "/SafeSide.pdf",
-    "image": "/p (5).webp",
-    "technologies": ["React Native", "Google Maps API", "Firebase", "BLE", "Node.js"]
   },
   {
     "title": "Heat Wave",
     "description": "A responsive web app designed to help users stay safe during heat waves by providing real-time weather alerts, safety guidelines, nearby hospital locations, and emergency contact options.",
     "href": "https://github.com/Fido27/heat-wave",
     "github": "https://github.com/Fido27/heat-wave",
-    "image": "/p (6).webp",
+    "image": "/projects/projects (8).jpg",
     "technologies": ["React", "Weather API", "TailwindCSS", "Express", "MongoDB"]
   }
 ]
