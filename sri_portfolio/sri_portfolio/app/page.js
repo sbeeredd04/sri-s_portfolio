@@ -49,7 +49,7 @@ import aboutMeContent from "./json/aboutme.json";
 
 
 // Slider duration in milliseconds
-const SLIDE_DURATION = 5000;
+const SLIDE_DURATION = 2000;
 
 function Globe() {
   const canvasRef = useRef(null);  // <-- useRef to reference the canvas element

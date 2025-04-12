@@ -3,6 +3,7 @@ import { cn } from "../lib/utils";
 import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useRef, useEffect, useState} from "react";
 
 
@@ -42,6 +43,7 @@ const FloatingDockMobile = ({ items, className }) => {
     >
       <div className="w-auto rounded-xl bg-neutral-800/60 backdrop-blur-3xl border border-white/10 shadow-lg px-3 py-2">
         <div className={`flex ${open ? 'gap-4' : 'gap-3'} items-center justify-center`}>
+          {/* Icons Section */}
           {items.map((item) => (
             <IconContainerMobile
               key={item.title}
@@ -49,6 +51,16 @@ const FloatingDockMobile = ({ items, className }) => {
               {...item}
             />
           ))}
+          {/* Logo Section */}
+          <div className="w-8 h-8 flex items-center justify-center border-l border-white/10 pl-3 ml-3">
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+          </div>
         </div>
       </div>
 
@@ -117,10 +129,21 @@ const FloatingDockDesktop = ({ items, className }) => {
         className
       )}
     >
-      <div className="flex flex-col items-center justify-center gap-6 bac">
+      <div className="flex flex-col items-center justify-center gap-6">
+        {/* Icons Section */}
         {items.map((item) => (
           <IconContainer mouseX={mouseX} key={item.title} {...item} />
         ))}
+        {/* Logo Section */}
+        <div className="w-12 h-12 flex items-center justify-center border-t border-white/10 pt-4 mt-2">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={36}
+            height={36}
+            className="object-contain"
+          />
+        </div>
       </div>
     </motion.div>
   );
