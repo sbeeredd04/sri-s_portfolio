@@ -397,7 +397,7 @@ export default function Home() {
      </div>
 
       {/* Main Content */}
-      <div className="relative h-screen w-full">
+      <div className="relative h-screen w-full overflow-x-auto scrollbar-none">
 
         {/* Custom Top-Right Navbar - Only visible on mobile */}
         {isMobile && (
@@ -426,6 +426,7 @@ export default function Home() {
         </Link>
       </div>
         )}
+
 
         {/* Top Margin */}
         <div className="h-[10vh] md:h-[7.5vh]" />
