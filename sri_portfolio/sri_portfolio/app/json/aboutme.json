@@ -1,27 +1,27 @@
 [
   {
     "title": "About Me",
-    "description": "Hello! I'm Sri, a passionate technologist from Hyderabad, India, now pursuing my dreams in Arizona, USA. My journey in technology began with a curiosity about how things work and has evolved into a mission to create meaningful impact through innovation.",
+    "description": "Hi, I'm Sri, originally from Hyderabad, India. Here's a little about me:\n\n-   **Curious Explorer:** I love learning new things and exploring the world around me.\n-   **Passionate Tech Enthusiast:** I'm deeply interested in my work, especially when it involves technology.\n-   **Adaptable & Creative:** I adjust well to new situations, enjoy thinking creatively, and bring enthusiasm to every project.\n-   **Problem Solver:** My curiosity and adaptability make me a strong software engineer and help me find solutions.\n-   **Eager Learner:** I pick things up quickly and actively seek challenges that help me grow.\n-   **Team Player:** I believe in the power of working together to achieve great outcomes.",
     "content": "/aboutMe/DSC01381 (1).JPG"
   },
   {
     "title": "What I Do",
-    "description": "I'm currently a Junior pursuing a Bachelor's in Computer Science with a focus on Software Engineering at Arizona State University. My academic journey is complemented by a minor in Entrepreneurship, allowing me to blend technical expertise with business acumen. I maintain a perfect 4.0 GPA while actively engaging in research and development projects.",
+    "description": "I'm currently a Junior pursuing a Bachelor's in `Computer Science` with a focus on *Software Engineering* at Arizona State University. My academic journey is complemented by a minor in Entrepreneurship, allowing me to blend technical expertise with business acumen. I maintain a perfect **4.0 GPA** while actively engaging in research and development projects.",
     "content": "/aboutMe/DSC00409.JPG"
   },
   {
     "title": "What I Like to Do",
-    "description": "I thrive in hackathons and innovation challenges, where I can transform ideas into reality under pressure. I've participated in numerous hackathons, winning several awards for innovative solutions. I enjoy presenting my ideas and believe in the power of collaborative innovation. Whether it's coding marathons or brainstorming sessions, I'm always excited to create something new.",
+    "description": "I thrive in hackathons and innovation challenges, where I can transform ideas into reality under pressure. I've participated in numerous hackathons, winning several awards for innovative solutions. I enjoy presenting my ideas and believe in the power of *collaborative innovation*. Whether it's coding marathons or brainstorming sessions, I'm always excited to create something new.",
     "content": "/aboutMe/DSC00398.JPG"
   },
   {
     "title": "My Ideals",
-    "description": "I firmly believe in the principle that 'innovators innovate, customers validate.' My approach to technology is deeply rooted in creating meaningful impact through practical solutions. I strive to build products that not only solve problems but also enhance people's lives. Every project I undertake is guided by this vision of making a positive difference.",
+    "description": "I firmly believe in the principle that '**innovators innovate, customers validate**.' My approach to technology is deeply rooted in creating meaningful impact through practical solutions. I strive to build products that not only solve problems but also enhance people's lives. Every project I undertake is guided by this vision of making a positive difference.",
     "content": "/aboutMe/DSC01381 (1).JPG"
   },
   {
     "title": "Future Goals",
-    "description": "Looking ahead, I aim to be at the forefront of technological innovation, developing solutions that address real-world challenges. I'm particularly interested in the intersection of AI, software engineering, and entrepreneurship. My goal is to create products that not only push technological boundaries but also create lasting social impact.",
+    "description": "Looking ahead, I aim to be at the forefront of technological innovation, developing solutions that address real-world challenges. I'm particularly interested in the intersection of `AI`, *software engineering*, and **entrepreneurship**. My goal is to create products that not only push technological boundaries but also create lasting social impact.",
     "content": "/aboutMe/IMG_3453.JPG"
   }
 ]
