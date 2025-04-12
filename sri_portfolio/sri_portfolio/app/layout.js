@@ -2,18 +2,60 @@
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Sri's Portfolio",
-  description: "Nice to meet you!",
-  icons: {
-    icon: [
+  title: "Sri Ujjwal Reddy",
+  description: "Software Engineer | ML Engineer | Full Stack Developer",
+  openGraph: {
+    title: 'Sri Ujjwal Reddy',
+    description: 'Software Engineer | ML Engineer | Full Stack Developer',
+    url: 'https://www.sriujjwalreddy.com',
+    siteName: 'Sri Ujjwal Reddy',
+    images: [
       {
-        url: '/logo.png',
-        type: 'image/png',
-      }
-    ]
-  }
+        url: 'https://www.sriujjwalreddy.com/logo.png', // Update this path to your logo
+        width: 1200,
+        height: 1200,
+        alt: 'Sri Ujjwal Reddy Logo',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  icons: {
+    icon: '/logo.png', // Your favicon
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+    other: {
+      rel: 'apple-touch-icon',
+      url: '/logo.png',
+    },
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sri Ujjwal Reddy',
+    description: 'Software Engineer | ML Engineer | Full Stack Developer',
+    images: ['https://www.sriujjwalreddy.com/logo.png'], // Update this path
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -26,7 +68,7 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet" />
         <link rel="icon" type="image/png" href="/logo.png" />
       </head>
-      <body>
+      <body className={inter.className}>
         {children}
         <Analytics />
         <SpeedInsights />
