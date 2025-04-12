@@ -656,13 +656,13 @@ export default function Home() {
                           className="h-full relative"
                         >
                           <div className="absolute inset-0 w-full h-full flex items-center justify-center">
-                            <div className="w-full max-w-[90%]">
+                            <div className="w-full h-full">
                               <StickyScroll content={aboutMeContent} />
                             </div>
                           </div>
                           
                           {/* Resume Buttons */}
-                          <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 md:gap-4 px-4 z-50">
+                          <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 md:gap-4 px-4 z-50">
                             <Link href="/my_resume.pdf" download>
                               <button className="px-3 md:px-6 py-2 md:py-3 text-sm md:text-base bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
                                 Download Resume
@@ -1081,7 +1081,7 @@ export default function Home() {
         <div className="h-[1vh] md:h-[5vh]" />
 
         {/* Bottom Tabs Container - Floating */}
-        <div className="h-[5vh] mx-6">
+        <div className="h-[7.5vh] mx-6">
           <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center justify-between px-4 md:px-6">
             {/* Dynamic Tabs based on active section */}
             <div className="flex items-center gap-2 md:gap-4 overflow-x-auto scrollbar-none">
