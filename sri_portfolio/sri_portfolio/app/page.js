@@ -74,13 +74,55 @@ export default function Home() {
 
   // Navigation Items for the Floating Dock
   const items = [
-    { title: "Home", icon: <IconHome />, onClick: () => navigateToSection("home"), href: "#" },
-    { title: "About Me", icon: <IconUser />, onClick: () => navigateToSection("about"), href: "#" },
-    { title: "Experience", icon: <IconBriefcase />, onClick: () => navigateToSection("experience"), href: "#" },
-    { title: "Projects", icon: <IconBulb />, onClick: () => navigateToSection("projects"), href: "#" },
-    { title: "Skills", icon: <IconTools />, onClick: () => navigateToSection("skills"), href: "#" },
-    { title: "Blog", icon: <IconBook />, onClick: () => navigateToSection("blog"), href: "#" },
-    { title: "Contact", icon: <IconMail />, onClick: () => navigateToSection("contact"), href: "#" },
+    { 
+      title: "Home", 
+      icon: <IconHome />, 
+      onClick: () => navigateToSection("home"), 
+      href: "#",
+      isActive: activeSection === "home"
+    },
+    { 
+      title: "About Me", 
+      icon: <IconUser />, 
+      onClick: () => navigateToSection("about"), 
+      href: "#",
+      isActive: activeSection === "about"
+    },
+    { 
+      title: "Experience", 
+      icon: <IconBriefcase />, 
+      onClick: () => navigateToSection("experience"), 
+      href: "#",
+      isActive: activeSection === "experience"
+    },
+    { 
+      title: "Projects", 
+      icon: <IconBulb />, 
+      onClick: () => navigateToSection("projects"), 
+      href: "#",
+      isActive: activeSection === "projects"
+    },
+    { 
+      title: "Skills", 
+      icon: <IconTools />, 
+      onClick: () => navigateToSection("skills"), 
+      href: "#",
+      isActive: activeSection === "skills"
+    },
+    { 
+      title: "Blog", 
+      icon: <IconBook />, 
+      onClick: () => navigateToSection("blog"), 
+      href: "#",
+      isActive: activeSection === "blog"
+    },
+    { 
+      title: "Contact", 
+      icon: <IconMail />, 
+      onClick: () => navigateToSection("contact"), 
+      href: "#",
+      isActive: activeSection === "contact"
+    },
   ];
 
 

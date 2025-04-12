@@ -30,7 +30,6 @@ export const FloatingDock = ({ items, desktopClassName, mobileClassName }) => {
 // Mobile FloatingDock with icon enlargement on hover
 const FloatingDockMobile = ({ items, className }) => {
   const [open, setOpen] = useState(false);
-  let mouseX = useMotionValue(Infinity);
 
   return (
     <div
@@ -38,8 +37,6 @@ const FloatingDockMobile = ({ items, className }) => {
         "fixed bottom-3 left-0 right-0 z-50 flex justify-center z-[900]",
         className
       )}
-      onMouseMove={(e) => mouseX.set(e.pageX)}
-      onMouseLeave={() => mouseX.set(Infinity)}
     >
       <div className="w-auto rounded-xl bg-neutral-800/60 backdrop-blur-3xl border border-white/10 shadow-lg px-3 py-2">
         <div className={`flex ${open ? 'gap-4' : 'gap-3'} items-center justify-center`}>
@@ -47,7 +44,6 @@ const FloatingDockMobile = ({ items, className }) => {
           {items.map((item) => (
             <IconContainerMobile
               key={item.title}
-              mouseX={mouseX}
               {...item}
             />
           ))}
@@ -76,42 +72,20 @@ const FloatingDockMobile = ({ items, className }) => {
 };
 
 // Mobile-specific IconContainer with enlarging animation based on horizontal mouse movement
-const IconContainerMobile = ({ mouseX, title, icon, onClick }) => {
-  const ref = useRef(null);
-
-  const distance = useTransform(mouseX, (val) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-    return val - bounds.x - bounds.width / 2;
-  });
-
-  const widthTransform = useTransform(distance, [-150, 0, 150], [32, 64, 32]);
-  const heightTransform = useTransform(distance, [-150, 0, 150], [32, 64, 32]);
-
-  const widthIcon = useSpring(widthTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-  const heightIcon = useSpring(heightTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-
+const IconContainerMobile = ({ title, icon, onClick, isActive }) => {
   return (
-    <motion.div
-      ref={ref}
-      style={{ width: widthIcon, height: heightIcon }}
+    <div
       onClick={onClick}
-      className="aspect-square flex items-center justify-center relative cursor-pointer"
+      className="aspect-square w-8 h-8 flex items-center justify-center relative cursor-pointer"
     >
-      <motion.div
-        className="flex items-center justify-center text-white"
-        style={{ width: widthIcon, height: heightIcon }}
+      <div
+        className={`flex items-center justify-center ${isActive ? 'text-blue-500' : 'text-white'}`}
       >
-        {React.cloneElement(icon, { className: "h-5 w-5 stroke-[1.5]" })}
-      </motion.div>
-    </motion.div>
+        {React.cloneElement(icon, { 
+          className: `${isActive ? 'h-7 w-7' : 'h-5 w-5'} ${isActive ? 'stroke-[3]' : 'stroke-[1.5]'}`
+        })}
+      </div>
+    </div>
   );
 };
 
@@ -159,6 +133,7 @@ function IconContainer({
   icon,
   href,
   onClick,
+  isActive
 }) {
   let ref = useRef(null);
 
@@ -220,9 +195,11 @@ function IconContainer({
       </AnimatePresence>
       <motion.div
         style={{ width: widthIcon, height: heightIcon }}
-        className="flex items-center justify-center text-white"
+        className={`flex items-center justify-center ${isActive ? 'text-blue-500' : 'text-white'}`}
       >
-        {React.cloneElement(icon, { className: "h-5 w-5 stroke-[1.5]" })}
+        {React.cloneElement(icon, { 
+          className: `${isActive ? 'h-7 w-7' : 'h-5 w-5'} ${isActive ? 'stroke-[3]' : 'stroke-[1.5]'}`
+        })}
       </motion.div>
     </motion.div>
   );
