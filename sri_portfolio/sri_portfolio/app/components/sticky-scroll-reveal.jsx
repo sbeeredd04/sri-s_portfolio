@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { motion } from "motion/react";
 import Image from "next/image";
@@ -12,7 +12,20 @@ export const StickyScroll = ({
   contentClassName
 }) => {
   const [activeCard, setActiveCard] = React.useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const ref = useRef(null);
+  
+  // Check for mobile view
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     container: ref,
     offset: ["start start", "end start"],
@@ -31,47 +44,50 @@ export const StickyScroll = ({
     setActiveCard(closestBreakpointIndex);
   });
 
-  // Custom components for ReactMarkdown
+  // Custom components for ReactMarkdown with mobile-responsive classes
   const components = {
-    // Style paragraphs
     p: ({ children }) => (
-      <p className="text-slate-300 mb-4">{children}</p>
+      <p className="text-slate-300 mb-4 text-sm md:text-base">{children}</p>
     ),
-    // Style lists
     ul: ({ children }) => (
-      <ul className="space-y-3 mt-4">{children}</ul>
+      <ul className="space-y-2 md:space-y-3 mt-3 md:mt-4">{children}</ul>
     ),
-    // Style list items
     li: ({ children }) => (
       <li className="flex items-start">
-        <span className="text-emerald-400 mr-3">•</span>
-        <span>{children}</span>
+        <span className="text-emerald-400 mr-2 md:mr-3 text-sm md:text-base">•</span>
+        <span className="text-sm md:text-base">{children}</span>
       </li>
     ),
-    // Style bold text
     strong: ({ children }) => (
-      <strong className="text-slate-100 font-semibold">{children}</strong>
+      <strong className="text-slate-100 font-semibold text-sm md:text-base">{children}</strong>
     ),
-    // Style italic text
     em: ({ children }) => (
-      <em className="text-slate-200 italic">{children}</em>
+      <em className="text-slate-200 italic text-sm md:text-base">{children}</em>
     ),
-    // Style inline code blocks
     code: ({ children }) => (
-      <code className="bg-slate-800/50 text-cyan-400 px-1.5 py-0.5 rounded font-mono text-sm">{children}</code>
+      <code className="bg-slate-800/50 text-cyan-400 px-1 md:px-1.5 py-0.5 rounded font-mono text-xs md:text-sm">{children}</code>
     ),
   };
 
   return (
-    <div className="h-full w-full flex pb-20">
+    <div className={cn(
+      "h-full w-full flex pb-20",
+      isMobile ? "block" : "flex"
+    )}>
       {/* Scrollable Text Content */}
       <div
         ref={ref}
-        className="w-1/2 h-full overflow-y-auto scrollbar-none px-6 py-4 relative"
+        className={cn(
+          "h-full overflow-y-auto scrollbar-none relative",
+          isMobile ? "w-full px-4 py-2" : "w-1/2 px-6 py-4"
+        )}
       >
         {/* Scroll Indicator */}
         <motion.div 
-          className="absolute left-1/2 -translate-x-1/2 top-8 flex flex-col items-center gap-2 text-slate-400"
+          className={cn(
+            "absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-400",
+            isMobile ? "top-4" : "top-8"
+          )}
           animate={{
             y: [0, 10, 0],
             opacity: [1, 0.5, 1],
@@ -82,24 +98,32 @@ export const StickyScroll = ({
             ease: "easeInOut",
           }}
         >
-          <span className="text-sm font-medium">Scroll to learn more</span>
-          <IconChevronDown className="w-6 h-6" />
+          <span className="text-xs md:text-sm font-medium">Scroll to learn more</span>
+          <IconChevronDown className="w-4 h-4 md:w-6 md:h-6" />
         </motion.div>
 
         {/* Content */}
         {content.map((item, index) => (
-          <div key={item.title + index} className="my-64">
+          <div 
+            key={item.title + index} 
+            className={cn(
+              isMobile ? "my-32" : "my-64"
+            )}
+          >
             <motion.h2
               initial={{ opacity: 0 }}
               animate={{ opacity: activeCard === index ? 1 : 0.3 }}
-              className="text-xl md:text-4xl font-bold text-slate-100 mb-6"
+              className={cn(
+                "font-bold text-slate-100 mb-4 md:mb-6",
+                isMobile ? "text-lg" : "text-xl md:text-4xl"
+              )}
             >
               {item.title}
             </motion.h2>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: activeCard === index ? 1 : 0.3 }}
-              className="text-base md:text-md"
+              className="text-sm md:text-md"
             >
               <ReactMarkdown components={components}>
                 {item.description}
@@ -109,25 +133,27 @@ export const StickyScroll = ({
         ))}
       </div>
 
-      {/* Fixed Image Content */}
-      <div className="w-1/2 h-full relative">
-        <div className="absolute inset-0 flex items-center justify-center p-8">
-          <div className={cn(
-            "w-full h-full relative rounded-3xl overflow-hidden",
-            contentClassName
-          )}>
-            {content[activeCard].content && (
-              <Image
-                src={content[activeCard].content}
-                alt={content[activeCard].title}
-                fill
-                className="object-contain"
-                priority
-              />
-            )}
+      {/* Fixed Image Content - Hidden on Mobile */}
+      {!isMobile && (
+        <div className="w-1/2 h-full relative">
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className={cn(
+              "w-full h-full relative rounded-3xl overflow-hidden",
+              contentClassName
+            )}>
+              {content[activeCard].content && (
+                <Image
+                  src={content[activeCard].content}
+                  alt={content[activeCard].title}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
