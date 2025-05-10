@@ -12,6 +12,7 @@ import {
   IconVolumeOff,
   IconRepeat,
   IconRepeatOnce,
+  IconRepeatOff,
   IconArrowsShuffle,
   IconArrowsRight,
   IconX
@@ -57,12 +58,18 @@ export const SpotifyPlayer = () => {
   };
 
   const getRepeatIcon = () => {
+    if (repeatMode === 0) return <IconRepeatOff stroke={1.5} />;
     if (repeatMode === 1) return <IconRepeat stroke={1.5} />;
     if (repeatMode === 2) return <IconRepeatOnce stroke={1.5} />;
-    return <IconRepeat stroke={1.5} />;
+    return <IconRepeatOff stroke={1.5} />;
   };
 
-  const getRepeatClass = () => (repeatMode === 0 ? "text-neutral-500" : "text-green-500");
+  const getRepeatClass = () => {
+    if (repeatMode === 0) return "text-neutral-500 hover:text-white";
+    if (repeatMode === 1) return "text-green-500";
+    if (repeatMode === 2) return "text-green-500";
+    return "text-neutral-500 hover:text-white";
+  };
 
   return (
     <AnimatePresence>
@@ -100,19 +107,33 @@ export const SpotifyPlayer = () => {
           {/* Controls & Progress */}
           <div className="flex-1 flex flex-col items-center w-full">
             <div className="flex items-center justify-center gap-4">
-              <button onClick={toggleShuffle} className={`p-2 rounded-full transition-colors ${isShuffle ? 'text-green-500' : 'text-neutral-500 hover:text-white'}`}>
+              <button 
+                onClick={toggleShuffle} 
+                className={`p-2 rounded-full transition-colors ${
+                  isShuffle ? 'text-green-500' : 'text-neutral-500 hover:text-white'
+                }`}
+                title={isShuffle ? "Shuffle On" : "Shuffle Off"}
+              >
                 {isShuffle ? <IconArrowsShuffle stroke={1.5} /> : <IconArrowsRight stroke={1.5} />}
               </button>
-              <button onClick={prevSong} className="p-2 text-neutral-300 hover:text-white">
+              <button onClick={prevSong} className="p-2 text-neutral-300 hover:text-white" title="Previous">
                 <IconPlayerTrackPrevFilled size={24} />
               </button>
-              <button onClick={togglePlay} className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-white hover:scale-105 transition-transform">
+              <button onClick={togglePlay} className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-white hover:scale-105 transition-transform" title={isPlaying ? "Pause" : "Play"}>
                 {isPlaying ? <IconPlayerPauseFilled size={28} className="text-black" /> : <IconPlayerPlayFilled size={28} className="text-black" />}
               </button>
-              <button onClick={nextSong} className="p-2 text-neutral-300 hover:text-white">
+              <button onClick={nextSong} className="p-2 text-neutral-300 hover:text-white" title="Next">
                 <IconPlayerTrackNextFilled size={24} />
               </button>
-              <button onClick={toggleRepeat} className={`p-2 rounded-full transition-colors ${getRepeatClass()}`}>
+              <button 
+                onClick={toggleRepeat} 
+                className={`p-2 rounded-full transition-colors ${getRepeatClass()}`}
+                title={
+                  repeatMode === 0 ? "Repeat Off" : 
+                  repeatMode === 1 ? "Repeat All" : 
+                  "Repeat One"
+                }
+              >
                 {getRepeatIcon()}
               </button>
             </div>
@@ -135,7 +156,7 @@ export const SpotifyPlayer = () => {
 
           {/* Volume */}
           <div className="flex items-center gap-2 mt-3 sm:mt-0 sm:ml-auto">
-            <button onClick={() => changeVolume(volume === 0 ? 1 : 0)} className="p-2 text-neutral-400 hover:text-white rounded-full transition-colors">
+            <button onClick={() => changeVolume(volume === 0 ? 1 : 0)} className="p-2 text-neutral-400 hover:text-white rounded-full transition-colors" title={volume === 0 ? "Unmute" : "Mute"}>
               {getVolumeIcon()}
             </button>
             <input

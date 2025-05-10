@@ -736,12 +736,12 @@ export default function Home() {
                 {isSoundEnabled ? (
                   <>
                     <IconVolume size={18} stroke={2.5} className="md:hidden" />
-                    <IconVolume size={24} stroke={3} className="hidden md:block" />
+                    <IconVolume size={28} stroke={1.75} className="hidden md:block" />
                   </>
                 ) : (
                   <>
                     <IconVolumeOff size={18} stroke={2.5} className="md:hidden" />
-                    <IconVolumeOff size={24} stroke={3} className="hidden md:block" />
+                    <IconVolumeOff size={28} stroke={1.75} className="hidden md:block" />
                   </>
                 )}
               </button>
