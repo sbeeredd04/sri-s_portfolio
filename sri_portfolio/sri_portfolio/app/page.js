@@ -757,7 +757,7 @@ export default function Home() {
                 className="flex items-center gap-1 px-2 py-1 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10 md:gap-2 md:px-3 md:py-1.5"
               >
                 <IconPalette size={18} stroke={2.5} className="md:hidden" />
-                <IconPalette size={24} stroke={3} className="hidden md:block" />
+                <IconPalette size={28} stroke={1.75} className="hidden md:block" />
                 <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
               </button>
             </div>
