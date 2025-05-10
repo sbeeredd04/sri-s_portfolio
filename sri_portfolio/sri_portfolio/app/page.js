@@ -72,6 +72,8 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  //one setting setShow
+
   // Navigation Items for the Floating Dock
   const items = [
     { 
@@ -447,22 +449,22 @@ export default function Home() {
             className="fixed top-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 bg-black bg-opacity-60 rounded-2xl shadow-lg z-[1000] py-2 px-4"
       >
         <Link href="https://github.com/sbeeredd04" target="_blank">
-              <IconBrandGithub className="text-white hover:text-gray-400 mx-1" size={24} />
+              <IconBrandGithub className="text-white hover:text-gray-400 mx-1" size={20} />
         </Link>
             <Link href="https://www.instagram.com/sriujjwalreddy/" target="_blank">
-              <IconBrandInstagram className="text-pink-500 hover:text-pink-400 mx-1" size={24} />
+              <IconBrandInstagram className="text-pink-500 hover:text-pink-400 mx-1" size={20} />
         </Link>
         <Link href="https://www.linkedin.com/in/sriujjwal/" target="_blank">
-              <IconBrandLinkedin className="text-blue-700 hover:text-blue-500 mx-1" size={24} />
+              <IconBrandLinkedin className="text-blue-700 hover:text-blue-500 mx-1" size={20} />
         </Link>
         <Link href="mailto:srisubspace@gmail.com" target="_blank">
-          <IconMail className="text-red-500 hover:text-red-400 mx-1" size={24} />
+          <IconMail className="text-red-500 hover:text-red-400 mx-1" size={20} />
         </Link>
         <Link href="https://open.spotify.com/user/31qr3j45nvoqp4lfh6vuabmlwguq?si=2c62fb75bef644f6" target="_blank">
-              <IconBrandSpotify className="text-green-500 hover:text-green-400 mx-1" size={24} />
+              <IconBrandSpotify className="text-green-500 hover:text-green-400 mx-1" size={20} />
         </Link>
         <Link href="/my_resume.pdf" download>
-              <button className="px-4 py-2 border border-white/40 text-white font-semibold rounded-md shadow-md hover:border-emerald-500 hover:text-emerald-500 transition-all mx-1 bg-transparent">
+              <button className="px-3 py-1.5 text-xs border border-white/40 text-white font-semibold rounded-md shadow-md hover:border-emerald-500 hover:text-emerald-500 transition-all mx-1 bg-transparent">
             Resume
           </button>
         </Link>
@@ -537,20 +539,20 @@ export default function Home() {
                 </div>
               </div>
               <button className="text-neutral-400 hover:text-white transition-colors">
-                <IconShare size={20} stroke={3} className="md:hidden" />
+                <IconShare size={18} stroke={2.5} className="md:hidden" />
                 <IconShare size={24} stroke={3} className="hidden md:block" />
               </button>
               <button className="text-neutral-400 hover:text-white transition-colors">
-                <IconCopy size={20} stroke={3} className="md:hidden" />
+                <IconCopy size={18} stroke={2.5} className="md:hidden" />
                 <IconCopy size={24} stroke={3} className="hidden md:block" />
               </button>
               <button
                 onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
-                className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10"
+                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10 md:gap-2 md:px-3 md:py-1.5"
               >
-                <IconPalette size={20} stroke={3} className="md:hidden" />
+                <IconPalette size={18} stroke={2.5} className="md:hidden" />
                 <IconPalette size={24} stroke={3} className="hidden md:block" />
-                <span className="text-xs md:text-sm font-medium hidden md:inline">Theme</span>
+                <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
               </button>
             </div>
           </div>
@@ -587,7 +589,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="h-full overflow-y-auto overflow-x-hidden px-6 py-6 scrollbar-none"
+                className="h-full overflow-y-auto overflow-x-hidden px-4 py-4 md:px-6 md:py-6 scrollbar-none"
               >
         {/* Home Section */}
                 {activeSection === "home" && (
@@ -610,11 +612,11 @@ export default function Home() {
                     }}
                   >
                               <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-md flex flex-col items-center justify-center text-white text-center p-4 md:p-8">
-                      <h2 className="text-4xl md:text-5xl font-bold mb-4">{slide.title}</h2>
-                      <p className="text-md md:text-lg mb-4">{slide.description}</p>
+                      <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-2 sm:mb-4">{slide.title}</h2>
+                      <p className="text-sm sm:text-base md:text-lg mb-3 sm:mb-4">{slide.description}</p>
                                 <button 
                                   onClick={() => navigateToSection(slide.section)}
-                                  className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all"
+                                  className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all md:px-6 md:py-3"
                                 >
                         Learn More
                                 </button>
@@ -626,15 +628,15 @@ export default function Home() {
 
                       <button 
                         onClick={prevSlide} 
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
+                        className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
                       >
-                        <IconArrowLeft className="w-6 h-6" />
+                        <IconArrowLeft className="w-4 h-4 sm:w-6 sm:h-6" />
             </button>
                       <button 
                         onClick={nextSlide} 
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
+                        className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
                       >
-                        <IconArrowRight className="w-6 h-6" />
+                        <IconArrowRight className="w-4 h-4 sm:w-6 sm:h-6" />
             </button>
           </div>
         </section>
@@ -659,14 +661,14 @@ export default function Home() {
                           </div>
                           
                           {/* Resume Buttons */}
-                          <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 md:gap-4 px-4 z-50">
+                          <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 md:gap-4 px-4 z-50 pb-2">
                             <Link href="/my_resume.pdf" download>
-                              <button className="px-3 md:px-6 py-2 md:py-3 text-sm md:text-base bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+                              <button className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all md:px-6 md:py-3 md:text-base">
                                 Download Resume
                               </button>
                             </Link>
                             <button
-                              className="px-3 md:px-6 py-2 md:py-3 text-sm md:text-base bg-neutral-800/50 backdrop-blur-sm border-2 border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-all"
+                              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-neutral-800/50 backdrop-blur-sm border-2 border-white/20 text-white hover:bg-white/5 transition-all md:px-6 md:py-3 md:text-base"
                               onClick={() => setShowResumePreview(true)}
                             >
                               View Resume
@@ -682,64 +684,64 @@ export default function Home() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="flex flex-col gap-4 md:gap-8 p-4 md:p-8 h-full w-full"
+                          className="flex flex-col gap-4 md:gap-8 p-3 md:p-8 h-full w-full"
                         >
                           {/* Top Section - Education Details */}
-                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-white/10">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-3 md:p-8 border border-white/10">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
                               {/* Logo and Title */}
-                              <div className="flex items-center gap-4 md:gap-6 md:col-span-3">
+                              <div className="flex items-center gap-3 md:gap-6 md:col-span-3">
                                 <img 
                                   src="/asulogo.png" 
                                   alt="ASU Logo" 
-                                  className="w-12 h-12 md:w-16 md:h-16 object-contain"
+                                  className="w-10 h-10 md:w-16 md:h-16 object-contain"
                                 />
                                 <div>
-                                  <h2 className="text-2xl md:text-4xl font-bold text-white">Education</h2>
-                                  <p className="text-base md:text-lg text-emerald-400">2022 - 2026</p>
+                                  <h2 className="text-xl md:text-4xl font-bold text-white">Education</h2>
+                                  <p className="text-sm md:text-lg text-emerald-400">2022 - 2026</p>
                                 </div>
                               </div>
 
                               {/* University Info */}
                               <div className="md:col-span-1">
-                                <h3 className="text-xl md:text-2xl font-semibold text-cyan-400">Arizona State University</h3>
-                                <p className="text-base md:text-lg text-white/80 mt-2">Bachelor of Science in Computer Science</p>
-                                <p className="text-sm md:text-md text-white/60">Software Engineering Track</p>
-                                <div className="mt-4 px-3 md:px-4 py-2 bg-emerald-500/20 rounded-lg border border-emerald-500/30">
+                                <h3 className="text-base font-semibold text-cyan-400 md:text-2xl">Arizona State University</h3>
+                                <p className="text-sm text-white/80 mt-1 md:text-lg md:mt-2">Bachelor of Science in Computer Science</p>
+                                <p className="text-xs text-white/60 md:text-md">Software Engineering Track</p>
+                                <div className="mt-2 px-2 py-1 bg-emerald-500/20 rounded-lg border border-emerald-500/30 md:mt-4 md:px-4 md:py-2">
                                   <div className="flex items-center justify-between">
-                                    <span className="text-sm md:text-base text-white/80">GPA</span>
-                                    <span className="text-xl md:text-2xl font-bold text-emerald-400">4.0/4.0</span>
+                                    <span className="text-xs text-white/80 md:text-base">GPA</span>
+                                    <span className="text-lg font-bold text-emerald-400 md:text-2xl">4.0/4.0</span>
                                   </div>
                                 </div>
                               </div>
 
                               {/* Academic Achievements */}
                               <div className="md:col-span-1 md:ml-8">
-                                <h4 className="text-lg md:text-xl font-semibold text-white/90 mt-4 md:mt-0">Academic Achievements</h4>
-                                <div className="mt-2 space-y-2 md:space-y-3">
-                                  <p className="text-sm md:text-md text-white/80">• Dean's List (All Semesters)</p>
-                                  <p className="text-sm md:text-md text-white/80">• New American University Scholar</p>
-                                  <p className="text-sm md:text-md text-white/80">• Minor in Entrepreneurship</p>
+                                <h4 className="text-sm font-semibold text-white/90 mt-2 md:text-xl md:mt-0">Academic Achievements</h4>
+                                <div className="mt-1 space-y-1 md:space-y-3 md:mt-2">
+                                  <p className="text-xs text-white/80 md:text-md">• Dean's List (All Semesters)</p>
+                                  <p className="text-xs text-white/80 md:text-md">• New American University Scholar</p>
+                                  <p className="text-xs text-white/80 md:text-md">• Minor in Entrepreneurship</p>
                                 </div>
                               </div>
 
                               {/* Location */}
                               <div className="md:col-span-1">
-                                <h4 className="text-lg md:text-xl font-semibold text-white/90 mt-4 md:mt-0">Location</h4>
-                                <p className="text-sm md:text-md text-white/60 mt-2">Tempe, Arizona</p>
-                                <p className="text-sm md:text-md text-white/60">United States</p>
+                                <h4 className="text-sm font-semibold text-white/90 mt-2 md:text-xl md:mt-0">Location</h4>
+                                <p className="text-xs text-white/60 mt-1 md:text-md md:mt-2">Tempe, Arizona</p>
+                                <p className="text-xs text-white/60 md:text-md">United States</p>
                               </div>
                             </div>
                           </div>
 
                           {/* Bottom Section - Coursework Grid */}
-                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-white/10">
-                            <h3 className="text-xl md:text-2xl font-semibold text-cyan-400 mb-4 md:mb-6">Key Coursework</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-h-[calc(100vh-400px)] overflow-y-auto pr-2 md:pr-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-3 md:p-8 border border-white/10">
+                            <h3 className="text-base font-semibold text-cyan-400 mb-3 md:text-2xl md:mb-6">Key Coursework</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 max-h-[40vh] md:max-h-[calc(100vh-450px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                               {/* CS Core */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Computer Science Core</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Computer Science Core</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• Data Structures and Algorithms</li>
                                   <li>• Operating Systems</li>
                                   <li>• Computer Organization & Assembly</li>
@@ -752,9 +754,9 @@ export default function Home() {
                               </div>
 
                               {/* Software Engineering Track */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Software Engineering Track</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Software Engineering Track</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• Software Analysis and Design</li>
                                   <li>• Software QA and Testing</li>
                                   <li>• Distributed Software Development</li>
@@ -763,9 +765,9 @@ export default function Home() {
                               </div>
 
                               {/* Mathematics & Theory */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Mathematics & Theory</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Mathematics & Theory</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• Discrete Mathematics</li>
                                   <li>• Calculus for Engineers I, II, III</li>
                                   <li>• Applied Linear Algebra</li>
@@ -774,9 +776,9 @@ export default function Home() {
                               </div>
 
                               {/* Entrepreneurship Minor */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Entrepreneurship Minor</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Entrepreneurship Minor</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• Principles of Entrepreneurship</li>
                                   <li>• Creativity and Innovation</li>
                                   <li>• Entrepreneurship & Value Creation</li>
@@ -784,9 +786,9 @@ export default function Home() {
                               </div>
 
                               {/* Projects & Practice */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Projects & Practice</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Projects & Practice</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• EPICS Gold Program</li>
                                   <li>• Computer Science Capstone</li>
                                   <li>• Grand Challenge Scholars Program</li>
@@ -804,9 +806,9 @@ export default function Home() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="flex items-center justify-center p-8 h-full"
+                          className="flex items-center justify-center p-4 md:p-8 h-full"
                         >
-                          <div className="text-2xl text-white/60">Hobbies content coming soon...</div>
+                          <div className="text-lg text-white/60 md:text-2xl">Hobbies content coming soon...</div>
                         </motion.div>
                       )}
 
@@ -817,9 +819,9 @@ export default function Home() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="flex items-center justify-center p-8 h-full"
+                          className="flex items-center justify-center p-4 md:p-8 h-full"
                         >
-                          <div className="text-2xl text-white/60">Side Quests content coming soon...</div>
+                          <div className="text-lg text-white/60 md:text-2xl">Side Quests content coming soon...</div>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -886,11 +888,11 @@ export default function Home() {
                 )}
 
                 {activeSection === "projects" && (
-                  <section className="w-full h-full p-8">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white/90 mb-8">
+                  <section className="w-full h-full p-4 md:p-8">
+                    <h2 className="text-xl font-bold text-white/90 mb-4 md:text-4xl md:mb-8">
                       {activeTab === "all" ? "Featured Projects" : "Deployed Projects"}
                     </h2>
-                    <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto scrollbar-none">
+                    <div className="w-full h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] overflow-y-auto scrollbar-none">
                       <AnimatePresence mode="wait">
                         <motion.div 
                           key={activeTab}
@@ -898,7 +900,7 @@ export default function Home() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.3 }}
-                          className="grid grid-cols-1 md:grid-cols-2 gap-16 pb-8"
+                          className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16 pb-8"
                         >
                           {activeTab === "all" ? (
                             projects.map((project, index) => (
@@ -953,9 +955,9 @@ export default function Home() {
 
                 {activeSection === "skills" && (
                   <section className="w-full h-full flex flex-col items-center justify-center">
-                    <div className="w-full max-w-7xl mx-auto px-4">
-                      <h2 className="text-3xl md:text-4xl font-bold text-white/90 mb-8 text-center">Technical Skills</h2>
-                      <div className="w-full overflow-y-auto max-h-[calc(100vh-16rem)] rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 p-6">
+                    <div className="w-full max-w-7xl mx-auto px-2 md:px-4">
+                      <h2 className="text-xl font-bold text-white/90 mb-4 text-center md:text-4xl md:mb-8">Technical Skills</h2>
+                      <div className="w-full overflow-y-auto max-h-[calc(100vh-12rem)] md:max-h-[calc(100vh-16rem)] rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 p-3 md:p-6">
                         <div className="w-full relative">
                           <InfiniteMovingCards
                             sections={skillsSections}
@@ -973,7 +975,7 @@ export default function Home() {
                 {activeSection === "blog" && (
                   <section className="w-full h-full">
                     <div className="flex-1 w-full overflow-hidden">
-                      <div className="w-full h-full relative px-4">
+                      <div className="w-full h-full relative px-2 md:px-4">
             <ExCarousel
               items={blogPosts.map((post, index) => (
                 <Card
@@ -997,24 +999,24 @@ export default function Home() {
 
                 {activeSection === "contact" && (
                   <section className="w-full h-full">
-                    <div className="w-full bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-8">
-                      <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">Contact Me</h2>
+                    <div className="w-full bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-4 md:p-8">
+                      <h2 className="text-xl font-bold text-center mb-4 md:text-4xl md:mb-6">Contact Me</h2>
             <div className="mt-4 md:mt-8 text-center">
-              <p className="text-md md:text-lg mb-6">Feel free to reach out for collaborations or inquiries.</p>
-              <form onSubmit={handleSubmit} className="mt-6 space-y-4 max-w-2xl mx-auto">
+              <p className="text-sm mb-4 md:text-lg md:mb-6">Feel free to reach out for collaborations or inquiries.</p>
+              <form onSubmit={handleSubmit} className="mt-4 space-y-3 max-w-2xl mx-auto md:mt-6 md:space-y-4">
                 <input 
                   type="text" 
                   name="from_name"
                   placeholder="Your Name" 
                   required
-                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                  className="w-full p-2.5 text-sm bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all md:p-4" 
                 />
                 <input 
                   type="email" 
                   name="from_email"
                   placeholder="Your Email" 
                   required
-                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                  className="w-full p-2.5 text-sm bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all md:p-4" 
                 />
                 <input 
                   type="hidden" 
@@ -1025,23 +1027,23 @@ export default function Home() {
                   name="message"
                   placeholder="Your Message" 
                   required
-                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-32 md:h-40"
+                  className="w-full p-2.5 text-sm bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-28 md:h-40 md:p-4"
                 ></textarea>
                 <button 
                   type="submit" 
-                  className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 md:px-6 md:py-3"
                 >
                   Send Message
                 </button>
               </form>
-              <div className="mt-6 flex flex-col items-center justify-center space-y-4">
-                <div className="text-sm text-gray-500">or connect with me on</div>
-                <div className="flex space-x-4">
+              <div className="mt-4 flex flex-col items-center justify-center space-y-2 md:mt-6 md:space-y-4">
+                <div className="text-xs text-gray-500 md:text-sm">or connect with me on</div>
+                <div className="flex space-x-3 md:space-x-4">
                   <a 
                     href="https://www.linkedin.com/in/sriujjwal/" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 hover:text-blue-600"
+                    className="text-blue-500 hover:text-blue-600 text-xs md:text-sm"
                   >
                     LinkedIn
                   </a>
@@ -1050,13 +1052,13 @@ export default function Home() {
                     href="https://github.com/sbeeredd04" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-500 hover:text-gray-400"
+                    className="text-gray-500 hover:text-gray-400 text-xs md:text-sm"
                   >
                     GitHub
                   </a>
                 </div>
               </div>
-              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 md:mt-4 md:text-sm">
                 Or email me directly at{' '}
                 <a 
                   href="mailto:srisubspace@gmail.com?subject=WEBSITE CONTACT" 
@@ -1078,15 +1080,15 @@ export default function Home() {
         <div className="h-[1vh] md:h-[5vh]" />
 
         {/* Bottom Tabs Container - Floating */}
-        <div className="h-[7.5vh] mx-6">
-          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center justify-between px-4 md:px-6">
+        <div className="h-[5vh] mx-6 md:h-[7.5vh]">
+          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center justify-between px-2 md:px-6">
             {/* Dynamic Tabs based on active section */}
-            <div className="flex items-center gap-2 md:gap-4 overflow-x-auto scrollbar-none">
+            <div className="flex items-center gap-1 md:gap-4 overflow-x-auto scrollbar-none">
               {activeSection === "about" && (
                 <>
                   <button
                     onClick={() => setActiveTab("profile")}
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "profile"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1096,7 +1098,7 @@ export default function Home() {
                   </button>
                   <button
                     onClick={() => setActiveTab("education")}
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "education"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1106,7 +1108,7 @@ export default function Home() {
                   </button>
                   <button
                     onClick={() => setActiveTab("hobbies")}
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "hobbies"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1116,7 +1118,7 @@ export default function Home() {
                   </button>
                   <button
                     onClick={() => setActiveTab("side-quests")}
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "side-quests"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1130,7 +1132,7 @@ export default function Home() {
               {activeSection === "experience" && (
                 <>
                   <button
-                    className={`px-6 py-1.5 rounded-lg text-lg font-medium transition-all ${
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "experience"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1140,7 +1142,7 @@ export default function Home() {
                     Experience
                   </button>
                   <button
-                    className={`px-6 py-1.5 rounded-lg text-lg font-medium transition-all ${
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "achievements"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1155,7 +1157,7 @@ export default function Home() {
               {activeSection === "projects" && (
                 <>
                   <button 
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "all"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1165,7 +1167,7 @@ export default function Home() {
                     All Projects
                   </button>
                   <button 
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "deployed"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1179,16 +1181,16 @@ export default function Home() {
 
               {activeSection === "skills" && (
                 <>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
                     All Skills
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Languages
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Frameworks
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Tools
                   </button>
                 </>
@@ -1196,13 +1198,13 @@ export default function Home() {
 
               {activeSection === "blog" && (
                 <>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
                     All Posts
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Tech
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Tutorials
                   </button>
                 </>
@@ -1210,7 +1212,7 @@ export default function Home() {
 
               {activeSection === "contact" && (
                 <>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
                     Contact Form
                   </button>
                 </>
