@@ -14,6 +14,20 @@ const tutorialSteps = [
     tooltipAlign: "center",    // e.g., centered vertically along the right edge
   },
   {
+    elementId: "sound-toggle-tutorial-target",
+    title: "Sound Effects",
+    text: "Toggle sound effects on/off. When enabled, you'll hear a satisfying click sound when interacting with buttons throughout the site.",
+    tooltipAttachment: "bottom", 
+    tooltipAlign: "center",
+  },
+  {
+    elementId: "spotify-player-tutorial-target",
+    title: "Music Player",
+    text: "Click here to show/hide the Spotify-themed music player. You can play, pause, skip tracks, adjust volume, and toggle shuffle and repeat modes.",
+    tooltipAttachment: "bottom",
+    tooltipAlign: "center",
+  },
+  {
     elementId: "theme-button-tutorial-target",
     title: "Change Theme",
     text: "Personalize your viewing experience! Click here to change the background theme.",
@@ -27,94 +41,173 @@ const TOOLTIP_WIDTH = 300; // Approximate width of the tooltip
 const TOOLTIP_HEIGHT = 150; // Approximate height of the tooltip
 const TOOLTIP_OFFSET = 20; // Increased offset from the element
 const BOUNDARY_PADDING = 10; // Padding from viewport edges
+const MAX_ATTEMPTS = 20; // Maximum number of attempts to find a target
+const RETRY_INTERVAL = 200; // Milliseconds between retries
+const SPOTLIGHT_PADDING = 12; // Padding around the spotlight element
 
 export const TutorialOverlay = ({ onClose }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [highlightBox, setHighlightBox] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0, visibility: 'visible' });
+  const findAttemptsRef = useRef(0);
+  const findIntervalRef = useRef(null);
   
   const currentStep = tutorialSteps[currentStepIndex];
+
+  const findTargetElement = useCallback(() => {
+    if (!currentStep || !document) return null;
+    return document.getElementById(currentStep.elementId);
+  }, [currentStep]);
 
   const calculatePositions = useCallback(() => {
     if (!currentStep) return;
 
-    const targetElement = document.getElementById(currentStep.elementId);
+    const targetElement = findTargetElement();
 
     if (targetElement) {
+      // Clear any existing interval as we found the element
+      if (findIntervalRef.current) {
+        clearInterval(findIntervalRef.current);
+        findIntervalRef.current = null;
+        findAttemptsRef.current = 0;
+      }
+
       const rect = targetElement.getBoundingClientRect();
-      setHighlightBox({
-        top: rect.top,
-        left: rect.left,
-        width: rect.width,
-        height: rect.height,
-      });
-
-      let topPos = 0;
-      let leftPos = 0;
-
-      // Calculate tooltip position based on attachment and alignment
-      // Attachment: which side of the target element the tooltip attaches to
-      // Alignment: how the tooltip aligns along that side
-
-      // Horizontal positioning
-      if (currentStep.tooltipAttachment === 'left') {
-        leftPos = rect.left - TOOLTIP_WIDTH - TOOLTIP_OFFSET;
-      } else if (currentStep.tooltipAttachment === 'right') {
-        leftPos = rect.right + TOOLTIP_OFFSET;
-      } else { // top or bottom attachment
-        if (currentStep.tooltipAlign === 'start') {
-          leftPos = rect.left;
-        } else if (currentStep.tooltipAlign === 'center') {
-          leftPos = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
-        } else { // end
-          leftPos = rect.right - TOOLTIP_WIDTH;
-        }
-      }
-
-      // Vertical positioning
-      if (currentStep.tooltipAttachment === 'top') {
-        topPos = rect.top - TOOLTIP_HEIGHT - TOOLTIP_OFFSET;
-      } else if (currentStep.tooltipAttachment === 'bottom') {
-        topPos = rect.bottom + TOOLTIP_OFFSET;
-      } else { // left or right attachment
-        if (currentStep.tooltipAlign === 'start') {
-          topPos = rect.top;
-        } else if (currentStep.tooltipAlign === 'center') {
-          topPos = rect.top + rect.height / 2 - TOOLTIP_HEIGHT / 2;
-        } else { // end
-          topPos = rect.bottom - TOOLTIP_HEIGHT;
-        }
-      }
       
-      // Boundary corrections
-      if (leftPos < BOUNDARY_PADDING) {
-        leftPos = BOUNDARY_PADDING;
-      }
-      if (leftPos + TOOLTIP_WIDTH > window.innerWidth - BOUNDARY_PADDING) {
-        leftPos = window.innerWidth - TOOLTIP_WIDTH - BOUNDARY_PADDING;
-      }
-      if (topPos < BOUNDARY_PADDING) {
-        topPos = BOUNDARY_PADDING;
-      }
-      if (topPos + TOOLTIP_HEIGHT > window.innerHeight - BOUNDARY_PADDING) {
-        topPos = window.innerHeight - TOOLTIP_HEIGHT - BOUNDARY_PADDING;
-      }
+      // Only update if the element is actually visible
+      if (rect.width > 0 && rect.height > 0) {
+        console.log(`Found target: ${currentStep.elementId} at position:`, rect);
+        
+        setHighlightBox({
+          top: rect.top - SPOTLIGHT_PADDING,
+          left: rect.left - SPOTLIGHT_PADDING,
+          width: rect.width + SPOTLIGHT_PADDING * 2,
+          height: rect.height + SPOTLIGHT_PADDING * 2,
+          elementWidth: rect.width,
+          elementHeight: rect.height,
+          elementTop: rect.top,
+          elementLeft: rect.left,
+        });
 
-      setTooltipPosition({ top: topPos, left: leftPos, visibility: 'visible' });
+        let topPos = 0;
+        let leftPos = 0;
 
-    } else {
-      console.warn(`Tutorial target element not found: ${currentStep.elementId}`);
-      setTooltipPosition(prev => ({ ...prev, visibility: 'hidden' })); // Hide tooltip if target not found
-      // Optionally auto-advance or close
-      if (currentStepIndex < tutorialSteps.length - 1) {
-        // setCurrentStepIndex(currentStepIndex + 1); // Can lead to rapid skipping if many elements are missing
+        // Calculate tooltip position based on attachment and alignment
+        // Attachment: which side of the target element the tooltip attaches to
+        // Alignment: how the tooltip aligns along that side
+
+        // Horizontal positioning
+        if (currentStep.tooltipAttachment === 'left') {
+          leftPos = rect.left - TOOLTIP_WIDTH - TOOLTIP_OFFSET;
+        } else if (currentStep.tooltipAttachment === 'right') {
+          leftPos = rect.right + TOOLTIP_OFFSET;
+        } else { // top or bottom attachment
+          if (currentStep.tooltipAlign === 'start') {
+            leftPos = rect.left;
+          } else if (currentStep.tooltipAlign === 'center') {
+            leftPos = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
+          } else { // end
+            leftPos = rect.right - TOOLTIP_WIDTH;
+          }
+        }
+
+        // Vertical positioning
+        if (currentStep.tooltipAttachment === 'top') {
+          topPos = rect.top - TOOLTIP_HEIGHT - TOOLTIP_OFFSET;
+        } else if (currentStep.tooltipAttachment === 'bottom') {
+          topPos = rect.bottom + TOOLTIP_OFFSET;
+        } else { // left or right attachment
+          if (currentStep.tooltipAlign === 'start') {
+            topPos = rect.top;
+          } else if (currentStep.tooltipAlign === 'center') {
+            topPos = rect.top + rect.height / 2 - TOOLTIP_HEIGHT / 2;
+          } else { // end
+            topPos = rect.bottom - TOOLTIP_HEIGHT;
+          }
+        }
+        
+        // Boundary corrections
+        if (leftPos < BOUNDARY_PADDING) {
+          leftPos = BOUNDARY_PADDING;
+        }
+        if (leftPos + TOOLTIP_WIDTH > window.innerWidth - BOUNDARY_PADDING) {
+          leftPos = window.innerWidth - TOOLTIP_WIDTH - BOUNDARY_PADDING;
+        }
+        if (topPos < BOUNDARY_PADDING) {
+          topPos = BOUNDARY_PADDING;
+        }
+        if (topPos + TOOLTIP_HEIGHT > window.innerHeight - BOUNDARY_PADDING) {
+          topPos = window.innerHeight - TOOLTIP_HEIGHT - BOUNDARY_PADDING;
+        }
+
+        setTooltipPosition({ top: topPos, left: leftPos, visibility: 'visible' });
       } else {
-        // onClose();
+        console.warn(`Element ${currentStep.elementId} found but has zero dimensions`);
+      }
+    } else {
+      console.warn(`Tutorial target element not found: ${currentStep.elementId}, attempt: ${findAttemptsRef.current + 1}`);
+      
+      // Start repeated attempts to find the element if not already trying
+      if (!findIntervalRef.current) {
+        findIntervalRef.current = setInterval(() => {
+          findAttemptsRef.current += 1;
+          
+          // Check if we should keep trying
+          if (findAttemptsRef.current <= MAX_ATTEMPTS) {
+            const element = findTargetElement();
+            if (element) {
+              console.log(`Found element ${currentStep.elementId} after ${findAttemptsRef.current} attempts`);
+              calculatePositions(); // Recalculate now that we found it
+            }
+          } else {
+            // Give up after max attempts
+            clearInterval(findIntervalRef.current);
+            findIntervalRef.current = null;
+            
+            // Fallback position in the center of the screen
+            const fallbackTop = window.innerHeight / 2 - TOOLTIP_HEIGHT / 2;
+            const fallbackLeft = window.innerWidth / 2 - TOOLTIP_WIDTH / 2;
+            
+            console.log(`Using fallback position for ${currentStep.elementId}`);
+            
+            setTooltipPosition({ 
+              top: fallbackTop, 
+              left: fallbackLeft, 
+              visibility: 'visible'
+            });
+            
+            // Also set a fallback highlight box in the center
+            setHighlightBox({
+              top: window.innerHeight / 2 - 50,
+              left: window.innerWidth / 2 - 50,
+              width: 100,
+              height: 100,
+              elementWidth: 100,
+              elementHeight: 100,
+              elementTop: window.innerHeight / 2 - 50,
+              elementLeft: window.innerWidth / 2 - 50,
+            });
+          }
+        }, RETRY_INTERVAL);
       }
     }
-  }, [currentStep, currentStepIndex]); // Removed onClose from dependencies to prevent re-calculation on every render if onClose is a new function
+  }, [currentStep, findTargetElement]);
+
+  // Clean up intervals when component unmounts or step changes
+  useEffect(() => {
+    return () => {
+      if (findIntervalRef.current) {
+        clearInterval(findIntervalRef.current);
+        findIntervalRef.current = null;
+      }
+      findAttemptsRef.current = 0;
+    };
+  }, [currentStepIndex]);
 
   useEffect(() => {
+    // Reset the find attempts when step changes
+    findAttemptsRef.current = 0;
+    
     calculatePositions(); // Initial calculation
     window.addEventListener('resize', calculatePositions);
     window.addEventListener('scroll', calculatePositions, true); // Listen on capture phase for scroll
@@ -122,8 +215,13 @@ export const TutorialOverlay = ({ onClose }) => {
     return () => {
       window.removeEventListener('resize', calculatePositions);
       window.removeEventListener('scroll', calculatePositions, true);
+      
+      if (findIntervalRef.current) {
+        clearInterval(findIntervalRef.current);
+        findIntervalRef.current = null;
+      }
     };
-  }, [calculatePositions]);
+  }, [calculatePositions, currentStepIndex]);
 
 
   const handleNextStep = () => {
@@ -138,7 +236,7 @@ export const TutorialOverlay = ({ onClose }) => {
     onClose();
   };
 
-  if (!currentStep || !highlightBox) {
+  if (!currentStep) {
     return null; 
   }
 
@@ -147,35 +245,50 @@ export const TutorialOverlay = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/75 backdrop-blur-md z-[10000] flex items-center justify-center" // Increased backdrop opacity and blur
+      className="fixed inset-0 z-[99999] flex items-center justify-center" 
     >
-      {/* Highlight Box */}
+      {/* Full-screen backdrop with cutout for the highlighted element */}
       {highlightBox && (
-        <motion.div
-          key={`highlight-${currentStepIndex}`}
-          initial={{ 
-            x: highlightBox.left + highlightBox.width / 2, 
-            y: highlightBox.top + highlightBox.height / 2, 
-            width: 0, 
-            height: 0,
-            opacity: 0,
-          }}
-          animate={{
-            x: highlightBox.left - 8, // Increased padding for highlight
-            y: highlightBox.top - 8,
-            width: highlightBox.width + 16,
-            height: highlightBox.height + 16,
-            opacity: 1,
-          }}
-          transition={{ duration: 0.35, ease: "circOut" }}
-          style={{
-            position: 'fixed',
-            border: '3px solid #0ea5e9', // A slightly different cyan (sky-500)
-            borderRadius: '12px', // Slightly more rounded
-            boxShadow: '0 0 0 9999px rgba(0,0,0,0.65)', // Slightly darker spotlight
-            pointerEvents: 'none', 
-          }}
-        />
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-none">
+          {/* SVG mask technique for cutting out the spotlight */}
+          <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <mask id="spotlight-mask">
+                <rect width="100%" height="100%" fill="white" />
+                <rect 
+                  x={highlightBox.left} 
+                  y={highlightBox.top} 
+                  width={highlightBox.width} 
+                  height={highlightBox.height} 
+                  rx="12" 
+                  ry="12" 
+                  fill="black" 
+                />
+              </mask>
+            </defs>
+            <rect 
+              width="100%" 
+              height="100%" 
+              fill="rgba(0,0,0,0.7)" 
+              mask="url(#spotlight-mask)" 
+            />
+          </svg>
+          
+          {/* Glowing border around the highlighted element */}
+          <div
+            style={{
+              position: 'absolute',
+              top: highlightBox.top,
+              left: highlightBox.left,
+              width: highlightBox.width,
+              height: highlightBox.height,
+              borderRadius: '12px',
+              boxShadow: '0 0 0 3px #0ea5e9, 0 0 20px rgba(14, 165, 233, 0.5)',
+              pointerEvents: 'none',
+              zIndex: 100000
+            }}
+          />
+        </div>
       )}
 
       {/* Tooltip */}
@@ -190,8 +303,9 @@ export const TutorialOverlay = ({ onClose }) => {
           left: `${tooltipPosition.left}px`,
           visibility: tooltipPosition.visibility,
           width: `${TOOLTIP_WIDTH}px`,
+          zIndex: 100001, // Ensure tooltip is above highlight
         }}
-        className="bg-neutral-800/90 border border-neutral-700/80 text-white p-5 rounded-lg shadow-2xl z-[10001] backdrop-blur-sm" // Added slight transparency and blur to tooltip
+        className="bg-neutral-800/90 border border-neutral-700/80 text-white p-5 rounded-lg shadow-2xl backdrop-blur-sm" // Added slight transparency and blur to tooltip
       >
         <h3 className="text-lg font-semibold text-sky-400 mb-2">{currentStep.title}</h3> {/* Matched highlight border color */}
         <p className="text-sm text-neutral-200 mb-4">{currentStep.text}</p> {/* Lighter text */}

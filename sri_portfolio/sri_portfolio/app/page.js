@@ -53,6 +53,7 @@ import { GlowingEffect } from "./components/glowing-effect";
 import { SpotifyPlayer } from "./components/SpotifyPlayer";
 import { useMusic } from "./components/MusicProvider";
 import { useSound } from "./components/SoundProvider";
+import { FirstVisitTutorial } from "./components/FirstVisitTutorial";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -626,7 +627,7 @@ export default function Home() {
     >
       {/* Floating Dock */}
      <div className={`relative z-50 opacity-90 ${isMobile ? 'fixed bottom-0 w-full z[9999]' : 'left-0 z-[9999]'} opacity-100`}>
-       <FloatingDock items={items} />
+       <FloatingDock items={items} id="floating-dock-tutorial-target" />
      </div>
 
       {/* Main Content */}
@@ -729,37 +730,43 @@ export default function Home() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <button 
-                className="text-neutral-400 hover:text-white transition-colors"
-                onClick={toggleSound}
-              >
-                {isSoundEnabled ? (
-                  <>
-                    <IconVolume size={18} stroke={2.5} className="md:hidden" />
-                    <IconVolume size={28} stroke={1.75} className="hidden md:block" />
-                  </>
-                ) : (
-                  <>
-                    <IconVolumeOff size={18} stroke={2.5} className="md:hidden" />
-                    <IconVolumeOff size={28} stroke={1.75} className="hidden md:block" />
-                  </>
-                )}
-              </button>
-              <button 
-                className="text-neutral-400 hover:text-white transition-colors"
-                onClick={togglePlayerVisibility}
-              >
-                <IconBrandSpotify size={24} stroke={2.5} className="md:hidden" />
-                <IconBrandSpotify size={32} stroke={1} className="hidden md:block" />
-              </button>
-              <button
-                onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10 md:gap-2 md:px-3 md:py-1.5"
-              >
-                <IconPalette size={18} stroke={2.5} className="md:hidden" />
-                <IconPalette size={28} stroke={1.75} className="hidden md:block" />
-                <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
-              </button>
+              <div id="sound-toggle-tutorial-target" className="relative">
+                <button 
+                  className="text-neutral-400 hover:text-white transition-colors"
+                  onClick={toggleSound}
+                >
+                  {isSoundEnabled ? (
+                    <>
+                      <IconVolume size={18} stroke={2.5} className="md:hidden" />
+                      <IconVolume size={28} stroke={1.75} className="hidden md:block" />
+                    </>
+                  ) : (
+                    <>
+                      <IconVolumeOff size={18} stroke={2.5} className="md:hidden" />
+                      <IconVolumeOff size={28} stroke={1.75} className="hidden md:block" />
+                    </>
+                  )}
+                </button>
+              </div>
+              <div id="spotify-player-tutorial-target" className="relative">
+                <button 
+                  className="text-neutral-400 hover:text-white transition-colors"
+                  onClick={togglePlayerVisibility}
+                >
+                  <IconBrandSpotify size={24} stroke={2.5} className="md:hidden" />
+                  <IconBrandSpotify size={32} stroke={1} className="hidden md:block" />
+                </button>
+              </div>
+              <div id="theme-button-tutorial-target" className="relative">
+                <button
+                  onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10 md:gap-2 md:px-3 md:py-1.5"
+                >
+                  <IconPalette size={18} stroke={2.5} className="md:hidden" />
+                  <IconPalette size={28} stroke={1.75} className="hidden md:block" />
+                  <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1454,6 +1461,9 @@ export default function Home() {
 
       {/* Spotify Player - Now rendered as a fixed popup outside the main content flow */}
       {showPlayer && <SpotifyPlayer />}
+      
+      {/* Tutorial for first-time visitors */}
+      <FirstVisitTutorial />
     </div>
   );
 }

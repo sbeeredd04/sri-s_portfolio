@@ -8,7 +8,7 @@ import { useRef, useEffect, useState} from "react";
 
 
 // FloatingDock component updated to switch between desktop and mobile views based on screen size
-export const FloatingDock = ({ items, desktopClassName, mobileClassName }) => {
+export const FloatingDock = ({ items, desktopClassName, mobileClassName, id }) => {
   const [isDesktop, setIsDesktop] = useState(true);
 
   useEffect(() => {
@@ -21,14 +21,14 @@ export const FloatingDock = ({ items, desktopClassName, mobileClassName }) => {
   }, []);
 
   return isDesktop ? (
-    <FloatingDockDesktop items={items} className={desktopClassName} />
+    <FloatingDockDesktop items={items} className={desktopClassName} id={id} />
   ) : (
-    <FloatingDockMobile items={items} className={mobileClassName} />
+    <FloatingDockMobile items={items} className={mobileClassName} id={id} />
   );
 };
 
 // Draggable button that triggers the menu
-const DraggableMenuButton = ({ onClick, x, y, onDragEnd, dragBounds, initialPositionSet }) => {
+const DraggableMenuButton = ({ onClick, x, y, onDragEnd, dragBounds, initialPositionSet, id }) => {
   const buttonRef = useRef(null);
   const [isReadyToDrag, setIsReadyToDrag] = useState(false);
 
@@ -42,6 +42,7 @@ const DraggableMenuButton = ({ onClick, x, y, onDragEnd, dragBounds, initialPosi
 
   return (
     <motion.button
+      id={id}
       ref={buttonRef}
       drag={isReadyToDrag}
       dragMomentum={false}
@@ -178,7 +179,7 @@ const ExpandedMenuPanel = ({ items, onClose, anchorRect }) => {
 };
 
 // Mobile FloatingDock - Assistive Touch Style
-const FloatingDockMobile = ({ items, className }) => {
+const FloatingDockMobile = ({ items, className, id }) => {
   const [open, setOpen] = useState(false);
   const [buttonRect, setButtonRect] = useState(null); // To store position of the button
   
@@ -278,6 +279,7 @@ const FloatingDockMobile = ({ items, className }) => {
         onDragEnd={handleDragEnd}
         dragBounds={constraintsRef.current}
         initialPositionSet={initialPositionSet}
+        id={id}
       />
       <AnimatePresence>
         {open && (
@@ -315,11 +317,12 @@ const IconContainerMobile = ({ title, icon, onClick, isActive }) => {
 };
 
 // Updated FloatingDockDesktop to fix position on left side
-const FloatingDockDesktop = ({ items, className }) => {
+const FloatingDockDesktop = ({ items, className, id }) => {
   let mouseX = useMotionValue(Infinity);
   
   return (
     <motion.div
+      id={id}
       onMouseMove={(e) => mouseX.set(e.pageY)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
