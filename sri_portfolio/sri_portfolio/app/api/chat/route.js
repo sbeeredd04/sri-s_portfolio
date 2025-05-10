@@ -39,11 +39,87 @@ function getRandomResponse(category) {
 }
 
 /**
+ * Get the list of allowed domains from environment variables
+ * @returns {string[]} Array of allowed domains
+ */
+function getAllowedDomains() {
+  // Default allowed domains if env variable is not set
+  const defaultDomains = [
+    'localhost',
+    '127.0.0.1',
+    'sriujjwalreddy.vercel.app',
+    'sriujjwalreddy.com'
+  ];
+  
+  // Check if ALLOWED_DOMAINS is defined in environment variables
+  const envDomains = process.env.ALLOWED_DOMAINS;
+  
+  if (envDomains) {
+    // Split comma-separated domains and trim whitespace
+    return envDomains.split(',').map(domain => domain.trim());
+  }
+  
+  // Fallback to default domains
+  console.log('ALLOWED_DOMAINS not found in environment variables, using defaults');
+  return defaultDomains;
+}
+
+/**
+ * Check if the request is from an allowed origin
+ * @param {Request} request - The incoming request
+ * @returns {boolean} Whether the request is allowed
+ */
+function isRequestAllowed(request) {
+  // Get the request origin or referer header
+  const origin = request.headers.get('origin');
+  const referer = request.headers.get('referer');
+  
+  // In development, accept localhost requests
+  if (process.env.NODE_ENV === 'development') {
+    const isDev = 
+      (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) ||
+      (referer && (referer.includes('localhost') || referer.includes('127.0.0.1')));
+    
+    if (isDev) {
+      console.log('Development request accepted');
+      return true;
+    }
+  }
+  
+  // Get allowed domains from environment variables
+  const allowedDomains = getAllowedDomains();
+  
+  // Check if origin is from an allowed domain
+  let isAllowed = false;
+  if (origin) {
+    isAllowed = allowedDomains.some(domain => origin.includes(domain));
+  } else if (referer) {
+    // Fallback to referer check if origin is not available
+    isAllowed = allowedDomains.some(domain => referer.includes(domain));
+  }
+  
+  // Debug
+  console.log(`Request from origin: ${origin || 'none'}, referer: ${referer || 'none'}`);
+  console.log(`Is request allowed: ${isAllowed}`);
+  
+  return isAllowed;
+}
+
+/**
  * Process incoming chat messages and generate responses
  * Uses the content of about_me.txt as Sri's direct memory to answer as himself
  */
 export async function POST(request) {
   try {
+    // Check if request is from an allowed origin
+    if (!isRequestAllowed(request)) {
+      console.warn('Unauthorized request from external origin');
+      return NextResponse.json(
+        { error: 'Unauthorized. External requests are not allowed.' },
+        { status: 403 }
+      );
+    }
+    
     const { message, messages } = await request.json();
     
     // Format chat history for Gemini if provided

@@ -18,8 +18,10 @@ export const ChatInterface = () => {
   const inputRef = useRef(null);
   const [isStreaming, setIsStreaming] = useState(false);
 
-  // Network URL
-  const NETWORK_URL = process.env.NETWORK_URL || 'http://localhost:3000/';
+  // Network URL and API Key retrieved from environment variables
+  // These are set in next.config.js
+  const NETWORK_URL = process.env.NEXT_PUBLIC_NETWORK_URL;
+  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
   // Scroll to bottom of messages
   const scrollToBottom = () => {
@@ -55,11 +57,13 @@ export const ChatInterface = () => {
     setIsTyping(true);
     
     try {
-      // Call the API endpoint with the current message and chat history
-      const response = await fetch(`${NETWORK_URL}api/chat`, {
+      // Call the API endpoint with the current message, chat history, and API key
+      const response = await fetch(`${NETWORK_URL || '/'}api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Add the API key to authenticate requests
+          'X-API-Key': API_KEY || '',
         },
         body: JSON.stringify({ 
           message: inputMessage,
@@ -67,8 +71,12 @@ export const ChatInterface = () => {
         }),
       });
       
+      if (response.status === 401) {
+        throw new Error('Unauthorized: Invalid API credentials');
+      }
+      
       if (!response.ok) {
-        throw new Error('Failed to get response from API');
+        throw new Error(`Failed to get response from API: ${response.status}`);
       }
       
       const data = await response.json();
@@ -93,7 +101,9 @@ export const ChatInterface = () => {
       setTimeout(() => {
         setMessages(prev => [...prev, {
           id: Date.now() + 1,
-          text: "Sorry, I encountered an error. Please try again later.",
+          text: error.message.includes('Unauthorized') ? 
+            "API authentication failed. Please check your environment configuration." : 
+            "Sorry, I encountered an error. Please try again later.",
           sender: 'bot',
           timestamp: new Date().toISOString(),
           error: true,
