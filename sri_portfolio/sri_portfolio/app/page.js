@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react"; 
+import { useEffect, useRef, useState, useCallback } from "react"; 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { FloatingDock } from "./components/FloatingDock";
@@ -22,16 +22,20 @@ import {
   IconLock, 
   IconLetterA,
   IconShare,
-  IconCopy,
+  IconVolume,
   IconPlus,
   IconPalette,
   IconChevronDown,
   IconDownload,
   IconSearch,
-} from "@tabler/icons-react"; // Import relevant icons
-import { PinContainer } from "./components/3d-pin"; // Import 3D Pin Container for projects
-import { Carousel } from "./components/apple-cards-carousel"; // Import Carousel for projects and blog posts
-import createGlobe from "cobe"; // Import cobe to create the globe
+  IconLayoutSidebar,
+  IconMessageCircle
+} from "@tabler/icons-react";
+// Import IconVolumeOff instead of IconVolumeMute (which appears to be unavailable)
+import { IconVolumeOff } from "@tabler/icons-react"; 
+import { PinContainer } from "./components/3d-pin";
+import { Carousel } from "./components/apple-cards-carousel";
+import createGlobe from "cobe";
 import { CardSpotlight } from "./components/card-spotlight";
 import { Card, ExCarousel } from "./components/ExpandableCard";
 import { InfiniteMovingCards } from "./components/infinite-moving-cards";
@@ -46,23 +50,29 @@ import { ProjectCard } from "./components/ProjectCard";
 import deployedProjects from "./json/deployed.json";
 import { StickyScroll } from "./components/sticky-scroll-reveal";
 import aboutMeContent from "./json/aboutme.json";
-
-
-// Slider duration in milliseconds
-const SLIDE_DURATION = 2000;
+import { GlowingEffect } from "./components/glowing-effect";
+import { SpotifyPlayer } from "./components/SpotifyPlayer";
+import { useMusic } from "./components/MusicProvider";
+import { useSound } from "./components/SoundProvider";
+import { FirstVisitTutorial } from "./components/FirstVisitTutorial";
+import { ChatInterface } from "./components/ChatInterface";
 
 export default function Home() {
   // Add these state variables at the top of the component
   const [activeSection, setActiveSection] = useState("home");
-  const [activeTab, setActiveTab] = useState("profile"); // Set default tab to profile
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [activeTab, setActiveTab] = useState("profile");
   const [showResumePreview, setShowResumePreview] = useState(false);
   const [activeTimeline, setActiveTimeline] = useState("experience");
   const [showName, setShowName] = useState(true);
   const [showProjectPreview, setShowProjectPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [isMobile, setIsMobile] = useState(false);
-
+  
+  // Important: Make sure these hooks are called at the top level
+  const { showPlayer, togglePlayerVisibility } = useMusic();
+  const { isSoundEnabled, toggleSound, playClickSound } = useSound();
+  
+  // Check for mobile devices
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -71,6 +81,47 @@ export default function Home() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  
+  // New click sound effect with improved debugging
+  useEffect(() => {
+    console.log("Setting up click sound handler");
+    
+    // Create a direct click handler function
+    const handleClickSound = () => {
+      if (isSoundEnabled && typeof playClickSound === 'function') {
+        console.log("Click detected, playing sound");
+        playClickSound();
+      }
+    };
+    
+    // Add to document body for global coverage
+    if (typeof window !== 'undefined') {
+      document.body.addEventListener('click', handleClickSound);
+      console.log("Click sound handler attached to document body");
+      
+      // Also add to specific important elements
+      const importantButtons = document.querySelectorAll('.FloatingDock button, .Browser-Controls button');
+      importantButtons.forEach(btn => {
+        btn.addEventListener('click', handleClickSound);
+        console.log("Added click handler to important button:", btn);
+      });
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        document.body.removeEventListener('click', handleClickSound);
+        
+        const importantButtons = document.querySelectorAll('.FloatingDock button, .Browser-Controls button');
+        importantButtons.forEach(btn => {
+          btn.removeEventListener('click', handleClickSound);
+        });
+        
+        console.log("Removed all click sound handlers");
+      }
+    };
+  }, [isSoundEnabled, playClickSound]);
+
+  //one setting setShow
 
   // Navigation Items for the Floating Dock
   const items = [
@@ -117,6 +168,13 @@ export default function Home() {
       isActive: activeSection === "blog"
     },
     { 
+      title: "Chat", 
+      icon: <IconMessageCircle />, 
+      onClick: () => navigateToSection("chat"), 
+      href: "#",
+      isActive: activeSection === "chat"
+    },
+    { 
       title: "Contact", 
       icon: <IconMail />, 
       onClick: () => navigateToSection("contact"), 
@@ -127,17 +185,17 @@ export default function Home() {
 
 
 
-  // Auto slide effect for the header slides
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, SLIDE_DURATION);
-    return () => clearInterval(interval);
-  }, [currentSlide]);
+  // Auto slide effect for the header slides - REMOVED as it's not used by Bento Grid
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setCurrentSlide((prev) => (prev + 1) % slides.length);
+  //   }, SLIDE_DURATION);
+  //   return () => clearInterval(interval);
+  // }, [currentSlide]);
 
-  // Manual slide navigation
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  // Manual slide navigation - REMOVED
+  // const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+  // const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
 
   useEffect(() => {
@@ -428,6 +486,149 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const getIconForSection = (sectionTitle) => {
+    switch (sectionTitle?.toLowerCase()) {
+      case 'welcome to my portfolio': return <IconHome className="h-5 w-5 text-yellow-400" />;
+      case 'about me': return <IconUser className="h-5 w-5 text-blue-400" />;
+      case 'professional experience': return <IconBriefcase className="h-5 w-5 text-green-400" />;
+      case 'featured projects': return <IconBulb className="h-5 w-5 text-orange-400" />;
+      case 'technical skills': return <IconTools className="h-5 w-5 text-purple-400" />;
+      case 'blog insights': return <IconBook className="h-5 w-5 text-indigo-400" />;
+      case 'get in touch': return <IconMail className="h-5 w-5 text-red-400" />;
+      default: return <IconBulb className="h-5 w-5 text-gray-400" />;
+    }
+  };
+
+  // Define GridItem component for the new Home section
+  const GridItem = ({
+    gridArea,
+    icon,
+    title,
+    description,
+    imageUrl,
+    onClick,
+    isImageCard = false, 
+  }) => {
+    const isClickable = !isImageCard && onClick;
+
+    return (
+      <li className={`list-none ${gridArea}`}>
+        <div className="relative h-full w-full rounded-2xl border border-white/10 p-2 md:rounded-3xl md:p-3">
+          {!isImageCard && ( 
+            <GlowingEffect
+              spread={30}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+              variant="default"
+              className="opacity-70"
+            />
+          )}
+          {isImageCard ? (
+            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-neutral-800/60 backdrop-blur-sm">
+              <img 
+                src={imageUrl} 
+                alt={title || "Sri Ujjwal Reddy B"} 
+                className="h-full w-full object-contain" 
+              />
+            </div>
+          ) : (
+            <div
+              onClick={isClickable ? onClick : undefined}
+              role={isClickable ? "button" : undefined}
+              tabIndex={isClickable ? 0 : undefined}
+              onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
+              className={`relative flex h-full flex-col justify-start gap-4 overflow-hidden rounded-xl p-4 md:p-6 shadow-xl 
+                         ${isClickable ? 'cursor-pointer hover:ring-1 hover:ring-cyan-400/50 transition-all duration-300' : ''}`}
+              style={{ 
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${imageUrl})`, 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center' 
+              }}
+            >
+              {/* Content wrapper ensuring content takes available space and aligns to top */}
+              <div className="relative flex flex-col justify-start flex-grow gap-3"> 
+                {icon && (
+                  <div className="w-fit rounded-lg border border-neutral-600/50 bg-neutral-700/30 p-2 mb-1 md:mb-2 shadow-md">
+                    {icon}
+                  </div>
+                )}
+                <div className="space-y-1 md:space-y-2">
+                  <h3 className="font-sans text-base md:text-xl font-semibold text-balance text-white">
+                    {title}
+                  </h3>
+                  {description && (
+                    <p className="font-sans text-xs md:text-sm text-neutral-300 leading-relaxed">
+                      {description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </li>
+    );
+  };
+  
+  // Data for the home grid items
+  const homeGridItems = [];
+
+  // Define the 8 grid areas for the bento layout: 3 left, 1 central image, 4 right
+  const ALL_GRID_AREAS = [
+    // Left Column (3 items)
+    "md:col-start-1 md:col-span-4 md:row-start-1 md:row-span-2", // Slot 0: slides[0] (Welcome)
+    "md:col-start-1 md:col-span-4 md:row-start-3 md:row-span-1", // Slot 1: slides[1] (About Me)
+    "md:col-start-1 md:col-span-4 md:row-start-4 md:row-span-1", // Slot 2: slides[2] (Experience)
+    // Central Column (1 item - Image)
+    "md:col-start-5 md:col-span-4 md:row-start-1 md:row-span-4", // Slot 3: me.png Image Card (Full Height)
+    // Right Column (4 items)
+    "md:col-start-9 md:col-span-4 md:row-start-1 md:row-span-1", // Slot 4: slides[3] (Projects)
+    "md:col-start-9 md:col-span-4 md:row-start-2 md:row-span-1", // Slot 5: slides[4] (Skills)
+    "md:col-start-9 md:col-span-4 md:row-start-3 md:row-span-1", // Slot 6: slides[5] (Blog)
+    "md:col-start-9 md:col-span-4 md:row-start-4 md:row-span-1", // Slot 7: slides[6] (Contact)
+  ];
+
+  // Map slides and the image to the slots in a fixed order for the desired layout
+  const itemsDataMap = [
+    slides.length > 0 ? slides[0] : null, // Slot 0: Welcome
+    slides.length > 1 ? slides[1] : null, // Slot 1: About Me
+    slides.length > 2 ? slides[2] : null, // Slot 2: Experience
+    { isImage: true, imageUrl: "/me.png", title: "Sri Ujjwal Reddy B" }, // Slot 3: me.png
+    slides.length > 3 ? slides[3] : null, // Slot 4: Projects
+    slides.length > 4 ? slides[4] : null, // Slot 5: Skills
+    slides.length > 5 ? slides[5] : null, // Slot 6: Blog
+    slides.length > 6 ? slides[6] : null, // Slot 7: Contact
+  ];
+
+  itemsDataMap.forEach((itemData, index) => {
+    if (itemData && index < ALL_GRID_AREAS.length) {
+      if (itemData.isImage) {
+        homeGridItems.push({
+          isImageCard: true,
+          imageUrl: itemData.imageUrl,
+          title: itemData.title,
+          gridArea: ALL_GRID_AREAS[index],
+        });
+      } else {
+        const targetSection = itemData.title === "Welcome to My Portfolio" 
+                              ? "about" 
+                              : itemData.section;
+        homeGridItems.push({
+          title: itemData.title,
+          description: itemData.description,
+          imageUrl: itemData.image,
+          onClick: () => navigateToSection(targetSection),
+          icon: getIconForSection(itemData.title),
+          gridArea: ALL_GRID_AREAS[index],
+          isImageCard: false,
+        });
+      }
+    }
+  });
+
+
  return (
     <div 
       className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:inset-0 before:bg-black/50" 
@@ -435,7 +636,7 @@ export default function Home() {
     >
       {/* Floating Dock */}
      <div className={`relative z-50 opacity-90 ${isMobile ? 'fixed bottom-0 w-full z[9999]' : 'left-0 z-[9999]'} opacity-100`}>
-       <FloatingDock items={items} />
+       <FloatingDock items={items} id="floating-dock-tutorial-target" />
      </div>
 
       {/* Main Content */}
@@ -447,22 +648,22 @@ export default function Home() {
             className="fixed top-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 bg-black bg-opacity-60 rounded-2xl shadow-lg z-[1000] py-2 px-4"
       >
         <Link href="https://github.com/sbeeredd04" target="_blank">
-              <IconBrandGithub className="text-white hover:text-gray-400 mx-1" size={24} />
+              <IconBrandGithub className="text-white hover:text-gray-400 mx-1" size={20} />
         </Link>
             <Link href="https://www.instagram.com/sriujjwalreddy/" target="_blank">
-              <IconBrandInstagram className="text-pink-500 hover:text-pink-400 mx-1" size={24} />
+              <IconBrandInstagram className="text-pink-500 hover:text-pink-400 mx-1" size={20} />
         </Link>
         <Link href="https://www.linkedin.com/in/sriujjwal/" target="_blank">
-              <IconBrandLinkedin className="text-blue-700 hover:text-blue-500 mx-1" size={24} />
+              <IconBrandLinkedin className="text-blue-700 hover:text-blue-500 mx-1" size={20} />
         </Link>
         <Link href="mailto:srisubspace@gmail.com" target="_blank">
-          <IconMail className="text-red-500 hover:text-red-400 mx-1" size={24} />
+          <IconMail className="text-red-500 hover:text-red-400 mx-1" size={20} />
         </Link>
         <Link href="https://open.spotify.com/user/31qr3j45nvoqp4lfh6vuabmlwguq?si=2c62fb75bef644f6" target="_blank">
-              <IconBrandSpotify className="text-green-500 hover:text-green-400 mx-1" size={24} />
+              <IconBrandSpotify className="text-green-500 hover:text-green-400 mx-1" size={20} />
         </Link>
         <Link href="/my_resume.pdf" download>
-              <button className="px-4 py-2 border border-white/40 text-white font-semibold rounded-md shadow-md hover:border-emerald-500 hover:text-emerald-500 transition-all mx-1 bg-transparent">
+              <button className="px-3 py-1.5 text-xs border border-white/40 text-white font-semibold rounded-md shadow-md hover:border-emerald-500 hover:text-emerald-500 transition-all mx-1 bg-transparent">
             Resume
           </button>
         </Link>
@@ -532,26 +733,49 @@ export default function Home() {
             {/* Browser Controls */}
             <div className="flex items-center gap-2 md:gap-4">
               <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-neutral-700/50 border border-white/10 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-neutral-500 to-neutral-700 flex items-center justify-center text-white text-xs md:text-sm font-medium">
-                  SR
-                </div>
+                <img 
+                  src="/music/mySong.png" 
+                  alt="Sri" 
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <button className="text-neutral-400 hover:text-white transition-colors">
-                <IconShare size={20} stroke={3} className="md:hidden" />
-                <IconShare size={24} stroke={3} className="hidden md:block" />
-              </button>
-              <button className="text-neutral-400 hover:text-white transition-colors">
-                <IconCopy size={20} stroke={3} className="md:hidden" />
-                <IconCopy size={24} stroke={3} className="hidden md:block" />
-              </button>
-              <button
-                onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
-                className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10"
-              >
-                <IconPalette size={20} stroke={3} className="md:hidden" />
-                <IconPalette size={24} stroke={3} className="hidden md:block" />
-                <span className="text-xs md:text-sm font-medium hidden md:inline">Theme</span>
-              </button>
+              <div id="sound-toggle-tutorial-target" className="relative">
+                <button 
+                  className="text-neutral-400 hover:text-white transition-colors"
+                  onClick={toggleSound}
+                >
+                  {isSoundEnabled ? (
+                    <>
+                      <IconVolume size={18} stroke={2.5} className="md:hidden" />
+                      <IconVolume size={28} stroke={1.75} className="hidden md:block" />
+                    </>
+                  ) : (
+                    <>
+                      <IconVolumeOff size={18} stroke={2.5} className="md:hidden" />
+                      <IconVolumeOff size={28} stroke={1.75} className="hidden md:block" />
+                    </>
+                  )}
+                </button>
+              </div>
+              <div id="spotify-player-tutorial-target" className="relative">
+                <button 
+                  className="text-neutral-400 hover:text-white transition-colors"
+                  onClick={togglePlayerVisibility}
+                >
+                  <IconBrandSpotify size={24} stroke={2.5} className="md:hidden" />
+                  <IconBrandSpotify size={32} stroke={1} className="hidden md:block" />
+                </button>
+              </div>
+              <div id="theme-button-tutorial-target" className="relative">
+                <button
+                  onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10 md:gap-2 md:px-3 md:py-1.5"
+                >
+                  <IconPalette size={18} stroke={2.5} className="md:hidden" />
+                  <IconPalette size={28} stroke={1.75} className="hidden md:block" />
+                  <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -587,57 +811,32 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="h-full overflow-y-auto overflow-x-hidden px-6 py-6 scrollbar-none"
+                className="h-full overflow-y-auto overflow-x-hidden px-2 py-2 md:px-4 md:py-4 scrollbar-none"
               >
         {/* Home Section */}
                 {activeSection === "home" && (
                   <section className="w-full h-full">
-                    <div className="relative w-full h-full">
-                      <AnimatePresence mode="wait">
-              {slides.map((slide, index) =>
-                currentSlide === index ? (
-                  <motion.div
-                    key={slide.title}
-                    initial={{ opacity: 0, x: 100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.6 }}
-                    className="absolute inset-0 rounded-xl overflow-hidden"
-                    style={{
-                      backgroundImage: `url(${slide.image})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  >
-                              <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-md flex flex-col items-center justify-center text-white text-center p-4 md:p-8">
-                      <h2 className="text-4xl md:text-5xl font-bold mb-4">{slide.title}</h2>
-                      <p className="text-md md:text-lg mb-4">{slide.description}</p>
-                                <button 
-                                  onClick={() => navigateToSection(slide.section)}
-                                  className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all"
-                                >
-                        Learn More
-                                </button>
-                    </div>
-                  </motion.div>
-                ) : null
-              )}
-            </AnimatePresence>
-
-                      <button 
-                        onClick={prevSlide} 
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
-                      >
-                        <IconArrowLeft className="w-6 h-6" />
-            </button>
-                      <button 
-                        onClick={nextSlide} 
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
-                      >
-                        <IconArrowRight className="w-6 h-6" />
-            </button>
-          </div>
-        </section>
+                    {homeGridItems.length > 0 ? (
+                      <ul className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-4 gap-3 md:gap-4 h-full p-1 md:p-2">
+                        {homeGridItems.map((item, idx) => (
+                          <GridItem
+                            key={item.title || `grid-item-${idx}`} 
+                            gridArea={item.gridArea}
+                            icon={item.icon}
+                            title={item.title}
+                            description={item.description}
+                            imageUrl={item.imageUrl}
+                            onClick={item.onClick}
+                            isImageCard={item.isImageCard}
+                          />
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-white/70">
+                        Loading home content...
+                      </div>
+                    )}
+                  </section>
                 )}
 
                 {activeSection === "about" && (
@@ -659,14 +858,14 @@ export default function Home() {
                           </div>
                           
                           {/* Resume Buttons */}
-                          <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 md:gap-4 px-4 z-50">
+                          <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 md:gap-4 px-4 z-50 pb-2">
                             <Link href="/my_resume.pdf" download>
-                              <button className="px-3 md:px-6 py-2 md:py-3 text-sm md:text-base bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all">
+                              <button className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all md:px-6 md:py-3 md:text-base">
                                 Download Resume
                               </button>
                             </Link>
                             <button
-                              className="px-3 md:px-6 py-2 md:py-3 text-sm md:text-base bg-neutral-800/50 backdrop-blur-sm border-2 border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-all"
+                              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-neutral-800/50 backdrop-blur-sm border-2 border-white/20 text-white hover:bg-white/5 transition-all md:px-6 md:py-3 md:text-base"
                               onClick={() => setShowResumePreview(true)}
                             >
                               View Resume
@@ -682,64 +881,64 @@ export default function Home() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="flex flex-col gap-4 md:gap-8 p-4 md:p-8 h-full w-full"
+                          className="flex flex-col gap-4 md:gap-8 p-3 md:p-8 h-full w-full"
                         >
                           {/* Top Section - Education Details */}
-                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-white/10">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-3 md:p-8 border border-white/10">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
                               {/* Logo and Title */}
-                              <div className="flex items-center gap-4 md:gap-6 md:col-span-3">
+                              <div className="flex items-center gap-3 md:gap-6 md:col-span-3">
                                 <img 
                                   src="/asulogo.png" 
                                   alt="ASU Logo" 
-                                  className="w-12 h-12 md:w-16 md:h-16 object-contain"
+                                  className="w-10 h-10 md:w-16 md:h-16 object-contain"
                                 />
                                 <div>
-                                  <h2 className="text-2xl md:text-4xl font-bold text-white">Education</h2>
-                                  <p className="text-base md:text-lg text-emerald-400">2022 - 2026</p>
+                                  <h2 className="text-xl md:text-4xl font-bold text-white">Education</h2>
+                                  <p className="text-sm md:text-lg text-emerald-400">2022 - 2026</p>
                                 </div>
                               </div>
 
                               {/* University Info */}
                               <div className="md:col-span-1">
-                                <h3 className="text-xl md:text-2xl font-semibold text-cyan-400">Arizona State University</h3>
-                                <p className="text-base md:text-lg text-white/80 mt-2">Bachelor of Science in Computer Science</p>
-                                <p className="text-sm md:text-md text-white/60">Software Engineering Track</p>
-                                <div className="mt-4 px-3 md:px-4 py-2 bg-emerald-500/20 rounded-lg border border-emerald-500/30">
+                                <h3 className="text-base font-semibold text-cyan-400 md:text-2xl">Arizona State University</h3>
+                                <p className="text-sm text-white/80 mt-1 md:text-lg md:mt-2">Bachelor of Science in Computer Science</p>
+                                <p className="text-xs text-white/60 md:text-md">Software Engineering Track</p>
+                                <div className="mt-2 px-2 py-1 bg-emerald-500/20 rounded-lg border border-emerald-500/30 md:mt-4 md:px-4 md:py-2">
                                   <div className="flex items-center justify-between">
-                                    <span className="text-sm md:text-base text-white/80">GPA</span>
-                                    <span className="text-xl md:text-2xl font-bold text-emerald-400">4.0/4.0</span>
+                                    <span className="text-xs text-white/80 md:text-base">GPA</span>
+                                    <span className="text-lg font-bold text-emerald-400 md:text-2xl">4.0/4.0</span>
                                   </div>
                                 </div>
                               </div>
 
                               {/* Academic Achievements */}
                               <div className="md:col-span-1 md:ml-8">
-                                <h4 className="text-lg md:text-xl font-semibold text-white/90 mt-4 md:mt-0">Academic Achievements</h4>
-                                <div className="mt-2 space-y-2 md:space-y-3">
-                                  <p className="text-sm md:text-md text-white/80">• Dean's List (All Semesters)</p>
-                                  <p className="text-sm md:text-md text-white/80">• New American University Scholar</p>
-                                  <p className="text-sm md:text-md text-white/80">• Minor in Entrepreneurship</p>
+                                <h4 className="text-sm font-semibold text-white/90 mt-2 md:text-xl md:mt-0">Academic Achievements</h4>
+                                <div className="mt-1 space-y-1 md:space-y-3 md:mt-2">
+                                  <p className="text-xs text-white/80 md:text-md">• Dean's List (All Semesters)</p>
+                                  <p className="text-xs text-white/80 md:text-md">• New American University Scholar</p>
+                                  <p className="text-xs text-white/80 md:text-md">• Minor in Entrepreneurship</p>
                                 </div>
                               </div>
 
                               {/* Location */}
                               <div className="md:col-span-1">
-                                <h4 className="text-lg md:text-xl font-semibold text-white/90 mt-4 md:mt-0">Location</h4>
-                                <p className="text-sm md:text-md text-white/60 mt-2">Tempe, Arizona</p>
-                                <p className="text-sm md:text-md text-white/60">United States</p>
+                                <h4 className="text-sm font-semibold text-white/90 mt-2 md:text-xl md:mt-0">Location</h4>
+                                <p className="text-xs text-white/60 mt-1 md:text-md md:mt-2">Tempe, Arizona</p>
+                                <p className="text-xs text-white/60 md:text-md">United States</p>
                               </div>
                             </div>
                           </div>
 
                           {/* Bottom Section - Coursework Grid */}
-                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-4 md:p-8 border border-white/10">
-                            <h3 className="text-xl md:text-2xl font-semibold text-cyan-400 mb-4 md:mb-6">Key Coursework</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-h-[calc(100vh-400px)] overflow-y-auto pr-2 md:pr-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                          <div className="w-full bg-neutral-800/30 backdrop-blur-sm rounded-2xl p-3 md:p-8 border border-white/10">
+                            <h3 className="text-base font-semibold text-cyan-400 mb-3 md:text-2xl md:mb-6">Key Coursework</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 max-h-[40vh] md:max-h-[calc(100vh-450px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                               {/* CS Core */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Computer Science Core</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Computer Science Core</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• Data Structures and Algorithms</li>
                                   <li>• Operating Systems</li>
                                   <li>• Computer Organization & Assembly</li>
@@ -752,9 +951,9 @@ export default function Home() {
                               </div>
 
                               {/* Software Engineering Track */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Software Engineering Track</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Software Engineering Track</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• Software Analysis and Design</li>
                                   <li>• Software QA and Testing</li>
                                   <li>• Distributed Software Development</li>
@@ -763,9 +962,9 @@ export default function Home() {
                               </div>
 
                               {/* Mathematics & Theory */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Mathematics & Theory</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Mathematics & Theory</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• Discrete Mathematics</li>
                                   <li>• Calculus for Engineers I, II, III</li>
                                   <li>• Applied Linear Algebra</li>
@@ -774,9 +973,9 @@ export default function Home() {
                               </div>
 
                               {/* Entrepreneurship Minor */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Entrepreneurship Minor</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Entrepreneurship Minor</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• Principles of Entrepreneurship</li>
                                   <li>• Creativity and Innovation</li>
                                   <li>• Entrepreneurship & Value Creation</li>
@@ -784,9 +983,9 @@ export default function Home() {
                               </div>
 
                               {/* Projects & Practice */}
-                              <div className="bg-neutral-700/20 rounded-xl p-4 md:p-6 border border-white/5">
-                                <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 md:mb-3">Projects & Practice</h4>
-                                <ul className="space-y-1 md:space-y-2 text-sm md:text-base text-white/60">
+                              <div className="bg-neutral-700/20 rounded-xl p-3 md:p-6 border border-white/5">
+                                <h4 className="text-sm font-semibold text-white/90 mb-1 md:text-lg md:mb-3">Projects & Practice</h4>
+                                <ul className="space-y-1 text-xs text-white/60 md:text-base md:space-y-2">
                                   <li>• EPICS Gold Program</li>
                                   <li>• Computer Science Capstone</li>
                                   <li>• Grand Challenge Scholars Program</li>
@@ -804,9 +1003,9 @@ export default function Home() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="flex items-center justify-center p-8 h-full"
+                          className="flex items-center justify-center p-4 md:p-8 h-full"
                         >
-                          <div className="text-2xl text-white/60">Hobbies content coming soon...</div>
+                          <div className="text-lg text-white/60 md:text-2xl">Hobbies content coming soon...</div>
                         </motion.div>
                       )}
 
@@ -817,9 +1016,9 @@ export default function Home() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="flex items-center justify-center p-8 h-full"
+                          className="flex items-center justify-center p-4 md:p-8 h-full"
                         >
-                          <div className="text-2xl text-white/60">Side Quests content coming soon...</div>
+                          <div className="text-lg text-white/60 md:text-2xl">Side Quests content coming soon...</div>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -886,11 +1085,11 @@ export default function Home() {
                 )}
 
                 {activeSection === "projects" && (
-                  <section className="w-full h-full p-8">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white/90 mb-8">
+                  <section className="w-full h-full p-4 md:p-8">
+                    <h2 className="text-xl font-bold text-white/90 mb-4 md:text-4xl md:mb-8">
                       {activeTab === "all" ? "Featured Projects" : "Deployed Projects"}
                     </h2>
-                    <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto scrollbar-none">
+                    <div className="w-full h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] overflow-y-auto scrollbar-none">
                       <AnimatePresence mode="wait">
                         <motion.div 
                           key={activeTab}
@@ -898,7 +1097,7 @@ export default function Home() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.3 }}
-                          className="grid grid-cols-1 md:grid-cols-2 gap-16 pb-8"
+                          className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16 pb-8"
                         >
                           {activeTab === "all" ? (
                             projects.map((project, index) => (
@@ -953,9 +1152,9 @@ export default function Home() {
 
                 {activeSection === "skills" && (
                   <section className="w-full h-full flex flex-col items-center justify-center">
-                    <div className="w-full max-w-7xl mx-auto px-4">
-                      <h2 className="text-3xl md:text-4xl font-bold text-white/90 mb-8 text-center">Technical Skills</h2>
-                      <div className="w-full overflow-y-auto max-h-[calc(100vh-16rem)] rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 p-6">
+                    <div className="w-full max-w-7xl mx-auto px-2 md:px-4">
+                      <h2 className="text-xl font-bold text-white/90 mb-4 text-center md:text-4xl md:mb-8">Technical Skills</h2>
+                      <div className="w-full overflow-y-auto max-h-[calc(100vh-12rem)] md:max-h-[calc(100vh-16rem)] rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 p-3 md:p-6">
                         <div className="w-full relative">
                           <InfiniteMovingCards
                             sections={skillsSections}
@@ -973,7 +1172,7 @@ export default function Home() {
                 {activeSection === "blog" && (
                   <section className="w-full h-full">
                     <div className="flex-1 w-full overflow-hidden">
-                      <div className="w-full h-full relative px-4">
+                      <div className="w-full h-full relative px-2 md:px-4">
             <ExCarousel
               items={blogPosts.map((post, index) => (
                 <Card
@@ -995,26 +1194,32 @@ export default function Home() {
         </section>
                 )}
 
+                {activeSection === "chat" && (
+                  <section className="w-full h-full p-1 md:p-4">
+                    <ChatInterface />
+                  </section>
+                )}
+
                 {activeSection === "contact" && (
                   <section className="w-full h-full">
-                    <div className="w-full bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-8">
-                      <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">Contact Me</h2>
+                    <div className="w-full bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-4 md:p-8">
+                      <h2 className="text-xl font-bold text-center mb-4 md:text-4xl md:mb-6">Contact Me</h2>
             <div className="mt-4 md:mt-8 text-center">
-              <p className="text-md md:text-lg mb-6">Feel free to reach out for collaborations or inquiries.</p>
-              <form onSubmit={handleSubmit} className="mt-6 space-y-4 max-w-2xl mx-auto">
+              <p className="text-sm mb-4 md:text-lg md:mb-6">Feel free to reach out for collaborations or inquiries.</p>
+              <form onSubmit={handleSubmit} className="mt-4 space-y-3 max-w-2xl mx-auto md:mt-6 md:space-y-4">
                 <input 
                   type="text" 
                   name="from_name"
                   placeholder="Your Name" 
                   required
-                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                  className="w-full p-2.5 text-sm bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all md:p-4" 
                 />
                 <input 
                   type="email" 
                   name="from_email"
                   placeholder="Your Email" 
                   required
-                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all" 
+                  className="w-full p-2.5 text-sm bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all md:p-4" 
                 />
                 <input 
                   type="hidden" 
@@ -1025,23 +1230,23 @@ export default function Home() {
                   name="message"
                   placeholder="Your Message" 
                   required
-                  className="w-full p-3 md:p-4 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-32 md:h-40"
+                  className="w-full p-2.5 text-sm bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-28 md:h-40 md:p-4"
                 ></textarea>
                 <button 
                   type="submit" 
-                  className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-semibold rounded-lg hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 md:px-6 md:py-3"
                 >
                   Send Message
                 </button>
               </form>
-              <div className="mt-6 flex flex-col items-center justify-center space-y-4">
-                <div className="text-sm text-gray-500">or connect with me on</div>
-                <div className="flex space-x-4">
+              <div className="mt-4 flex flex-col items-center justify-center space-y-2 md:mt-6 md:space-y-4">
+                <div className="text-xs text-gray-500 md:text-sm">or connect with me on</div>
+                <div className="flex space-x-3 md:space-x-4">
                   <a 
                     href="https://www.linkedin.com/in/sriujjwal/" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 hover:text-blue-600"
+                    className="text-blue-500 hover:text-blue-600 text-xs md:text-sm"
                   >
                     LinkedIn
                   </a>
@@ -1050,13 +1255,13 @@ export default function Home() {
                     href="https://github.com/sbeeredd04" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-500 hover:text-gray-400"
+                    className="text-gray-500 hover:text-gray-400 text-xs md:text-sm"
                   >
                     GitHub
                   </a>
                 </div>
               </div>
-              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 md:mt-4 md:text-sm">
                 Or email me directly at{' '}
                 <a 
                   href="mailto:srisubspace@gmail.com?subject=WEBSITE CONTACT" 
@@ -1078,15 +1283,25 @@ export default function Home() {
         <div className="h-[1vh] md:h-[5vh]" />
 
         {/* Bottom Tabs Container - Floating */}
-        <div className="h-[7.5vh] mx-6">
-          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center justify-between px-4 md:px-6">
+        <div className="h-[5vh] mx-6 md:h-[7.5vh]" id="tab-switcher-tutorial-target">
+          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center justify-between px-2 md:px-6">
             {/* Dynamic Tabs based on active section */}
-            <div className="flex items-center gap-2 md:gap-4 overflow-x-auto scrollbar-none">
+            <div className="flex items-center gap-1 md:gap-4 overflow-x-auto scrollbar-none">
+              {activeSection === "home" && (
+                <>
+                  <button
+                    className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg"
+                  >
+                    Overview
+                  </button>
+                </>
+              )}
+              
               {activeSection === "about" && (
                 <>
                   <button
                     onClick={() => setActiveTab("profile")}
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "profile"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1096,7 +1311,7 @@ export default function Home() {
                   </button>
                   <button
                     onClick={() => setActiveTab("education")}
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "education"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1106,7 +1321,7 @@ export default function Home() {
                   </button>
                   <button
                     onClick={() => setActiveTab("hobbies")}
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "hobbies"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1116,7 +1331,7 @@ export default function Home() {
                   </button>
                   <button
                     onClick={() => setActiveTab("side-quests")}
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "side-quests"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1130,7 +1345,7 @@ export default function Home() {
               {activeSection === "experience" && (
                 <>
                   <button
-                    className={`px-6 py-1.5 rounded-lg text-lg font-medium transition-all ${
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "experience"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1140,7 +1355,7 @@ export default function Home() {
                     Experience
                   </button>
                   <button
-                    className={`px-6 py-1.5 rounded-lg text-lg font-medium transition-all ${
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "achievements"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1155,7 +1370,7 @@ export default function Home() {
               {activeSection === "projects" && (
                 <>
                   <button 
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "all"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1165,7 +1380,7 @@ export default function Home() {
                     All Projects
                   </button>
                   <button 
-                    className={`px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap ${
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
                       activeTab === "deployed"
                         ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                         : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
@@ -1179,16 +1394,16 @@ export default function Home() {
 
               {activeSection === "skills" && (
                 <>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
                     All Skills
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Languages
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Frameworks
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Tools
                   </button>
                 </>
@@ -1196,21 +1411,32 @@ export default function Home() {
 
               {activeSection === "blog" && (
                 <>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
                     All Posts
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Tech
                   </button>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Tutorials
+                  </button>
+                </>
+              )}
+
+              {activeSection === "chat" && (
+                <>
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
+                    Chat
+                  </button>
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
+                    Assistant
                   </button>
                 </>
               )}
 
               {activeSection === "contact" && (
                 <>
-                  <button className="px-3 md:px-6 py-1.5 rounded-lg text-base md:text-lg font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
                     Contact Form
                   </button>
                 </>
@@ -1219,7 +1445,7 @@ export default function Home() {
 
             {/* Social Links - Only visible on desktop */}
             {!isMobile && (
-              <div className="hidden md:flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-4" id="social-links-tutorial-target">
                 <Link 
                   href="https://github.com/sbeeredd04" 
                   target="_blank"
@@ -1268,6 +1494,12 @@ export default function Home() {
         {/* Bottom 10% Margin */}
         <div className="h-[10vh] md:h-[5vh]" />
       </div>
+
+      {/* Spotify Player - Now rendered as a fixed popup outside the main content flow */}
+      {showPlayer && <SpotifyPlayer />}
+      
+      {/* Tutorial for first-time visitors */}
+      <FirstVisitTutorial />
     </div>
   );
 }

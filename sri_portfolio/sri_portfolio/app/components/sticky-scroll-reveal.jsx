@@ -13,7 +13,9 @@ export const StickyScroll = ({
 }) => {
   const [activeCard, setActiveCard] = React.useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isIntersecting, setIsIntersecting] = useState(false);
   const ref = useRef(null);
+  const containerRef = useRef(null);
   
   // Check for mobile view
   useEffect(() => {
@@ -26,13 +28,34 @@ export const StickyScroll = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsIntersecting(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        observer.unobserve(containerRef.current);
+      }
+    };
+  }, []);
+
   const { scrollYProgress } = useScroll({
     container: ref,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end end"],
   });
   const cardLength = content.length;
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (!isIntersecting) return;
+
     const cardsBreakpoints = content.map((_, index) => index / cardLength);
     const closestBreakpointIndex = cardsBreakpoints.reduce((acc, breakpoint, index) => {
       const distance = Math.abs(latest - breakpoint);
@@ -70,23 +93,25 @@ export const StickyScroll = ({
   };
 
   return (
-    <div className={cn(
-      "h-full w-full flex pb-20",
-      isMobile ? "block" : "flex"
-    )}>
+    <div 
+      ref={containerRef}
+      className={cn(
+        "h-full w-full flex pb-10 md:pb-20",
+        isMobile ? "flex-col" : "flex-row"
+      )}>
       {/* Scrollable Text Content */}
       <div
         ref={ref}
         className={cn(
           "h-full overflow-y-auto scrollbar-none relative",
-          isMobile ? "w-full px-4 py-2" : "w-1/2 px-6 py-4"
+          isMobile ? "w-full px-4 pt-16 pb-8" : "w-1/2 px-6 py-4 pt-24"
         )}
       >
         {/* Scroll Indicator */}
         <motion.div 
           className={cn(
-            "absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-400",
-            isMobile ? "top-4" : "top-8"
+            "absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-slate-400",
+            isMobile ? "top-6" : "top-10"
           )}
           animate={{
             y: [0, 10, 0],
@@ -107,15 +132,16 @@ export const StickyScroll = ({
           <div 
             key={item.title + index} 
             className={cn(
-              isMobile ? "my-32" : "my-64"
+              "mx-auto flex flex-col justify-center",
+              isMobile ? "min-h-[65vh] my-16" : "min-h-[55vh] mb-16"
             )}
           >
             <motion.h2
               initial={{ opacity: 0 }}
               animate={{ opacity: activeCard === index ? 1 : 0.3 }}
               className={cn(
-                "font-bold text-slate-100 mb-4 md:mb-6",
-                isMobile ? "text-lg" : "text-xl md:text-4xl"
+                "font-bold text-slate-100 mb-3 md:mb-4 text-center",
+                isMobile ? "text-xl" : "text-2xl md:text-3xl"
               )}
             >
               {item.title}
@@ -123,7 +149,10 @@ export const StickyScroll = ({
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: activeCard === index ? 1 : 0.3 }}
-              className="text-sm md:text-md"
+              className={cn(
+                "text-slate-200",
+                isMobile ? "text-sm" : "text-base"
+              )}
             >
               <ReactMarkdown components={components}>
                 {item.description}
@@ -135,10 +164,10 @@ export const StickyScroll = ({
 
       {/* Fixed Image Content - Hidden on Mobile */}
       {!isMobile && (
-        <div className="w-1/2 h-full relative">
-          <div className="absolute inset-0 flex items-center justify-center p-8">
+        <div className="w-1/2 h-full relative flex-shrink-0">
+          <div className="absolute inset-0 flex items-center justify-center p-6 md:p-8">
             <div className={cn(
-              "w-full h-full relative rounded-3xl overflow-hidden",
+              "w-full h-[80%] relative rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl",
               contentClassName
             )}>
               {content[activeCard].content && (
