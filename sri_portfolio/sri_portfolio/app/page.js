@@ -28,6 +28,7 @@ import {
   IconChevronDown,
   IconDownload,
   IconSearch,
+  IconLayoutSidebar,
 } from "@tabler/icons-react"; // Import relevant icons
 import { PinContainer } from "./components/3d-pin"; // Import 3D Pin Container for projects
 import { Carousel } from "./components/apple-cards-carousel"; // Import Carousel for projects and blog posts
@@ -46,16 +47,17 @@ import { ProjectCard } from "./components/ProjectCard";
 import deployedProjects from "./json/deployed.json";
 import { StickyScroll } from "./components/sticky-scroll-reveal";
 import aboutMeContent from "./json/aboutme.json";
+import { GlowingEffect } from "./components/glowing-effect"; // Import GlowingEffect
 
 
 // Slider duration in milliseconds
-const SLIDE_DURATION = 2000;
+// const SLIDE_DURATION = 2000; // No longer needed for bento grid
 
 export default function Home() {
   // Add these state variables at the top of the component
   const [activeSection, setActiveSection] = useState("home");
   const [activeTab, setActiveTab] = useState("profile"); // Set default tab to profile
-  const [currentSlide, setCurrentSlide] = useState(0);
+  // const [currentSlide, setCurrentSlide] = useState(0); // No longer needed for bento grid
   const [showResumePreview, setShowResumePreview] = useState(false);
   const [activeTimeline, setActiveTimeline] = useState("experience");
   const [showName, setShowName] = useState(true);
@@ -129,17 +131,17 @@ export default function Home() {
 
 
 
-  // Auto slide effect for the header slides
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, SLIDE_DURATION);
-    return () => clearInterval(interval);
-  }, [currentSlide]);
+  // Auto slide effect for the header slides - REMOVED as it's not used by Bento Grid
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setCurrentSlide((prev) => (prev + 1) % slides.length);
+  //   }, SLIDE_DURATION);
+  //   return () => clearInterval(interval);
+  // }, [currentSlide]);
 
-  // Manual slide navigation
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  // Manual slide navigation - REMOVED
+  // const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+  // const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
 
   useEffect(() => {
@@ -430,6 +432,149 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const getIconForSection = (sectionTitle) => {
+    switch (sectionTitle?.toLowerCase()) {
+      case 'welcome to my portfolio': return <IconHome className="h-5 w-5 text-yellow-400" />;
+      case 'about me': return <IconUser className="h-5 w-5 text-blue-400" />;
+      case 'professional experience': return <IconBriefcase className="h-5 w-5 text-green-400" />;
+      case 'featured projects': return <IconBulb className="h-5 w-5 text-orange-400" />;
+      case 'technical skills': return <IconTools className="h-5 w-5 text-purple-400" />;
+      case 'blog insights': return <IconBook className="h-5 w-5 text-indigo-400" />;
+      case 'get in touch': return <IconMail className="h-5 w-5 text-red-400" />;
+      default: return <IconBulb className="h-5 w-5 text-gray-400" />;
+    }
+  };
+
+  // Define GridItem component for the new Home section
+  const GridItem = ({
+    gridArea,
+    icon,
+    title,
+    description,
+    imageUrl,
+    onClick,
+    isImageCard = false, 
+  }) => {
+    const isClickable = !isImageCard && onClick;
+
+    return (
+      <li className={`list-none ${gridArea}`}>
+        <div className="relative h-full w-full rounded-2xl border border-white/10 p-2 md:rounded-3xl md:p-3">
+          {!isImageCard && ( 
+            <GlowingEffect
+              spread={30}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+              variant="default"
+              className="opacity-70"
+            />
+          )}
+          {isImageCard ? (
+            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-neutral-800/60 backdrop-blur-sm">
+              <img 
+                src={imageUrl} 
+                alt={title || "Sri Ujjwal Reddy B"} 
+                className="h-full w-full object-contain" 
+              />
+            </div>
+          ) : (
+            <div
+              onClick={isClickable ? onClick : undefined}
+              role={isClickable ? "button" : undefined}
+              tabIndex={isClickable ? 0 : undefined}
+              onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
+              className={`relative flex h-full flex-col justify-start gap-4 overflow-hidden rounded-xl p-4 md:p-6 shadow-xl 
+                         ${isClickable ? 'cursor-pointer hover:ring-1 hover:ring-cyan-400/50 transition-all duration-300' : ''}`}
+              style={{ 
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${imageUrl})`, 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center' 
+              }}
+            >
+              {/* Content wrapper ensuring content takes available space and aligns to top */}
+              <div className="relative flex flex-col justify-start flex-grow gap-3"> 
+                {icon && (
+                  <div className="w-fit rounded-lg border border-neutral-600/50 bg-neutral-700/30 p-2 mb-1 md:mb-2 shadow-md">
+                    {icon}
+                  </div>
+                )}
+                <div className="space-y-1 md:space-y-2">
+                  <h3 className="font-sans text-base md:text-xl font-semibold text-balance text-white">
+                    {title}
+                  </h3>
+                  {description && (
+                    <p className="font-sans text-xs md:text-sm text-neutral-300 leading-relaxed">
+                      {description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </li>
+    );
+  };
+  
+  // Data for the home grid items
+  const homeGridItems = [];
+
+  // Define the 8 grid areas for the bento layout: 3 left, 1 central image, 4 right
+  const ALL_GRID_AREAS = [
+    // Left Column (3 items)
+    "md:col-start-1 md:col-span-4 md:row-start-1 md:row-span-2", // Slot 0: slides[0] (Welcome)
+    "md:col-start-1 md:col-span-4 md:row-start-3 md:row-span-1", // Slot 1: slides[1] (About Me)
+    "md:col-start-1 md:col-span-4 md:row-start-4 md:row-span-1", // Slot 2: slides[2] (Experience)
+    // Central Column (1 item - Image)
+    "md:col-start-5 md:col-span-4 md:row-start-1 md:row-span-4", // Slot 3: me.png Image Card (Full Height)
+    // Right Column (4 items)
+    "md:col-start-9 md:col-span-4 md:row-start-1 md:row-span-1", // Slot 4: slides[3] (Projects)
+    "md:col-start-9 md:col-span-4 md:row-start-2 md:row-span-1", // Slot 5: slides[4] (Skills)
+    "md:col-start-9 md:col-span-4 md:row-start-3 md:row-span-1", // Slot 6: slides[5] (Blog)
+    "md:col-start-9 md:col-span-4 md:row-start-4 md:row-span-1", // Slot 7: slides[6] (Contact)
+  ];
+
+  // Map slides and the image to the slots in a fixed order for the desired layout
+  const itemsDataMap = [
+    slides.length > 0 ? slides[0] : null, // Slot 0: Welcome
+    slides.length > 1 ? slides[1] : null, // Slot 1: About Me
+    slides.length > 2 ? slides[2] : null, // Slot 2: Experience
+    { isImage: true, imageUrl: "/me.png", title: "Sri Ujjwal Reddy B" }, // Slot 3: me.png
+    slides.length > 3 ? slides[3] : null, // Slot 4: Projects
+    slides.length > 4 ? slides[4] : null, // Slot 5: Skills
+    slides.length > 5 ? slides[5] : null, // Slot 6: Blog
+    slides.length > 6 ? slides[6] : null, // Slot 7: Contact
+  ];
+
+  itemsDataMap.forEach((itemData, index) => {
+    if (itemData && index < ALL_GRID_AREAS.length) {
+      if (itemData.isImage) {
+        homeGridItems.push({
+          isImageCard: true,
+          imageUrl: itemData.imageUrl,
+          title: itemData.title,
+          gridArea: ALL_GRID_AREAS[index],
+        });
+      } else {
+        const targetSection = itemData.title === "Welcome to My Portfolio" 
+                              ? "about" 
+                              : itemData.section;
+        homeGridItems.push({
+          title: itemData.title,
+          description: itemData.description,
+          imageUrl: itemData.image,
+          onClick: () => navigateToSection(targetSection),
+          icon: getIconForSection(itemData.title),
+          gridArea: ALL_GRID_AREAS[index],
+          isImageCard: false,
+        });
+      }
+    }
+  });
+
+
  return (
     <div 
       className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:inset-0 before:bg-black/50" 
@@ -589,57 +734,32 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="h-full overflow-y-auto overflow-x-hidden px-4 py-4 md:px-6 md:py-6 scrollbar-none"
+                className="h-full overflow-y-auto overflow-x-hidden px-2 py-2 md:px-4 md:py-4 scrollbar-none"
               >
         {/* Home Section */}
                 {activeSection === "home" && (
                   <section className="w-full h-full">
-                    <div className="relative w-full h-full">
-                      <AnimatePresence mode="wait">
-              {slides.map((slide, index) =>
-                currentSlide === index ? (
-                  <motion.div
-                    key={slide.title}
-                    initial={{ opacity: 0, x: 100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.6 }}
-                    className="absolute inset-0 rounded-xl overflow-hidden"
-                    style={{
-                      backgroundImage: `url(${slide.image})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  >
-                              <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-md flex flex-col items-center justify-center text-white text-center p-4 md:p-8">
-                      <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-2 sm:mb-4">{slide.title}</h2>
-                      <p className="text-sm sm:text-base md:text-lg mb-3 sm:mb-4">{slide.description}</p>
-                                <button 
-                                  onClick={() => navigateToSection(slide.section)}
-                                  className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all md:px-6 md:py-3"
-                                >
-                        Learn More
-                                </button>
-                    </div>
-                  </motion.div>
-                ) : null
-              )}
-            </AnimatePresence>
-
-                      <button 
-                        onClick={prevSlide} 
-                        className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
-                      >
-                        <IconArrowLeft className="w-4 h-4 sm:w-6 sm:h-6" />
-            </button>
-                      <button 
-                        onClick={nextSlide} 
-                        className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-black/50 backdrop-blur-sm text-white rounded-full hover:bg-black/70 transition-all z-10"
-                      >
-                        <IconArrowRight className="w-4 h-4 sm:w-6 sm:h-6" />
-            </button>
-          </div>
-        </section>
+                    {homeGridItems.length > 0 ? (
+                      <ul className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-4 gap-3 md:gap-4 h-full p-1 md:p-2">
+                        {homeGridItems.map((item, idx) => (
+                          <GridItem
+                            key={item.title || `grid-item-${idx}`} 
+                            gridArea={item.gridArea}
+                            icon={item.icon}
+                            title={item.title}
+                            description={item.description}
+                            imageUrl={item.imageUrl}
+                            onClick={item.onClick}
+                            isImageCard={item.isImageCard}
+                          />
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-white/70">
+                        Loading home content...
+                      </div>
+                    )}
+                  </section>
                 )}
 
                 {activeSection === "about" && (
