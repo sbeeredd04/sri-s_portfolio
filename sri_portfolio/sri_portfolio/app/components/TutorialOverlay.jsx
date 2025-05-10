@@ -245,39 +245,37 @@ export const TutorialOverlay = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[99999] flex items-center justify-center" 
+      className="fixed inset-0 z-[99999]" 
     >
       {/* Full-screen backdrop with cutout for the highlighted element */}
       {highlightBox && (
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-none">
-          {/* SVG mask technique for cutting out the spotlight */}
-          <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <mask id="spotlight-mask">
-                <rect width="100%" height="100%" fill="white" />
-                <rect 
-                  x={highlightBox.left} 
-                  y={highlightBox.top} 
-                  width={highlightBox.width} 
-                  height={highlightBox.height} 
-                  rx="12" 
-                  ry="12" 
-                  fill="black" 
-                />
-              </mask>
-            </defs>
-            <rect 
-              width="100%" 
-              height="100%" 
-              fill="rgba(0,0,0,0.7)" 
-              mask="url(#spotlight-mask)" 
-            />
-          </svg>
+        <>
+          {/* 
+            Create a specially shaped overlay that darkens everything 
+            EXCEPT where the target element is (using clip-path)
+          */}
+          <div 
+            className="fixed inset-0 bg-black/80 pointer-events-none"
+            style={{ 
+              zIndex: 99998,
+              clipPath: `path('M 0,0 L 0,${window.innerHeight} L ${window.innerWidth},${window.innerHeight} L ${window.innerWidth},0 L 0,0 Z M ${highlightBox.left},${highlightBox.top} L ${highlightBox.left + highlightBox.width},${highlightBox.top} L ${highlightBox.left + highlightBox.width},${highlightBox.top + highlightBox.height} L ${highlightBox.left},${highlightBox.top + highlightBox.height} Z')`,
+              backdropFilter: 'blur(0)',
+            }}
+          />
+          
+          {/* Semi-transparent overlay for areas that are not the target */}
+          <div 
+            className="fixed inset-0 backdrop-blur-sm pointer-events-none"
+            style={{ 
+              zIndex: 99997,
+              clipPath: `path('M 0,0 L 0,${window.innerHeight} L ${window.innerWidth},${window.innerHeight} L ${window.innerWidth},0 L 0,0 Z M ${highlightBox.left},${highlightBox.top} L ${highlightBox.left + highlightBox.width},${highlightBox.top} L ${highlightBox.left + highlightBox.width},${highlightBox.top + highlightBox.height} L ${highlightBox.left},${highlightBox.top + highlightBox.height} Z')`,
+            }}
+          />
           
           {/* Glowing border around the highlighted element */}
           <div
             style={{
-              position: 'absolute',
+              position: 'fixed',
               top: highlightBox.top,
               left: highlightBox.left,
               width: highlightBox.width,
@@ -288,10 +286,10 @@ export const TutorialOverlay = ({ onClose }) => {
               zIndex: 100000
             }}
           />
-        </div>
+        </>
       )}
 
-      {/* Tooltip */}
+      {/* Tooltip - IMPORTANT: This needs pointer-events-auto to be clickable */}
       <motion.div
         key={`tooltip-${currentStepIndex}`}
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -305,7 +303,7 @@ export const TutorialOverlay = ({ onClose }) => {
           width: `${TOOLTIP_WIDTH}px`,
           zIndex: 100001, // Ensure tooltip is above highlight
         }}
-        className="bg-neutral-800/90 border border-neutral-700/80 text-white p-5 rounded-lg shadow-2xl backdrop-blur-sm" // Added slight transparency and blur to tooltip
+        className="bg-neutral-800/90 border border-neutral-700/80 text-white p-5 rounded-lg shadow-2xl backdrop-blur-sm pointer-events-auto" // Added pointer-events-auto
       >
         <h3 className="text-lg font-semibold text-sky-400 mb-2">{currentStep.title}</h3> {/* Matched highlight border color */}
         <p className="text-sm text-neutral-200 mb-4">{currentStep.text}</p> {/* Lighter text */}
