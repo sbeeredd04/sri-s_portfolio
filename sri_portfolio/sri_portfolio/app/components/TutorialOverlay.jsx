@@ -34,6 +34,20 @@ const tutorialSteps = [
     tooltipAttachment: "bottom", // e.g., tooltip below the theme button
     tooltipAlign: "end",      // e.g., aligned to the right edge of the button
   },
+  {
+    elementId: "tab-switcher-tutorial-target",
+    title: "Section Tabs",
+    text: "Switch between different views within each section. Each section has its own set of tabs that let you explore different content.",
+    tooltipAttachment: "top",
+    tooltipAlign: "start",
+  },
+  {
+    elementId: "social-links-tutorial-target",
+    title: "Connect With Me",
+    text: "Find me on social media, send an email, or download my resume. These links provide easy access to my professional profiles and contact information.",
+    tooltipAttachment: "top",
+    tooltipAlign: "end",
+  },
   // Add more steps here for other important buttons if needed
 ];
 

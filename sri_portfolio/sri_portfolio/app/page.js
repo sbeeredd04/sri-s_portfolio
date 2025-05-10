@@ -1268,10 +1268,20 @@ export default function Home() {
         <div className="h-[1vh] md:h-[5vh]" />
 
         {/* Bottom Tabs Container - Floating */}
-        <div className="h-[5vh] mx-6 md:h-[7.5vh]">
+        <div className="h-[5vh] mx-6 md:h-[7.5vh]" id="tab-switcher-tutorial-target">
           <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center justify-between px-2 md:px-6">
             {/* Dynamic Tabs based on active section */}
             <div className="flex items-center gap-1 md:gap-4 overflow-x-auto scrollbar-none">
+              {activeSection === "home" && (
+                <>
+                  <button
+                    className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg"
+                  >
+                    Overview
+                  </button>
+                </>
+              )}
+              
               {activeSection === "about" && (
                 <>
                   <button
@@ -1409,7 +1419,7 @@ export default function Home() {
 
             {/* Social Links - Only visible on desktop */}
             {!isMobile && (
-              <div className="hidden md:flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-4" id="social-links-tutorial-target">
                 <Link 
                   href="https://github.com/sbeeredd04" 
                   target="_blank"
