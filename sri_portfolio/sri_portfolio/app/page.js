@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react"; 
+import { useEffect, useRef, useState, useCallback } from "react"; 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { FloatingDock } from "./components/FloatingDock";
@@ -22,17 +22,19 @@ import {
   IconLock, 
   IconLetterA,
   IconShare,
-  IconCopy,
+  IconVolume,
   IconPlus,
   IconPalette,
   IconChevronDown,
   IconDownload,
   IconSearch,
-  IconLayoutSidebar,
-} from "@tabler/icons-react"; // Import relevant icons
-import { PinContainer } from "./components/3d-pin"; // Import 3D Pin Container for projects
-import { Carousel } from "./components/apple-cards-carousel"; // Import Carousel for projects and blog posts
-import createGlobe from "cobe"; // Import cobe to create the globe
+  IconLayoutSidebar
+} from "@tabler/icons-react";
+// Import IconVolumeOff instead of IconVolumeMute (which appears to be unavailable)
+import { IconVolumeOff } from "@tabler/icons-react"; 
+import { PinContainer } from "./components/3d-pin";
+import { Carousel } from "./components/apple-cards-carousel";
+import createGlobe from "cobe";
 import { CardSpotlight } from "./components/card-spotlight";
 import { Card, ExCarousel } from "./components/ExpandableCard";
 import { InfiniteMovingCards } from "./components/infinite-moving-cards";
@@ -47,24 +49,27 @@ import { ProjectCard } from "./components/ProjectCard";
 import deployedProjects from "./json/deployed.json";
 import { StickyScroll } from "./components/sticky-scroll-reveal";
 import aboutMeContent from "./json/aboutme.json";
-import { GlowingEffect } from "./components/glowing-effect"; // Import GlowingEffect
-
-
-// Slider duration in milliseconds
-// const SLIDE_DURATION = 2000; // No longer needed for bento grid
+import { GlowingEffect } from "./components/glowing-effect";
+import { SpotifyPlayer } from "./components/SpotifyPlayer";
+import { useMusic } from "./components/MusicProvider";
+import { useSound } from "./components/SoundProvider";
 
 export default function Home() {
   // Add these state variables at the top of the component
   const [activeSection, setActiveSection] = useState("home");
-  const [activeTab, setActiveTab] = useState("profile"); // Set default tab to profile
-  // const [currentSlide, setCurrentSlide] = useState(0); // No longer needed for bento grid
+  const [activeTab, setActiveTab] = useState("profile");
   const [showResumePreview, setShowResumePreview] = useState(false);
   const [activeTimeline, setActiveTimeline] = useState("experience");
   const [showName, setShowName] = useState(true);
   const [showProjectPreview, setShowProjectPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [isMobile, setIsMobile] = useState(false);
-
+  
+  // Important: Make sure these hooks are called at the top level
+  const { showPlayer, togglePlayerVisibility } = useMusic();
+  const { isSoundEnabled, toggleSound, playClickSound } = useSound();
+  
+  // Check for mobile devices
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -73,6 +78,45 @@ export default function Home() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  
+  // New click sound effect with improved debugging
+  useEffect(() => {
+    console.log("Setting up click sound handler");
+    
+    // Create a direct click handler function
+    const handleClickSound = () => {
+      if (isSoundEnabled && typeof playClickSound === 'function') {
+        console.log("Click detected, playing sound");
+        playClickSound();
+      }
+    };
+    
+    // Add to document body for global coverage
+    if (typeof window !== 'undefined') {
+      document.body.addEventListener('click', handleClickSound);
+      console.log("Click sound handler attached to document body");
+      
+      // Also add to specific important elements
+      const importantButtons = document.querySelectorAll('.FloatingDock button, .Browser-Controls button');
+      importantButtons.forEach(btn => {
+        btn.addEventListener('click', handleClickSound);
+        console.log("Added click handler to important button:", btn);
+      });
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        document.body.removeEventListener('click', handleClickSound);
+        
+        const importantButtons = document.querySelectorAll('.FloatingDock button, .Browser-Controls button');
+        importantButtons.forEach(btn => {
+          btn.removeEventListener('click', handleClickSound);
+        });
+        
+        console.log("Removed all click sound handlers");
+      }
+    };
+  }, [isSoundEnabled, playClickSound]);
 
   //one setting setShow
 
@@ -679,17 +723,34 @@ export default function Home() {
             {/* Browser Controls */}
             <div className="flex items-center gap-2 md:gap-4">
               <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-neutral-700/50 border border-white/10 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-neutral-500 to-neutral-700 flex items-center justify-center text-white text-xs md:text-sm font-medium">
-                  SR
-                </div>
+                <img 
+                  src="/music/mySong.png" 
+                  alt="Sri" 
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <button className="text-neutral-400 hover:text-white transition-colors">
-                <IconShare size={18} stroke={2.5} className="md:hidden" />
-                <IconShare size={24} stroke={3} className="hidden md:block" />
+              <button 
+                className="text-neutral-400 hover:text-white transition-colors"
+                onClick={toggleSound}
+              >
+                {isSoundEnabled ? (
+                  <>
+                    <IconVolume size={18} stroke={2.5} className="md:hidden" />
+                    <IconVolume size={24} stroke={3} className="hidden md:block" />
+                  </>
+                ) : (
+                  <>
+                    <IconVolumeOff size={18} stroke={2.5} className="md:hidden" />
+                    <IconVolumeOff size={24} stroke={3} className="hidden md:block" />
+                  </>
+                )}
               </button>
-              <button className="text-neutral-400 hover:text-white transition-colors">
-                <IconCopy size={18} stroke={2.5} className="md:hidden" />
-                <IconCopy size={24} stroke={3} className="hidden md:block" />
+              <button 
+                className="text-neutral-400 hover:text-white transition-colors"
+                onClick={togglePlayerVisibility}
+              >
+                <IconBrandSpotify size={24} stroke={2.5} className="md:hidden" />
+                <IconBrandSpotify size={32} stroke={1} className="hidden md:block" />
               </button>
               <button
                 onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
@@ -1390,6 +1451,9 @@ export default function Home() {
         {/* Bottom 10% Margin */}
         <div className="h-[10vh] md:h-[5vh]" />
       </div>
+
+      {/* Spotify Player - Now rendered as a fixed popup outside the main content flow */}
+      {showPlayer && <SpotifyPlayer />}
     </div>
   );
 }

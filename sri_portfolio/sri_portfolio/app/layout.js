@@ -3,6 +3,8 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Inter } from "next/font/google";
+import { MusicProvider } from './components/MusicProvider';
+import { SoundProvider } from './components/SoundProvider';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,22 +42,13 @@ export const metadata = {
     description: 'Software Engineer | ML Engineer | Full Stack Developer',
     images: ['https://www.sriujjwalreddy.com/logo.png'], // Update this path
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+};
+
+// Fix: Move viewport settings to a separate export
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }) {
@@ -69,7 +62,11 @@ export default function RootLayout({ children }) {
         <link rel="icon" type="image/png" href="/logo.png" />
       </head>
       <body className={inter.className}>
-        {children}
+        <SoundProvider>
+          <MusicProvider>
+            {children}
+          </MusicProvider>
+        </SoundProvider>
         <Analytics />
         <SpeedInsights />
       </body>
