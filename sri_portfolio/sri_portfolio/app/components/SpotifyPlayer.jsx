@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useRef } from "react";
 import {
   IconPlayerPlayFilled,
   IconPlayerPauseFilled,
@@ -18,6 +19,7 @@ import {
   IconX
 } from "@tabler/icons-react";
 import { useMusic } from "./MusicProvider";
+import { useOutsideClick } from "../hooks/use-outside-click";
 
 const formatTime = (seconds) => {
   if (!seconds || isNaN(seconds)) return "0:00";
@@ -27,6 +29,7 @@ const formatTime = (seconds) => {
 };
 
 export const SpotifyPlayer = () => {
+  const playerRef = useRef(null);
   const {
     isPlaying,
     currentSong,
@@ -44,6 +47,10 @@ export const SpotifyPlayer = () => {
     changeVolume,
     togglePlayerVisibility
   } = useMusic();
+
+  useOutsideClick(playerRef, () => {
+    togglePlayerVisibility();
+  });
 
   if (!currentSong) return null;
 
@@ -73,14 +80,15 @@ export const SpotifyPlayer = () => {
 
   return (
     <AnimatePresence>
-      {/* Wrapper div that covers the entire screen and centers content */}
-      <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+      {/* Wrapper div that covers the entire screen but aligns content to bottom */}
+      <div className="fixed inset-0 flex items-end justify-center z-50 pointer-events-none">
         {/* Container with constrained width */}
-        <div className="w-[95%] max-w-3xl pointer-events-auto px-4">
+        <div className="w-[95%] max-w-3xl pointer-events-auto px-4 mb-4 md:mb-8">
           <motion.div
-            initial={{ y: 50, opacity: 0, scale: 0.9 }}
+            ref={playerRef}
+            initial={{ y: 80, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 50, opacity: 0, scale: 0.9 }}
+            exit={{ y: 80, opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 25 }}
             className="bg-neutral-900/90 backdrop-blur-md shadow-lg rounded-xl border border-white/10 p-4 flex flex-col sm:flex-col md:flex-row items-center gap-4"
           >
