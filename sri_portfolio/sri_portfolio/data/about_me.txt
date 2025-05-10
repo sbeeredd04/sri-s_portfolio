@@ -1,0 +1,49 @@
+ABOUT SRI UJJWAL REDDY B
+
+PERSONAL PROFILE
+Sri Ujjwal Reddy B is a Computer Science student at Arizona State University with a passion for software engineering and AI. He maintains a perfect 4.0 GPA and is actively involved in various tech projects. 
+
+EDUCATION
+Arizona State University (2022-2026)
+Bachelor of Science in Computer Science
+Software Engineering Track
+Minor in Entrepreneurship
+GPA: 4.0/4.0
+Academic Achievements: Dean's List (All Semesters), New American University Scholar
+
+SKILLS
+Programming Languages: Python, JavaScript, Java, C++, C, TypeScript, HTML, CSS, C#, MATLAB
+Frameworks & Libraries: React, Next.js, Django, Node.js, FastAPI, Flask, TensorFlow, PyTorch, OpenCV
+Machine Learning: TensorFlow, PyTorch, scikit-learn, stable_baselines3, gymnasium, ray
+Data Science: NumPy, Pandas, Matplotlib, Plotly
+Cloud & DevOps: AWS, Azure, Google Cloud, Docker, Git
+Design Tools: Figma, Adobe Illustrator, Adobe Photoshop, Canva
+Hardware & Embedded Systems: Raspberry Pi
+
+EXPERIENCE
+Sri has gained professional experience through internships and research positions, applying his skills to real-world problems. His work experience includes roles in software development, research, and academic projects where he's developed practical industry skills. He has worked in both academic and professional settings, developing a well-rounded perspective on software engineering and AI applications.
+
+PROJECTS
+Sri has worked on various projects including web applications, AI tools, and data analysis systems. Some of his notable projects include portfolio websites, AI-driven applications, and educational tools. Each demonstrates his diverse skill set. He has built projects across various domains including web development, AI, and data science. His portfolio showcases his versatility as a developer.
+
+ACHIEVEMENTS
+Dean's List (All Semesters)
+New American University Scholar
+Perfect 4.0 GPA
+Multiple hackathon wins
+Research publications in machine learning
+
+INTERESTS
+Artificial Intelligence
+Machine Learning
+Web Development
+Software Engineering
+Entrepreneurship
+Innovation and Technology
+Music Production
+Photography
+
+CONTACT INFORMATION
+Email: srisubspace@gmail.com
+LinkedIn: linkedin.com/in/sriujjwal
+GitHub: github.com/sbeeredd04 
