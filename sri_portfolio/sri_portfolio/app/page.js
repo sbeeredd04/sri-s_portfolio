@@ -29,7 +29,9 @@ import {
   IconDownload,
   IconSearch,
   IconLayoutSidebar,
-  IconMessageCircle
+  IconMessageCircle,
+  IconLink,
+  IconShare2
 } from "@tabler/icons-react";
 // Import IconVolumeOff instead of IconVolumeMute (which appears to be unavailable)
 import { IconVolumeOff } from "@tabler/icons-react"; 
@@ -56,6 +58,7 @@ import { useMusic } from "./components/MusicProvider";
 import { useSound } from "./components/SoundProvider";
 import { FirstVisitTutorial } from "./components/FirstVisitTutorial";
 import { ChatInterface } from "./components/ChatInterface";
+import { BentoGrid, BentoGridItem } from "./components/bento-grid";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -67,6 +70,7 @@ export default function Home() {
   const [showProjectPreview, setShowProjectPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
   
   // Important: Make sure these hooks are called at the top level
   const { showPlayer, togglePlayerVisibility } = useMusic();
@@ -81,6 +85,20 @@ export default function Home() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  
+  // Preload project images when visiting projects section
+  useEffect(() => {
+    // Only preload when projects section is active
+    if (activeSection === "projects") {
+      const allProjects = [...projects, ...deployedProjects];
+      allProjects.forEach(project => {
+        if (project.image) {
+          const img = new Image();
+          img.src = project.image.startsWith('/') ? project.image : `/${project.image}`;
+        }
+      });
+    }
+  }, [activeSection, activeTab]);
   
   // New click sound effect with improved debugging
   useEffect(() => {
@@ -1083,11 +1101,19 @@ export default function Home() {
                 )}
 
                 {activeSection === "projects" && (
-                  <section className="w-full h-full p-4 md:p-8">
-                    <h2 className="text-xl font-bold text-white/90 mb-4 md:text-4xl md:mb-8">
+                  <section className="w-full h-full p-4 md:p-8 flex flex-col">
+                    <h2 className="text-xl font-bold text-white/90 mb-4 md:text-4xl md:mb-6 flex-shrink-0">
                       {activeTab === "all" ? "Featured Projects" : "Deployed Projects"}
                     </h2>
-                    <div className="w-full h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] overflow-y-auto scrollbar-none">
+                    
+                    <div 
+                      className="flex-1 overflow-y-auto scrollbar-none scroll-smooth"
+                      style={{ 
+                        overscrollBehavior: 'contain',
+                        WebkitOverflowScrolling: 'touch',
+                        paddingBottom: '100px' // Extra padding at the bottom to prevent getting stuck
+                      }}
+                    >
                       <AnimatePresence mode="wait">
                         <motion.div 
                           key={activeTab}
@@ -1095,56 +1121,104 @@ export default function Home() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.3 }}
-                          className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16 pb-8"
+                          className="pb-16" // Extra padding at bottom for scrolling space
                         >
                           {activeTab === "all" ? (
-                            projects.map((project, index) => (
-                              <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 50 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ 
-                                  duration: 0.5, 
-                                  delay: index * 0.1,
-                                  ease: [0.25, 0.1, 0.25, 1]
-                                }}
-                              >
-                                <ProjectCard
-                                  title={project.title}
-                                  description={project.description}
-                                  imageUrl={project.image}
-                                  techStack={project.technologies || ["React", "Next.js", "TailwindCSS"]}
-                                  projectUrl={project.href}
-                                  githubUrl={project.github}
-                                />
-                              </motion.div>
-                            ))
+                            <BentoGrid className="max-w-7xl mx-auto pb-20">
+                              {projects.map((project, index) => {
+                                // Randomly determine if this project should span 2 columns with ~30% chance
+                                // Making items at index 2, 5, and 7 span 2 columns (if they exist)
+                                const spanTwoColumns = 
+                                  index === 2 || index === 5 || index === 7;
+                                
+                                return (
+                                  <BentoGridItem
+                                    key={index}
+                                    title={project.title}
+                                    description={project.description}
+                                    backgroundImage={project.image}
+                                    onClick={() => setSelectedProject(project)}
+                                    githubUrl={project.github}
+                                    projectUrl={project.href}
+                                    icon={
+                                      <div className="flex flex-wrap gap-1">
+                                        {project.technologies?.slice(0, 3).map((tech, i) => (
+                                          <span 
+                                            key={i} 
+                                            className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90"
+                                          >
+                                            {tech}
+                                          </span>
+                                        ))}
+                                        {project.technologies?.length > 3 && (
+                                          <span className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90">
+                                            +{project.technologies.length - 3}
+                                          </span>
+                                        )}
+                                      </div>
+                                    }
+                                    className={`border-white/10 ${
+                                      spanTwoColumns ? "md:col-span-2" : ""
+                                    }`}
+                                  />
+                                );
+                              })}
+                            </BentoGrid>
                           ) : (
-                            deployedProjects.map((project, index) => (
-                              <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 50 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ 
-                                  duration: 0.5, 
-                                  delay: index * 0.1,
-                                  ease: [0.25, 0.1, 0.25, 1]
-                                }}
-                              >
-                                <ProjectCard
-                                  title={project.title}
-                                  description={project.description}
-                                  imageUrl={project.image}
-                                  techStack={project.technologies || ["React", "Next.js", "TailwindCSS"]}
-                                  projectUrl={project.href}
-                                  githubUrl={project.github}
-                                />
-                              </motion.div>
-                            ))
+                            <BentoGrid className="max-w-7xl mx-auto pb-20">
+                              {deployedProjects.map((project, index) => {
+                                // Randomly determine if this project should span 2 columns with ~30% chance
+                                // Making items at index 1, 3, and 4 span 2 columns (if they exist)
+                                const spanTwoColumns = 
+                                  index === 1 || index === 3 || index === 4;
+                                
+                                return (
+                                  <BentoGridItem
+                                    key={index}
+                                    title={project.title}
+                                    description={project.description}
+                                    backgroundImage={project.image}
+                                    onClick={() => setSelectedProject(project)}
+                                    githubUrl={project.github}
+                                    projectUrl={project.href}
+                                    icon={
+                                      <div className="flex flex-wrap gap-1">
+                                        {project.technologies?.slice(0, 3).map((tech, i) => (
+                                          <span 
+                                            key={i} 
+                                            className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90"
+                                          >
+                                            {tech}
+                                          </span>
+                                        ))}
+                                        {project.technologies?.length > 3 && (
+                                          <span className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90">
+                                            +{project.technologies.length - 3}
+                                          </span>
+                                        )}
+                                      </div>
+                                    }
+                                    className={`border-white/10 ${
+                                      spanTwoColumns ? "md:col-span-2" : ""
+                                    }`}
+                                  />
+                                );
+                              })}
+                            </BentoGrid>
                           )}
                         </motion.div>
                       </AnimatePresence>
                     </div>
+                    
+                    {/* Project Modal */}
+                    <AnimatePresence>
+                      {selectedProject && (
+                        <ProjectModal 
+                          project={selectedProject} 
+                          onClose={() => setSelectedProject(null)}
+                        />
+                      )}
+                    </AnimatePresence>
                   </section>
                 )}
 
@@ -1501,3 +1575,117 @@ export default function Home() {
     </div>
   );
 }
+
+// Create a ProjectModal component right before the main return statement
+// Add this before the return statement in the Home component
+const ProjectModal = ({ project, onClose }) => {
+  if (!project) return null;
+  
+  // Handle click on the modal background (outside the content) to close
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+  
+  // Handle escape key to close the modal
+  useEffect(() => {
+    const handleEscKey = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEscKey);
+    return () => window.removeEventListener('keydown', handleEscKey);
+  }, [onClose]);
+  
+  // Make sure image path is correct
+  const imageUrl = project.image || '/projects/default-project.jpg';
+  const safeImageUrl = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+  
+  return (
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+      onClick={handleBackdropClick}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+        className="relative w-full max-w-2xl rounded-xl bg-neutral-900/90 border border-white/20 shadow-xl overflow-hidden max-h-[85vh]"
+      >
+        {/* Close button */}
+        <button 
+          onClick={onClose}
+          className="absolute top-3 right-3 z-50 p-1 rounded-full bg-black/50 text-white"
+        >
+          <IconPlus className="h-5 w-5 rotate-45" />
+        </button>
+        
+        {/* Project Image */}
+        <div className="relative w-full h-40 md:h-56">
+          <img 
+            src={safeImageUrl} 
+            alt={project.title}
+            className="w-full h-full object-cover"
+            loading="eager"
+            onError={(e) => {
+              e.target.src = '/projects/default-project.jpg';
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
+          <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+            <h2 className="text-lg md:text-2xl font-bold text-white">{project.title}</h2>
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {project.technologies?.slice(0, 5).map((tech, i) => (
+                <span 
+                  key={i} 
+                  className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90"
+                >
+                  {tech}
+                </span>
+              ))}
+              {project.technologies?.length > 5 && (
+                <span className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90">
+                  +{project.technologies.length - 5}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Project Details */}
+        <div className="p-3 md:p-4 overflow-y-auto max-h-[40vh] scroll-smooth" style={{ overscrollBehavior: 'contain' }}>
+          <p className="text-white/80 mb-3 md:mb-4 text-xs md:text-sm leading-relaxed">{project.description}</p>
+          
+          {/* Links */}
+          <div className="flex gap-2 flex-wrap">
+            {project.github && (
+              <a 
+                href={project.github} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-neutral-800 rounded-lg text-xs text-white transition-colors"
+              >
+                <IconBrandGithub size={14} />
+                <span>GitHub</span>
+              </a>
+            )}
+            {project.href && (
+              <a 
+                href={project.href} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-800/80 rounded-lg text-xs text-white transition-colors"
+              >
+                <IconShare2 size={14} />
+                <span>View Project</span>
+              </a>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+  
+  // Now update the main return statement
