@@ -1111,7 +1111,7 @@ export default function Home() {
                       style={{ 
                         overscrollBehavior: 'contain',
                         WebkitOverflowScrolling: 'touch',
-                        paddingBottom: '100px' // Extra padding at the bottom to prevent getting stuck
+                        paddingBottom: '120px' // Extra padding at the bottom to prevent getting stuck
                       }}
                     >
                       <AnimatePresence mode="wait">
@@ -1121,13 +1121,12 @@ export default function Home() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.3 }}
-                          className="pb-16" // Extra padding at bottom for scrolling space
+                          className="pb-20" // Extra padding at bottom for scrolling space
                         >
                           {activeTab === "all" ? (
-                            <BentoGrid className="max-w-7xl mx-auto pb-20">
+                            <BentoGrid className="max-w-7xl mx-auto pb-24">
                               {projects.map((project, index) => {
-                                // Randomly determine if this project should span 2 columns with ~30% chance
-                                // Making items at index 2, 5, and 7 span 2 columns (if they exist)
+                                // Determine if this project should span 2 columns
                                 const spanTwoColumns = 
                                   index === 2 || index === 5 || index === 7;
                                 
@@ -1141,23 +1140,23 @@ export default function Home() {
                                     githubUrl={project.github}
                                     projectUrl={project.href}
                                     icon={
-                                      <div className="flex flex-wrap gap-1">
-                                        {project.technologies?.slice(0, 3).map((tech, i) => (
+                                      <div className="flex flex-wrap gap-2">
+                                        {project.technologies?.slice(0, isMobile ? 2 : 3).map((tech, i) => (
                                           <span 
                                             key={i} 
-                                            className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90"
+                                            className="text-[8px] sm:text-[9px] py-1 px-2 bg-black/80 backdrop-blur-sm rounded-full text-white/95 border border-white/20"
                                           >
                                             {tech}
                                           </span>
                                         ))}
-                                        {project.technologies?.length > 3 && (
-                                          <span className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90">
-                                            +{project.technologies.length - 3}
+                                        {project.technologies?.length > (isMobile ? 2 : 3) && (
+                                          <span className="text-[8px] sm:text-[9px] py-1 px-2 bg-black/80 backdrop-blur-sm rounded-full text-white/95 border border-white/20">
+                                            +{project.technologies.length - (isMobile ? 2 : 3)}
                                           </span>
                                         )}
                                       </div>
                                     }
-                                    className={`border-white/10 ${
+                                    className={`border-white/10 hover:border-white/20 ${
                                       spanTwoColumns ? "md:col-span-2" : ""
                                     }`}
                                   />
@@ -1165,10 +1164,9 @@ export default function Home() {
                               })}
                             </BentoGrid>
                           ) : (
-                            <BentoGrid className="max-w-7xl mx-auto pb-20">
+                            <BentoGrid className="max-w-7xl mx-auto pb-24">
                               {deployedProjects.map((project, index) => {
-                                // Randomly determine if this project should span 2 columns with ~30% chance
-                                // Making items at index 1, 3, and 4 span 2 columns (if they exist)
+                                // Determine if this project should span 2 columns
                                 const spanTwoColumns = 
                                   index === 1 || index === 3 || index === 4;
                                 
@@ -1182,23 +1180,23 @@ export default function Home() {
                                     githubUrl={project.github}
                                     projectUrl={project.href}
                                     icon={
-                                      <div className="flex flex-wrap gap-1">
-                                        {project.technologies?.slice(0, 3).map((tech, i) => (
+                                      <div className="flex flex-wrap gap-2">
+                                        {project.technologies?.slice(0, isMobile ? 2 : 3).map((tech, i) => (
                                           <span 
                                             key={i} 
-                                            className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90"
+                                            className="text-[8px] sm:text-[9px] py-1 px-2 bg-black/80 backdrop-blur-sm rounded-full text-white/95 border border-white/20"
                                           >
                                             {tech}
                                           </span>
                                         ))}
-                                        {project.technologies?.length > 3 && (
-                                          <span className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90">
-                                            +{project.technologies.length - 3}
+                                        {project.technologies?.length > (isMobile ? 2 : 3) && (
+                                          <span className="text-[8px] sm:text-[9px] py-1 px-2 bg-black/80 backdrop-blur-sm rounded-full text-white/95 border border-white/20">
+                                            +{project.technologies.length - (isMobile ? 2 : 3)}
                                           </span>
                                         )}
                                       </div>
                                     }
-                                    className={`border-white/10 ${
+                                    className={`border-white/10 hover:border-white/20 ${
                                       spanTwoColumns ? "md:col-span-2" : ""
                                     }`}
                                   />
@@ -1603,7 +1601,7 @@ const ProjectModal = ({ project, onClose }) => {
   
   return (
     <div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6 bg-black/80 backdrop-blur-md"
       onClick={handleBackdropClick}
     >
       <motion.div
@@ -1611,18 +1609,18 @@ const ProjectModal = ({ project, onClose }) => {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ type: "spring", damping: 20, stiffness: 300 }}
-        className="relative w-full max-w-2xl rounded-xl bg-neutral-900/90 border border-white/20 shadow-xl overflow-hidden max-h-[85vh]"
+        className="relative w-full max-w-2xl rounded-xl bg-neutral-900/90 border border-white/20 shadow-xl overflow-hidden max-h-[90vh]"
       >
         {/* Close button */}
         <button 
           onClick={onClose}
-          className="absolute top-3 right-3 z-50 p-1 rounded-full bg-black/50 text-white"
+          className="absolute top-3 right-3 z-50 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
         >
           <IconPlus className="h-5 w-5 rotate-45" />
         </button>
         
         {/* Project Image */}
-        <div className="relative w-full h-40 md:h-56">
+        <div className="relative w-full h-56 md:h-72">
           <img 
             src={safeImageUrl} 
             alt={project.title}
@@ -1633,40 +1631,39 @@ const ProjectModal = ({ project, onClose }) => {
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
-          <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
-            <h2 className="text-lg md:text-2xl font-bold text-white">{project.title}</h2>
-            <div className="flex flex-wrap gap-1 mt-1.5">
-              {project.technologies?.slice(0, 5).map((tech, i) => (
+          <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-3">
+              {project.title}
+            </h2>
+            <div className="flex flex-wrap gap-2 mt-3">
+              {project.technologies?.map((tech, i) => (
                 <span 
                   key={i} 
-                  className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90"
+                  className="text-[9px] md:text-[10px] py-1 px-2.5 bg-black/80 backdrop-blur-sm rounded-full text-white/95 border border-white/20"
                 >
                   {tech}
                 </span>
               ))}
-              {project.technologies?.length > 5 && (
-                <span className="text-[9px] py-0.5 px-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white/90">
-                  +{project.technologies.length - 5}
-                </span>
-              )}
             </div>
           </div>
         </div>
         
         {/* Project Details */}
-        <div className="p-3 md:p-4 overflow-y-auto max-h-[40vh] scroll-smooth" style={{ overscrollBehavior: 'contain' }}>
-          <p className="text-white/80 mb-3 md:mb-4 text-xs md:text-sm leading-relaxed">{project.description}</p>
+        <div className="p-5 md:p-6 overflow-y-auto max-h-[40vh] scroll-smooth" style={{ overscrollBehavior: 'contain' }}>
+          <p className="text-white/80 mb-5 md:mb-6 text-xs md:text-sm leading-relaxed">
+            {project.description}
+          </p>
           
           {/* Links */}
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-3 flex-wrap">
             {project.github && (
               <a 
                 href={project.github} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-neutral-800 rounded-lg text-xs text-white transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-xs text-white transition-colors"
               >
-                <IconBrandGithub size={14} />
+                <IconBrandGithub size={16} />
                 <span>GitHub</span>
               </a>
             )}
@@ -1675,9 +1672,9 @@ const ProjectModal = ({ project, onClose }) => {
                 href={project.href} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-800/80 rounded-lg text-xs text-white transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-800/80 hover:bg-emerald-700/90 rounded-lg text-xs text-white transition-colors"
               >
-                <IconShare2 size={14} />
+                <IconShare2 size={16} />
                 <span>View Project</span>
               </a>
             )}

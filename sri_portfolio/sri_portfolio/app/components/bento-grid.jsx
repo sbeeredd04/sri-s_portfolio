@@ -9,7 +9,7 @@ export const BentoGrid = ({
   return (
     <div
       className={cn(
-        "mx-auto grid max-w-7xl grid-cols-1 gap-2 md:gap-3 md:auto-rows-[14rem] lg:auto-rows-[15rem] md:grid-cols-3 content-start",
+        "mx-auto grid max-w-7xl grid-cols-1 gap-5 sm:gap-4 md:gap-4 md:auto-rows-[16rem] lg:auto-rows-[18rem] md:grid-cols-3 content-start px-2 sm:px-0",
         className
       )}>
       {children}
@@ -42,7 +42,7 @@ export const BentoGridItem = memo(({
     <div
       onClick={onClick}
       className={cn(
-        "group/bento relative row-span-1 flex flex-col justify-center items-center overflow-hidden rounded-xl border border-white/10 transition-colors duration-200 shadow-sm shadow-black/20 cursor-pointer",
+        "group/bento relative row-span-1 flex flex-col justify-between overflow-hidden rounded-xl border border-white/10 transition-colors duration-200 shadow-md shadow-black/20 cursor-pointer p-4 hover:shadow-lg hover:border-white/20",
         className
       )}
       style={{
@@ -53,34 +53,34 @@ export const BentoGridItem = memo(({
         transform: 'translateZ(0)' // Force GPU acceleration
       }}
     >
-      {/* Tech stack at top left */}
-      <div className="absolute top-2 left-2 z-10">
+      {/* Top section with tech stack tags */}
+      <div className="z-10 mb-6">
         {icon}
       </div>
       
-      {/* Title and description in absolute center */}
-      <div className="relative z-10 text-center px-4 max-w-[90%]">
-        <div className="font-mono font-bold text-white/90 text-sm md:text-base mb-1">
+      {/* Middle section with title and description */}
+      <div className="z-10 text-center px-3 sm:px-4 md:px-5 max-w-[95%] sm:max-w-[90%] mx-auto mb-8">
+        <div className="font-mono font-bold text-white/90 text-sm md:text-base mb-3">
           {title}
         </div>
         
-        <div className="font-mono text-[10px] md:text-[11px] font-normal text-white/70 line-clamp-2">
+        <div className="font-mono text-[10px] md:text-[11px] font-normal text-white/70 line-clamp-3 sm:line-clamp-2">
           {description}
         </div>
       </div>
       
-      {/* GitHub and External Link buttons at bottom right */}
-      <div className="absolute bottom-2 right-2 flex space-x-1.5 z-10">
+      {/* Bottom section with GitHub and External Link buttons */}
+      <div className="flex justify-end space-x-2 z-10">
         {githubUrl && (
           <a 
             href={githubUrl} 
             target="_blank" 
             rel="noopener noreferrer"
             onClick={handleLinkClick}
-            className="p-1 bg-black/70 backdrop-blur-sm rounded-full text-white transition-colors"
+            className="p-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white transition-colors hover:bg-black/90"
             aria-label="GitHub"
           >
-            <IconBrandGithub size={14} />
+            <IconBrandGithub size={15} />
           </a>
         )}
         {projectUrl && (
@@ -89,10 +89,10 @@ export const BentoGridItem = memo(({
             target="_blank" 
             rel="noopener noreferrer"
             onClick={handleLinkClick}
-            className="p-1 bg-black/70 backdrop-blur-sm rounded-full text-white transition-colors"
+            className="p-1.5 bg-black/70 backdrop-blur-sm rounded-full text-white transition-colors hover:bg-black/90"
             aria-label="View Project"
           >
-            <IconShare2 size={14} />
+            <IconShare2 size={15} />
           </a>
         )}
       </div>
