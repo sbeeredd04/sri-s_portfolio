@@ -539,7 +539,7 @@ export default function Home() {
               role={isClickable ? "button" : undefined}
               tabIndex={isClickable ? 0 : undefined}
               onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
-              className={`relative flex h-full flex-col justify-start gap-4 overflow-hidden rounded-xl p-4 md:p-6 shadow-xl 
+              className={`relative flex h-full flex-col justify-start overflow-hidden rounded-xl p-2 xs:p-3 md:p-4 lg:p-6 shadow-xl 
                          ${isClickable ? 'cursor-pointer hover:ring-1 hover:ring-cyan-400/50 transition-all duration-300' : ''}`}
               style={{ 
                 backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${imageUrl})`, 
@@ -547,23 +547,28 @@ export default function Home() {
                 backgroundPosition: 'center' 
               }}
             >
-              {/* Content wrapper ensuring content takes available space and aligns to top */}
-              <div className="relative flex flex-col justify-start flex-grow gap-3"> 
-                {icon && (
-                  <div className="w-fit rounded-lg border border-neutral-600/50 bg-neutral-700/30 p-2 mb-1 md:mb-2 shadow-md">
-                    {icon}
-                  </div>
-                )}
-                <div className="space-y-1 md:space-y-2">
-                  <h3 className="font-sans text-base md:text-xl font-semibold text-balance text-white">
+              {/* Outer container with full flex column layout */}
+              <div className="relative flex flex-col gap-1 xs:gap-2 md:gap-3 h-full">
+                {/* Top row container for icon and title side by side */}
+                <div className="flex flex-row items-center gap-2 md:gap-3">
+                  {icon && (
+                    <div className="w-fit rounded-lg border border-neutral-600/50 bg-neutral-700/30 p-1.5 xs:p-2 shadow-md shrink-0">
+                      {icon}
+                    </div>
+                  )}
+                  
+                  {/* Title - always beside the icon */}
+                  <h3 className="font-sans text-sm xs:text-base md:text-xl font-semibold text-balance text-white line-clamp-2">
                     {title}
                   </h3>
-                  {description && (
-                    <p className="font-sans text-xs md:text-sm text-neutral-300 leading-relaxed">
-                      {description}
-                    </p>
-                  )}
                 </div>
+                
+                {/* Description - always below the icon/title row */}
+                {description && (
+                  <p className="font-sans text-xs xs:text-xs md:text-sm text-neutral-300 leading-relaxed line-clamp-2 md:line-clamp-3">
+                    {description}
+                  </p>
+                )}
               </div>
             </div>
           )}
