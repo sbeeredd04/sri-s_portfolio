@@ -2,11 +2,15 @@
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Inter } from "next/font/google";
+import { Ubuntu_Mono } from "next/font/google";
 import { MusicProvider } from './components/MusicProvider';
 import { SoundProvider } from './components/SoundProvider';
 
-const inter = Inter({ subsets: ["latin"] });
+const ubuntuMono = Ubuntu_Mono({ 
+  weight: ['400', '700'],
+  subsets: ["latin"],
+  display: 'swap',
+});
 
 export const metadata = {
   title: "Sri Ujjwal Reddy",
@@ -67,11 +71,10 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        {/* Add only Ubuntu Mono font */}
-        <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet" />
+        {/* No need for extra link tag as we're using next/font/google */}
         <link rel="icon" type="image/png" href="/logo.png" />
       </head>
-      <body className={inter.className}>
+      <body className={ubuntuMono.className}>
         <SoundProvider>
           <MusicProvider>
             {children}
