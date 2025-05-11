@@ -48,6 +48,7 @@ function getAllowedDomains() {
     'localhost',
     '127.0.0.1',
     'sriujjwalreddy.vercel.app',
+    'www.sriujjwalreddy.com',
     'sriujjwalreddy.com'
   ];
   
@@ -56,11 +57,13 @@ function getAllowedDomains() {
   
   if (envDomains) {
     // Split comma-separated domains and trim whitespace
-    return envDomains.split(',').map(domain => domain.trim());
+    const domains = envDomains.split(',').map(domain => domain.trim());
+    console.log('Using allowed domains from environment:', domains);
+    return domains;
   }
   
-  // Fallback to default domains
-  console.log('ALLOWED_DOMAINS not found in environment variables, using defaults');
+  // Log for debugging purposes
+  console.log('ALLOWED_DOMAINS not found directly in environment variables, using defaults:', defaultDomains);
   return defaultDomains;
 }
 
@@ -73,6 +76,10 @@ function isRequestAllowed(request) {
   // Get the request origin or referer header
   const origin = request.headers.get('origin');
   const referer = request.headers.get('referer');
+  
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('Request origin:', origin);
+  console.log('Request referer:', referer);
   
   // In development, accept localhost requests
   if (process.env.NODE_ENV === 'development') {
@@ -89,18 +96,48 @@ function isRequestAllowed(request) {
   // Get allowed domains from environment variables
   const allowedDomains = getAllowedDomains();
   
+  // Make a more flexible domain check function that handles variations
+  const matchesDomain = (url, domain) => {
+    if (!url) return false;
+    
+    // Handle http:// and https:// prefixes
+    const urlLower = url.toLowerCase();
+    const domainLower = domain.toLowerCase();
+    
+    // Check for exact domain match or subdomain match
+    return urlLower.includes(`//${domainLower}`) || // matches domain with protocol
+           urlLower.includes(`.${domainLower}`) || // matches subdomain
+           urlLower.includes(`//${domainLower}/`) || // matches domain with path
+           urlLower === domainLower; // exact match
+  };
+  
   // Check if origin is from an allowed domain
   let isAllowed = false;
   if (origin) {
-    isAllowed = allowedDomains.some(domain => origin.includes(domain));
-  } else if (referer) {
-    // Fallback to referer check if origin is not available
-    isAllowed = allowedDomains.some(domain => referer.includes(domain));
+    isAllowed = allowedDomains.some(domain => matchesDomain(origin, domain));
+    if (isAllowed) {
+      console.log(`Request allowed from origin: ${origin}`);
+    }
   }
   
-  // Debug
-  console.log(`Request from origin: ${origin || 'none'}, referer: ${referer || 'none'}`);
-  console.log(`Is request allowed: ${isAllowed}`);
+  // If not allowed by origin, check referer
+  if (!isAllowed && referer) {
+    isAllowed = allowedDomains.some(domain => matchesDomain(referer, domain));
+    if (isAllowed) {
+      console.log(`Request allowed from referer: ${referer}`);
+    }
+  }
+  
+  // Always allow Vercel preview deployments
+  if (!isAllowed && (origin?.includes('vercel.app') || referer?.includes('vercel.app'))) {
+    console.log('Request allowed from Vercel preview deployment');
+    isAllowed = true;
+  }
+  
+  // Final verdict
+  if (!isAllowed) {
+    console.warn(`Request BLOCKED. Origin: ${origin || 'none'}, Referer: ${referer || 'none'}`);
+  }
   
   return isAllowed;
 }

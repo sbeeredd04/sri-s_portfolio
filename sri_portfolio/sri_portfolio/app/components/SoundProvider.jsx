@@ -18,18 +18,15 @@ export const SoundProvider = ({ children }) => {
   // Initialize on client side only
   useEffect(() => {
     setIsClient(true);
-    console.log("SoundProvider mounted, initializing click sound");
     
     // Create audio element for click sound if it doesn't exist
     if (!clickSoundRef.current && typeof Audio !== 'undefined') {
       try {
-        console.log("Creating new Audio element for click sound");
         clickSoundRef.current = new Audio('/click.mp3');
         clickSoundRef.current.volume = 0.8; // Increase volume to make it more audible
         
         // Add event listeners to track audio loading
         clickSoundRef.current.addEventListener('canplaythrough', () => {
-          console.log("Click sound loaded successfully!");
           setIsLoaded(true);
         });
         
@@ -44,7 +41,6 @@ export const SoundProvider = ({ children }) => {
         document.addEventListener('click', function initialClick() {
           clickSoundRef.current.play()
             .then(() => {
-              console.log("Initial click sound played successfully!");
               clickSoundRef.current.pause();
               clickSoundRef.current.currentTime = 0;
             })
@@ -59,7 +55,6 @@ export const SoundProvider = ({ children }) => {
     
     return () => {
       if (clickSoundRef.current) {
-        console.log("Cleaning up click sound");
         clickSoundRef.current = null;
       }
     };
@@ -67,18 +62,15 @@ export const SoundProvider = ({ children }) => {
 
   const playClickSound = () => {
     if (!isClient || !isSoundEnabled) {
-      console.log("Click sound not played: client:", isClient, "sound enabled:", isSoundEnabled);
       return;
     }
     
     try {
       if (clickSoundRef.current) {
-        console.log("Attempting to play click sound");
         // Create a new audio element each time for better handling of rapid clicks
         const sound = new Audio('/click.mp3');
         sound.volume = 0.8;
         sound.play().then(() => {
-          console.log("Click sound played successfully!");
         }).catch(error => {
           console.error("Click sound failed to play:", error);
         });
@@ -92,7 +84,6 @@ export const SoundProvider = ({ children }) => {
 
   const toggleSound = () => {
     setIsSoundEnabled(prev => {
-      console.log("Sound toggled from", prev, "to", !prev);
       return !prev;
     });
   };

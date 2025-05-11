@@ -19,9 +19,12 @@ export const ChatInterface = () => {
   const [isStreaming, setIsStreaming] = useState(false);
 
   // Network URL and API Key retrieved from environment variables
-  // These are set in next.config.js
-  const NETWORK_URL = process.env.NEXT_PUBLIC_NETWORK_URL;
-  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+  // These are accessed directly from process.env
+  const NETWORK_URL = process.env.NEXT_PUBLIC_VERCEL_URL 
+    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+    : process.env.NEXT_PUBLIC_NETWORK_URL || '';
+  // API_KEY is no longer used with domain-based security
+  // const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
   // Scroll to bottom of messages
   const scrollToBottom = () => {
@@ -57,13 +60,19 @@ export const ChatInterface = () => {
     setIsTyping(true);
     
     try {
-      // Call the API endpoint with the current message, chat history, and API key
-      const response = await fetch(`${NETWORK_URL || '/'}api/chat`, {
+      // Build the API URL properly to work in both development and production
+      // Remove trailing slash from NETWORK_URL if it exists
+      const baseUrl = NETWORK_URL ? NETWORK_URL.replace(/\/$/, '') : '';
+      const apiUrl = `${baseUrl}/api/chat`;
+      
+      console.log('Sending message to API:', apiUrl);
+      
+      // Call the API endpoint with the current message and chat history
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Add the API key to authenticate requests
-          'X-API-Key': API_KEY || '',
+          // No API key header anymore - using domain-based security instead
         },
         body: JSON.stringify({ 
           message: inputMessage,
@@ -71,8 +80,8 @@ export const ChatInterface = () => {
         }),
       });
       
-      if (response.status === 401) {
-        throw new Error('Unauthorized: Invalid API credentials');
+      if (response.status === 403) {
+        throw new Error('Access denied: Domain not authorized');
       }
       
       if (!response.ok) {
@@ -101,8 +110,8 @@ export const ChatInterface = () => {
       setTimeout(() => {
         setMessages(prev => [...prev, {
           id: Date.now() + 1,
-          text: error.message.includes('Unauthorized') ? 
-            "API authentication failed. Please check your environment configuration." : 
+          text: error.message.includes('Domain not authorized') ? 
+            "This domain is not authorized to access the chat API." : 
             "Sorry, I encountered an error. Please try again later.",
           sender: 'bot',
           timestamp: new Date().toISOString(),

@@ -84,12 +84,10 @@ export default function Home() {
   
   // New click sound effect with improved debugging
   useEffect(() => {
-    console.log("Setting up click sound handler");
     
     // Create a direct click handler function
     const handleClickSound = () => {
       if (isSoundEnabled && typeof playClickSound === 'function') {
-        console.log("Click detected, playing sound");
         playClickSound();
       }
     };
@@ -97,13 +95,11 @@ export default function Home() {
     // Add to document body for global coverage
     if (typeof window !== 'undefined') {
       document.body.addEventListener('click', handleClickSound);
-      console.log("Click sound handler attached to document body");
       
       // Also add to specific important elements
       const importantButtons = document.querySelectorAll('.FloatingDock button, .Browser-Controls button');
       importantButtons.forEach(btn => {
         btn.addEventListener('click', handleClickSound);
-        console.log("Added click handler to important button:", btn);
       });
     }
     
@@ -116,7 +112,6 @@ export default function Home() {
           btn.removeEventListener('click', handleClickSound);
         });
         
-        console.log("Removed all click sound handlers");
       }
     };
   }, [isSoundEnabled, playClickSound]);
@@ -200,7 +195,6 @@ export default function Home() {
 
   useEffect(() => {
     const handleScroll = () => {
-      console.log("Scroll detected in main-content container or fallback"); // Debugging statement
       setShowName(false);  // Hide name on scroll
   
       // If scroll is back to top, show name
@@ -214,7 +208,6 @@ export default function Home() {
   
     // If main-content is not found, use the first existing container as a fallback
     if (!contentContainer) {
-      console.log("main-content container not found, using fallback container");
       contentContainer = document.querySelector(".relative.overflow-y-auto.overflow-x-hidden.p-4");
     } else {
       console.log("main-content container found, adding scroll event listener");
@@ -228,7 +221,6 @@ export default function Home() {
     // Cleanup the scroll event listener on component unmount
     return () => {
       if (contentContainer) {
-        console.log("Removing scroll event listener from main-content or fallback container");
         contentContainer.removeEventListener("scroll", handleScroll);
       }
     };

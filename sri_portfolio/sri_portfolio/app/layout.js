@@ -51,6 +51,16 @@ export const viewport = {
   maximumScale: 1,
 };
 
+// Try to load environment variables in development mode
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    require('dotenv').config();
+    console.log('Loaded environment variables from .env file');
+  } catch (error) {
+    console.warn('Failed to load dotenv:', error.message);
+  }
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

@@ -11,14 +11,14 @@ export const getGeminiClient = () => {
   if (!geminiClient) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error('GEMINI_API_KEY is not set in environment variables');
+      console.error('GEMINI_API_KEY is not set directly in environment variables');
       throw new Error('GEMINI_API_KEY is required');
     }
     
     geminiClient = new GoogleGenAI({ 
       apiKey: apiKey 
     });
-    console.log('Gemini client initialized successfully');
+    console.log('Gemini client initialized successfully with API key from process.env');
   }
   return geminiClient;
 };
