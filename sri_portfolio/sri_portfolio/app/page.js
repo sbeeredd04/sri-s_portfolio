@@ -642,6 +642,7 @@ export default function Home() {
         {/* Custom Top-Right Navbar - Only visible on mobile */}
         {isMobile && (
           <div
+            id="mobile-connections-tutorial-target"
             className="fixed top-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 bg-black bg-opacity-60 rounded-2xl shadow-lg z-[1000] py-2 px-4"
       >
         <Link href="https://github.com/sbeeredd04" target="_blank">

@@ -5,11 +5,12 @@ import { IconArrowRight, IconX } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 // import { cn } from "../lib/utils"; // cn is not used in this version
 
-const tutorialSteps = [
+// Desktop tutorial steps
+const desktopTutorialSteps = [
   {
     elementId: "floating-dock-tutorial-target",
     title: "Quick Navigation",
-    text: "Use this dock to easily navigate to different sections of the portfolio. It's on the left (desktop) or bottom (mobile).",
+    text: "Use this dock to easily navigate to different sections of the portfolio. It's on the left side of your screen.",
     tooltipAttachment: "right", // e.g., tooltip to the right of the dock
     tooltipAlign: "center",    // e.g., centered vertically along the right edge
   },
@@ -48,7 +49,53 @@ const tutorialSteps = [
     tooltipAttachment: "top",
     tooltipAlign: "end",
   },
-  // Add more steps here for other important buttons if needed
+];
+
+// Mobile-specific tutorial steps - some elements may be different or in different positions
+const mobileTutorialSteps = [
+  {
+    elementId: "floating-dock-tutorial-target",
+    title: "Navigation Menu",
+    text: "Tap this floating button to access the main navigation menu. You can also drag it to reposition it on your screen.",
+    tooltipAttachment: "top", 
+    tooltipAlign: "center",
+  },
+  {
+    elementId: "sound-toggle-tutorial-target",
+    title: "Sound Effects",
+    text: "Toggle sound effects on/off for interaction sounds throughout the site.",
+    tooltipAttachment: "bottom", 
+    tooltipAlign: "center",
+  },
+  {
+    elementId: "spotify-player-tutorial-target",
+    title: "Music Player",
+    text: "Access the Spotify-themed music player to enhance your browsing experience.",
+    tooltipAttachment: "bottom",
+    tooltipAlign: "center",
+  },
+  {
+    elementId: "theme-button-tutorial-target",
+    title: "Change Theme",
+    text: "Change the background theme to customize your viewing experience.",
+    tooltipAttachment: "bottom",
+    tooltipAlign: "center",
+  },
+  {
+    elementId: "tab-switcher-tutorial-target",
+    title: "Section Tabs",
+    text: "Navigate between different views within each section using these tabs.",
+    tooltipAttachment: "top",
+    tooltipAlign: "center",
+  },
+  {
+    elementId: "mobile-connections-tutorial-target",
+    title: "Connect With Me",
+    text: "Quick access to my GitHub, Instagram, LinkedIn, Email, and Spotify profiles. You can also download my resume from here.",
+    tooltipAttachment: "bottom",
+    tooltipAlign: "center",
+  }
+  // Social links may not be visible in mobile view, so we omit that step
 ];
 
 const TOOLTIP_WIDTH = 300; // Approximate width of the tooltip
@@ -59,14 +106,36 @@ const MAX_ATTEMPTS = 20; // Maximum number of attempts to find a target
 const RETRY_INTERVAL = 200; // Milliseconds between retries
 const SPOTLIGHT_PADDING = 12; // Padding around the spotlight element
 
+// Mobile viewport detection - smaller tooltip for mobile
+const MOBILE_WIDTH_THRESHOLD = 768;
+const MOBILE_TOOLTIP_WIDTH = 250;
+const MOBILE_TOOLTIP_HEIGHT = 180; // Slightly taller for mobile to accommodate text
+
 export const TutorialOverlay = ({ onClose }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [highlightBox, setHighlightBox] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0, visibility: 'visible' });
+  const [isMobile, setIsMobile] = useState(false);
   const findAttemptsRef = useRef(0);
   const findIntervalRef = useRef(null);
   
+  // Choose tutorial steps based on viewport size
+  const tutorialSteps = isMobile ? mobileTutorialSteps : desktopTutorialSteps;
   const currentStep = tutorialSteps[currentStepIndex];
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_WIDTH_THRESHOLD);
+    };
+    
+    checkMobile(); // Initial check
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   const findTargetElement = useCallback(() => {
     if (!currentStep || !document) return null;
@@ -103,6 +172,10 @@ export const TutorialOverlay = ({ onClose }) => {
           elementLeft: rect.left,
         });
 
+        // Determine tooltip dimensions based on viewport
+        const tooltipWidth = isMobile ? MOBILE_TOOLTIP_WIDTH : TOOLTIP_WIDTH;
+        const tooltipHeight = isMobile ? MOBILE_TOOLTIP_HEIGHT : TOOLTIP_HEIGHT;
+        
         let topPos = 0;
         let leftPos = 0;
 
@@ -110,48 +183,92 @@ export const TutorialOverlay = ({ onClose }) => {
         // Attachment: which side of the target element the tooltip attaches to
         // Alignment: how the tooltip aligns along that side
 
-        // Horizontal positioning
-        if (currentStep.tooltipAttachment === 'left') {
-          leftPos = rect.left - TOOLTIP_WIDTH - TOOLTIP_OFFSET;
-        } else if (currentStep.tooltipAttachment === 'right') {
-          leftPos = rect.right + TOOLTIP_OFFSET;
-        } else { // top or bottom attachment
-          if (currentStep.tooltipAlign === 'start') {
-            leftPos = rect.left;
-          } else if (currentStep.tooltipAlign === 'center') {
-            leftPos = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
-          } else { // end
-            leftPos = rect.right - TOOLTIP_WIDTH;
+        // For mobile, we need special handling for the floating dock button which can be anywhere
+        if (isMobile && currentStep.elementId === 'floating-dock-tutorial-target') {
+          // Mobile floating dock is likely at the bottom of the screen
+          // Try to position tooltip above it
+          topPos = rect.top - tooltipHeight - TOOLTIP_OFFSET;
+          leftPos = window.innerWidth / 2 - tooltipWidth / 2; // Center horizontally
+          
+          // If too high, place it below instead
+          if (topPos < BOUNDARY_PADDING) {
+            topPos = rect.bottom + TOOLTIP_OFFSET;
+          }
+        } 
+        // Special handling for mobile connections bar at the top of the screen
+        else if (isMobile && currentStep.elementId === 'mobile-connections-tutorial-target') {
+          // Mobile connections is fixed at the top of the screen
+          // Position tooltip below it
+          topPos = rect.bottom + TOOLTIP_OFFSET;
+          leftPos = window.innerWidth / 2 - tooltipWidth / 2; // Center horizontally
+          
+          // If too low (unlikely), place it above
+          if (topPos + tooltipHeight > window.innerHeight - BOUNDARY_PADDING) {
+            topPos = rect.top - tooltipHeight - TOOLTIP_OFFSET;
           }
         }
+        else {
+          // Standard positioning for other elements
+          // Horizontal positioning
+          if (currentStep.tooltipAttachment === 'left') {
+            leftPos = rect.left - tooltipWidth - TOOLTIP_OFFSET;
+          } else if (currentStep.tooltipAttachment === 'right') {
+            leftPos = rect.right + TOOLTIP_OFFSET;
+          } else { // top or bottom attachment
+            if (currentStep.tooltipAlign === 'start') {
+              leftPos = rect.left;
+            } else if (currentStep.tooltipAlign === 'center') {
+              leftPos = rect.left + rect.width / 2 - tooltipWidth / 2;
+            } else { // end
+              leftPos = rect.right - tooltipWidth;
+            }
+          }
 
-        // Vertical positioning
-        if (currentStep.tooltipAttachment === 'top') {
-          topPos = rect.top - TOOLTIP_HEIGHT - TOOLTIP_OFFSET;
-        } else if (currentStep.tooltipAttachment === 'bottom') {
-          topPos = rect.bottom + TOOLTIP_OFFSET;
-        } else { // left or right attachment
-          if (currentStep.tooltipAlign === 'start') {
-            topPos = rect.top;
-          } else if (currentStep.tooltipAlign === 'center') {
-            topPos = rect.top + rect.height / 2 - TOOLTIP_HEIGHT / 2;
-          } else { // end
-            topPos = rect.bottom - TOOLTIP_HEIGHT;
+          // Vertical positioning
+          if (currentStep.tooltipAttachment === 'top') {
+            topPos = rect.top - tooltipHeight - TOOLTIP_OFFSET;
+          } else if (currentStep.tooltipAttachment === 'bottom') {
+            topPos = rect.bottom + TOOLTIP_OFFSET;
+          } else { // left or right attachment
+            if (currentStep.tooltipAlign === 'start') {
+              topPos = rect.top;
+            } else if (currentStep.tooltipAlign === 'center') {
+              topPos = rect.top + rect.height / 2 - tooltipHeight / 2;
+            } else { // end
+              topPos = rect.bottom - tooltipHeight;
+            }
           }
         }
         
-        // Boundary corrections
-        if (leftPos < BOUNDARY_PADDING) {
-          leftPos = BOUNDARY_PADDING;
-        }
-        if (leftPos + TOOLTIP_WIDTH > window.innerWidth - BOUNDARY_PADDING) {
-          leftPos = window.innerWidth - TOOLTIP_WIDTH - BOUNDARY_PADDING;
-        }
-        if (topPos < BOUNDARY_PADDING) {
-          topPos = BOUNDARY_PADDING;
-        }
-        if (topPos + TOOLTIP_HEIGHT > window.innerHeight - BOUNDARY_PADDING) {
-          topPos = window.innerHeight - TOOLTIP_HEIGHT - BOUNDARY_PADDING;
+        // Mobile viewport adjustments - make sure tooltip is fully visible
+        if (isMobile) {
+          // Ensure tooltip is within viewport for mobile (stricter boundaries)
+          if (leftPos < BOUNDARY_PADDING) {
+            leftPos = BOUNDARY_PADDING;
+          }
+          if (leftPos + tooltipWidth > window.innerWidth - BOUNDARY_PADDING) {
+            leftPos = window.innerWidth - tooltipWidth - BOUNDARY_PADDING;
+          }
+          if (topPos < BOUNDARY_PADDING + 60) { // Add extra space for potential browser UI
+            topPos = BOUNDARY_PADDING + 60;
+          }
+          if (topPos + tooltipHeight > window.innerHeight - BOUNDARY_PADDING - 60) {
+            topPos = window.innerHeight - tooltipHeight - BOUNDARY_PADDING - 60;
+          }
+        } else {
+          // Desktop viewport adjustments
+          if (leftPos < BOUNDARY_PADDING) {
+            leftPos = BOUNDARY_PADDING;
+          }
+          if (leftPos + tooltipWidth > window.innerWidth - BOUNDARY_PADDING) {
+            leftPos = window.innerWidth - tooltipWidth - BOUNDARY_PADDING;
+          }
+          if (topPos < BOUNDARY_PADDING) {
+            topPos = BOUNDARY_PADDING;
+          }
+          if (topPos + tooltipHeight > window.innerHeight - BOUNDARY_PADDING) {
+            topPos = window.innerHeight - tooltipHeight - BOUNDARY_PADDING;
+          }
         }
 
         setTooltipPosition({ top: topPos, left: leftPos, visibility: 'visible' });
@@ -179,8 +296,8 @@ export const TutorialOverlay = ({ onClose }) => {
             findIntervalRef.current = null;
             
             // Fallback position in the center of the screen
-            const fallbackTop = window.innerHeight / 2 - TOOLTIP_HEIGHT / 2;
-            const fallbackLeft = window.innerWidth / 2 - TOOLTIP_WIDTH / 2;
+            const fallbackTop = window.innerHeight / 2 - (isMobile ? MOBILE_TOOLTIP_HEIGHT : TOOLTIP_HEIGHT) / 2;
+            const fallbackLeft = window.innerWidth / 2 - (isMobile ? MOBILE_TOOLTIP_WIDTH : TOOLTIP_WIDTH) / 2;
             
             console.log(`Using fallback position for ${currentStep.elementId}`);
             
@@ -205,7 +322,7 @@ export const TutorialOverlay = ({ onClose }) => {
         }, RETRY_INTERVAL);
       }
     }
-  }, [currentStep, findTargetElement]);
+  }, [currentStep, findTargetElement, isMobile]);
 
   // Clean up intervals when component unmounts or step changes
   useEffect(() => {
@@ -314,7 +431,7 @@ export const TutorialOverlay = ({ onClose }) => {
           top: `${tooltipPosition.top}px`,
           left: `${tooltipPosition.left}px`,
           visibility: tooltipPosition.visibility,
-          width: `${TOOLTIP_WIDTH}px`,
+          width: isMobile ? `${MOBILE_TOOLTIP_WIDTH}px` : `${TOOLTIP_WIDTH}px`,
           zIndex: 100001, // Ensure tooltip is above highlight
         }}
         className="bg-neutral-800/90 border border-neutral-700/80 text-white p-5 rounded-lg shadow-2xl backdrop-blur-sm pointer-events-auto" // Added pointer-events-auto
