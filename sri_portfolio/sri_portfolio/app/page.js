@@ -696,33 +696,33 @@ export default function Home() {
             {/* Navigation Controls */}
             <div className="flex items-center gap-2 md:gap-4">
               <button 
-                className={`text-neutral-400 hover:text-white transition-colors
+                className={`flex items-center justify-center w-8 h-8 text-neutral-400 hover:text-white transition-colors
                   ${currentHistoryIndex > 0 
                     ? 'cursor-pointer' 
                     : 'opacity-50 cursor-not-allowed'}`}
                 onClick={goBack}
                 disabled={currentHistoryIndex <= 0}
               >
-                <IconArrowLeft size={20} stroke={3} className="md:hidden" />
-                <IconArrowLeft size={24} stroke={3} className="hidden md:block" />
+                <IconArrowLeft size={20} stroke={1.5} className="md:hidden" />
+                <IconArrowLeft size={24} stroke={1.5} className="hidden md:block" />
               </button>
               <button 
-                className={`text-neutral-400 hover:text-white transition-colors
+                className={`flex items-center justify-center w-8 h-8 text-neutral-400 hover:text-white transition-colors
                   ${currentHistoryIndex < navigationHistory.length - 1 
                     ? 'cursor-pointer' 
                     : 'opacity-50 cursor-not-allowed'}`}
                 onClick={goForward}
                 disabled={currentHistoryIndex >= navigationHistory.length - 1}
               >
-                <IconArrowRight size={20} stroke={3} className="md:hidden" />
-                <IconArrowRight size={24} stroke={3} className="hidden md:block" />
+                <IconArrowRight size={20} stroke={1.5} className="md:hidden" />
+                <IconArrowRight size={24} stroke={1.5} className="hidden md:block" />
               </button>
               <button 
-                className="text-neutral-400 hover:text-white transition-colors"
+                className="flex items-center justify-center w-8 h-8 text-neutral-400 hover:text-white transition-colors"
                 onClick={() => window.location.reload()}
               >
-                <IconRefresh size={20} stroke={3} className="md:hidden" />
-                <IconRefresh size={24} stroke={3} className="hidden md:block" />
+                <IconRefresh size={20} stroke={1.5} className="md:hidden" />
+                <IconRefresh size={24} stroke={1.5} className="hidden md:block" />
               </button>
             </div>
 
@@ -748,7 +748,7 @@ export default function Home() {
 
             {/* Browser Controls */}
             <div className="flex items-center gap-2 md:gap-4">
-              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-neutral-700/50 border border-white/10 overflow-hidden">
+              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-700/50 border border-white/10 overflow-hidden">
                 <img 
                   src="/music/mySong.png" 
                   alt="Sri" 
@@ -757,38 +757,38 @@ export default function Home() {
               </div>
               <div id="sound-toggle-tutorial-target" className="relative">
                 <button 
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="flex items-center justify-center w-8 h-8 text-neutral-400 hover:text-white transition-colors"
                   onClick={toggleSound}
                 >
                   {isSoundEnabled ? (
                     <>
-                      <IconVolume size={18} stroke={2.5} className="md:hidden" />
-                      <IconVolume size={28} stroke={1.75} className="hidden md:block" />
+                      <IconVolume size={20} stroke={1.5} className="md:hidden" />
+                      <IconVolume size={24} stroke={1.5} className="hidden md:block" />
                     </>
                   ) : (
                     <>
-                      <IconVolumeOff size={18} stroke={2.5} className="md:hidden" />
-                      <IconVolumeOff size={28} stroke={1.75} className="hidden md:block" />
+                      <IconVolumeOff size={20} stroke={1.5} className="md:hidden" />
+                      <IconVolumeOff size={24} stroke={1.5} className="hidden md:block" />
                     </>
                   )}
                 </button>
               </div>
               <div id="spotify-player-tutorial-target" className="relative">
                 <button 
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="flex items-center justify-center w-8 h-8 text-neutral-400 hover:text-white transition-colors"
                   onClick={togglePlayerVisibility}
                 >
-                  <IconBrandSpotify size={24} stroke={2.5} className="md:hidden" />
-                  <IconBrandSpotify size={32} stroke={1} className="hidden md:block" />
+                  <IconBrandSpotify size={20} stroke={1.5} className="md:hidden" />
+                  <IconBrandSpotify size={24} stroke={1.5} className="hidden md:block" />
                 </button>
               </div>
               <div id="theme-button-tutorial-target" className="relative">
                 <button
                   onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10 md:gap-2 md:px-3 md:py-1.5"
+                  className="flex items-center justify-center gap-1 px-3 py-1.5 h-8 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10 md:gap-2"
                 >
-                  <IconPalette size={18} stroke={2.5} className="md:hidden" />
-                  <IconPalette size={28} stroke={1.75} className="hidden md:block" />
+                  <IconPalette size={20} stroke={1.5} className="md:hidden" />
+                  <IconPalette size={24} stroke={1.5} className="hidden md:block" />
                   <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
                 </button>
               </div>
