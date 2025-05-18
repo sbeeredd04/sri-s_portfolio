@@ -1,3 +1,13 @@
+// Try to load environment variables in development mode
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    require('dotenv').config();
+    console.log('Loaded environment variables from .env file');
+  } catch (error) {
+    console.warn('Failed to load dotenv:', error.message);
+  }
+}
+
 // Import the global CSS and Google Fonts link
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
@@ -5,6 +15,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Ubuntu_Mono } from "next/font/google";
 import { MusicProvider } from './components/MusicProvider';
 import { SoundProvider } from './components/SoundProvider';
+import './initialize-embeddings'; // Import the embeddings initialization script
 
 const ubuntuMono = Ubuntu_Mono({ 
   weight: ['400', '700'],
@@ -54,16 +65,6 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
 };
-
-// Try to load environment variables in development mode
-if (process.env.NODE_ENV !== 'production') {
-  try {
-    require('dotenv').config();
-    console.log('Loaded environment variables from .env file');
-  } catch (error) {
-    console.warn('Failed to load dotenv:', error.message);
-  }
-}
 
 export default function RootLayout({ children }) {
   return (

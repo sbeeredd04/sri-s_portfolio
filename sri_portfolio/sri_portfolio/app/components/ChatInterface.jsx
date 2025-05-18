@@ -4,6 +4,7 @@ import { IconSend, IconRobot, IconUser, IconTrash, IconRefresh } from '@tabler/i
 import { renderMarkdown } from '../utils/markdownHelper';
 
 export const ChatInterface = () => {
+  // UI messages (what the user sees)
   const [messages, setMessages] = useState([
     { 
       id: 1, 
@@ -12,6 +13,10 @@ export const ChatInterface = () => {
       timestamp: new Date().toISOString()
     }
   ]);
+  
+  // Gemini chat history (for multi-turn conversation)
+  const [chatHistory, setChatHistory] = useState([]);
+  
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
@@ -45,7 +50,7 @@ export const ChatInterface = () => {
     
     if (!inputMessage.trim()) return;
     
-    // Add user message
+    // Add user message to UI
     const userMessage = {
       id: Date.now(),
       text: inputMessage,
@@ -75,6 +80,18 @@ export const ChatInterface = () => {
       }
       
       console.log('Sending message to API:', apiUrl);
+      console.log('Chat history length:', chatHistory.length);
+      
+      // Format the current user message for Gemini
+      const geminiUserMessage = {
+        role: 'user',
+        parts: [{ text: inputMessage }]
+      };
+      
+      // Log current chat history being sent
+      if (chatHistory.length > 0) {
+        console.log('Chat history roles:', chatHistory.map(msg => msg.role).join(', '));
+      }
       
       // Call the API endpoint with the current message and chat history
       const response = await fetch(apiUrl, {
@@ -84,7 +101,7 @@ export const ChatInterface = () => {
         },
         body: JSON.stringify({ 
           message: inputMessage,
-          messages: messages.concat(userMessage) // Include user message just added
+          messages: chatHistory.length > 0 ? chatHistory : [geminiUserMessage] // Use Gemini format
         }),
       });
       
@@ -97,6 +114,12 @@ export const ChatInterface = () => {
       }
       
       const data = await response.json();
+      
+      // Update the chat history with the new messages from the API
+      if (data.history && Array.isArray(data.history)) {
+        console.log('Received updated chat history with', data.history.length, 'messages');
+        setChatHistory(data.history);
+      }
       
       // Small delay to simulate natural conversation
       setTimeout(() => {
@@ -132,6 +155,7 @@ export const ChatInterface = () => {
   };
 
   const clearChat = () => {
+    // Reset both the displayed messages and the chat history
     setMessages([{
       id: Date.now(),
       text: "Hey there! What would you like to know about me or my work?",
@@ -139,6 +163,10 @@ export const ChatInterface = () => {
       timestamp: new Date().toISOString(),
       source: 'sri_direct'
     }]);
+    
+    // Clear the Gemini chat history
+    setChatHistory([]);
+    console.log('Chat cleared - history reset');
   };
 
   const formatTime = (timestamp) => {
@@ -152,6 +180,11 @@ export const ChatInterface = () => {
         return {
           text: 'Sri',
           className: 'bg-emerald-500/20 text-emerald-300'
+        };
+      case 'sri_semantic_search':
+        return {
+          text: 'Sri AI',
+          className: 'bg-blue-500/20 text-blue-300'
         };
       case 'sri_fallback':
         return {
@@ -188,6 +221,9 @@ export const ChatInterface = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <div className="text-xs text-neutral-400 mr-2">
+            {chatHistory.length > 0 ? `${chatHistory.length} messages in history` : 'New conversation'}
+          </div>
           <button 
             onClick={clearChat}
             className="p-2 hover:bg-neutral-800/80 rounded-full transition-colors"

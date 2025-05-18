@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { generateResponse, formatChatHistory } from '../../utils/gemini';
+import { getRelevantContext, areEmbeddingsInitialized } from '../../utils/embeddings';
+import { initializeApp } from '../../initialize-embeddings';
 import fs from 'fs';
 import path from 'path';
 
@@ -17,16 +19,19 @@ const fallbackResponses = {
   ]
 };
 
-// Read the about_me.txt file content on server startup - this is Sri's personal information
+// Read the about_me.txt file content on server startup as a fallback
 let aboutMeContext = '';
 try {
   const aboutMePath = path.join(process.cwd(), 'data', 'about_me.txt');
   aboutMeContext = fs.readFileSync(aboutMePath, 'utf-8');
-  console.log('Successfully loaded about_me.txt for context.');
+  console.log('Successfully loaded about_me.txt for context fallback.');
 } catch (error) {
   console.error('Failed to load about_me.txt:', error);
   aboutMeContext = "Error: Could not load my personal information."; // Updated fallback message
 }
+
+// No need for self-executing function here - initialization happens in initialize-embeddings.js
+// Just make sure embeddings are ready when needed
 
 /**
  * Get a random response from a category
@@ -148,7 +153,8 @@ function isRequestAllowed(request) {
 
 /**
  * Process incoming chat messages and generate responses
- * Uses the content of about_me.txt as Sri's direct memory to answer as himself
+ * Uses semantic search with embeddings to find relevant context
+ * Maintains chat history for multi-turn conversations
  */
 export async function POST(request) {
   try {
@@ -163,20 +169,85 @@ export async function POST(request) {
     
     const { message, messages } = await request.json();
     
-    // Format chat history for Gemini if provided
+    // Validate message
+    if (!message || typeof message !== 'string' || message.trim() === '') {
+      return NextResponse.json(
+        { error: 'Message is required and cannot be empty' },
+        { status: 400 }
+      );
+    }
+    
+    // Format chat history from client's message history
+    // This is crucial for multi-turn conversations
     const chatHistory = messages ? formatChatHistory(messages) : [];
+    console.log(`Formatted ${chatHistory.length} messages for chat history`);
     
-    let source = 'sri_direct'; // Updated source to reflect it's Sri directly answering
+    // Log the chat history (for debugging)
+    if (chatHistory.length > 0) {
+      console.log('Chat history summary:');
+      chatHistory.forEach((msg, idx) => {
+        console.log(`[${idx}] ${msg.role}: ${msg.parts[0].text.substring(0, 50)}...`);
+      });
+    }
     
-    // Try to generate a response using Gemini, with the aboutMeContext as Sri's memory
+    let source = 'sri_semantic_search'; // Default source
+    
     try {
-      const geminiResponse = await generateResponse(message, aboutMeContext, chatHistory);
+      // Make sure embeddings are initialized 
+      if (!areEmbeddingsInitialized()) {
+        console.log('Ensuring embeddings are initialized before processing request...');
+        await initializeApp();
+      }
       
-      // Return the generated response
+      // With the new larger chunks, we might just need the full context always
+      // But we'll still use the semantic search to get the most relevant parts
+      const NUM_CHUNKS = 1; // Since we've made chunks larger, we can keep this at 1
+      
+      // Use embeddings to find relevant context
+      console.log('Getting relevant context through embeddings...');
+      let context = '';
+      
+      try {
+        context = await getRelevantContext(message, NUM_CHUNKS);
+        console.log(`Retrieved ${context.length} characters of relevant context`);
+      } catch (contextError) {
+        console.error('Error getting relevant context:', contextError);
+        // Fall back to full text on context error
+        context = aboutMeContext;
+        source = 'sri_direct';
+      }
+      
+      // If no context found through embeddings, fall back to full text
+      if (!context || context.trim() === '') {
+        console.log('No relevant context found through embeddings, using full text fallback');
+        context = aboutMeContext;
+        source = 'sri_direct';
+      }
+      
+      // Generate response with the retrieved context and chat history
+      // This is the main change - we now pass chat history to maintain conversation context
+      const geminiResponse = await generateResponse(message, context, chatHistory);
+      
+      // Update history for next turn (not stored server-side, just returned to client)
+      // Client will send this back with the next message
+      const updatedHistory = [
+        ...chatHistory,
+        {
+          role: 'user',
+          parts: [{ text: message }]
+        },
+        {
+          role: 'model', 
+          parts: [{ text: geminiResponse }]
+        }
+      ];
+      
+      // Return the generated response with metadata
       return NextResponse.json({ 
         message: geminiResponse,
-        category: 'sri_response', // Updated category
-        source: source
+        category: 'sri_response',
+        source: source,
+        history: updatedHistory // Return updated history to client
       });
     } catch (error) {
       console.error('Gemini generation error:', error);
@@ -191,10 +262,24 @@ export async function POST(request) {
       
       const fallbackResponse = getRandomResponse(responseCategory);
       
+      // Create fallback history update
+      const updatedHistory = [
+        ...chatHistory,
+        {
+          role: 'user',
+          parts: [{ text: message }]
+        },
+        {
+          role: 'model', 
+          parts: [{ text: fallbackResponse }]
+        }
+      ];
+      
       return NextResponse.json({ 
         message: fallbackResponse,
         category: responseCategory,
-        source: 'sri_fallback'
+        source: 'sri_fallback',
+        history: updatedHistory // Return updated history even on fallback
       });
     }
   } catch (error) {
