@@ -60,10 +60,19 @@ export const ChatInterface = () => {
     setIsTyping(true);
     
     try {
-      // Build the API URL properly to work in both development and production
-      // Remove trailing slash from NETWORK_URL if it exists
-      const baseUrl = NETWORK_URL ? NETWORK_URL.replace(/\/$/, '') : '';
-      const apiUrl = `${baseUrl}/api/chat`;
+      // Determine API URL based on current environment
+      let apiUrl;
+      
+      // If we're in a browser, use relative URL which automatically adapts to the current domain
+      if (typeof window !== 'undefined') {
+        // Use relative URL which works in all environments
+        apiUrl = '/api/chat';
+      } else {
+        // Server-side fallback (should rarely be needed)
+        // Remove trailing slash from NETWORK_URL if it exists
+        const baseUrl = NETWORK_URL ? NETWORK_URL.replace(/\/$/, '') : '';
+        apiUrl = `${baseUrl}/api/chat`;
+      }
       
       console.log('Sending message to API:', apiUrl);
       
@@ -72,7 +81,6 @@ export const ChatInterface = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // No API key header anymore - using domain-based security instead
         },
         body: JSON.stringify({ 
           message: inputMessage,

@@ -49,7 +49,11 @@ function getAllowedDomains() {
     '127.0.0.1',
     'sriujjwalreddy.vercel.app',
     'www.sriujjwalreddy.com',
-    'sriujjwalreddy.com'
+    'sriujjwalreddy.com',
+    'sri-portfolio-qpyqwkk19-sbeeredd04s-projects.vercel.app',
+    'sri-s-portfolio.vercel.app',
+    'sri-s-portfolio-git-main-sbeeredd04s-projects.vercel.app',
+    'vercel.app' // Allow all Vercel preview deployments
   ];
   
   // Check if ALLOWED_DOMAINS is defined in environment variables
