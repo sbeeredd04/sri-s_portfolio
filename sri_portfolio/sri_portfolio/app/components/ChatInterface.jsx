@@ -83,16 +83,18 @@ export const ChatInterface = () => {
       console.log('Chat history length:', chatHistory.length);
       
       // Format the current user message for Gemini
-      const geminiUserMessage = {
-        role: 'user',
-        parts: [{ text: inputMessage }]
-      };
+      // const geminiUserMessage = {  // This is no longer needed here as history is managed server-side based on UI messages
+      //   role: 'user',
+      //   parts: [{ text: inputMessage }]
+      // };
       
       // Log current chat history being sent
       if (chatHistory.length > 0) {
         console.log('Chat history roles:', chatHistory.map(msg => msg.role).join(', '));
       }
       
+      const currentChatHistoryForAPI = [...chatHistory]; // Send a copy of the current history
+
       // Call the API endpoint with the current message and chat history
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -100,8 +102,8 @@ export const ChatInterface = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          message: inputMessage,
-          messages: chatHistory.length > 0 ? chatHistory : [geminiUserMessage] // Use Gemini format
+          message: inputMessage, // The new user message
+          messages: currentChatHistoryForAPI // The history *before* this new message
         }),
       });
       

@@ -7,7 +7,7 @@ const EMBEDDING_MODEL = "text-embedding-004";
 // Using a large chunk size since our about_me.txt is relatively small
 // This ensures we capture full context in the embeddings
 const CHUNK_SIZE = 8000; // characters per chunk - increased for better context
-const CHUNK_OVERLAP = 200; // overlap between chunks
+const CHUNK_OVERLAP = 1000; // overlap between chunks
 
 // In-memory storage for embeddings
 let embeddingCache = null;
