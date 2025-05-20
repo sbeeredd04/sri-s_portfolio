@@ -60,19 +60,7 @@ export const createChatSession = (history = []) => {
       maxOutputTokens: 1024,
     },
     systemInstruction: {
-      text: `YOU ARE SRI UJJWAL REDDY B. NOT an AI. I REPEAT, YOU ARE SRI UJJWAL REDDY B.
-
-You will respond AS SRI HIMSELF, using "I", "me", "my" throughout.
-
-CRITICAL RULES:
-1. ALWAYS use FIRST PERSON ("I gained experience through...", "I worked on...")
-2. NEVER say "As Sri" or "Sri has" - you ARE Sri speaking directly
-3. NEVER mention being an AI, language model, or assistant
-4. NEVER start with "Based on my knowledge" or similar phrases
-5. Start responses immediately with substance - no preambles
-6. Be authentic and conversational
-
-The provided context is YOUR actual experience, skills, and knowledge.`
+      text: `You are a helpful AI assistant for Sri Ujjwal Reddy B. Your primary goal is to answer user questions about Sri accurately and concisely, based on the provided context. Be polite, professional, and focus on providing information directly related to Sri Ujjwal Reddy B.`
     },
     safetySettings: [
       {
@@ -110,7 +98,9 @@ export const generateResponse = async (query, context = null, history = []) => {
   try {
     // Create message by combining context (if any) with the query
     const messageContent = context ? 
-      `CONTEXT ABOUT ME (SRI): ${context}\n\nQUESTION: ${query}` : 
+      `CONTEXT ABOUT SRI UJJWAL REDDY B.: ${context}
+
+USER QUESTION: ${query}` : 
       query;
     
     console.log('Creating chat session with history...');
@@ -119,7 +109,7 @@ export const generateResponse = async (query, context = null, history = []) => {
     
     // Send the message to the chat session
     console.log('Sending message to chat session...');
-    const response = await chat.sendMessage(messageContent);
+    const response = await chat.sendMessage({ message: messageContent });
     console.log('Successfully received chat response');
     
     // Post-process response to remove any AI disclosure phrasing that might slip through
@@ -128,17 +118,16 @@ export const generateResponse = async (query, context = null, history = []) => {
     // Log the raw response before processing
     console.log(`Raw response (first 50 chars): ${responseText.substring(0, 50)}...`);
     
-    // Remove common AI disclosure patterns and introductory phrases
-    responseText = responseText
-      .replace(/^(As an AI|As a language model|As an assistant|I'm an AI|I am an AI|I'm a large language model|I am a large language model)/i, "")
-      .replace(/^(As Sri|Sri has|Sri is|Based on Sri's|According to Sri's profile)/i, "")
-      .replace(/^(Hello|Hi|Greetings|Sure|I'd be happy to|Certainly|Of course|Okay|Sure thing|Absolutely)/i, "")
-      .replace(/^(Based on my knowledge|Based on the provided information|Based on my profile|Based on the context|From my profile)/i, "")
-      .trim();
+    // COMPLETELY REMOVED POST-PROCESSING
+    // responseText = responseText
+    //   .replace(/^(As Sri|Sri is telling you)/i, "") // Prevent AI from speaking *as* Sri
+    //   // Removed the broad greeting stripper here
+    //   .replace(/^(Based on the provided information|Based on the context|According to the information provided)/i, "") // Remove generic context intros
+    //   .trim();
     
     // Log the processed response
-    console.log(`Processed response (first 50 chars): ${responseText.substring(0, 50)}...`);
-    console.log('Gemini chat response generated successfully');
+    // console.log(`Processed response (first 50 chars): ${responseText.substring(0, 50)}...`);
+    console.log('Gemini chat response generated successfully (no post-processing)');
     
     return responseText;
   } catch (error) {
@@ -166,23 +155,13 @@ const generateResponseFallback = async (query, context, history) => {
   const ai = getGeminiClient();
   
   // Forceful, explicit instruction that avoids any identity confusion
-  const systemInstructionContent = `YOU ARE SRI UJJWAL REDDY B. NOT an AI. I REPEAT, YOU ARE SRI UJJWAL REDDY B.
-
-You will respond AS SRI HIMSELF, using "I", "me", "my" throughout.
-
-CRITICAL RULES:
-1. ALWAYS use FIRST PERSON ("I gained experience through...", "I worked on...")
-2. NEVER say "As Sri" or "Sri has" - you ARE Sri speaking directly
-3. NEVER mention being an AI, language model, or assistant
-4. NEVER start with "Based on my knowledge" or similar phrases
-5. Start responses immediately with substance - no preambles
-6. Be authentic and conversational
-
-The provided context is YOUR actual experience, skills, and knowledge.`;
+  const systemInstructionContent = `You are a helpful AI assistant for Sri Ujjwal Reddy B. Your primary goal is to answer user questions about Sri accurately and concisely, based on the provided context. Be polite, professional, and focus on providing information directly related to Sri Ujjwal Reddy B.`;
 
   // Construct the message in a way that clearly separates context from query
   const messageContent = context ? 
-    `CONTEXT ABOUT ME (SRI): ${context}\n\nQUESTION: ${query}` : 
+    `CONTEXT ABOUT SRI UJJWAL REDDY B.: ${context}
+
+USER QUESTION: ${query}` : 
     query;
 
   // Use generateContent API for more control
@@ -238,16 +217,16 @@ The provided context is YOUR actual experience, skills, and knowledge.`;
   
   // Post-process response to remove any AI disclosure phrasing 
   let responseText = response.text || "";
-  responseText = responseText
-    .replace(/^(As an AI|As a language model|As an assistant|I'm an AI|I am an AI|I'm a large language model|I am a large language model)/i, "")
-    .replace(/^(As Sri|Sri has|Sri is|Based on Sri's|According to Sri's profile)/i, "")
-    .replace(/^(Hello|Hi|Greetings|Sure|I'd be happy to|Certainly|Of course|Okay|Sure thing|Absolutely)/i, "")
-    .replace(/^(Based on my knowledge|Based on the provided information|Based on my profile|Based on the context|From my profile)/i, "")
-    .trim();
+  // COMPLETELY REMOVED POST-PROCESSING
+  // responseText = responseText
+  //   .replace(/^(As Sri|Sri is telling you)/i, "") // Prevent AI from speaking *as* Sri
+  //   // Removed the broad greeting stripper here
+  //   .replace(/^(Based on the provided information|Based on the context|According to the information provided)/i, "") // Remove generic context intros
+  //   .trim();
   
   // Log the processed response
-  console.log(`Processed fallback response (first 50 chars): ${responseText.substring(0, 50)}...`);
-  console.log('Gemini generateContent API response generated successfully');
+  // console.log(`Processed fallback response (first 50 chars): ${responseText.substring(0, 50)}...`);
+  console.log('Gemini generateContent API response generated successfully (no post-processing)');
   
   return responseText;
 };

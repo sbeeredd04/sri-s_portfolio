@@ -8,14 +8,14 @@ import path from 'path';
 // Fallback responses for cases where Gemini fails - written in first person as Sri
 const fallbackResponses = {
   greeting: [
-    "Hey there! What would you like to know about me or my work?",
-    "Hi! Thanks for reaching out. What can I tell you about my experience or projects?",
-    "Hello! I'm glad you're interested in my portfolio. What would you like to discuss?"
+    "Hello! How can I assist you today with information about Sri Ujjwal Reddy B.?",
+    "Hi there! I'm Sri's AI assistant. What would you like to know about his work or projects?",
+    "Greetings! I can help answer your questions about Sri. What are you interested in?"
   ],
   error: [
-    "Sorry, I seem to be having some connection issues. Could we try that again?",
-    "Hmm, I couldn't process that properly. Mind rephrasing your question?",
-    "I apologize, but I couldn't formulate a proper response to that. Let's try a different question."
+    "My apologies, I seem to be having trouble connecting. Could you please try asking again?",
+    "Hmm, I couldn't quite process that. Would you mind rephrasing your question about Sri?",
+    "I'm sorry, but I couldn't generate a response. Perhaps try a different question about Sri?"
   ]
 };
 
@@ -27,7 +27,7 @@ try {
   console.log('Successfully loaded about_me.txt for context fallback.');
 } catch (error) {
   console.error('Failed to load about_me.txt:', error);
-  aboutMeContext = "Error: Could not load my personal information."; // Updated fallback message
+  aboutMeContext = "Error: Could not load information about Sri Ujjwal Reddy B."; // Updated fallback message
 }
 
 // No need for self-executing function here - initialization happens in initialize-embeddings.js

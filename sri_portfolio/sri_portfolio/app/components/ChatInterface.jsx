@@ -8,9 +8,10 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState([
     { 
       id: 1, 
-      text: "Hey there! What would you like to know about me or my work?", 
+      text: "Hello! I'm Sri's AI assistant. How can I help you learn more about him or his work today?", 
       sender: 'bot',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      source: 'assistant_greeting'
     }
   ]);
   
@@ -83,16 +84,18 @@ export const ChatInterface = () => {
       console.log('Chat history length:', chatHistory.length);
       
       // Format the current user message for Gemini
-      const geminiUserMessage = {
-        role: 'user',
-        parts: [{ text: inputMessage }]
-      };
+      // const geminiUserMessage = {  // This is no longer needed here as history is managed server-side based on UI messages
+      //   role: 'user',
+      //   parts: [{ text: inputMessage }]
+      // };
       
       // Log current chat history being sent
       if (chatHistory.length > 0) {
         console.log('Chat history roles:', chatHistory.map(msg => msg.role).join(', '));
       }
       
+      const currentChatHistoryForAPI = [...chatHistory]; // Send a copy of the current history
+
       // Call the API endpoint with the current message and chat history
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -100,8 +103,8 @@ export const ChatInterface = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          message: inputMessage,
-          messages: chatHistory.length > 0 ? chatHistory : [geminiUserMessage] // Use Gemini format
+          message: inputMessage, // The new user message
+          messages: currentChatHistoryForAPI // The history *before* this new message
         }),
       });
       
@@ -158,10 +161,10 @@ export const ChatInterface = () => {
     // Reset both the displayed messages and the chat history
     setMessages([{
       id: Date.now(),
-      text: "Hey there! What would you like to know about me or my work?",
+      text: "Hello! I'm Sri's AI assistant. How can I help you learn more about him or his work today?",
       sender: 'bot',
       timestamp: new Date().toISOString(),
-      source: 'sri_direct'
+      source: 'assistant_greeting'
     }]);
     
     // Clear the Gemini chat history
@@ -176,9 +179,14 @@ export const ChatInterface = () => {
 
   const getSourceBadgeInfo = (source) => {
     switch(source) {
+      case 'assistant_greeting':
+        return {
+          text: 'Assistant',
+          className: 'bg-sky-500/20 text-sky-300'
+        };
       case 'sri_direct':
         return {
-          text: 'Sri',
+          text: 'Sri Info',
           className: 'bg-emerald-500/20 text-emerald-300'
         };
       case 'sri_semantic_search':
@@ -188,7 +196,7 @@ export const ChatInterface = () => {
         };
       case 'sri_fallback':
         return {
-          text: 'Sri (Preset)',
+          text: 'Assistant (Preset)',
           className: 'bg-yellow-500/20 text-yellow-300'
         };
       case 'error':
@@ -198,7 +206,7 @@ export const ChatInterface = () => {
         };
       default:
         return {
-          text: 'Sri',
+          text: 'Assistant',
           className: 'bg-neutral-500/20 text-neutral-300'
         };
     }
@@ -210,14 +218,14 @@ export const ChatInterface = () => {
       <div className="flex items-center justify-between px-4 py-3 bg-neutral-900/50 border-b border-white/10">
         <div className="flex items-center">
           <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mr-3 overflow-hidden">
-            <img src="/pfp.png" alt="AI Sri Avatar" className="w-full h-full object-cover" />
+            <img src="/pfp.png" alt="AI Assistant Avatar" className="w-full h-full object-cover" />
           </div>
           <div>
             <h2 className="text-white font-medium flex items-center">
-              AI Sri 
+              Sri's AI Assistant 
               <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 bg-blue-500/30 text-blue-300 rounded-md">BETA</span>
             </h2>
-            <p className="text-xs text-neutral-400">Digital Version of Sri</p>
+            <p className="text-xs text-neutral-400">Your guide to Sri's portfolio</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -251,7 +259,7 @@ export const ChatInterface = () => {
               <div className="flex items-start gap-2">
                 {message.sender === 'bot' && (
                   <div className="w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden">
-                    <img src="/pfp.png" alt="AI Avatar" className="w-full h-full object-cover" />
+                    <img src="/pfp.png" alt="AI Assistant Avatar" className="w-full h-full object-cover" />
                   </div>
                 )}
                 <div className="flex-1">
@@ -292,7 +300,7 @@ export const ChatInterface = () => {
             <div className="bg-neutral-700/70 rounded-3xl rounded-tl-none px-4 py-3">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center overflow-hidden">
-                  <img src="/pfp.png" alt="AI Avatar Typing" className="w-full h-full object-cover" />
+                  <img src="/pfp.png" alt="AI Assistant Avatar Typing" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 rounded-full bg-neutral-400 animate-pulse" style={{ animationDelay: '0ms' }}></div>
