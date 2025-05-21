@@ -31,7 +31,8 @@ import {
   IconLayoutSidebar,
   IconMessageCircle,
   IconLink,
-  IconShare2
+  IconShare2,
+  IconEye // Added IconEye
 } from "@tabler/icons-react";
 // Import IconVolumeOff instead of IconVolumeMute (which appears to be unavailable)
 import { IconVolumeOff } from "@tabler/icons-react"; 
@@ -876,14 +877,16 @@ export default function Home() {
                           {/* Resume Buttons */}
                           <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 md:gap-4 px-4 z-50 pb-2">
                             <Link href="/my_resume.pdf" download>
-                              <button className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:from-blue-500 hover:to-green-500 transition-all md:px-6 md:py-3 md:text-base">
+                              <button className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-500 text-black hover:from-cyan-500 hover:to-emerald-600 transition-all md:px-6 md:py-3 md:text-base shadow-lg hover:shadow-cyan-500/40 active:scale-95">
+                                <IconDownload size="1.1em" strokeWidth={2} className="mr-1.5 md:mr-2 flex-shrink-0" />
                                 Download Resume
                               </button>
                             </Link>
                             <button
-                              className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:from-blue-500 hover:to-green-500 transition-all md:px-6 md:py-3 md:text-base"
+                              className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-black/20 backdrop-blur-md border border-cyan-400/60 text-cyan-300 hover:bg-black/30 hover:border-cyan-300 hover:text-cyan-200 transition-all md:px-6 md:py-3 md:text-base active:scale-95"
                               onClick={() => setShowResumePreview(true)}
                             >
+                              <IconEye size="1.1em" strokeWidth={2} className="mr-1.5 md:mr-2 flex-shrink-0" />
                               View Resume
                             </button>
                           </div>
