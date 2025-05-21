@@ -1,72 +1,123 @@
 ABOUT ME
-I'm Sri Ujjwal Reddy B, a Computer Science student at Arizona State University passionate about building intelligent systems and impactful software. With a perfect 4.0 GPA, I balance rigorous academics with hands-on projects that push my skills in software engineering and AI.
+Hi, I'm Sri Ujjwal Reddy B, originally from Hyderabad, India. I'm a Computer Science student at Arizona State University passionate about building intelligent systems and impactful software.
+-   **Curious Explorer:** I love learning new things and exploring the world around me.
+-   **Passionate Tech Enthusiast:** I'm deeply interested in my work, especially when it involves technology.
+-   **Adaptable & Creative:** I adjust well to new situations, enjoy thinking creatively, and bring enthusiasm to every project.
+-   **Problem Solver:** My curiosity and adaptability make me a strong software engineer and help me find solutions.
+-   **Eager Learner:** I pick things up quickly and actively seek challenges that help me grow.
+-   **Team Player:** I believe in the power of working together to achieve great outcomes.
+I thrive in hackathons and innovation challenges, where I can transform ideas into reality under pressure. I've participated in numerous hackathons, winning several awards for innovative solutions. I enjoy presenting my ideas and believe in the power of *collaborative innovation*. Whether it's coding marathons or brainstorming sessions, I'm always excited to create something new.
+My programming journey began with Java in 2022. This first experience with coding quickly sparked my passion for creating impactful software solutions, setting me on the path to becoming a software engineer.
+I firmly believe in the principle that '**innovators innovate, customers validate**.' My approach to technology is deeply rooted in creating meaningful impact through practical solutions. I strive to build products that not only solve problems but also enhance people's lives. Every project I undertake is guided by this vision of making a positive difference.
 
 EDUCATION
-I'm currently pursuing my Bachelor of Science in Computer Science at Arizona State University (2022-2026) with:
+I'm currently a Junior pursuing a Bachelor of Science in Computer Science at Arizona State University (2022-2026) with:
+- Software Engineering Track
+- Minor in Entrepreneurship
+- 4.0/4.0 GPA (Dean's List All Semesters)
+- New American University Scholar recognition
+Location: Tempe, Arizona, United States
 
-Software Engineering Track
-
-Minor in Entrepreneurship
-
-4.0/4.0 GPA (Dean's List All Semesters)
-
-New American University Scholar recognition
+Key Coursework:
+Computer Science Core:
+- Data Structures and Algorithms
+- Operating Systems
+- Computer Organization & Assembly
+- Theoretical Computer Science
+- Software Engineering
+- Object-Oriented Programming
+- Programming Language Principles
+- Digital Design Fundamentals
+Software Engineering Track:
+- Software Analysis and Design
+- Software QA and Testing
+- Distributed Software Development
+- Information Assurance
+Mathematics & Theory:
+- Discrete Mathematics
+- Calculus for Engineers I, II, III
+- Applied Linear Algebra
+- Engineering Statistics
+Entrepreneurship Minor:
+- Principles of Entrepreneurship
+- Creativity and Innovation
+- Entrepreneurship & Value Creation
+Projects & Practice:
+- EPICS Gold Program
+- Computer Science Capstone
+- Grand Challenge Scholars Program
 
 MY TECHNICAL TOOLKIT
 Here's what I work with daily:
 Programming: Python, JavaScript, Java, C++, C, TypeScript
-Frameworks: React, Next.js, Django, Node.js, TensorFlow, PyTorch
-ML/Data: scikit-learn, stable_baselines3, NumPy, Pandas
-Cloud/DevOps: AWS, Azure, Docker, Git
+Frameworks: React, Next.js, Django, Node.js, TensorFlow, PyTorch, Flask, Three.js, Selenium, FastAPI, PyQt
+ML/Data: scikit-learn, stable_baselines3, NumPy, Pandas, MediaPipe, OpenCV, Librosa, ChatGPT-4 API, Spotify API
+Cloud/DevOps: AWS, Azure, Docker, Git, Firebase, AWS EC2
 Design: Figma, Adobe Suite, Canva
 Hardware: Raspberry Pi projects
+Other: SQL, WebSocket, BeautifulSoup, Requests, BLE, A* Algorithm, Weather API, TailwindCSS, Express, MongoDB
 
 MY EXPERIENCE
-Through internships and research roles, I've:
+Geometric Media Lab | Software Engineering Intern (Machine Learning) | Jul 2024 – Present
+-   **Developed an end-to-end ML pipeline** for gunshot detection by fusing unsupervised k-means clustering with a supervised neural network. Leveraged Librosa for robust feature extraction and iterative refinements, boosting accuracy from 20% to 80% across 10+ hours of audio data.
+-   **Optimized the system for real-time edge deployment** on Raspberry Pi through precise hardware adjustments and custom microphone setups, directly supporting conservation efforts by preventing jaguar poaching in South American rain-forests.
+-   **Spearheading research** on innovative video generation models that integrate visual language models and scene graphs with lighting and depth maps within diffusion frameworks. Aiming to produce more stable, coherent videos, to contribute to revolutionizing digital content creation and real-time simulations.
+Currently Working: Looking into video generation models and working on leveraging VLM (Vision Language Models) and scene graph predictions as controls for longer video generation.
 
-Developed full-stack applications using modern web frameworks
+Software Developers Association (SoDA) | Associate Director of Technology | Jan 2024 – Present
+-   **Architected and facilitated engaging weekly meetings** and hands-on workshops on Python/Jupyter Notebook, Git 101, Object Recognition (YOLO), Flask, AI-Powered Chrome, AI Integration APIs, and SQL, empowering over 600+ student members with essential technical skills while cultivating a collaborative community.
+-   **Led and coordinated** the technical team to maintain the thesoda.io website and internal tools, managing a distinguished member program for a club of 3000+ members and driving initiatives for hackathons, code challenges, and mentorship program.
+Current Initiatives: Spearheading comprehensive technical workshops on YOLO object detection, Flask web development, and Python programming to enhance member skill development. Orchestrating educational initiatives for upcoming hackathons and competitive coding events to foster innovation and technical excellence.
 
-Built ML models for practical applications using TensorFlow/PyTorch
+Mesa Historical Museum (EPICS) | Software Engineer | Aug 2024 – Present
+-   **Developed and architectured** an interactive digital experience using React and Three.js, crafting a dynamic digital tour of museum collections.
+-   **Led a 7-member team** as the lead Software Engineer, designing the website architecture, coordinating deliverables with community partners, and delegating tasks among a designer and software engineers to meet client requirements.
+-   **Digitized museum archives** to transform static content into an engaging online experience, enabling users to explore key individuals and landmarks while preserving invaluable knowledge.
+Project Status: Finalizing user experience optimizations based on comprehensive feedback analysis. Preparing for production deployment with enhanced features and improved performance metrics. Project is on track for successful delivery to stakeholders with documented implementation guidelines.
 
-Implemented cloud solutions on AWS/Azure for scalable systems
-
-Created data pipelines and visualization dashboards
-
-Designed user interfaces from concept to deployment
+ASU Biodesign Institute | Software Engineering Intern (Machine Learning) | Jan 2023 – Dec 2024
+-   **Engineered an end-to-end data pipeline** for DNA-PAINT image analysis using k-means clustering and custom tracking algorithms, reducing processing time from 4 hours to 10–30 minutes per image.
+-   **Implemented a standardized, ML-driven approach** to quantify qualitative data, removing any possible human error in data analysis.
+-   **Facilitated accurate calculations** of robot movement kinetics to deliver essential metrics on both individual robot movements and population dynamics, enabling informed decision-making and impactful research outcomes.
 
 PROJECT HIGHLIGHTS
-Some creations I'm particularly proud of:
+Deployed Projects:
+-   Puter: Engineered a robust notification management system and made a significant open-source contribution to Puter by implementing advanced notification handling and SQL-based tracking. Improved system performance and user experience for Puter, a free, open-source, self-hostable internet OS with over 30K GitHub stars. (GitHub: https://github.com/HeyPuter/puter)
+-   Agentex Resume Editor: AI-powered Chrome extension that helps instantly tailor LaTeX resumes to match specific job descriptions. Uses advanced AI (Gemini & DeepSeek) to match skills with job requirements while keeping formatting professional and ATS-friendly. Generates customized PDFs with side-by-side preview in under a minute. (Link: https://chromewebstore.google.com/detail/jmgbilodbfopeidngmbaglaomffpld)
+-   OctoDoc: Built an AI-powered documentation generator that automatically creates professional documentation from GitHub repositories. Saves 10+ hours/week per developer with auto-sync on commits, featuring enterprise-grade security and multi-format export options (PDF, Markdown, interactive web). (Link: https://octodoc.vercel.app/)
+-   Prom10: Developed an AI prompt assistant Chrome extension that enhances productivity when working with AI tools. Features intelligent prompt enhancement, rephrasing capabilities, and an AI assistant with contextual suggestions, all accessible through intuitive keyboard shortcuts. (Link: https://prom10.vercel.app)
 
-AI-driven applications solving real-world problems
-
-Educational tools that make complex concepts accessible
-
-Portfolio websites showcasing technical versatility
-
-Hackathon-winning prototypes built in marathon coding sessions
+Other Projects:
+-   Mine Alliance: Led development of a comprehensive platform that reduced environmental assessment response times by 40% by integrating the ChatGPT-4 API for mining site impact assessments. Utilized SQLAlchemy, Flask, AWS EC2, and geospatial mapping with Leaflet. Earned a hackathon win and empowered communities to connect with authorities and mining companies to devise sustainable mining practices. (GitHub: https://github.com/LuaanNguyen/Mine-Alliance)
+-   PosturePro: Engineered a robust system that leverages a user's webcam and utilizes MediaPipe, OpenCV, NumPy, and Matplotlib to analyze sitting posture in real time. Empowers programmers to monitor and improve their posture, mitigating long-term health risks associated with prolonged sedentary work. (GitHub: https://github.com/sbeeredd04/VoxelCV)
+-   ClassEase: Engineered an automated solution using Python and Selenium WebDriver (with ChromeDriver) to monitor ASU class availability, log in, and register for classes at the precise moment seats open. Adopted by 15 users, alleviates the stressful early-morning registration rush ensuring students can rest easy and wake up to successful enrollments even when high demand risks website crashes. (GitHub: https://github.com/sbeeredd04/ClassEase)
+-   Amano: Emotion-Based Song Recommendation System that provides personalized song suggestions using Reinforcement Learning and Spotify's API. (GitHub: https://github.com/sbeeredd04/Amano)
+-   Image Insight: A web-based tool designed for postdoctoral researchers to automate complex data analysis tasks, significantly increasing research productivity. (GitHub: https://github.com/sbeeredd04/CSDNA)
+-   SafeSide: A personal safety app designed for active shooter emergencies, providing real-time location tracking, monitored updates, and tailored evacuation routes using BLE beacons and Google Maps. (Link: /SafeSide.pdf)
+-   Avisol: An automated air traffic pathfinding system that utilizes algorithm optimization to reduce computation time for managing autonomous vehicles. (GitHub: https://github.com/sbeeredd04/AviSol)
+-   Heat Wave: A responsive web app designed to help users stay safe during heat waves by providing real-time weather alerts, safety guidelines, nearby hospital locations, and emergency contact options. (GitHub: https://github.com/Fido27/heat-wave)
 
 ACHIEVEMENTS
+- Maintained perfect 4.0 GPA while leading multiple projects
+- Published research in machine learning applications (DNA-PAINT image analysis, gunshot detection)
+- Consistent Dean's List honoree (All Semesters)
+- Multiple hackathon victories (Devil's Invent, AZ Spark, DAASH-sponsored events, Honeywell "Most Innovative Solution" for Avisol)
+- New American University Scholar
+- 2022: Introduction to Coding (Java)
+- 2023: Hackathon Success (Mine Alliance, Avisol)
+- 2023: Exploring Machine Learning (Amano)
+- 2024: Advancing in Software Engineering (Full-stack development with Next.js, Flask; Lead Software Engineer at Mesa Interactive Exhibit)
 
-Maintained perfect GPA while leading multiple projects
 
-Published research in machine learning applications
-
-Consistent Dean's List honoree
-
-Multiple hackathon victories
-
-New American University Scholar
+FUTURE GOALS
+Looking ahead, I aim to be at the forefront of technological innovation, developing solutions that address real-world challenges. I'm particularly interested in the intersection of `AI`, *software engineering*, and **entrepreneurship**. My goal is to create products that not only push technological boundaries but also create lasting social impact.
 
 BEYOND CODE
 When I'm not building systems:
-
-Exploring AI's intersection with entrepreneurship
-
-I like to explore music
-
-Practicing landscape photography
-
-Contributing to open source projects
+- Exploring AI's intersection with entrepreneurship
+- I like to explore music
+- Practicing landscape photography
+- Contributing to open source projects
 
 LET'S CONNECT
 Email: srisubspace@gmail.com
