@@ -728,7 +728,7 @@ export default function Home() {
             </div>
 
             {/* Search/URL Bar - Different for mobile and desktop */}
-            <div className="flex-1 mx-2 md:mx-6">
+            <div className="flex-1 mx-2 md:mx-6 min-w-0"> {/* Added min-w-0 */}
               {/* Mobile Search Bar */}
               <div className="flex items-center gap-1 px-2 py-1.5 bg-neutral-900/90 rounded-lg border border-white/5 md:hidden">
                 <IconSearch size={14} className="text-neutral-500" />
@@ -748,7 +748,7 @@ export default function Home() {
             </div>
 
             {/* Browser Controls */}
-            <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-1 md:gap-4"> {/* Changed mobile gap to gap-1 */}
               <div className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-700/50 border border-white/10 overflow-hidden">
                 <img 
                   src="/music/mySong.png" 
@@ -786,7 +786,7 @@ export default function Home() {
               <div id="theme-button-tutorial-target" className="relative">
                 <button
                   onClick={() => setIsBackgroundMenuOpen(!isBackgroundMenuOpen)}
-                  className="flex items-center justify-center gap-1 px-3 py-1.5 h-8 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10 md:gap-2"
+                  className="flex items-center justify-center gap-1 px-2 py-1.5 h-8 rounded-lg bg-neutral-700/30 text-neutral-400 hover:text-white hover:bg-neutral-600/30 transition-colors border border-white/10 md:px-3 md:gap-2" /* Changed mobile px to px-2 */
                 >
                   <IconPalette size={20} stroke={1.5} className="md:hidden" />
                   <IconPalette size={24} stroke={1.5} className="hidden md:block" />
