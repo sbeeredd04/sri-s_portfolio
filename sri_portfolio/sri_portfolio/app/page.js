@@ -874,14 +874,14 @@ export default function Home() {
                           </div>
                           
                           {/* Resume Buttons */}
-                          <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 md:gap-4 px-4 z-50 pb-2">
+                          <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 md:gap-4 px-4 z-50 pb-2">
                             <Link href="/my_resume.pdf" download>
-                              <button className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-green-500 transition-all md:px-6 md:py-3 md:text-base">
+                              <button className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:from-blue-500 hover:to-green-500 transition-all md:px-6 md:py-3 md:text-base">
                                 Download Resume
                               </button>
                             </Link>
                             <button
-                              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-neutral-800/50 backdrop-blur-sm border-2 border-white/20 text-white hover:bg-white/5 transition-all md:px-6 md:py-3 md:text-base"
+                              className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:from-blue-500 hover:to-green-500 transition-all md:px-6 md:py-3 md:text-base"
                               onClick={() => setShowResumePreview(true)}
                             >
                               View Resume
