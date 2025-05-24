@@ -60,6 +60,9 @@ import { useSound } from "./components/SoundProvider";
 import { FirstVisitTutorial } from "./components/FirstVisitTutorial";
 import { ChatInterface } from "./components/ChatInterface";
 import { BentoGrid, BentoGridItem } from "./components/bento-grid";
+import { radarSkillsData, detailedSkillsData, gameStatsData, achievementsData } from "./json/skillsData";
+import GameSkillsView from "./components/GameSkillsView";
+import GitHubStatsView from "./components/GitHubStatsView";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -72,6 +75,7 @@ export default function Home() {
   const [previewUrl, setPreviewUrl] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [skillsActiveTab, setSkillsActiveTab] = useState("overview");
   
   // Important: Make sure these hooks are called at the top level
   const { showPlayer, togglePlayerVisibility } = useMusic();
@@ -1224,19 +1228,33 @@ export default function Home() {
                 )}
 
                 {activeSection === "skills" && (
-                  <section className="w-full h-full flex flex-col items-center justify-center">
-                    <div className="w-full max-w-7xl mx-auto px-2 md:px-4">
-                      <h2 className="text-xl font-bold text-white/90 mb-4 text-center md:text-4xl md:mb-8">Technical Skills</h2>
-                      <div className="w-full overflow-y-auto max-h-[calc(100vh-12rem)] md:max-h-[calc(100vh-16rem)] rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 p-3 md:p-6">
-                        <div className="w-full relative">
-                          <InfiniteMovingCards
-                            sections={skillsSections}
-                            direction="left"
-                            speed="normal"
-                            pauseOnHover={true}
-                            className="w-full"
+                  <section className="w-full h-full">
+                    <div className="w-full h-full max-w-7xl mx-auto">
+                      <div className="w-full h-full rounded-2xl bg-neutral-800/10 backdrop-blur-xl border border-white/10 overflow-hidden"
+                           style={{
+                             background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+                             backdropFilter: 'blur(20px)',
+                             WebkitBackdropFilter: 'blur(20px)',
+                           }}>
+                        {skillsActiveTab === "overview" ? (
+                          <GameSkillsView
+                            radarSkills={radarSkillsData}
+                            detailedSkills={detailedSkillsData}
+                            playerStats={gameStatsData}
+                            achievements={achievementsData}
+                            activeView={skillsActiveTab}
                           />
-                        </div>
+                        ) : skillsActiveTab === "github" ? (
+                          <GitHubStatsView />
+                        ) : (
+                          <GameSkillsView
+                            radarSkills={radarSkillsData}
+                            detailedSkills={detailedSkillsData}
+                            playerStats={gameStatsData}
+                            achievements={achievementsData}
+                            activeView={skillsActiveTab}
+                          />
+                        )}
                       </div>
                     </div>
                   </section>
@@ -1246,25 +1264,25 @@ export default function Home() {
                   <section className="w-full h-full">
                     <div className="flex-1 w-full overflow-hidden">
                       <div className="w-full h-full relative px-2 md:px-4">
-            <ExCarousel
-              items={blogPosts.map((post, index) => (
-                <Card
-                  key={index}
-                  index={index}
-                  card={{
-                    title: post.title,
-                    content: post.content,
-                    category: post.category,
-                    src: `/${index + 1}.jpg`, 
-                  }}
+                        <ExCarousel
+                          items={blogPosts.map((post, index) => (
+                            <Card
+                              key={index}
+                              index={index}
+                              card={{
+                                title: post.title,
+                                content: post.content,
+                                category: post.category,
+                                src: `/${index + 1}.jpg`, 
+                              }}
                               className="max-w-[90%] mx-auto"
-                />
-              ))}
+                            />
+                          ))}
                           className="w-full h-full"
-            />
+                        />
                       </div>
-          </div>
-        </section>
+                    </div>
+                  </section>
                 )}
 
                 {activeSection === "chat" && (
@@ -1467,17 +1485,25 @@ export default function Home() {
 
               {activeSection === "skills" && (
                 <>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
-                    All Skills
+                  <button 
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
+                      skillsActiveTab === "overview"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                    onClick={() => setSkillsActiveTab("overview")}
+                  >
+                    Skill Overview
                   </button>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
-                    Languages
-                  </button>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
-                    Frameworks
-                  </button>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
-                    Tools
+                  <button 
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
+                      skillsActiveTab === "github"
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
+                    }`}
+                    onClick={() => setSkillsActiveTab("github")}
+                  >
+                    GitHub Analytics
                   </button>
                 </>
               )}
