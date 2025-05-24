@@ -70,6 +70,7 @@ import {
   IconBrandWindows,
   IconBrandVue,
   IconBrandUbuntu,
+  IconBrandNotion
 } from '@tabler/icons-react';
 
 // Custom Badge Component with consistent styling and proper icons
@@ -230,7 +231,7 @@ const skillSections = [
         ],
       },
       {
-        name: "API Development",
+        name: "Development",
         skills: [
           { name: "RESTful APIs", icon: <IconApi />, color: "blue" },
           { name: "GraphQL", icon: <IconBrandGraphql />, color: "pink" },
@@ -238,6 +239,7 @@ const skillSections = [
           { name: "FastAPI", icon: <IconBrandPython />, color: "cyan" },
           { name: "SQLAlchemy", icon: <IconDatabase />, color: "blue" },
           { name: "MySQL", icon: <IconBrandMysql />, color: "blue" },
+          { name: "Chrome Extension Development", icon: <IconBrandChrome />, color: "purple" },
         ],
       },
     ],
@@ -356,8 +358,7 @@ const skillSections = [
           { name: "Selenium", icon: <IconTool />, color: "red" },
           { name: "Figma", icon: <IconBrandFigma />, color: "purple" },
           { name: "LaTeX", icon: <IconFileText />, color: "teal" },
-          { name: "Chrome Extension Development", icon: <IconBrandChrome />, color: "purple" },
-          { name: "Vite", icon: <IconLoader2 />, color: "pink" },
+          { name: "Notion", icon: <IconBrandNotion />, color: "purple" },
         ],
       },
       {
