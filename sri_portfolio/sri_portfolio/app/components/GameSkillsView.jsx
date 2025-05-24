@@ -539,11 +539,6 @@ export const GameSkillsView = ({ activeView = 'overview' }) => {
         {isMobile ? (
           /* Mobile Layout */
           <div className="h-full flex flex-col overflow-hidden w-full">
-            <div className="flex-shrink-0 p-3 sm:p-4 bg-neutral-850/30 border-b border-white/5 shadow-md">
-              <div className="h-[280px] sm:h-[320px]">
-                <SkillsRadarCard className="h-full" />
-              </div>
-            </div>
             <div ref={scrollRef} className="flex-1 overflow-y-auto hide-scrollbar p-3 sm:p-4 space-y-6">
               {skillSections.map((section, index) => (
                 <div 
