@@ -376,9 +376,38 @@ export const GitHubStatsView = () => {
         .contribution-grid img {
           position: relative;
           z-index: 2;
-          border-radius: 8px;
+          border-radius: 12px;
           box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
           background: transparent !important;
+          filter: invert(1) hue-rotate(180deg) saturate(120%) brightness(90%) contrast(120%);
+          overflow: hidden;
+        }
+        /* Add rounded corners effect to contribution grid */
+        .contribution-grid {
+          position: relative;
+          overflow: hidden;
+        }
+        /* Style the SVG rects to have rounded corners */
+        .contribution-grid img {
+          border-radius: 12px;
+        }
+        .contribution-grid svg rect {
+          rx: 2;
+          ry: 2;
+        }
+        /* CSS to enhance the rounded effect */
+        .contribution-grid::after {
+          content: '';
+          position: absolute;
+          top: 16px;
+          left: 16px;
+          right: 16px;
+          bottom: 16px;
+          background: transparent;
+          border-radius: 8px;
+          pointer-events: none;
+          z-index: 3;
+          border: 1px solid rgba(59, 130, 246, 0.1);
         }
         /* Enhanced glassmorphism for stat cards */
         .github-stat-container {
