@@ -215,26 +215,26 @@ export const ChatInterface = () => {
   return (
     <div className="w-full h-full flex flex-col bg-neutral-800/20 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
       {/* Chat Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-neutral-900/50 border-b border-white/10">
-        <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mr-3 overflow-hidden">
+      <div className="flex items-center justify-between px-2 sm:px-4 py-3 bg-neutral-900/50 border-b border-white/10">
+        <div className="flex items-center overflow-hidden">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 overflow-hidden">
             <img src="/pfp.png" alt="AI Assistant Avatar" className="w-full h-full object-cover" />
           </div>
-          <div>
-            <h2 className="text-white font-medium flex items-center">
+          <div className="flex flex-col sm:flex-row sm:items-center overflow-hidden">
+            <h2 className="text-white font-medium flex items-center text-sm sm:text-base truncate">
               Sri's AI Assistant 
-              <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 bg-blue-500/30 text-blue-300 rounded-md">BETA</span>
+              <span className="ml-1 sm:ml-2 text-xs font-semibold px-1 sm:px-1.5 py-0.5 bg-blue-500/30 text-blue-300 rounded-md">BETA</span>
             </h2>
-            <p className="text-xs text-neutral-400">Your guide to Sri's portfolio</p>
+            <p className="text-xs text-neutral-400 hidden sm:block sm:ml-2 truncate">Your guide to Sri's portfolio</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="text-xs text-neutral-400 mr-2">
-            {chatHistory.length > 0 ? `${chatHistory.length} messages in history` : 'New conversation'}
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <div className="text-xs text-neutral-400 mr-1 sm:mr-2 hidden md:block">
+            {chatHistory.length > 0 ? `${chatHistory.length} in history` : 'New'}
           </div>
           <button 
             onClick={clearChat}
-            className="p-2 hover:bg-neutral-800/80 rounded-full transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-neutral-800/80 rounded-full transition-colors"
             title="Clear chat"
           >
             <IconTrash size={18} className="text-neutral-400 hover:text-white" />
@@ -243,49 +243,49 @@ export const ChatInterface = () => {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
+      <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
         {messages.map((message) => (
           <div 
             key={message.id} 
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div 
-              className={`max-w-[75%] rounded-3xl px-4 py-3 ${
+              className={`max-w-[85%] sm:max-w-[75%] rounded-2xl sm:rounded-3xl px-3 py-2 sm:px-4 sm:py-3 ${
                 message.sender === 'user' 
-                  ? 'bg-blue-600 text-white rounded-tr-none' 
-                  : 'bg-neutral-700/70 text-white rounded-tl-none'
+                  ? 'bg-blue-600 text-white rounded-tr-lg sm:rounded-tr-none'
+                  : 'bg-neutral-700/70 text-white rounded-tl-lg sm:rounded-tl-none'
               } ${message.error ? 'bg-red-500/70' : ''}`}
             >
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-1.5 sm:gap-2">
                 {message.sender === 'bot' && (
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-500/30 flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden">
                     <img src="/pfp.png" alt="AI Assistant Avatar" className="w-full h-full object-cover" />
                   </div>
                 )}
                 <div className="flex-1">
                   {message.sender === 'bot' ? (
                     <div 
-                      className="text-sm break-words prose prose-sm prose-invert max-w-none" 
+                      className="text-xs sm:text-sm break-words prose prose-xs sm:prose-sm prose-invert max-w-none"
                       dangerouslySetInnerHTML={{ __html: renderMarkdown(message.text) }} 
                     />
                   ) : (
-                    <p className="text-sm break-words">{message.text}</p>
+                    <p className="text-xs sm:text-sm break-words">{message.text}</p>
                   )}
                   <div className="flex justify-between items-center mt-1">
                     {message.sender === 'bot' && message.source && (
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
+                      <span className={`text-[8px] sm:text-[9px] px-1 sm:px-1.5 py-0.5 rounded-full ${
                         getSourceBadgeInfo(message.source).className
                       }`}>
                         {getSourceBadgeInfo(message.source).text}
                       </span>
                     )}
-                    <p className="text-[10px] text-right opacity-70 ml-auto">
+                    <p className="text-[9px] sm:text-[10px] text-right opacity-70 ml-auto">
                       {formatTime(message.timestamp)}
                     </p>
                   </div>
                 </div>
                 {message.sender === 'user' && (
-                  <div className="w-6 h-6 rounded-full bg-blue-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <IconUser size={14} className="text-blue-300" />
                   </div>
                 )}
@@ -297,15 +297,15 @@ export const ChatInterface = () => {
         {/* Typing indicator */}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-neutral-700/70 rounded-3xl rounded-tl-none px-4 py-3">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center overflow-hidden">
+            <div className="bg-neutral-700/70 rounded-2xl sm:rounded-3xl rounded-tl-lg sm:rounded-tl-none px-3 py-2 sm:px-4 sm:py-3">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-500/30 flex items-center justify-center overflow-hidden">
                   <img src="/pfp.png" alt="AI Assistant Avatar Typing" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 rounded-full bg-neutral-400 animate-pulse" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 rounded-full bg-neutral-400 animate-pulse" style={{ animationDelay: '300ms' }}></div>
-                  <div className="w-2 h-2 rounded-full bg-neutral-400 animate-pulse" style={{ animationDelay: '600ms' }}></div>
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-neutral-400 animate-pulse" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-neutral-400 animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-neutral-400 animate-pulse" style={{ animationDelay: '600ms' }}></div>
                 </div>
               </div>
             </div>
@@ -316,21 +316,21 @@ export const ChatInterface = () => {
       </div>
 
       {/* Input Area */}
-      <div className="p-2 border-t border-white/10 bg-neutral-900/50">
-        <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+      <div className="p-1.5 sm:p-2 border-t border-white/10 bg-neutral-900/50">
+        <form onSubmit={handleSendMessage} className="flex items-center gap-1.5 sm:gap-2">
           <input
             ref={inputRef}
             type="text"
             placeholder="Type your message..."
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            className="flex-1 bg-neutral-800/80 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="flex-1 bg-neutral-800/80 border border-white/10 rounded-lg sm:rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-white focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-blue-500/50"
             disabled={isTyping}
           />
           <button
             type="submit"
             disabled={!inputMessage.trim() || isTyping}
-            className={`p-3 rounded-xl ${
+            className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl ${
               inputMessage.trim() && !isTyping
                 ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                 : 'bg-neutral-700 text-neutral-400 cursor-not-allowed'
