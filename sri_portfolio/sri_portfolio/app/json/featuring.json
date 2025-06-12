@@ -1,0 +1,107 @@
+{
+  "blogPosts": [
+    {
+      "id": 1,
+      "title": "Imagine Life as a Website: If Existence Ran on HTTP Requests",
+      "preview": "Ever wondered what life would be like if it were structured like a modern web application? Dive into this humorous take on existence through the lens of HTTP requests, APIs, and debugging...",
+      "category": "Tech Philosophy"
+    },
+    {
+      "id": 2,
+      "title": "The Future of AI in Software Development",
+      "preview": "Exploring how artificial intelligence is revolutionizing the way we write, test, and deploy code. From automated debugging to intelligent code completion...",
+      "category": "AI & Technology"
+    },
+    {
+      "id": 3,
+      "title": "Building Scalable Applications with Modern Frameworks",
+      "preview": "A deep dive into best practices for creating robust, scalable applications using React, Next.js, and modern development patterns...",
+      "category": "Web Development"
+    },
+    {
+      "id": 4,
+      "title": "The Art of Clean Code: Lessons from Production",
+      "preview": "Real-world insights on writing maintainable, readable code that stands the test of time. Learn from actual production scenarios...",
+      "category": "Software Engineering"
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "title": "Wanderer - Trip Planning AI",
+      "description": "AI-powered travel planning application with real-time recommendations and personalized itineraries.",
+      "image": "/projects/wanderer-ai.png",
+      "video": "/videos/wanderer-demo.mp4",
+      "technologies": ["React", "FastAPI", "OpenAI", "MongoDB"],
+      "github": "https://github.com/sbeeredd04/Wanderer",
+      "href": "https://wanderer-trip-planner.vercel.app/"
+    },
+    {
+      "id": 2,
+      "title": "Portfolio Website",
+      "description": "Modern, interactive portfolio showcasing projects and skills with smooth animations and responsive design.",
+      "image": "/projects/portfolio-display.png",
+      "video": "/videos/portfolio-demo.mp4",
+      "technologies": ["Next.js", "Framer Motion", "Tailwind CSS"],
+      "github": "https://github.com/sbeeredd04/sri-s_portfolio",
+      "href": "https://sriujjwalreddy.com"
+    },
+    {
+      "id": 3,
+      "title": "ASU Rideshare Platform",
+      "description": "Full-stack rideshare platform for ASU students with real-time matching and secure payments.",
+      "image": "/projects/ASU-rideshare.png",
+      "video": "/videos/rideshare-demo.mp4",
+      "technologies": ["Python", "JavaScript", "HTML", "CSS"],
+      "github": "https://github.com/sbeeredd04/ASU-rideshare",
+      "href": "https://asu-rideshare-platform.vercel.app/"
+    },
+    {
+      "id": 4,
+      "title": "Tetris Game",
+      "description": "Classic Tetris game implementation with smooth controls and scoring system.",
+      "image": "/projects/tetris-game.png",
+      "video": "/videos/tetris-demo.mp4",
+      "technologies": ["HTML", "CSS", "JavaScript"],
+      "github": "https://github.com/sbeeredd04/Tetris-Game",
+      "href": "https://tetris-game-sri.vercel.app/"
+    },
+    {
+      "id": 5,
+      "title": "Stock Price Predictor",
+      "description": "Machine learning model to predict stock prices using historical data and advanced algorithms.",
+      "image": "/projects/stock-predictor.png",
+      "video": "/videos/stock-demo.mp4",
+      "technologies": ["Python", "Scikit-learn", "Pandas", "NumPy"],
+      "github": "https://github.com/sbeeredd04/stock-price-predictor",
+      "href": "https://stock-price-predictor-sri.vercel.app/"
+    },
+    {
+      "id": 6,
+      "title": "Shopping Cart App",
+      "description": "React-based shopping cart application with product management and checkout functionality.",
+      "image": "/projects/shopping-cart.png",
+      "video": "/videos/shopping-demo.mp4",
+      "technologies": ["React", "JavaScript", "CSS", "HTML"],
+      "github": "https://github.com/sbeeredd04/Shopping-Cart",
+      "href": "https://shopping-cart-sri.vercel.app/"
+    }
+  ],
+  "thoughts": [
+    {
+      "id": 1,
+      "text": "Adaptability is my strongest suite",
+      "subtitle": "Embracing change as opportunity"
+    },
+    {
+      "id": 2,
+      "text": "Code is poetry in motion",
+      "subtitle": "Crafting elegant solutions"
+    },
+    {
+      "id": 3,
+      "text": "Innovation knows no boundaries",
+      "subtitle": "Global mindset, local impact"
+    }
+  ]
+} 

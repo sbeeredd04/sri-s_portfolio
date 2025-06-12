@@ -63,7 +63,7 @@ import { BentoGrid, BentoGridItem } from "./components/bento-grid";
 import { radarSkillsData, detailedSkillsData, gameStatsData, achievementsData } from "./json/skillsData";
 import GameSkillsView from "./components/GameSkillsView";
 import GitHubStatsView from "./components/GitHubStatsView";
-import { Featuring } from "./components/Featuring";
+import { FeaturingSection } from "./components/FeaturingSection";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -505,6 +505,8 @@ export default function Home() {
 
 
 
+
+
  return (
     <div 
       className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:inset-0 before:bg-black/50" 
@@ -691,9 +693,7 @@ export default function Home() {
               >
         {/* Home Section */}
                 {activeSection === "home" && (
-                  <section className="w-full h-full">
-                    <Featuring navigateToSection={navigateToSection} />
-                  </section>
+                  <FeaturingSection navigateToSection={navigateToSection} />
                 )}
 
                 {activeSection === "about" && (
