@@ -660,7 +660,7 @@ export default function Home() {
      </div>
 
       {/* Main Content */}
-      <div className="relative h-screen w-full overflow-x-auto scrollbar-none">
+      <div className="relative h-screen w-full flex flex-col overflow-hidden">
 
         {/* Custom Top-Right Navbar - Only visible on mobile */}
         {isMobile && (
@@ -691,12 +691,11 @@ export default function Home() {
       </div>
         )}
 
-
-        {/* Top Margin */}
-        <div className="h-[10vh] md:h-[7.5vh]" />
+        {/* Top Spacing - Flexible */}
+        <div className={`flex-shrink-0 ${isMobile ? 'h-16' : 'h-6'}`} />
 
         {/* Browser Toolbar */}
-        <div className="h-[6vh] mx-6">
+        <div className="flex-shrink-0 h-12 md:h-16 mx-6">
           <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center px-4 py-2 md:px-6">
             {/* Navigation Controls */}
             <div className="flex items-center gap-2 md:gap-4">
@@ -820,10 +819,10 @@ export default function Home() {
         )}
 
         {/* Spacing */}
-        <div className="h-[1vh] md:h-[2.5vh]" />
+        <div className="flex-shrink-0 h-2 md:h-4" />
 
-        {/* Main Content Area */}
-        <div className="h-[70vh] mx-6">
+        {/* Main Content Area - Takes up remaining space */}
+        <div className="flex-1 min-h-0 mx-6">
           <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
@@ -1370,11 +1369,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 5% Margin */}
-        <div className="h-[1vh] md:h-[5vh]" />
+        {/* Spacing */}
+        <div className="flex-shrink-0 h-2 md:h-4" />
 
         {/* Bottom Tabs Container - Floating */}
-        <div className="h-[5vh] mx-6 md:h-[7.5vh]" id="tab-switcher-tutorial-target">
+        <div className="flex-shrink-0 h-12 md:h-16 mx-6" id="tab-switcher-tutorial-target">
           <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center justify-between px-2 md:px-6">
             {/* Dynamic Tabs based on active section */}
             <div className="flex items-center gap-1 md:gap-4 overflow-x-auto scrollbar-none">
@@ -1590,8 +1589,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Bottom 10% Margin */}
-        <div className="h-[10vh] md:h-[5vh]" />
+        {/* Bottom Spacing */}
+        <div className={`flex-shrink-0 ${isMobile ? 'h-16' : 'h-6'}`} />
       </div>
 
       {/* Spotify Player - Now rendered as a fixed popup outside the main content flow */}
