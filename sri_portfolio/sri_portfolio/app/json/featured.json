@@ -1,0 +1,108 @@
+{
+  "blogPosts": [
+    {
+      "title": "Imagine Life as a Website: If Existence Ran on HTTP Requests",
+      "category": "Tech Philosophy",
+      "preview": "What if our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements? Each one of us is like a unique URL endpoint...",
+      "readTime": "5 min read"
+    },
+    {
+      "title": "The AI Revolution in Full Stack Development",
+      "category": "AI & Development",
+      "preview": "Exploring how artificial intelligence is transforming the way we build web applications and the tools that are reshaping modern development workflows...",
+      "readTime": "7 min read"
+    },
+    {
+      "title": "Building Scalable React Applications",
+      "category": "Frontend",
+      "preview": "Best practices and architectural patterns for creating maintainable React applications that can grow with your team and user base...",
+      "readTime": "6 min read"
+    },
+    {
+      "title": "The Future of Web Development",
+      "category": "Technology",
+      "preview": "Predictions and insights about emerging technologies that will shape the next generation of web development, from WebAssembly to edge computing...",
+      "readTime": "8 min read"
+    }
+  ],
+  "featuredProjects": [
+    {
+      "title": "AI-Powered Task Manager",
+      "description": "Intelligent task management system with AI-driven prioritization and natural language processing for seamless productivity enhancement.",
+      "image": "/projects/taskmaster.jpg",
+      "video": "/videos/taskmaster-demo.mp4",
+      "technologies": ["React", "Python", "OpenAI", "FastAPI", "PostgreSQL"],
+      "github": "https://github.com/sbeeredd04/ai-task-manager",
+      "href": "https://ai-taskmaster.vercel.app",
+      "status": "Live"
+    },
+    {
+      "title": "Real-Time Collaboration Platform",
+      "description": "Next-generation collaboration tool with real-time editing, video conferencing, and intelligent document analysis.",
+      "image": "/projects/collab.jpg",
+      "video": "/videos/collab-demo.mp4",
+      "technologies": ["Next.js", "WebRTC", "Socket.io", "MongoDB", "AWS"],
+      "github": "https://github.com/sbeeredd04/collab-platform",
+      "href": "https://realtime-collab.com",
+      "status": "Live"
+    },
+    {
+      "title": "Smart Finance Tracker",
+      "description": "AI-enhanced personal finance management with predictive analytics and automated categorization of expenses.",
+      "image": "/projects/finance.jpg",
+      "video": "/videos/finance-demo.mp4",
+      "technologies": ["Vue.js", "Django", "TensorFlow", "Chart.js", "Redis"],
+      "github": "https://github.com/sbeeredd04/smart-finance",
+      "href": "https://smart-finance-tracker.com",
+      "status": "Live"
+    },
+    {
+      "title": "IoT Home Automation",
+      "description": "Comprehensive smart home solution with voice control, automated scheduling, and energy optimization algorithms.",
+      "image": "/projects/smarthome.jpg",
+      "video": "/videos/smarthome-demo.mp4",
+      "technologies": ["React Native", "Python", "Raspberry Pi", "MQTT", "InfluxDB"],
+      "github": "https://github.com/sbeeredd04/iot-home",
+      "href": "https://iot-home-demo.com",
+      "status": "Live"
+    },
+    {
+      "title": "Machine Learning Pipeline",
+      "description": "Automated ML pipeline for data preprocessing, model training, and deployment with real-time monitoring capabilities.",
+      "image": "/projects/mlpipeline.jpg",
+      "video": "/videos/mlpipeline-demo.mp4",
+      "technologies": ["Python", "Docker", "Kubernetes", "MLflow", "Apache Airflow"],
+      "github": "https://github.com/sbeeredd04/ml-pipeline",
+      "href": "https://ml-pipeline-demo.com",
+      "status": "Live"
+    },
+    {
+      "title": "Blockchain Voting System",
+      "description": "Secure and transparent voting platform built on blockchain technology with end-to-end encryption and audit trails.",
+      "image": "/projects/blockchain.jpg",
+      "video": "/videos/blockchain-demo.mp4",
+      "technologies": ["Solidity", "React", "Web3.js", "IPFS", "Ethereum"],
+      "github": "https://github.com/sbeeredd04/blockchain-voting",
+      "href": "https://secure-voting.com",
+      "status": "Live"
+    }
+  ],
+  "thoughts": [
+    {
+      "title": "Adaptability",
+      "description": "Adaptability is my strongest suite. In the rapidly evolving tech landscape, being flexible and open to learning new technologies is what keeps me ahead of the curve."
+    },
+    {
+      "title": "Innovation",
+      "description": "Innovation drives every project I touch. I believe in pushing boundaries and exploring unconventional solutions to create meaningful impact."
+    },
+    {
+      "title": "Passion",
+      "description": "Passion fuels my dedication to continuous learning and excellence. Every line of code I write is infused with genuine enthusiasm for problem-solving."
+    },
+    {
+      "title": "Problem Solving",
+      "description": "Complex problems excite me. I thrive on breaking down challenging issues into manageable components and crafting elegant solutions."
+    }
+  ]
+} 

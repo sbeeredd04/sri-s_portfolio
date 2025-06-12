@@ -63,6 +63,7 @@ import { BentoGrid, BentoGridItem } from "./components/bento-grid";
 import { radarSkillsData, detailedSkillsData, gameStatsData, achievementsData } from "./json/skillsData";
 import GameSkillsView from "./components/GameSkillsView";
 import GitHubStatsView from "./components/GitHubStatsView";
+import { FeaturingSection } from "./components/FeaturingSection";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -501,152 +502,7 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const getIconForSection = (sectionTitle) => {
-    switch (sectionTitle?.toLowerCase()) {
-      case 'welcome to my portfolio': return <IconHome className="h-5 w-5 text-yellow-400" />;
-      case 'about me': return <IconUser className="h-5 w-5 text-blue-400" />;
-      case 'professional experience': return <IconBriefcase className="h-5 w-5 text-green-400" />;
-      case 'featured projects': return <IconBulb className="h-5 w-5 text-orange-400" />;
-      case 'technical skills': return <IconTools className="h-5 w-5 text-purple-400" />;
-      case 'blog insights': return <IconBook className="h-5 w-5 text-indigo-400" />;
-      case 'get in touch': return <IconMail className="h-5 w-5 text-red-400" />;
-      default: return <IconBulb className="h-5 w-5 text-gray-400" />;
-    }
-  };
-
-  // Define GridItem component for the new Home section
-  const GridItem = ({
-    gridArea,
-    icon,
-    title,
-    description,
-    imageUrl,
-    onClick,
-    isImageCard = false, 
-  }) => {
-    const isClickable = !isImageCard && onClick;
-
-    return (
-      <li className={`list-none ${gridArea}`}>
-        <div className="relative h-full w-full rounded-2xl border border-white/10 p-2 md:rounded-3xl md:p-3">
-          {!isImageCard && ( 
-            <GlowingEffect
-              spread={30}
-              glow={true}
-              disabled={false}
-              proximity={64}
-              inactiveZone={0.01}
-              variant="default"
-              className="opacity-70"
-            />
-          )}
-          {isImageCard ? (
-            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-neutral-800/60 backdrop-blur-sm">
-              <img 
-                src={imageUrl} 
-                alt={title || "Sri Ujjwal Reddy B"} 
-                className="h-full w-full object-contain" 
-              />
-            </div>
-          ) : (
-            <div
-              onClick={isClickable ? onClick : undefined}
-              role={isClickable ? "button" : undefined}
-              tabIndex={isClickable ? 0 : undefined}
-              onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
-              className={`relative flex h-full flex-col justify-start overflow-hidden rounded-xl p-2 xs:p-3 md:p-4 lg:p-6 shadow-xl 
-                         ${isClickable ? 'cursor-pointer hover:ring-1 hover:ring-cyan-400/50 transition-all duration-300' : ''}`}
-              style={{ 
-                backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${imageUrl})`, 
-                backgroundSize: 'cover', 
-                backgroundPosition: 'center' 
-              }}
-            >
-              {/* Outer container with full flex column layout */}
-              <div className="relative flex flex-col gap-1 xs:gap-2 md:gap-3 h-full">
-                {/* Top row container for icon and title side by side */}
-                <div className="flex flex-row items-center gap-2 md:gap-3">
-                  {icon && (
-                    <div className="w-fit rounded-lg border border-neutral-600/50 bg-neutral-700/30 p-1.5 xs:p-2 shadow-md shrink-0">
-                      {icon}
-                    </div>
-                  )}
-                  
-                  {/* Title - always beside the icon */}
-                  <h3 className="font-sans text-sm xs:text-base md:text-xl font-semibold text-balance text-white line-clamp-2">
-                    {title}
-                  </h3>
-                </div>
-                
-                {/* Description - always below the icon/title row */}
-                {description && (
-                  <p className="font-sans text-xs xs:text-xs md:text-sm text-neutral-300 leading-relaxed line-clamp-2 md:line-clamp-3">
-                    {description}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </li>
-    );
-  };
-  
-  // Data for the home grid items
-  const homeGridItems = [];
-
-  // Define the 8 grid areas for the bento layout: 3 left, 1 central image, 4 right
-  const ALL_GRID_AREAS = [
-    // Left Column (3 items)
-    "md:col-start-1 md:col-span-4 md:row-start-1 md:row-span-2", // Slot 0: slides[0] (Welcome)
-    "md:col-start-1 md:col-span-4 md:row-start-3 md:row-span-1", // Slot 1: slides[1] (About Me)
-    "md:col-start-1 md:col-span-4 md:row-start-4 md:row-span-1", // Slot 2: slides[2] (Experience)
-    // Central Column (1 item - Image)
-    "md:col-start-5 md:col-span-4 md:row-start-1 md:row-span-4", // Slot 3: me.png Image Card (Full Height)
-    // Right Column (4 items)
-    "md:col-start-9 md:col-span-4 md:row-start-1 md:row-span-1", // Slot 4: slides[3] (Projects)
-    "md:col-start-9 md:col-span-4 md:row-start-2 md:row-span-1", // Slot 5: slides[4] (Skills)
-    "md:col-start-9 md:col-span-4 md:row-start-3 md:row-span-1", // Slot 6: slides[5] (Blog)
-    "md:col-start-9 md:col-span-4 md:row-start-4 md:row-span-1", // Slot 7: slides[6] (Contact)
-  ];
-
-  // Map slides and the image to the slots in a fixed order for the desired layout
-  const itemsDataMap = [
-    slides.length > 0 ? slides[0] : null, // Slot 0: Welcome
-    slides.length > 1 ? slides[1] : null, // Slot 1: About Me
-    slides.length > 2 ? slides[2] : null, // Slot 2: Experience
-    { isImage: true, imageUrl: "/me.png", title: "Sri Ujjwal Reddy B" }, // Slot 3: me.png
-    slides.length > 3 ? slides[3] : null, // Slot 4: Projects
-    slides.length > 4 ? slides[4] : null, // Slot 5: Skills
-    slides.length > 5 ? slides[5] : null, // Slot 6: Blog
-    slides.length > 6 ? slides[6] : null, // Slot 7: Contact
-  ];
-
-  itemsDataMap.forEach((itemData, index) => {
-    if (itemData && index < ALL_GRID_AREAS.length) {
-      if (itemData.isImage) {
-        homeGridItems.push({
-          isImageCard: true,
-          imageUrl: itemData.imageUrl,
-          title: itemData.title,
-          gridArea: ALL_GRID_AREAS[index],
-        });
-      } else {
-        const targetSection = itemData.title === "Welcome to My Portfolio" 
-                              ? "about" 
-                              : itemData.section;
-        homeGridItems.push({
-          title: itemData.title,
-          description: itemData.description,
-          imageUrl: itemData.image,
-          onClick: () => navigateToSection(targetSection),
-          icon: getIconForSection(itemData.title),
-          gridArea: ALL_GRID_AREAS[index],
-          isImageCard: false,
-        });
-      }
-    }
-  });
+  // Removed old home grid logic - now using FeaturingSection component
 
 
  return (
@@ -836,26 +692,7 @@ export default function Home() {
         {/* Home Section */}
                 {activeSection === "home" && (
                   <section className="w-full h-full">
-                    {homeGridItems.length > 0 ? (
-                      <ul className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-4 gap-3 md:gap-4 h-full p-1 md:p-2">
-                        {homeGridItems.map((item, idx) => (
-                          <GridItem
-                            key={item.title || `grid-item-${idx}`} 
-                            gridArea={item.gridArea}
-                            icon={item.icon}
-                            title={item.title}
-                            description={item.description}
-                            imageUrl={item.imageUrl}
-                            onClick={item.onClick}
-                            isImageCard={item.isImageCard}
-                          />
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-white/70">
-                        Loading home content...
-                      </div>
-                    )}
+                    <FeaturingSection navigateToSection={navigateToSection} />
                   </section>
                 )}
 
