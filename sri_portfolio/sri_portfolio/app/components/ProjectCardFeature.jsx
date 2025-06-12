@@ -46,7 +46,7 @@ export const ProjectCardFeature = ({ project, onClick }) => {
         className="relative h-full rounded-lg overflow-hidden cursor-pointer group"
       >
         {/* Video Section - Top 60% */}
-        <div className="relative h-[60%] rounded-t-lg overflow-hidden">
+        <div className="relative h-[70%] rounded-t-lg overflow-hidden">
           {project?.video && (
             <video
               ref={videoRef}
@@ -66,7 +66,7 @@ export const ProjectCardFeature = ({ project, onClick }) => {
         </div>
 
         {/* Content Section - Bottom 40% */}
-        <div className="h-[40%] p-3 bg-black/60 backdrop-blur-sm border-t border-white/10">
+        <div className="h-[30%] p-3 bg-black/60 backdrop-blur-sm border-t border-white/10">
           <div className="h-full flex flex-col justify-between">
             {/* Technologies */}
             <div className="flex flex-wrap gap-1 mb-1">

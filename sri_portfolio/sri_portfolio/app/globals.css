@@ -4,6 +4,7 @@
 
 /* Import KaTeX CSS for math rendering */
 @import 'katex/dist/katex.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -297,4 +298,10 @@ body {
   width: 100%;
   height: 100%;
   will-change: transform;
+}
+
+.major-mono-display-regular {
+  font-family: 'Major Mono Display', monospace;
+  font-weight: 400;
+  font-style: normal;
 }

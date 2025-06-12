@@ -1,0 +1,38 @@
+[
+  {
+    "title": "The Beginning",
+    "heading": "Origin Story - Starting the Journey",
+    "content": "Started my Computer Science journey at Arizona State University with a passion for creating innovative solutions and building the future through technology. This marked the foundation of my technical expertise and problem-solving mindset, setting the stage for everything that followed.",
+    "image": "/1.jpg"
+  },
+  {
+    "title": "First Breakthrough", 
+    "heading": "Discovery Phase - Learning & Building",
+    "content": "Developed my first major projects, diving deep into full-stack development and machine learning fundamentals while exploring cutting-edge technologies. Each project became a stepping stone to greater understanding and capability, building confidence and expertise.",
+    "image": "/2.jpg"
+  },
+  {
+    "title": "Innovation Phase",
+    "heading": "Building Solutions - Creating Impact",
+    "content": "Built multiple deployed applications, contributed to open source projects, and started exploring AI/ML applications with real-world impact and user adoption. This phase focused on creating meaningful solutions that solve actual problems for real users.",
+    "image": "/3.jpg"
+  },
+  {
+    "title": "Current Highlights",
+    "heading": "Making an Impact - Present Day",
+    "content": "Leading projects in AI, full-stack development, and creating memorable digital experiences while mentoring others in the field and contributing to the community. Currently focused on pushing the boundaries of what's possible with technology and innovation.",
+    "image": "/4.jpg"
+  },
+  {
+    "title": "Future Vision",
+    "heading": "What's Next - Beyond Today",
+    "content": "Continuing to push boundaries in software engineering, machine learning, and building solutions that matter for the next generation of technology and human progress. The journey continues with even bigger challenges and opportunities ahead, always learning and growing.",
+    "image": "/5.jpg"
+  },
+  {
+    "title": "New Horizons",
+    "heading": "Expanding Boundaries - Innovation Ahead",
+    "content": "Exploring emerging technologies like quantum computing, advanced AI systems, and sustainable tech solutions. Working towards creating technology that not only solves problems but also contributes positively to society and the environment.",
+    "image": "/6.jpg"
+  }
+] 

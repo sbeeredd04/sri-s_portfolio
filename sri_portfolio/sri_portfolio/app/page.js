@@ -65,6 +65,8 @@ import { radarSkillsData, detailedSkillsData, gameStatsData, achievementsData } 
 import GameSkillsView from "./components/GameSkillsView";
 import GitHubStatsView from "./components/GitHubStatsView";
 import { FeaturingSection } from "./components/FeaturingSection";
+import Loader from "./components/animation/Loader";
+import Journey3D from "./components/animation/Journey3D";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -455,15 +457,87 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const [showLoader, setShowLoader] = useState(true);
+  const [showJourney, setShowJourney] = useState(false);
+  const [showMainPortfolio, setShowMainPortfolio] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
+  useEffect(() => {
+    // Initialize navigation history when main portfolio loads
+    if (showMainPortfolio && navigationHistory.length === 0) {
+      setNavigationHistory(["home"]);
+      setCurrentHistoryIndex(0);
+    }
+  }, [showMainPortfolio, navigationHistory.length]);
 
+  const handleLoaderComplete = () => {
+    setIsTransitioning(true);
+    setShowLoader(false);
+    
+    // Small delay to ensure smooth transition
+    setTimeout(() => {
+      setShowJourney(true);
+      setIsTransitioning(false);
+    }, 100);
+  };
 
+  const handleJourneyComplete = () => {
+    setIsTransitioning(true);
+    setShowJourney(false);
+    
+    // Longer delay to match the Journey3D fade out
+    setTimeout(() => {
+      setShowMainPortfolio(true);
+      setIsTransitioning(false);
+    }, 1000);
+  };
 
+  // Show loader phase
+  if (showLoader) {
+    return <Loader onFinish={handleLoaderComplete} />;
+  }
 
- return (
-    <div 
+  // Show journey phase
+  if (showJourney) {
+    return <Journey3D onComplete={handleJourneyComplete} />;
+  }
+
+  // Show transition or main portfolio
+  if (!showMainPortfolio) {
+    return (
+      <motion.div 
+        className="fixed inset-0 bg-black flex items-center justify-center"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: isTransitioning ? 1 : 0 }}
+        transition={{ duration: 1.5, ease: "easeInOut" }}
+      >
+        <motion.div 
+          className="text-white text-xl major-mono-display-regular"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          Entering Portfolio...
+        </motion.div>
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+          .major-mono-display-regular {
+            font-family: 'Major Mono Display', monospace;
+            font-weight: 400;
+            font-style: normal;
+          }
+        `}</style>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div 
       className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:inset-0 before:bg-black/50" 
       style={{ backgroundImage: `url(${currentBackground})` }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
     >
       {/* Floating Dock */}
      <div className={`relative z-50 opacity-90 ${isMobile ? 'fixed bottom-0 w-full z[9999]' : 'left-0 z-[9999]'} opacity-100`}>
@@ -1378,7 +1452,7 @@ export default function Home() {
       
       {/* Tutorial for first-time visitors */}
       <FirstVisitTutorial />
-    </div>
+    </motion.div>
   );
 }
 
