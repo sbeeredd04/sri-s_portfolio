@@ -49,6 +49,7 @@ import { Cover } from "./components/cover";
 import emailjs from '@emailjs/browser';
 import projects from "./json/projects.json";
 import slides from "./json/slides.json";
+import blogs from "./json/blogs.json";
 import { ProjectCard } from "./components/ProjectCard";
 import deployedProjects from "./json/deployed.json";
 import { StickyScroll } from "./components/sticky-scroll-reveal";
@@ -75,7 +76,7 @@ export default function Home() {
   const [showProjectPreview, setShowProjectPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
+
   const [skillsActiveTab, setSkillsActiveTab] = useState("overview");
   
   // Important: Make sure these hooks are called at the top level
@@ -251,56 +252,8 @@ export default function Home() {
   }, []);
   
 
-  // Placeholder data for Blog Posts
-  const blogPosts = [
-    {
-      title: "Imagine Life as a Website: If Existence Ran on HTTP Requests",
-      category: "Tech",
-      content: `
-  <p>Imagine our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements. Each one of us is like a unique URL endpoint. Life's "server" sends requests, handles responses, and sometimes… well, sometimes you just get a <i>404</i> error. 😆</p>
-  
-  <p>Here's a deep dive into life if it were structured like a modern web application:</p>
-  
-  <h2>1. The Signup Page</h2>
-  <p>Birth? That's like the "sign-up" page—where we hit "Submit" (or, maybe someone else did?), and suddenly, here we are! We get our user ID (a.k.a. name) and begin our <i>session</i>.</p>
-  
-  <h2>2. Loading, Loading...</h2>
-  <p>Ever feel like you're waiting for something that never arrives? Life's loading bars are basically our day-to-day anticipation—waiting for dreams to process. Sometimes we get the data we requested, sometimes we get a <i>504 Gateway Timeout</i>. 😬</p>
-  
-  <h2>3. API Calls and Relationships</h2>
-  <p>When you meet someone, it's like calling an API endpoint. You send a GET request, hoping for a JSON response with mutual understanding and maybe a few interesting properties. Or, you might get a <i>403 Forbidden</i>—access denied to someone's personal data!</p>
-  
-  <h2>4. Daily Data Refreshes</h2>
-  <p>Every morning, you refresh your "page" with coffee or exercise. You've got new cookies (or bad ones) stored, new "sessions" ready to go. Life is constantly refreshing and re-rendering.</p>
-  
-  <h2>5. Security Tokens & Trust Issues</h2>
-  <p>Trust? It's like a security token—sometimes it gets validated, other times it expires without notice. And yes, those who betray you? That's basically a CSRF attack on your well-being. 😂</p>
-  
-  <h2>6. The "Terms & Conditions"</h2>
-  <p>Ah, the life agreements! We agree to things we might never have read the fine print on, but, hey, we're all "logged in" now, right? Just click "Accept All" and hope for the best.</p>
-  
-  <h2>7. The Debugging Process</h2>
-  <p>Every time you make a mistake, it's like throwing an error in the console. Except, there's no debugger in life. We just try to interpret the cryptic message ("SyntaxError: Can't find happiness") and go on anyway.</p>
-  
-  <h2>8. 404: Purpose Not Found</h2>
-  <p>Sometimes we hit a <i>404 Page Not Found</i> in our journey, wondering if we're on the right URL. Maybe it's a career that's just not loading or relationships stuck in a loop. Good thing we've got "refresh" and plenty of re-routing options!</p>
-  
-  <h2>9. Scheduled Maintenance (Sleep)</h2>
-  <p>Every night, we log off for maintenance. If only there were patch notes every morning, letting us know what life's server team fixed overnight. Maybe a few bugs squashed or minor "optimizations" applied?</p>
-  
-  <h2>10. Redirects and Major Life Changes</h2>
-  <p>A new job, a relationship, a move—these are like 301 Redirects. You're still "you," but now you're located somewhere new on the server, with a fresh HTML and CSS setup.</p>
-  
-  <h2>11. User Engagement and Feedback Loops</h2>
-  <p>What's life without a bit of engagement? Whether it's friends, followers, or family, our "backend" runs on constant feedback loops. And yes, sometimes we go viral for all the wrong reasons. But in the end, it's about how you respond to the response.</p>
-  
-  <p><strong>In closing</strong>, life as a website might have its quirks and errors, but with every refresh, new opportunities load. Just remember: when life throws you a <i>403 Forbidden</i>, there's always a way to reroute. And if you're ever feeling lost? Sometimes all you need is a hard refresh and a little faith that your server is still up and running.</p>
-      `
-    },
-    { title: "Blog Post 2", category: "Tech", content: "This is the content for blog post 2" },
-    { title: "Blog Post 3", category: "Tech", content: "This is the content for blog post 3" },
-    { title: "Blog Post 4", category: "Tech", content: "This is the content for blog post 4" }
-  ];  
+  // Use imported blog posts
+  const blogPosts = blogs;  
   
   const skillsSections = [
     {
@@ -979,7 +932,6 @@ export default function Home() {
                                     title={project.title}
                                     description={project.description}
                                     backgroundImage={project.image}
-                                    onClick={() => setSelectedProject(project)}
                                     githubUrl={project.github}
                                     projectUrl={project.href}
                                     icon={
@@ -1019,7 +971,6 @@ export default function Home() {
                                     title={project.title}
                                     description={project.description}
                                     backgroundImage={project.image}
-                                    onClick={() => setSelectedProject(project)}
                                     githubUrl={project.github}
                                     projectUrl={project.href}
                                     icon={
@@ -1051,15 +1002,7 @@ export default function Home() {
                       </AnimatePresence>
                     </div>
                     
-                    {/* Project Modal */}
-                    <AnimatePresence>
-                      {selectedProject && (
-                        <ProjectModal 
-                          project={selectedProject} 
-                          onClose={() => setSelectedProject(null)}
-                        />
-                      )}
-                    </AnimatePresence>
+
                   </section>
                 )}
 
@@ -1439,115 +1382,4 @@ export default function Home() {
   );
 }
 
-// Create a ProjectModal component right before the main return statement
-// Add this before the return statement in the Home component
-const ProjectModal = ({ project, onClose }) => {
-  if (!project) return null;
-  
-  // Handle click on the modal background (outside the content) to close
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-  
-  // Handle escape key to close the modal
-  useEffect(() => {
-    const handleEscKey = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleEscKey);
-    return () => window.removeEventListener('keydown', handleEscKey);
-  }, [onClose]);
-  
-  // Make sure image path is correct
-  const imageUrl = project.image || '/projects/default-project.jpg';
-  const safeImageUrl = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
-  
-  return (
-    <div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6 bg-black/80 backdrop-blur-md"
-      onClick={handleBackdropClick}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ type: "spring", damping: 20, stiffness: 300 }}
-        className="relative w-full max-w-2xl rounded-xl bg-neutral-900/90 border border-white/20 shadow-xl overflow-hidden max-h-[90vh]"
-      >
-        {/* Close button */}
-        <button 
-          onClick={onClose}
-          className="absolute top-3 right-3 z-50 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
-        >
-          <IconPlus className="h-5 w-5 rotate-45" />
-        </button>
-        
-        {/* Project Image */}
-        <div className="relative w-full h-56 md:h-72">
-          <img 
-            src={safeImageUrl} 
-            alt={project.title}
-            className="w-full h-full object-cover"
-            loading="eager"
-            onError={(e) => {
-              e.target.src = '/projects/default-project.jpg';
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
-          <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-3">
-              {project.title}
-            </h2>
-            <div className="flex flex-wrap gap-2 mt-3">
-              {project.technologies?.map((tech, i) => (
-                <span 
-                  key={i} 
-                  className="text-[9px] md:text-[10px] py-1 px-2.5 bg-black/80 backdrop-blur-sm rounded-full text-white/95 border border-white/20"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        {/* Project Details */}
-        <div className="p-5 md:p-6 overflow-y-auto max-h-[40vh] scroll-smooth" style={{ overscrollBehavior: 'contain' }}>
-          <p className="text-white/80 mb-5 md:mb-6 text-xs md:text-sm leading-relaxed">
-            {project.description}
-          </p>
-          
-          {/* Links */}
-          <div className="flex gap-3 flex-wrap">
-            {project.github && (
-              <a 
-                href={project.github} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-xs text-white transition-colors"
-              >
-                <IconBrandGithub size={16} />
-                <span>GitHub</span>
-              </a>
-            )}
-            {project.href && (
-              <a 
-                href={project.href} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-800/80 hover:bg-emerald-700/90 rounded-lg text-xs text-white transition-colors"
-              >
-                <IconShare2 size={16} />
-                <span>View Project</span>
-              </a>
-            )}
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-};
-  
-  // Now update the main return statement
+

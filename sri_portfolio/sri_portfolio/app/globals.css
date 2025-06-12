@@ -2,10 +2,231 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import KaTeX CSS for math rendering */
+@import 'katex/dist/katex.min.css';
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
 body {
-font-family: 'Ubuntu Mono', monospace;
-color: var(--foreground);
-background-color: var(--background);
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Enhanced markdown content styles */
+.markdown-content {
+  max-width: none !important;
+  line-height: 1.6;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  scroll-margin-top: 1rem;
+  font-weight: 600;
+}
+
+.markdown-content img {
+  transition: transform 0.3s ease;
+  max-width: 100%;
+  height: auto;
+}
+
+.markdown-content img:hover {
+  transform: scale(1.02);
+}
+
+.markdown-content pre {
+  position: relative;
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.markdown-content code {
+  font-family: 'Fira Code', 'Courier New', monospace;
+}
+
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.markdown-content table th {
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #06b6d4;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.markdown-content li {
+  margin: 0.25rem 0;
+}
+
+/* Code block copy button styling */
+.code-block-wrapper {
+  position: relative;
+}
+
+.copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.copy-button:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.copy-button.copied {
+  background-color: #10b981;
+}
+
+.copy-button.copied:hover {
+  background-color: #059669;
+}
+
+/* KaTeX math styling for dark theme */
+.katex {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.katex-display {
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+/* GitHub-style badges */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 9999px;
+}
+
+/* Responsive table wrapper */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.table-wrapper table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+/* Link styling in markdown */
+.markdown-content a {
+  color: #06b6d4;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.markdown-content a:hover {
+  color: #67e8f9;
+}
+
+/* Horizontal rule styling */
+.markdown-content hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 2rem 0;
+}
+
+/* Inline code styling */
+.inline-code {
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #10b981;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: 'Fira Code', 'Courier New', monospace;
 }
 
 /* Ubuntu Mono optimizations */
@@ -34,18 +255,6 @@ background-color: var(--background);
   button, input, textarea, select {
     font-family: 'Ubuntu Mono', monospace;
   }
-}
-
-:root {
---background: #ffffff;
---foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
- :root {
-   --background: #0a0a0a;
-   --foreground: #ededed;
- }
 }
 
 /* styles/globals.css (or wherever your global CSS is) */

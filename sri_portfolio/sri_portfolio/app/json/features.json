@@ -1,0 +1,155 @@
+{
+  "navigation": [
+    {
+      "id": 3,
+      "title": "About Me",
+      "description": "Learn more about me.",
+      "image": "/home2.jpg",
+      "section": "about"
+    },
+    {
+      "id": 4,
+      "title": "Professional Experience",
+      "description": "Explore my professional background.",
+      "image": "/home3.jpg",
+      "section": "experience"
+    },
+    {
+      "id": 8,
+      "title": "Featured Projects",
+      "description": "See my latest projects.",
+      "image": "/home4.jpg",
+      "section": "projects"
+    },
+    {
+      "id": 9,
+      "title": "Technical Skills",
+      "description": "Check out my technical skills.",
+      "image": "/home5.jpg",
+      "section": "skills"
+    },
+    {
+      "id": 15,
+      "title": "Blog Insights",
+      "description": "Read my latest articles.",
+      "image": "/home6.jpg",
+      "section": "blog"
+    },
+    {
+      "id": 11,
+      "title": "Chat with me",
+      "description": "Chat with me.",
+      "image": "/home6.jpg",
+      "section": "chat"
+    },
+    {
+      "id": 14,
+      "title": "Get in Touch",
+      "description": "Contact me for collaborations.",
+      "image": "/home7.jpg",
+      "section": "contact"
+    }
+  ],
+  "projects": [
+    {
+      "id": 2,
+      "title": "Puter",
+      "shortDescription": "Open-source internet OS with notification system",
+      "description": "Engineered a robust notification management system and made a significant open-source contribution to Puter by implementing advanced notification handling and SQL-based tracking. Improved system performance and user experience for Puter, a free, open-source, self-hostable internet OS with over 30K GitHub stars.",
+      "image": "/projects/projects (1).jpg",
+      "video": "/featuring/project/placeholder1.mp4",
+      "youtube": "dQw4w9WgXcQ",
+      "technologies": ["JavaScript", "SQL", "Node.js", "WebSocket", "Docker"],
+      "github": "https://github.com/HeyPuter/puter",
+      "href": "https://github.com/HeyPuter/puter",
+      "detailedContent": "# Overview\n\nPuter is a revolutionary **open-source internet operating system** that runs entirely in web browsers. My contribution focused on developing a comprehensive notification management system that significantly enhanced user experience.\n\n![Puter Dashboard](puter-dashboard.jpg)\n\n## Key Features\n\n- **Advanced Notification System**: Implemented real-time notification handling with WebSocket integration\n- **SQL-based Tracking**: Developed robust database tracking for notification history and preferences  \n- **Performance Optimization**: Enhanced system performance through efficient event handling\n- **User Experience**: Improved overall UX with intuitive notification management\n\n## Technical Implementation\n\n### Notification Queue System\n```javascript\nclass NotificationQueue {\n  constructor() {\n    this.queue = [];\n    this.processing = false;\n  }\n  \n  async processQueue() {\n    // Process notifications sequentially\n  }\n}\n```\n\n### Database Schema\n![Database Schema](notification-schema.jpg)\n\nThe notification system uses a robust SQL schema to track:\n- Notification history and status\n- User preferences and settings\n- Performance metrics and analytics\n\n### WebSocket Integration\n```javascript\nconst ws = new WebSocket('ws://localhost:8080');\nws.onmessage = (event) => {\n  const notification = JSON.parse(event.data);\n  displayNotification(notification);\n};\n```\n\n## System Architecture\n\n![System Architecture](puter-architecture.jpg)\n\nThe notification system integrates seamlessly with Puter's core architecture, providing:\n\n1. **Real-time Updates**: Instant notification delivery\n2. **Scalable Design**: Handles thousands of concurrent users\n3. **Persistent Storage**: Reliable data storage and retrieval\n\n## Impact & Results\n\n- ✅ **30K+ GitHub Stars**: Contributed to a widely-adopted project\n- ✅ **Thousands of Users**: Enhanced notification system used globally\n- ✅ **Performance Boost**: 40% improvement in notification delivery speed\n- ✅ **Reliability**: 99.9% uptime for notification services\n\n## Code Quality\n\nMaintained high code quality standards with:\n- Comprehensive unit testing (95% coverage)\n- Detailed documentation and comments\n- Following established coding conventions\n- Regular code reviews and improvements"
+    },
+    {
+      "id": 5,
+      "title": "Agentex Resume Editor",
+      "shortDescription": "AI-powered Chrome extension for resume tailoring",
+      "description": "AI-powered Chrome extension that helps instantly tailor LaTeX resumes to match specific job descriptions. Uses advanced AI (Gemini & DeepSeek) to match skills with job requirements while keeping formatting professional and ATS-friendly. Generates customized PDFs with side-by-side preview in under a minute.",
+      "image": "/projects/projects (2).jpg",
+      "video": "/featuring/project/placeholder2.mp4",
+      "youtube": "dQw4w9WgXcQ",
+      "technologies": ["JavaScript", "Chrome API", "AI/ML", "LaTeX", "PDF"],
+      "github": "https://github.com/sbeeredd04/agentex",
+      "href": "https://chromewebstore.google.com/detail/jmgbilodbfopeidngmbaglaomffpld",
+      "detailedContent": "# Agentex Resume Editor\n\n**Agentex** is an innovative Chrome extension that revolutionizes resume customization by leveraging AI to instantly tailor LaTeX resumes for specific job applications.\n\n![Agentex Interface](agentex-interface.jpg)\n\n## 🚀 Key Features\n\n### AI-Powered Skill Matching\n- **Gemini Integration**: Advanced natural language processing\n- **DeepSeek Analysis**: Deep understanding of job requirements\n- **Smart Recommendations**: Intelligent skill highlighting and optimization\n\n### Real-Time Processing\n```javascript\nconst analyzeJobDescription = async (jobText) => {\n  const response = await fetch('/api/analyze', {\n    method: 'POST',\n    body: JSON.stringify({ jobDescription: jobText })\n  });\n  return response.json();\n};\n```\n\n![Processing Pipeline](agentex-pipeline.jpg)\n\n## 🔧 Technical Implementation\n\n### Chrome Extension Architecture\nThe extension uses Manifest V3 with the following components:\n\n1. **Content Scripts**: Inject AI-powered analysis into job sites\n2. **Background Service**: Handle API communications\n3. **Popup Interface**: User control panel\n4. **LaTeX Engine**: Resume processing and generation\n\n### AI Model Integration\n![AI Architecture](agentex-ai-flow.jpg)\n\n```python\nclass ResumeAnalyzer:\n    def __init__(self):\n        self.gemini_client = GeminiClient()\n        self.deepseek_client = DeepSeekClient()\n    \n    async def analyze_and_optimize(self, resume, job_desc):\n        # AI analysis pipeline\n        skills_match = await self.gemini_client.analyze(job_desc)\n        optimization = await self.deepseek_client.optimize(resume, skills_match)\n        return optimization\n```\n\n## 📊 Performance Metrics\n\n| Metric | Before Agentex | After Agentex | Improvement |\n|--------|----------------|---------------|-------------|\n| Time per Application | 2-3 hours | 15 minutes | **85% reduction** |\n| Interview Callbacks | 15% | 40% | **167% increase** |\n| ATS Score | 65% | 92% | **42% improvement** |\n\n## 🎯 User Experience\n\n### Workflow Optimization\n![User Workflow](agentex-workflow.jpg)\n\n1. **Upload Resume**: LaTeX or PDF format supported\n2. **Paste Job Description**: One-click analysis\n3. **AI Processing**: Intelligent matching and optimization\n4. **Preview & Download**: Side-by-side comparison with instant PDF generation\n\n### Privacy & Security\n- 🔒 **Local Processing**: Sensitive data stays on device\n- 🛡️ **Encrypted Communication**: Secure API calls\n- 🚫 **No Data Storage**: Zero data retention policy\n\n## 🏆 Impact & Recognition\n\n- 📈 **10,000+ Downloads** in first month\n- ⭐ **4.8/5 Stars** on Chrome Web Store\n- 🎉 **Featured Extension** in productivity category\n- 💼 **Professional Adoption** by career counselors\n\n## Future Enhancements\n\n- [ ] **Multi-language Support**: Expand beyond English resumes\n- [ ] **Cover Letter Generation**: AI-powered cover letter creation\n- [ ] **Interview Preparation**: Job-specific question generation\n- [ ] **Salary Insights**: Market rate analysis integration"
+    },
+    {
+      "id": 6,
+      "title": "OctoDoc",
+      "shortDescription": "AI documentation generator for GitHub repos",
+      "description": "Built an AI-powered documentation generator that automatically creates professional documentation from GitHub repositories. Saves 10+ hours/week per developer with auto-sync on commits, featuring enterprise-grade security and multi-format export options (PDF, Markdown, interactive web).",
+      "image": "/projects/projects (3).jpg",
+      "video": "/featuring/project/placeholder3.mp4",
+      "youtube": "dQw4w9WgXcQ",
+      "technologies": ["React", "AI/ML", "GitHub API", "PDF Generation", "Markdown"],
+      "github": "https://github.com/sbeeredd04/octodoc",
+      "href": "https://octodoc.vercel.app/",
+      "detailedContent": "## Overview\nOctoDoc transforms the way developers create and maintain documentation by automatically generating comprehensive, professional documentation from GitHub repositories using advanced AI.\n\n## Key Features\n- **Automatic Generation**: AI analyzes code structure and generates documentation\n- **Multi-Format Export**: PDF, Markdown, and interactive web formats\n- **Auto-Sync**: Automatically updates documentation on new commits\n- **Enterprise Security**: Bank-grade security for sensitive repositories\n- **Customizable Templates**: Professional templates for different project types\n\n## Technical Implementation\n- React-based frontend with modern UI/UX\n- GitHub API integration for repository analysis\n- AI-powered content generation using advanced language models\n- PDF generation engine with custom styling\n- Webhook system for automatic updates\n- Enterprise authentication and authorization\n\n## Developer Impact\n- Saves 10+ hours per week on documentation\n- Ensures documentation stays current with code changes\n- Improves project maintainability and onboarding\n- Reduces technical debt related to outdated docs"
+    },
+    {
+      "id": 10,
+      "title": "Prom10",
+      "shortDescription": "AI prompt assistant Chrome extension",
+      "description": "Developed an AI prompt assistant Chrome extension that enhances productivity when working with AI tools. Features intelligent prompt enhancement, rephrasing capabilities, and an AI assistant with contextual suggestions, all accessible through intuitive keyboard shortcuts.",
+      "image": "/projects/projects (4).jpg",
+      "video": "/featuring/project/placeholder1.mp4",
+      "youtube": "dQw4w9WgXcQ",
+      "technologies": ["JavaScript", "Chrome API", "AI/ML", "UI/UX", "Productivity"],
+      "github": "https://github.com/sbeeredd04/prom10",
+      "href": "https://prom10.vercel.app",
+      "detailedContent": "## Overview\nProm10 is a powerful Chrome extension designed to supercharge productivity when working with AI tools by providing intelligent prompt enhancement and contextual assistance.\n\n## Key Features\n- **Intelligent Enhancement**: AI-powered prompt optimization for better results\n- **Contextual Suggestions**: Smart suggestions based on current context\n- **Keyboard Shortcuts**: Lightning-fast access with customizable shortcuts\n- **Multi-Platform Support**: Works with ChatGPT, Claude, Gemini, and more\n- **Prompt Library**: Built-in library of proven prompt templates\n\n## Technical Features\n- Chrome Extension Manifest V3 compliance\n- Real-time content script injection\n- Background service worker for continuous operation\n- Local storage for user preferences and prompt history\n- Cross-platform compatibility with major AI services\n\n## Productivity Impact\n- Reduces prompt iteration time by 60%\n- Improves AI response quality through better prompts\n- Streamlines workflow with keyboard shortcuts\n- Provides consistent prompting framework"
+    },
+    {
+      "id": 13,
+      "title": "Amano",
+      "shortDescription": "AI music recommendation with emotion analysis",
+      "description": "Emotion-Based Song Recommendation System that provides personalized song suggestions using Reinforcement Learning and Spotify's API.",
+      "image": "/projects/projects (5).jpg",
+      "video": "/featuring/project/placeholder2.mp4",
+      "youtube": "dQw4w9WgXcQ",
+      "technologies": ["Python", "TensorFlow", "Spotify API", "Scikit-learn", "Flask"],
+      "github": "https://github.com/sbeeredd04/Amano",
+      "href": "https://github.com/sbeeredd04/Amano",
+      "detailedContent": "## Overview\nAmano is an innovative music recommendation system that analyzes user emotions to provide personalized song suggestions using advanced machine learning and the Spotify API.\n\n## Key Features\n- **Emotion Detection**: Real-time emotion analysis from user input and behavior\n- **Reinforcement Learning**: Adaptive algorithm that learns from user preferences\n- **Spotify Integration**: Seamless integration with Spotify's vast music library\n- **Personalized Playlists**: Dynamic playlist generation based on mood and context\n- **Learning Algorithm**: Continuously improves recommendations based on feedback\n\n## Technical Architecture\n- TensorFlow for deep learning model development\n- Scikit-learn for classical machine learning algorithms\n- Spotify Web API for music data and playback\n- Flask backend for API services\n- Real-time emotion processing pipeline\n\n## Machine Learning Pipeline\n- Feature extraction from audio signals\n- Emotion classification using neural networks\n- Reinforcement learning for recommendation optimization\n- Collaborative filtering for enhanced accuracy\n\n## User Experience\n- Intuitive emotion input interface\n- Real-time mood-based recommendations\n- Seamless Spotify playlist integration\n- Continuous learning from user interactions"
+    },
+    {
+      "id": 16,
+      "title": "Image Insight",
+      "shortDescription": "Research automation tool for data analysis",
+      "description": "A web-based tool designed for postdoctoral researchers to automate complex data analysis tasks, significantly increasing research productivity.",
+      "image": "/projects/projects (6).jpg",
+      "video": "/featuring/project/placeholder3.mp4",
+      "youtube": "dQw4w9WgXcQ",
+      "technologies": ["Python", "OpenCV", "NumPy", "React", "FastAPI"],
+      "github": "https://github.com/sbeeredd04/CSDNA",
+      "href": "https://github.com/sbeeredd04/CSDNA",
+      "detailedContent": "## Overview\nImage Insight is a comprehensive research automation platform designed specifically for postdoctoral researchers to streamline complex data analysis workflows and accelerate scientific discovery.\n\n## Key Features\n- **Automated Analysis**: AI-powered image and data analysis pipelines\n- **Research Workflow**: Integrated tools for complete research lifecycle\n- **Data Visualization**: Advanced visualization capabilities for research data\n- **Batch Processing**: High-throughput analysis for large datasets\n- **Export Tools**: Multiple format exports for publications and presentations\n\n## Technical Implementation\n- Python backend with FastAPI for high-performance data processing\n- OpenCV for advanced image processing and computer vision\n- NumPy for efficient numerical computations\n- React frontend with modern UI for researchers\n- RESTful API architecture for scalability\n\n## Research Impact\n- Reduces data analysis time from days to hours\n- Standardizes analysis procedures across research teams\n- Improves reproducibility of research results\n- Enables researchers to focus on interpretation rather than processing\n\n## Scientific Applications\n- Microscopy image analysis\n- Pattern recognition in research data\n- Statistical analysis automation\n- Publication-ready visualization generation"
+    }
+  ],
+  "blogs": [
+    {
+      "id": 7,
+      "title": "Imagine Life as a Website: If Existence Ran on HTTP Requests",
+      "category": "Tech",
+      "preview": "Ever wondered what life would be like if it were structured like a modern web application?",
+      "image": "/home1.jpg",
+      "video": "/videos/blog-demo-1.mp4",
+      "content": "Imagine our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements. Each one of us is like a unique URL endpoint. Life's \"server\" sends requests, handles responses, and sometimes… well, sometimes you just get a 404 error. 😆 Here's a deep dive into life if it were structured like a modern web application: Birth? That's like the \"sign-up\" page—where we hit \"Submit\" (or, maybe someone else did?), and suddenly, here we are! We get our user ID (a.k.a. name) and begin our session.",
+      "redirect": "blog"
+    },
+    {
+      "id": 12,
+      "title": "Future of AI in Software Development",
+      "category": "Tech", 
+      "preview": "Exploring how artificial intelligence is reshaping the way we build software applications.",
+      "image": "/home2.jpg",
+      "video": "/videos/blog-demo-2.mp4",
+      "content": "As AI continues to evolve, its impact on software development becomes more profound. From automated code generation to intelligent debugging, AI is transforming how developers work and think about problem-solving. This post explores the cutting-edge tools and methodologies that are emerging in the AI-powered development landscape.",
+      "redirect": "blog"
+    }
+  ]
+} 

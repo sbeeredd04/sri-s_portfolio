@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "title": "Imagine Life as a Website: If Existence Ran on HTTP Requests",
+    "category": "Tech",
+    "preview": "Ever wondered what life would be like if it were structured like a modern web application?",
+    "image": "/home1.jpg",
+    "video": "/videos/blog-demo-1.mp4",
+    "content": "Imagine our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements. Each one of us is like a unique URL endpoint. Life's \"server\" sends requests, handles responses, and sometimes… well, sometimes you just get a 404 error. 😆 Here's a deep dive into life if it were structured like a modern web application: Birth? That's like the \"sign-up\" page—where we hit \"Submit\" (or, maybe someone else did?), and suddenly, here we are! We get our user ID (a.k.a. name) and begin our session.",
+    "redirect": "blog"
+  },
+  {
+    "id": 2,
+    "title": "Future of AI in Software Development",
+    "category": "Tech", 
+    "preview": "Exploring how artificial intelligence is reshaping the way we build software applications.",
+    "image": "/home2.jpg",
+    "video": "/videos/blog-demo-2.mp4",
+    "content": "As AI continues to evolve, its impact on software development becomes more profound. From automated code generation to intelligent debugging, AI is transforming how developers work and think about problem-solving. This post explores the cutting-edge tools and methodologies that are emerging in the AI-powered development landscape.",
+    "redirect": "blog"
+  }
+] 

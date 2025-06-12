@@ -42,6 +42,13 @@
       "section": "blog"
     },
     {
+      "title": "Chat with me",
+      "description": "Chat with me.",
+      "image": "/home6.jpg",
+      "link": "#chat",
+      "section": "chat"
+    },
+    {
       "title": "Get in Touch",
       "description": "Contact me for collaborations.",
       "image": "/home7.jpg",
