@@ -63,7 +63,7 @@ import { BentoGrid, BentoGridItem } from "./components/bento-grid";
 import { radarSkillsData, detailedSkillsData, gameStatsData, achievementsData } from "./json/skillsData";
 import GameSkillsView from "./components/GameSkillsView";
 import GitHubStatsView from "./components/GitHubStatsView";
-import { FeaturingSection } from "./components/FeaturingSection";
+import { Featuring } from "./components/Featuring";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -502,7 +502,7 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Removed old home grid logic - now using FeaturingSection component
+
 
 
  return (
@@ -692,7 +692,7 @@ export default function Home() {
         {/* Home Section */}
                 {activeSection === "home" && (
                   <section className="w-full h-full">
-                    <FeaturingSection navigateToSection={navigateToSection} />
+                    <Featuring navigateToSection={navigateToSection} />
                   </section>
                 )}
 
