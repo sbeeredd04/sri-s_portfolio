@@ -305,3 +305,132 @@ body {
   font-weight: 400;
   font-style: normal;
 }
+
+/* Journey3D Component Styles - Enhanced for prominence */
+.journey-card {
+  position: relative;
+  width: 1200px;          /* ↑ from 400px - much larger presence */
+  height: 900px;         /* ↑ from 300px - more content space */
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;   /* Slightly larger rounding */
+  padding: 30px;         /* ↑ from 20px - more breathing room */
+  opacity: 0;
+  transform: translateX(var(--offscreen-x, -100px));
+  transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+  will-change: transform, opacity;
+  backdrop-filter: blur(10px);
+  /* GPU layer promotion for smooth animations */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.journey-card.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.journey-content {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;             /* ↑ from 15px - more spacing between elements */
+  height: 100%;
+}
+
+.journey-image-container {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 8px;    /* ↑ from 4px - slightly larger rounding */
+}
+
+.journey-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;    /* ↑ from 4px - matches container */
+}
+
+.journey-text-content {
+  flex: 1;
+}
+
+.journey-description {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;       /* ↑ from 14px - much more readable */
+  line-height: 1.6;
+  margin: 0;
+  font-family: 'Major Mono Display', monospace;
+}
+
+.journey-header-overlay {
+  position: relative;
+  width: 500px;          /* ↑ from 350px - larger header presence */
+  height: 180px;         /* ↑ from 120px - more space for text */
+  padding: 25px;         /* ↑ from 20px - more breathing room */
+  opacity: 0;
+  transform: translateX(var(--offscreen-x, 100px));
+  transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+  will-change: transform, opacity;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;             /* ↑ from 10px - more spacing */
+  /* GPU layer promotion for smooth animations */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.journey-header-overlay.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.journey-title-container {
+  margin-bottom: 10px;   /* ↑ from 8px */
+}
+
+.journey-title {
+  color: white;
+  font-size: 32px;       /* ↑ from 24px - much more prominent */
+  font-weight: bold;
+  margin: 0;
+  font-family: 'Major Mono Display', monospace;
+  letter-spacing: 0.1em;
+}
+
+.journey-heading-container {
+  margin-bottom: 10px;   /* ↑ from 8px */
+}
+
+.journey-heading {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 20px;       /* ↑ from 16px - more readable */
+  margin: 0;
+  font-family: 'Major Mono Display', monospace;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+  .journey-card {
+    width: 450px;         /* ↑ from 300px - still prominent on mobile */
+    height: 350px;        /* ↑ from 250px - adequate mobile size */
+    padding: 20px;        /* ↑ from 15px */
+  }
+
+  .journey-header-overlay {
+    width: 380px;         /* ↑ from 280px - larger mobile header */
+    height: 140px;        /* ↑ from 100px */
+    padding: 20px;        /* ↑ from 15px */
+  }
+
+  .journey-title {
+    font-size: 28px;      /* ↑ from 20px - prominent mobile title */
+  }
+
+  .journey-heading {
+    font-size: 18px;      /* ↑ from 14px - readable mobile heading */
+  }
+
+  .journey-description {
+    font-size: 14px;      /* ↑ from 12px - readable mobile description */
+  }
+}

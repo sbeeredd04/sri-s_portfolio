@@ -461,9 +461,7 @@ export default function Home() {
   const [showJourney, setShowJourney] = useState(false);
   const [showMainPortfolio, setShowMainPortfolio] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [journeyLoadingProgress, setJourneyLoadingProgress] = useState(0);
-  const [journeyLoadingText, setJourneyLoadingText] = useState('');
-  const [isJourneyLoaded, setIsJourneyLoaded] = useState(false);
+  const [preloadedResources, setPreloadedResources] = useState(null);
 
   useEffect(() => {
     // Initialize navigation history when main portfolio loads
@@ -473,13 +471,8 @@ export default function Home() {
     }
   }, [showMainPortfolio, navigationHistory.length]);
 
-  const handleJourneyLoadingProgress = (progress, text) => {
-    setJourneyLoadingProgress(progress);
-    setJourneyLoadingText(text);
-    
-    if (progress >= 100) {
-      setIsJourneyLoaded(true);
-    }
+  const handleResourcesReady = (resources) => {
+    setPreloadedResources(resources);
   };
 
   const handleLoaderComplete = () => {
@@ -504,29 +497,19 @@ export default function Home() {
     }, 1000);
   };
 
-  // Show loader phase with background journey loading
+  // Show loader phase - all resources are built here
   if (showLoader) {
     return (
-      <>
-        <Loader 
-          onFinish={handleLoaderComplete} 
-          externalProgress={journeyLoadingProgress}
-          externalLoadingText={journeyLoadingText}
-        />
-        {/* Preload Journey3D resources in background */}
-        <Journey3D 
-          onComplete={() => {}} 
-          onLoadingProgress={handleJourneyLoadingProgress}
-          preloadOnly={true}
-          style={{ position: 'fixed', left: '-100vw', top: '-100vh', width: '1px', height: '1px', overflow: 'hidden', pointerEvents: 'none' }}
-        />
-      </>
+      <Loader 
+        onComplete={handleLoaderComplete} 
+        onResourcesReady={handleResourcesReady}
+      />
     );
   }
 
-  // Show journey phase
+  // Show journey phase with pre-loaded resources
   if (showJourney) {
-    return <Journey3D onComplete={handleJourneyComplete} />;
+    return <Journey3D onComplete={handleJourneyComplete} preloadedResources={preloadedResources} />;
   }
 
   // Show transition or main portfolio
