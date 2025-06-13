@@ -461,6 +461,9 @@ export default function Home() {
   const [showJourney, setShowJourney] = useState(false);
   const [showMainPortfolio, setShowMainPortfolio] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [journeyLoadingProgress, setJourneyLoadingProgress] = useState(0);
+  const [journeyLoadingText, setJourneyLoadingText] = useState('');
+  const [isJourneyLoaded, setIsJourneyLoaded] = useState(false);
 
   useEffect(() => {
     // Initialize navigation history when main portfolio loads
@@ -469,6 +472,15 @@ export default function Home() {
       setCurrentHistoryIndex(0);
     }
   }, [showMainPortfolio, navigationHistory.length]);
+
+  const handleJourneyLoadingProgress = (progress, text) => {
+    setJourneyLoadingProgress(progress);
+    setJourneyLoadingText(text);
+    
+    if (progress >= 100) {
+      setIsJourneyLoaded(true);
+    }
+  };
 
   const handleLoaderComplete = () => {
     setIsTransitioning(true);
@@ -492,9 +504,24 @@ export default function Home() {
     }, 1000);
   };
 
-  // Show loader phase
+  // Show loader phase with background journey loading
   if (showLoader) {
-    return <Loader onFinish={handleLoaderComplete} />;
+    return (
+      <>
+        <Loader 
+          onFinish={handleLoaderComplete} 
+          externalProgress={journeyLoadingProgress}
+          externalLoadingText={journeyLoadingText}
+        />
+        {/* Preload Journey3D resources in background */}
+        <Journey3D 
+          onComplete={() => {}} 
+          onLoadingProgress={handleJourneyLoadingProgress}
+          preloadOnly={true}
+          style={{ position: 'fixed', left: '-100vw', top: '-100vh', width: '1px', height: '1px', overflow: 'hidden', pointerEvents: 'none' }}
+        />
+      </>
+    );
   }
 
   // Show journey phase

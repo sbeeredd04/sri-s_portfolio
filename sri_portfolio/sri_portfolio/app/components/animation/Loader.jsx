@@ -20,21 +20,28 @@ const CheckFilled = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-4 h-4 ${className}`}> <circle cx="12" cy="12" r="9" fill="currentColor" /> </svg>
 );
 
-function LoaderCore({ loadingStates, progress }) {
+function LoaderCore({ loadingStates, progress, currentText }) {
   const currentIdx = loadingStates.findIndex((s, i) => progress < s.checkpoint && (i === 0 || progress >= loadingStates[i - 1].checkpoint));
   const scrollIdx = currentIdx === -1 ? loadingStates.length - 1 : currentIdx;
   const offset = Math.max(0, scrollIdx - 2);
+  
+  // If we have external text, create a dynamic loading state
+  const displayStates = currentText ? [
+    ...loadingStates.slice(0, -1),
+    { text: currentText, checkpoint: 100 }
+  ] : loadingStates;
+  
   return (
     <div className="overflow-hidden h-[200px] w-full flex flex-col items-end pr-6 select-none">
       <motion.div
         animate={{ y: -offset * 40 }}
         transition={{ type: 'spring', stiffness: 60, damping: 18 }}
         className="flex flex-col gap-4 pb-8">
-        {loadingStates.map((loadingState, index) => {
+        {displayStates.map((loadingState, index) => {
           const isComplete = progress >= loadingState.checkpoint;
           const isCurrent =
             progress < loadingState.checkpoint &&
-            (index === 0 || progress >= loadingStates[index - 1].checkpoint);
+            (index === 0 || progress >= displayStates[index - 1].checkpoint);
           return (
             <motion.div
               key={index}
@@ -67,20 +74,41 @@ function LoaderCore({ loadingStates, progress }) {
   );
 }
 
-export default function Loader({ onFinish }) {
+export default function Loader({ onFinish, externalProgress, externalLoadingText }) {
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showContent, setShowContent] = useState(true);
   const [cameraPhase, setCameraPhase] = useState('initial');
   const [showButton, setShowButton] = useState(false);
+  const [currentLoadingText, setCurrentLoadingText] = useState('Booting up portfolio...');
   const containerRef = useRef(null);
 
   useEffect(() => {
     setShowContent(true);
   }, []);
 
+  // Handle external progress updates
   useEffect(() => {
-    if (!loading) return;
+    if (externalProgress !== undefined) {
+      setProgress(externalProgress);
+      if (externalProgress >= 100) {
+        setTimeout(() => {
+          setCameraPhase('moveToButton');
+        }, 500);
+      }
+    }
+  }, [externalProgress]);
+
+  // Handle external loading text updates
+  useEffect(() => {
+    if (externalLoadingText) {
+      setCurrentLoadingText(externalLoadingText);
+    }
+  }, [externalLoadingText]);
+
+  // Fallback auto-progress if no external progress is provided
+  useEffect(() => {
+    if (!loading || externalProgress !== undefined) return;
     
     let progressInterval = setInterval(() => {
       setProgress((prev) => {
@@ -96,7 +124,7 @@ export default function Loader({ onFinish }) {
     }, 45);
     
     return () => clearInterval(progressInterval);
-  }, [loading]);
+  }, [loading, externalProgress]);
 
   useEffect(() => {
     if (cameraPhase === 'moveToButton') {
@@ -224,7 +252,7 @@ export default function Loader({ onFinish }) {
               className="flex flex-row items-center justify-center w-full max-w-4xl mx-auto gap-16 md:gap-32"
             >
               <div className="hidden md:flex flex-col items-end mb-10 justify-center min-w-[260px]">
-                <LoaderCore loadingStates={loadingStates} progress={progress} />
+                <LoaderCore loadingStates={loadingStates} progress={progress} currentText={currentLoadingText} />
               </div>
               
               <div className="flex flex-col items-center justify-center w-[260px]">

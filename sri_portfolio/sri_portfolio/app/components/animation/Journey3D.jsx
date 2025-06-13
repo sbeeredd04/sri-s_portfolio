@@ -15,7 +15,7 @@ import journeyData from '../../json/journey.json';
 // • ↓ Smaller → scene shrinks.
 // Usage: multiplied into all positions & sizes.
 // Change if you want the whole world to feel more "zoomed in" or "zoomed out."
-const SCENE_SCALE = 6;
+const SCENE_SCALE = 4;
 
 // How quickly the camera "catches up" to your scroll position.
 // • Used in updateCameraAndObjects(): cameraT += (targetT – cameraT) * LERP_FACTOR.
@@ -165,7 +165,7 @@ const CheckpointHeader = ({ title, heading, onAnimationComplete }) => {
   );
 };
 
-export default function Journey3D({ onComplete }) {
+export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly = false, style }) {
   const containerRef = useRef(null);
   const [progress, setProgress] = useState(0);
   const [currentCheckpoint, setCurrentCheckpoint] = useState(0);
@@ -208,6 +208,9 @@ export default function Journey3D({ onComplete }) {
       const container = containerRef.current;
       if (!container || typeof THREE === 'undefined') return;
 
+      // Report initial setup progress
+      if (onLoadingProgress) onLoadingProgress(10, 'Initializing 3D environment...');
+
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x000000);
       scene.fog = new THREE.Fog(0x000000, 200 * SCENE_SCALE, 1000 * SCENE_SCALE);
@@ -237,6 +240,9 @@ export default function Journey3D({ onComplete }) {
         return;
       }
 
+      // Report renderer setup complete
+      if (onLoadingProgress) onLoadingProgress(25, 'Setting up renderers...');
+
       // Initialize look-around state now that THREE is available
       targetLookDirection = new THREE.Vector3(0, 0, -1);
       currentLookDirection = new THREE.Vector3(0, 0, -1);
@@ -254,11 +260,15 @@ export default function Journey3D({ onComplete }) {
         LERP_FACTOR, SCENE_SCALE
       };
 
+      // Report complete
+      if (onLoadingProgress) onLoadingProgress(100, 'Journey ready to begin...');
       setIsLoaded(true);
       animate();
     }
 
     function createStarfield() {
+      if (onLoadingProgress) onLoadingProgress(40, 'Creating starfield...');
+      
       const starCount = Math.max(STAR_FIELD_MAX_INITIAL_STARS, journeyLength * STAR_DENSITY_PER_CHECKPOINT);
       const starGroup = new THREE.Group();
       const starGeometry = new THREE.SphereGeometry(1, 8, 8); 
@@ -286,6 +296,8 @@ export default function Journey3D({ onComplete }) {
     }
 
     function createRollerCoasterRoad() {
+      if (onLoadingProgress) onLoadingProgress(60, 'Building journey path...');
+      
       const roadPoints = Math.max(1200, journeyLength * ROAD_POINTS_PER_CHECKPOINT);
       const points = [];
       for (let i = 0; i <= roadPoints; i++) {
@@ -307,6 +319,8 @@ export default function Journey3D({ onComplete }) {
     }
 
     function createCheckpointObjects() {
+      if (onLoadingProgress) onLoadingProgress(80, 'Placing journey milestones...');
+      
       journeyData.forEach((data, i) => {
         const stopT = (i + 1) / (journeyLength + 1);
         const objectT = stopT + OBJECT_PLACEMENT_OFFSET_T;
@@ -613,22 +627,29 @@ export default function Journey3D({ onComplete }) {
   }, [isTransitioning, journeyLength, totalHeight, onComplete, isCompleting]);
 
   return (
-    <div className="fixed inset-0 bg-black major-mono-display-regular overflow-hidden">
-      <motion.div
-        className="absolute inset-0 bg-black z-50 pointer-events-none"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: isTransitioning ? 1 : 0 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-      />
+    <div 
+      className={preloadOnly ? "" : "fixed inset-0 bg-black major-mono-display-regular overflow-hidden"}
+      style={preloadOnly ? style : {}}
+    >
+      {!preloadOnly && (
+        <>
+          <motion.div
+            className="absolute inset-0 bg-black z-50 pointer-events-none"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: isTransitioning ? 1 : 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+          />
 
-      <motion.div
-        className="absolute inset-0 bg-black z-60 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isCompleting ? 1 : 0 }}
-        transition={{ duration: 2, ease: "easeInOut" }}
-      />
+          <motion.div
+            className="absolute inset-0 bg-black z-60 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isCompleting ? 1 : 0 }}
+            transition={{ duration: 2, ease: "easeInOut" }}
+          />
+        </>
+      )}
 
-      {isTransitioning && (
+      {!preloadOnly && isTransitioning && (
         <motion.div
           className="absolute inset-0 flex items-center justify-center z-40"
           initial={{ opacity: 0 }}
@@ -675,7 +696,7 @@ export default function Journey3D({ onComplete }) {
       
       <div ref={containerRef} className="absolute inset-0" />
       
-      {!isTransitioning && !isCompleting && (
+      {!preloadOnly && !isTransitioning && !isCompleting && (
         <motion.div
           className="absolute inset-0 pointer-events-none z-10"
           initial={{ opacity: 0 }}
