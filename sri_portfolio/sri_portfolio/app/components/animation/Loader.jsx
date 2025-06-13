@@ -251,7 +251,7 @@ export default function Loader({ onFinish }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: showContent ? 1 : 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex flex-row items-center justify-center w-full max-w-4xl mx-auto gap-8 md:gap-20"
+              className="flex flex-row items-center justify-center w-full max-w-4xl mx-auto gap-16 md:gap-32"
             >
               <div className="hidden md:flex flex-col items-end mb-10 justify-center min-w-[260px]">
                 <LoaderCore loadingStates={loadingStates} progress={progress} />
@@ -326,4 +326,4 @@ export default function Loader({ onFinish }) {
       `}</style>
     </div>
   );
-} 
+}
