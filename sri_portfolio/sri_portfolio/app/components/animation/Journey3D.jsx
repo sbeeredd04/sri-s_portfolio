@@ -4,6 +4,9 @@ import { createRoot } from 'react-dom/client';
 import { motion } from 'framer-motion';
 import DecryptedText from './DecryptedText';
 import journeyData from '../../json/journey.json';
+// Import Three.js via ES modules instead of dynamic script loading
+import * as THREE from 'three';
+import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Scene & Camera Master Controls
@@ -15,7 +18,7 @@ import journeyData from '../../json/journey.json';
 // • ↓ Smaller → scene shrinks.
 // Usage: multiplied into all positions & sizes.
 // Change if you want the whole world to feel more "zoomed in" or "zoomed out."
-const SCENE_SCALE = 4;
+const SCENE_SCALE = 5;
 
 // How quickly the camera "catches up" to your scroll position.
 // • Used in updateCameraAndObjects(): cameraT += (targetT – cameraT) * LERP_FACTOR.
@@ -74,7 +77,7 @@ const ROAD_Y_AMPLITUDE_2              = 20;
 const ROAD_Y_FREQUENCY_2              = 0.8;
 
 // Z spacing between each sample
-const ROAD_Z_SPACING                  = 5.0;
+const ROAD_Z_SPACING                  = 6.0;
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Checkpoint Positioning & Size
@@ -204,9 +207,13 @@ export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly =
     let currentLookDirection = null;
     let isLookingAround = false;
 
+    // Track animation frame and component lifecycle
+    let rafId = null;
+    let isAlive = true;
+
     function initThreeJS() {
       const container = containerRef.current;
-      if (!container || typeof THREE === 'undefined') return;
+      if (!container) return;
 
       // Report initial setup progress
       if (onLoadingProgress) onLoadingProgress(10, 'Initializing 3D environment...');
@@ -229,8 +236,7 @@ export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly =
       }
 
       try {
-        if (typeof THREE.CSS3DRenderer === 'undefined') return;
-        cssRenderer = new THREE.CSS3DRenderer();
+        cssRenderer = new CSS3DRenderer();
         cssRenderer.setSize(window.innerWidth, window.innerHeight);
         cssRenderer.domElement.style.position = 'absolute';
         cssRenderer.domElement.style.top = 0;
@@ -342,7 +348,7 @@ export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly =
           </div>
         `;
         
-        const cardObject = new THREE.CSS3DObject(cardElement);
+        const cardObject = new CSS3DObject(cardElement);
         const cardSide = i % 2 === 0 ? 1 : -1;
         const cardOffset = binormal.clone().multiplyScalar(LATERAL_OFFSET_DISTANCE_CARD * SCENE_SCALE * cardSide);
         cardObject.position.copy(position).add(cardOffset);
@@ -350,7 +356,7 @@ export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly =
         const headerElement = document.createElement('div');
         headerElement.className = 'journey-header-overlay';
         
-        const headerObject = new THREE.CSS3DObject(headerElement);
+        const headerObject = new CSS3DObject(headerElement);
         const headerOffset = binormal.clone().multiplyScalar(LATERAL_OFFSET_DISTANCE_HEADER * SCENE_SCALE * -cardSide);
         headerObject.position.copy(position).add(headerOffset);
         
@@ -526,7 +532,7 @@ export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly =
     }
 
     async function playCheckpointSequence(cp) {
-      if (!sceneRef.current) return;
+      if (!sceneRef.current || !isAlive) return; // Guard against unmounted component
       sceneRef.current.isPausedAtCheckpoint = true;
       
       // Show card and header elements
@@ -539,6 +545,7 @@ export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly =
       });
 
       const typewriterPromise = new Promise((resolve) => {
+        if (!isAlive) return resolve(); // Don't render if component is unmounting
         cp.root.render(
           <CheckpointHeader 
             title={cp.data.title}
@@ -550,6 +557,8 @@ export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly =
       
       // Wait for both animations to complete
       await Promise.all([cardAnimationPromise, typewriterPromise]);
+
+      if (!isAlive) return; // Exit early if component unmounted during animation
 
       // Add a final delay before allowing scroll resume
       setTimeout(() => {
@@ -565,10 +574,13 @@ export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly =
     }
 
     function animate() {
-      requestAnimationFrame(animate);
+      if (!isAlive) return; // Stop animation if component is unmounting
+      rafId = requestAnimationFrame(animate);
       updateCameraAndObjects();
-      renderer.render(scene, camera);
-      cssRenderer.render(cssScene, camera);
+      if (renderer && cssRenderer) {
+        renderer.render(scene, camera);
+        cssRenderer.render(cssScene, camera);
+      }
     }
 
     function onWindowResize() {
@@ -581,47 +593,43 @@ export default function Journey3D({ onComplete, onLoadingProgress, preloadOnly =
     }
 
     if (typeof window !== 'undefined') {
-      if (typeof THREE !== 'undefined') {
-        if (typeof THREE.CSS3DRenderer !== 'undefined') {
-          initThreeJS();
-        } else {
-          const cssScript = document.createElement('script');
-          cssScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS3DRenderer.js';
-          cssScript.onload = () => initThreeJS();
-          document.head.appendChild(cssScript);
-        }
-      } else {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-        script.onload = () => {
-          const cssScript = document.createElement('script');
-          cssScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS3DRenderer.js';
-          cssScript.onload = () => initThreeJS();
-          document.head.appendChild(cssScript);
-        };
-        document.head.appendChild(script);
-      }
-      
+      // Three.js is now imported via ES modules, so we can directly initialize
+      initThreeJS();
       window.addEventListener('resize', onWindowResize);
     }
 
     return () => {
+      // 1. Stop the component lifecycle and animation loop first
+      isAlive = false;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+
       if (typeof document !== 'undefined') {
         document.body.style.height = '';
         document.body.style.overflow = '';
       }
       
-      rootsRef.current.forEach(root => root.unmount());
-      rootsRef.current = [];
-
+      // 2. Then dispose of Three.js resources
       if (sceneRef.current) {
         const { renderer, cssRenderer } = sceneRef.current;
         if (renderer) {
             renderer.dispose();
-            if (renderer.domElement) renderer.domElement.remove();
+            if (renderer.domElement && renderer.domElement.parentNode) {
+              renderer.domElement.parentNode.removeChild(renderer.domElement);
+            }
         }
-        if (cssRenderer && cssRenderer.domElement) cssRenderer.domElement.remove();
+        if (cssRenderer && cssRenderer.domElement && cssRenderer.domElement.parentNode) {
+          cssRenderer.domElement.parentNode.removeChild(cssRenderer.domElement);
+        }
       }
+
+      // 3. Finally, defer React root unmounting to avoid synchronous unmount error
+      Promise.resolve().then(() => {
+        rootsRef.current.forEach(root => root.unmount());
+        rootsRef.current = [];
+      });
+
       window.removeEventListener('resize', onWindowResize);
     };
   }, [isTransitioning, journeyLength, totalHeight, onComplete, isCompleting]);

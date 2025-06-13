@@ -111,7 +111,10 @@ export default function DecryptedText({
             } else {
               clearInterval(interval)
               setIsScrambling(false)
-              if (onAnimationComplete) onAnimationComplete()
+              // Make onAnimationComplete async to avoid setState during render
+              if (onAnimationComplete) {
+                setTimeout(() => onAnimationComplete(), 0)
+              }
               return prevRevealed
             }
           } else {
@@ -121,7 +124,10 @@ export default function DecryptedText({
               clearInterval(interval)
               setIsScrambling(false)
               setDisplayText(text)
-              if (onAnimationComplete) onAnimationComplete()
+              // Make onAnimationComplete async to avoid setState during render
+              if (onAnimationComplete) {
+                setTimeout(() => onAnimationComplete(), 0)
+              }
             }
             return prevRevealed
           }
