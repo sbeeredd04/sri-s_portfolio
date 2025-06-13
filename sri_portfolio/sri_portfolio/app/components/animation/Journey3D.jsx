@@ -5,6 +5,123 @@ import { motion } from 'framer-motion';
 import DecryptedText from './DecryptedText';
 import journeyData from '../../json/journey.json';
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Scene & Camera Master Controls
+// ──────────────────────────────────────────────────────────────────────────────
+
+// Master scale for everything in the 3D world.
+// • Applied when you build your road, stars, and offsets.
+// • ↑ Bigger → every coordinate and object scales up.
+// • ↓ Smaller → scene shrinks.
+// Usage: multiplied into all positions & sizes.
+// Change if you want the whole world to feel more "zoomed in" or "zoomed out."
+const SCENE_SCALE = 6;
+
+// How quickly the camera "catches up" to your scroll position.
+// • Used in updateCameraAndObjects(): cameraT += (targetT – cameraT) * LERP_FACTOR.
+// • ↑ Larger (≤1) → camera snaps immediately (sharp, jarring).
+// • ↓ Smaller → very smooth but laggy.
+// Tweak to get the right balance between responsiveness & smoothness.
+const LERP_FACTOR = 0.05;
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Starfield Constants (all scale with journeyLength)
+// ──────────────────────────────────────────────────────────────────────────────
+
+// Base stars per checkpoint.  Total stars ≈ max(STAR_FIELD_MAX_INITIAL_STARS, journeyLength * STAR_DENSITY_PER_CHECKPOINT).
+// • ↑ More stars → heavier render, denser sky.
+// • ↓ Fewer → sparse cosmos.
+// Usage: in createStarfield().
+const STAR_DENSITY_PER_CHECKPOINT     = 1000;  
+const STAR_FIELD_MAX_INITIAL_STARS    = 6000; // floor star count, regardless of journeyLength
+
+// Star color intensity (white gradient).
+// • color = random between [STAR_COLOR_MIN_INTENSITY, STAR_COLOR_MAX_INTENSITY].
+// • ↑ increase both toward 1.0 → brighter, more uniform stars.
+// • ↓ lower min → some very dim stars fade into background.
+const STAR_COLOR_MIN_INTENSITY        = 0.7;
+const STAR_COLOR_MAX_INTENSITY        = 1.0;
+
+// How "long" the star band is, relative to your road's point count.
+// • In createStarfield():  minZ = –roadPoints * STAR_FIELD_Z_OFFSET_FACTOR * SCENE_SCALE
+// • ↑ larger Z_LENGTH_FACTOR → stars cover more forward distance
+// • ↑ larger Z_OFFSET_FACTOR → stars start further "behind" the camera
+const STAR_FIELD_Z_LENGTH_FACTOR      = 2;  // forward multiplier
+const STAR_FIELD_Z_OFFSET_FACTOR      = 2;  // backward multiplier
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Road Curvature Constants (all scale with journeyLength)
+// ──────────────────────────────────────────────────────────────────────────────
+
+// Detail of the curve: number of sample points per checkpoint.
+// • ↑ more points → smoother curves but heavier CPU.
+// • ↓ fewer → blocky road.
+const ROAD_POINTS_PER_CHECKPOINT      = 200;
+
+// overall curve length multiplier: (journeyLength + ROAD_CURVE_LENGTH_MULTIPLIER) in your t–to–π mapping
+const ROAD_CURVE_LENGTH_MULTIPLIER    = 2;
+
+// Horizontal "wave" amplitudes & frequencies.  All feed into x = sin(f1⋅t)*A1 + cos(f2⋅t)*A2 + …
+const ROAD_X_AMPLITUDE_1              = 150;
+const ROAD_X_FREQUENCY_1              = 0.3;
+const ROAD_X_AMPLITUDE_2              = 50;
+const ROAD_X_FREQUENCY_2              = 0.15;
+
+// Vertical "wave" patterns for y
+const ROAD_Y_AMPLITUDE_1              = 40;
+const ROAD_Y_FREQUENCY_1              = 0.4;
+const ROAD_Y_AMPLITUDE_2              = 20;
+const ROAD_Y_FREQUENCY_2              = 0.8;
+
+// Z spacing between each sample
+const ROAD_Z_SPACING                  = 5.0;
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Checkpoint Positioning & Size
+// ──────────────────────────────────────────────────────────────────────────────
+
+// How far ahead of the "stop" point your object appears.
+// • objectT = stopT + OBJECT_PLACEMENT_OFFSET_T
+// • ↑ bigger → object spawns further along the track before the stop.
+// • ↓ smaller → closer to the exact stop.
+const OBJECT_PLACEMENT_OFFSET_T       = 0.065;
+
+// Lateral offset (distance from the road center-line) for cards & headers.
+// • ↑ larger → cards fly farther off-center.
+// • ↓ smaller → hug road more closely.
+const LATERAL_OFFSET_DISTANCE_CARD    = 250;
+const LATERAL_OFFSET_DISTANCE_HEADER  = 250;
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Camera Movement & "Look-Around" Controls
+// ──────────────────────────────────────────────────────────────────────────────
+
+// Vertical "hover" above the road
+const CAMERA_BASE_OFFSET_Y            = 5.0;
+
+// How much the camera rolls (banks) when turning corners.
+// • Used in updateCameraAndObjects(): camera.rotation.z = tangent-derived ⋅ CAMERA_TILT_ROLL_AMPLITUDE.
+// • ↑ larger → aggressive banking.
+// • ↓ smaller → subtle.
+const CAMERA_TILT_ROLL_AMPLITUDE      = 0.5;  // in radians
+
+// How much the camera pitches (tilts up/down) on elevation changes.
+// • ↑ larger → nodding effect exaggerates hills.
+// • ↓ smaller → almost flat.
+const CAMERA_TILT_PITCH_AMPLITUDE     = 0.1;  // in radians
+
+// Maximum "look-around" yaw (left/right) angle in degrees.
+// • User can hover/tilt up to ± LOOK_AROUND_MAX_YAW_DEG before clamping.
+// • ↑ bigger → can look farther sideways.
+// • ↓ smaller → restrict peripheral view.
+const LOOK_AROUND_MAX_YAW_DEG         = 30;
+
+// Smoothness for interpolating back from "look-around" to forward-facing.
+// • Similar to LERP_FACTOR but for user hover release.
+// • ↑ larger → snaps back quickly.
+// • ↓ smaller → lingers before recentring.
+const LOOK_AROUND_LERP_FACTOR         = 0.1;
+
 // Helper component for checkpoint headers
 const CheckpointHeader = ({ title, heading, onAnimationComplete }) => {
   const [titleDone, setTitleDone] = useState(false);
@@ -81,8 +198,11 @@ export default function Journey3D({ onComplete }) {
     let isPausedAtCheckpoint = false;
     let targetT = 0;
     let cameraT = 0;
-    const LERP_FACTOR = 0.05; // Increased from 0.02 for smoother movement like the example
-    const SCENE_SCALE = 6;
+    
+    // Look-around state (will be initialized in initThreeJS)
+    let targetLookDirection = null;
+    let currentLookDirection = null;
+    let isLookingAround = false;
 
     function initThreeJS() {
       const container = containerRef.current;
@@ -117,10 +237,15 @@ export default function Journey3D({ onComplete }) {
         return;
       }
 
+      // Initialize look-around state now that THREE is available
+      targetLookDirection = new THREE.Vector3(0, 0, -1);
+      currentLookDirection = new THREE.Vector3(0, 0, -1);
+
       createStarfield();
       createRollerCoasterRoad();
       createCheckpointObjects();
       setupScrollControls();
+      setupLookAroundControls();
       
       sceneRef.current = {
         scene, camera, renderer, cssRenderer, cssScene,
@@ -134,13 +259,14 @@ export default function Journey3D({ onComplete }) {
     }
 
     function createStarfield() {
-      const starCount = Math.max(6000, journeyLength * 1000);
+      const starCount = Math.max(STAR_FIELD_MAX_INITIAL_STARS, journeyLength * STAR_DENSITY_PER_CHECKPOINT);
       const starGroup = new THREE.Group();
       const starGeometry = new THREE.SphereGeometry(1, 8, 8); 
       
       for (let i = 0; i < starCount; i++) {
+        const intensity = THREE.MathUtils.randFloat(STAR_COLOR_MIN_INTENSITY, STAR_COLOR_MAX_INTENSITY);
         const starMaterial = new THREE.MeshBasicMaterial({ 
-            color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+            color: new THREE.Color(intensity, intensity, intensity),
             transparent: true, 
             opacity: 0.8
         });
@@ -160,13 +286,13 @@ export default function Journey3D({ onComplete }) {
     }
 
     function createRollerCoasterRoad() {
-      const roadPoints = Math.max(1200, journeyLength * 200);
+      const roadPoints = Math.max(1200, journeyLength * ROAD_POINTS_PER_CHECKPOINT);
       const points = [];
       for (let i = 0; i <= roadPoints; i++) {
-        const t = (i / roadPoints) * Math.PI * (journeyLength + 2);
-        const x = Math.sin(t * 0.3) * 150 + Math.cos(t * 0.15) * 50;
-        const y = Math.cos(t * 0.4) * 40 + Math.sin(t * 0.8) * 20;
-        const z = i * 5.0 - (roadPoints * 2);
+        const t = (i / roadPoints) * Math.PI * (journeyLength + ROAD_CURVE_LENGTH_MULTIPLIER);
+        const x = Math.sin(t * ROAD_X_FREQUENCY_1) * ROAD_X_AMPLITUDE_1 + Math.cos(t * ROAD_X_FREQUENCY_2) * ROAD_X_AMPLITUDE_2;
+        const y = Math.cos(t * ROAD_Y_FREQUENCY_1) * ROAD_Y_AMPLITUDE_1 + Math.sin(t * ROAD_Y_FREQUENCY_2) * ROAD_Y_AMPLITUDE_2;
+        const z = i * ROAD_Z_SPACING - (roadPoints * 2);
         points.push(new THREE.Vector3(x, y, z).multiplyScalar(SCENE_SCALE));
       }
       
@@ -183,7 +309,7 @@ export default function Journey3D({ onComplete }) {
     function createCheckpointObjects() {
       journeyData.forEach((data, i) => {
         const stopT = (i + 1) / (journeyLength + 1);
-        const objectT = stopT + 0.065; // Increased offset like in the example
+        const objectT = stopT + OBJECT_PLACEMENT_OFFSET_T;
         
         const position = roadCurve.getPointAt(objectT);
         const frameIndex = Math.floor(objectT * (frenetFrames.binormals.length - 1));
@@ -204,14 +330,14 @@ export default function Journey3D({ onComplete }) {
         
         const cardObject = new THREE.CSS3DObject(cardElement);
         const cardSide = i % 2 === 0 ? 1 : -1;
-        const cardOffset = binormal.clone().multiplyScalar(250 * SCENE_SCALE * cardSide);
+        const cardOffset = binormal.clone().multiplyScalar(LATERAL_OFFSET_DISTANCE_CARD * SCENE_SCALE * cardSide);
         cardObject.position.copy(position).add(cardOffset);
 
         const headerElement = document.createElement('div');
         headerElement.className = 'journey-header-overlay';
         
         const headerObject = new THREE.CSS3DObject(headerElement);
-        const headerOffset = binormal.clone().multiplyScalar(250 * SCENE_SCALE * -cardSide);
+        const headerOffset = binormal.clone().multiplyScalar(LATERAL_OFFSET_DISTANCE_HEADER * SCENE_SCALE * -cardSide);
         headerObject.position.copy(position).add(headerOffset);
         
         cssScene.add(cardObject);
@@ -258,6 +384,65 @@ export default function Journey3D({ onComplete }) {
       };
     }
 
+    function setupLookAroundControls() {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const onMouseMove = (event) => {
+        if (!camera || !targetLookDirection) return;
+        
+        const rect = container.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        // Calculate normalized position from center (-1 to 1)
+        const deltaX = (event.clientX - centerX) / (rect.width / 2);
+        const deltaY = (event.clientY - centerY) / (rect.height / 2);
+        
+        // Convert screen coordinates to 3D direction
+        const mouse = new THREE.Vector2(deltaX, deltaY);
+        
+        // Calculate look angles with clamping (invert yaw for natural direction)
+        const yawAngle = THREE.MathUtils.clamp(
+          -deltaX * THREE.MathUtils.degToRad(LOOK_AROUND_MAX_YAW_DEG),
+          THREE.MathUtils.degToRad(-LOOK_AROUND_MAX_YAW_DEG),
+          THREE.MathUtils.degToRad(LOOK_AROUND_MAX_YAW_DEG)
+        );
+        
+        const pitchAngle = THREE.MathUtils.clamp(
+          -deltaY * THREE.MathUtils.degToRad(LOOK_AROUND_MAX_YAW_DEG * 0.5),
+          THREE.MathUtils.degToRad(-LOOK_AROUND_MAX_YAW_DEG * 0.5),
+          THREE.MathUtils.degToRad(LOOK_AROUND_MAX_YAW_DEG * 0.5)
+        );
+        
+        // Create target look direction relative to camera's forward
+        const forward = new THREE.Vector3(0, 0, -1);
+        const right = new THREE.Vector3(1, 0, 0);
+        const up = new THREE.Vector3(0, 1, 0);
+        
+        // Apply yaw and pitch rotations
+        targetLookDirection.copy(forward);
+        targetLookDirection.applyAxisAngle(up, yawAngle);
+        targetLookDirection.applyAxisAngle(right, pitchAngle);
+        targetLookDirection.normalize();
+        
+        isLookingAround = true;
+      };
+
+      const onMouseLeave = () => {
+        isLookingAround = false;
+        // Target will smoothly return to forward direction in updateCameraAndObjects
+      };
+
+      container.addEventListener('mousemove', onMouseMove);
+      container.addEventListener('mouseleave', onMouseLeave);
+
+      return () => {
+        container.removeEventListener('mousemove', onMouseMove);
+        container.removeEventListener('mouseleave', onMouseLeave);
+      };
+    }
+
     function updateCameraAndObjects() {
       const sRef = sceneRef.current;
       if (!sRef) return;
@@ -271,13 +456,48 @@ export default function Journey3D({ onComplete }) {
       const position = sRef.roadCurve.getPointAt(sRef.cameraT);
       const frameIndex = Math.floor(sRef.cameraT * sRef.frenetFrames.tangents.length);
       const normal = sRef.frenetFrames.normals[frameIndex];
+      const tangent = sRef.frenetFrames.tangents[frameIndex];
       
-      sRef.camera.position.copy(position).add(normal.clone().multiplyScalar(5.0 * SCENE_SCALE));
+      sRef.camera.position.copy(position).add(normal.clone().multiplyScalar(CAMERA_BASE_OFFSET_Y * SCENE_SCALE));
 
+      // Calculate base forward direction along the road
+      const baseForward = tangent.clone().normalize();
+      
+      // Handle look-around behavior
+      if (targetLookDirection && currentLookDirection) {
+        if (!isLookingAround) {
+          // When not looking around, smoothly return to road direction
+          const roadForward = new THREE.Vector3(0, 0, -1);
+          targetLookDirection.copy(roadForward);
+        }
+        
+        // Smoothly interpolate current look direction towards target
+        currentLookDirection.lerp(targetLookDirection, LOOK_AROUND_LERP_FACTOR);
+        currentLookDirection.normalize();
+      }
+      
+      // Transform the look direction to world space based on camera's road orientation
+      const roadMatrix = new THREE.Matrix4();
       const lookAtPosition = sRef.roadCurve.getPointAt(Math.min(sRef.cameraT + 0.01, 1));
-      const matrix = new THREE.Matrix4();
-      matrix.lookAt(sRef.camera.position, lookAtPosition, normal);
-      sRef.camera.quaternion.setFromRotationMatrix(matrix);
+      roadMatrix.lookAt(sRef.camera.position, lookAtPosition, normal);
+      
+      // Apply the road orientation first
+      sRef.camera.quaternion.setFromRotationMatrix(roadMatrix);
+      
+      // Then apply the look-around offset in camera's local space
+      if (currentLookDirection && (isLookingAround || !currentLookDirection.equals(new THREE.Vector3(0, 0, -1)))) {
+        // Create final look direction by combining road direction with look offset
+        const worldLookDirection = currentLookDirection.clone();
+        worldLookDirection.applyQuaternion(sRef.camera.quaternion);
+        
+        // Calculate final look position
+        const finalLookAt = sRef.camera.position.clone().add(worldLookDirection.multiplyScalar(100));
+        
+        // Apply final camera orientation
+        const finalMatrix = new THREE.Matrix4();
+        finalMatrix.lookAt(sRef.camera.position, finalLookAt, normal);
+        sRef.camera.quaternion.setFromRotationMatrix(finalMatrix);
+      }
 
       sRef.checkpoints.forEach((cp, index) => {
         cp.cardObject.rotation.copy(sRef.camera.rotation);
