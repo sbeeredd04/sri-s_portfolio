@@ -125,7 +125,7 @@ export default function Loader({ onFinish }) {
       className="fixed inset-0 z-[100] flex flex-col min-h-screen min-w-full bg-black major-mono-display-regular overflow-hidden"
     >
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-        <Beams beamWidth={0.2} beamHeight={15} beamNumber={16} lightColor="#fff" speed={1.2} noiseIntensity={1.2} scale={0.18} rotation={0} />
+        <Beams beamWidth={0.8} beamHeight={14} beamNumber={4} lightColor="#fff" speed={2} noiseIntensity={1.75} scale={0.18} rotation={200} />
       </div>
 
       <motion.div
@@ -149,26 +149,6 @@ export default function Loader({ onFinish }) {
             className="absolute top-6 left-8 text-xs md:text-sm opacity-80 tracking-widest flex flex-col gap-1"
           >
             <DecryptedText
-              text={"Sri Ujjwal Reddy"}
-              speed={40}
-              maxIterations={10}
-              sequential={true}
-              revealDirection="start"
-              className="major-mono-display-regular text-xs md:text-sm text-white"
-              encryptedClassName="text-white/30"
-              animateOn="view"
-            />
-            <DecryptedText
-              text={"Software Engineer | ML Engineer | Full Stack Developer"}
-              speed={40}
-              maxIterations={10}
-              sequential={true}
-              revealDirection="start"
-              className="major-mono-display-regular text-xs md:text-sm text-white/70"
-              encryptedClassName="text-white/30"
-              animateOn="view"
-            />
-            <DecryptedText
               text={`Local time: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
               speed={40}
               maxIterations={10}
@@ -186,16 +166,6 @@ export default function Loader({ onFinish }) {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="absolute bottom-8 left-8 text-lg md:text-2xl font-bold tracking-widest flex flex-col gap-1"
           >
-            <DecryptedText
-              text={"Portfolio"}
-              speed={40}
-              maxIterations={10}
-              sequential={true}
-              revealDirection="start"
-              className="major-mono-display-regular text-lg md:text-2xl text-white"
-              encryptedClassName="text-white/30"
-              animateOn="view"
-            />
             <DecryptedText
               text={"sriujjwalreddy.com"}
               speed={40}
