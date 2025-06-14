@@ -42,7 +42,7 @@ const ROAD_Y_AMPLITUDE_2 = 20;
 const ROAD_Y_FREQUENCY_2 = 0.8;
 const ROAD_Z_SPACING = 6.0;
 const OBJECT_PLACEMENT_OFFSET_T = 0.065;
-const LATERAL_OFFSET_DISTANCE_CARD = 250;   // ↓ from 250 - bring cards closer to road
+const LATERAL_OFFSET_DISTANCE_CARD = 300;   // ↓ from 250 - bring cards closer to road
 const LATERAL_OFFSET_DISTANCE_HEADER = 150; // ↓ from 250 - bring headers closer to road
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -486,7 +486,36 @@ class ThreeJSResourceManager {
         
         this.scene.add(this.roadLine);
         
-        console.log('✅ createRoadGeometry: Road curve created successfully with', roadPoints, 'points');
+        // ── DEBUG MARKERS: Add visual markers for stopT and objectT positions ──
+        console.log('🎯 Adding debug markers for checkpoint positions');
+        const markerGeometry = new THREE.SphereGeometry(5 * SCENE_SCALE, 8, 8);
+        const stopMarkerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red for stopT
+        const objectMarkerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green for objectT
+        
+        // Add markers for each checkpoint
+        for (let i = 0; i < this.journeyLength; i++) {
+          const stopT = (i + 1) / (this.journeyLength + 1);
+          const objectT = stopT + OBJECT_PLACEMENT_OFFSET_T;
+          
+          // Red marker at stopT (where FSM pauses)
+          const stopPosition = this.roadCurve.getPointAt(stopT);
+          const stopMarker = new THREE.Mesh(markerGeometry, stopMarkerMaterial);
+          stopMarker.position.copy(stopPosition);
+          stopMarker.position.y += 10 * SCENE_SCALE; // Raise above road for visibility
+          this.scene.add(stopMarker);
+          
+          // Green marker at objectT (where cards actually live)
+          const objectPosition = this.roadCurve.getPointAt(objectT);
+          const objectMarker = new THREE.Mesh(markerGeometry, objectMarkerMaterial);
+          objectMarker.position.copy(objectPosition);
+          objectMarker.position.y += 10 * SCENE_SCALE; // Raise above road for visibility
+          this.scene.add(objectMarker);
+          
+          console.log(`🔴 Checkpoint ${i} stopT marker at t=${stopT.toFixed(3)}, position:`, stopPosition);
+          console.log(`🟢 Checkpoint ${i} objectT marker at t=${objectT.toFixed(3)}, position:`, objectPosition);
+        }
+        
+        console.log('✅ createRoadGeometry: Road curve created successfully with', roadPoints, 'points and debug markers');
         resolve();
       }, 100);
     });

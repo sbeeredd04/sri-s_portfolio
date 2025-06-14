@@ -37,18 +37,19 @@ export type CameraAction =
  * traveling → atCheckpoint (when cameraT >= stopT[index])
  * atCheckpoint → resuming (when user scrolls OR auto-timeout)
  * resuming → traveling (when catch-up animation completes)
+ * resuming → atCheckpoint (when hitting next checkpoint during catch-up)
  * traveling → completed (when cameraT >= 0.95)
  */
 export function cameraReducer(
   state: CameraState,
   action: CameraAction
 ): CameraState {
-  console.log(`🎬 CameraFSM: ${state.phase} + ${action.type}`);
+  console.log(`🎬 CameraFSM: ${state.phase} + ${action.type}${action.type === 'REACH_CHECKPOINT' ? ` (index=${action.index})` : ''}`);
   
   switch (state.phase) {
     case 'traveling':
       if (action.type === 'REACH_CHECKPOINT') {
-        console.log(`🛑 Pausing at checkpoint ${action.index}`);
+        console.log(`🛑 Pausing at checkpoint ${action.index} from traveling`);
         return { phase: 'atCheckpoint', index: action.index };
       }
       if (action.type === 'JOURNEY_COMPLETE') {
@@ -69,6 +70,10 @@ export function cameraReducer(
       return state;
 
     case 'resuming':
+      if (action.type === 'REACH_CHECKPOINT') {
+        console.log(`🎯 Hit checkpoint ${action.index} during resume - transitioning to atCheckpoint`);
+        return { phase: 'atCheckpoint', index: action.index };
+      }
       if (action.type === 'CATCH_UP_COMPLETE') {
         console.log('✅ Catch-up complete, resuming travel');
         return { phase: 'traveling' };

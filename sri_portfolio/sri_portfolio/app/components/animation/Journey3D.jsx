@@ -12,9 +12,10 @@ import { useJourneyControl } from './useJourneyControl';
 
 const SCENE_SCALE = 5; // Must match Loader's SCENE_SCALE
 const LERP_FACTOR = 0.05; // Camera smoothing factor
-const CAMERA_BASE_OFFSET_Y = 5.0; // Camera height above road
+const CAMERA_BASE_OFFSET_Y = 2.0; // Camera height above road
 const LOOK_AROUND_MAX_YAW_DEG = 30; // Max mouse look angle
 const LOOK_AROUND_LERP_FACTOR = 0.1; // Look-around smoothing
+const OBJECT_PLACEMENT_OFFSET_T = 0.065; // Must match Loader's offset
 
 // ──────────────────────────────────────────────────────────────────────────────
 // CHECKPOINT HEADER COMPONENT
@@ -75,25 +76,42 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   const [progress, setProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [showContinueHint, setShowContinueHint] = useState(false);
 
   // ── Journey Configuration ──
   const journeyLength = journeyData.length;
   const totalHeight = Math.max(1600, journeyLength * 300);
 
-  // ── FSM CHECKPOINT CONTROL: Replace old boolean-based checkpoint logic ──
-  const checkpointData = preloadedResources?.checkpoints?.map((cp, index) => ({
-    stopT: cp.stopT,
-    index: index,
-    triggered: false
-  })) || [];
+  // ── STABLE CHECKPOINT DATA: Initialize triggered flags only once ──
+  const checkpointsRef = useRef([]);
+  const lastCheckpointIndex = useRef(-1); // Track last triggered checkpoint
   
+  useEffect(() => {
+    if (preloadedResources?.checkpoints) {
+      // Initialize checkpoint data with triggered flags ONLY ONCE
+      // Include objectT to match Loader's card placement logic
+      checkpointsRef.current = preloadedResources.checkpoints.map((cp, i) => ({
+        stopT: cp.stopT,
+        objectT: cp.stopT + OBJECT_PLACEMENT_OFFSET_T, // Where cards actually live
+        index: i,
+        triggered: false
+      }));
+      lastCheckpointIndex.current = -1; // Reset checkpoint tracking
+      console.log('📋 Checkpoint data initialized:', checkpointsRef.current.length, 'checkpoints with objectT offsets');
+      console.log('📍 Checkpoint positions:', checkpointsRef.current.map(cp => 
+        `${cp.index}: stopT=${cp.stopT.toFixed(3)}, objectT=${cp.objectT.toFixed(3)}`
+      ));
+    }
+  }, [preloadedResources]);
+
+  // ── FSM CHECKPOINT CONTROL: Use stable checkpoint data ──
   const journeyControl = useJourneyControl({ 
-    checkpoints: checkpointData,
+    checkpoints: checkpointsRef.current,
     autoResumeDelayMs: 5000 
   });
 
-  // ── CHECKPOINT REFERENCES: Keep ref to CSS3D objects for React-driven animations ──
-  const checkpointsRef = useRef(preloadedResources?.checkpoints || []);
+  // ── CSS3D CHECKPOINT REFERENCES: Keep ref to CSS3D objects for React-driven animations ──
+  const css3DCheckpointsRef = useRef(preloadedResources?.checkpoints || []);
 
   // ── VIRTUAL SCROLL SYSTEM: Complete control over scroll behavior ──
   const virtualScrollY = useRef(0);
@@ -113,21 +131,24 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       let scaled = raw;
       
       // ZONE-BASED SLOWDOWN: Dramatically slow scroll near checkpoints
-      if (phase === 'traveling' && checkpointData.length > 0) {
-        // Find the next upcoming checkpoint
+      if (phase === 'traveling' && checkpointsRef.current.length > 0) {
+        // Find the next upcoming checkpoint that hasn't been triggered
         const currentProgress = virtualScrollY.current / docHeight;
-        const nextCheckpoint = checkpointData.find(cp => cp.stopT > currentProgress);
+        const nextCheckpoint = checkpointsRef.current.find(cp => 
+          cp.stopT > currentProgress && !cp.triggered
+        );
         
         if (nextCheckpoint) {
-          const stopT = nextCheckpoint.stopT;
-          const zoneStart = Math.max(0, (stopT - 0.1) * docHeight); // 10% before checkpoint
-          const zoneEnd = stopT * docHeight;
+          const { stopT, objectT } = nextCheckpoint;
+          const stopPx = stopT * docHeight;   // Where FSM pauses
+          const endPx = objectT * docHeight;  // Where cards actually live
           
-          if (virtualScrollY.current >= zoneStart && virtualScrollY.current <= zoneEnd) {
-            // DRAMATIC SLOWDOWN: 2% of normal scroll speed in checkpoint zone
-            const slowdownFactor = 0.02;
+          // CORRECTED ZONE: Slowdown between stopT and objectT (not before stopT)
+          if (virtualScrollY.current >= stopPx && virtualScrollY.current <= endPx) {
+            // DRAMATIC SLOWDOWN: 25% of normal scroll speed in checkpoint zone
+            const slowdownFactor = 0.25;
             scaled = raw * slowdownFactor;
-            console.log(`🐌 Slowdown zone active: ${slowdownFactor}x speed near checkpoint ${nextCheckpoint.index}`);
+            console.log(`🐌 Slowdown zone active: ${slowdownFactor}x speed between stopT=${stopT.toFixed(3)} and objectT=${objectT.toFixed(3)} for checkpoint ${nextCheckpoint.index}`);
           }
         }
       }
@@ -135,9 +156,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       // COMPLETE FREEZE: No scroll during checkpoint animations
       if (phase === 'atCheckpoint') {
         console.log('🔒 Scroll completely blocked during checkpoint animation');
-        // DISPATCH USER_RESUME: User tried to scroll during animation
-        console.log('👆 User attempted scroll during checkpoint - dispatching USER_RESUME');
-        journeyControl.dispatch({ type: 'USER_RESUME' });
+        // NO AUTO-RESUME: Let FSM timer or explicit user action handle resume
         return; // No movement at all
       }
       
@@ -164,6 +183,14 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       }
     };
     
+    // Manual resume mechanism - click anywhere to continue
+    const handleClick = (e) => {
+      if (journeyControl.state.phase === 'atCheckpoint') {
+        console.log('👆 User clicked during checkpoint - dispatching USER_RESUME');
+        journeyControl.dispatch({ type: 'USER_RESUME' });
+      }
+    };
+    
     // Touch handling for mobile devices
     let touchStartY = 0;
     const handleTouchStart = (e) => {
@@ -174,8 +201,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       if (journeyControl.state.phase === 'atCheckpoint') {
         e.preventDefault();
         console.log('📱 Touch scroll blocked during checkpoint animation');
-        console.log('👆 User attempted touch scroll during checkpoint - dispatching USER_RESUME');
-        journeyControl.dispatch({ type: 'USER_RESUME' });
+        // NO AUTO-RESUME: Let FSM timer or explicit user action handle resume
         return;
       }
       
@@ -190,20 +216,23 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       let scaled = deltaY * 2; // Touch sensitivity multiplier
       
       // Zone-based slowdown for touch
-      if (phase === 'traveling' && checkpointData.length > 0) {
-        // Find the next upcoming checkpoint
+      if (phase === 'traveling' && checkpointsRef.current.length > 0) {
+        // Find the next upcoming checkpoint that hasn't been triggered
         const currentProgress = virtualScrollY.current / docHeight;
-        const nextCheckpoint = checkpointData.find(cp => cp.stopT > currentProgress);
+        const nextCheckpoint = checkpointsRef.current.find(cp => 
+          cp.stopT > currentProgress && !cp.triggered
+        );
         
         if (nextCheckpoint) {
-          const stopT = nextCheckpoint.stopT;
-          const zoneStart = Math.max(0, (stopT - 0.1) * docHeight);
-          const zoneEnd = stopT * docHeight;
+          const { stopT, objectT } = nextCheckpoint;
+          const stopPx = stopT * docHeight;   // Where FSM pauses
+          const endPx = objectT * docHeight;  // Where cards actually live
           
-          if (virtualScrollY.current >= zoneStart && virtualScrollY.current <= zoneEnd) {
-            const slowdownFactor = 0.02;
+          // CORRECTED ZONE: Slowdown between stopT and objectT (not before stopT)
+          if (virtualScrollY.current >= stopPx && virtualScrollY.current <= endPx) {
+            const slowdownFactor = 0.25;
             scaled = deltaY * slowdownFactor;
-            console.log(`🐌📱 Touch slowdown zone active: ${slowdownFactor}x speed near checkpoint ${nextCheckpoint.index}`);
+            console.log(`🐌📱 Touch slowdown zone active: ${slowdownFactor}x speed between stopT=${stopT.toFixed(3)} and objectT=${objectT.toFixed(3)} for checkpoint ${nextCheckpoint.index}`);
           }
         }
       }
@@ -221,28 +250,34 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     window.addEventListener('keydown', handleKeyDown, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: false });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    console.log('🎮 Virtual scroll system activated (wheel + keyboard + touch)');
+    window.addEventListener('click', handleClick, { passive: false });
+    console.log('🎮 Virtual scroll system activated (wheel + keyboard + touch + click)');
     
     return () => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('click', handleClick);
       console.log('🧹 Virtual scroll system deactivated');
     };
-  }, [journeyControl.state.phase, journeyControl.state.index, checkpointData]);
+  }, [journeyControl.state.phase, journeyControl.state.index]);
 
   // ── FSM-DRIVEN CHECKPOINT TRIGGERING: React effect watches FSM state changes ──
   useEffect(() => {
     if (journeyControl.state.phase === 'atCheckpoint') {
       const checkpointIndex = journeyControl.state.index;
-      const cp = checkpointsRef.current[checkpointIndex];
+      const cp = css3DCheckpointsRef.current[checkpointIndex];
       
       if (cp && !cp._animated) {
         console.log(`🎯 FSM triggered checkpoint ${checkpointIndex} - starting animation sequence`);
         cp._animated = true; // Prevent duplicate animations
+        setShowContinueHint(false); // Hide hint during animation
         playCheckpointSequence(cp);
       }
+    } else {
+      // Hide hint when not at checkpoint
+      setShowContinueHint(false);
     }
   }, [journeyControl.state.phase, journeyControl.state.index]);
 
@@ -328,6 +363,18 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       await Promise.all([cardAnimationPromise, headerAnimationPromise, typewriterPromise]);
 
       console.log(`🎉 All animations completed for checkpoint ${cp.index}`);
+      
+      // ── SYNC VIRTUAL SCROLL: Reset virtual scroll to match camera position ──
+      if (sceneRef.current?.cameraT !== undefined) {
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        const newVirtualScrollY = sceneRef.current.cameraT * docHeight;
+        virtualScrollY.current = newVirtualScrollY;
+        window.scrollTo(0, newVirtualScrollY);
+        console.log(`🔄 Virtual scroll synced to camera position: cameraT=${sceneRef.current.cameraT.toFixed(3)}, virtualScrollY=${newVirtualScrollY.toFixed(0)}`);
+      }
+      
+      // Show continue hint after animations complete
+      setShowContinueHint(true);
       
     } finally {
       // ── RESTORE SCROLLING: Always restore scroll even if animations fail ──
@@ -418,7 +465,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       resourceManager = preloadedResources.resourceManager; // Store for React root cleanup
 
       // ── UPDATE CHECKPOINT REF: Ensure React effect has access to current checkpoints ──
-      checkpointsRef.current = checkpoints;
+      css3DCheckpointsRef.current = checkpoints;
 
       console.log('📦 Resources loaded:', {
         scene: !!scene,
@@ -775,6 +822,23 @@ export default function Journey3D({ onComplete, preloadedResources }) {
 
       {/* THREE.js container - renderers attached here by resource manager */}
       <div ref={containerRef} className="w-full h-full" />
+      
+      {/* Continue hint - shown after checkpoint animations complete */}
+      {showContinueHint && (
+        <motion.div
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="bg-black/80 backdrop-blur-sm border border-white/20 rounded-lg px-6 py-3">
+            <p className="text-white text-sm major-mono-display-regular tracking-wider">
+              Click anywhere or scroll to continue
+            </p>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 } 

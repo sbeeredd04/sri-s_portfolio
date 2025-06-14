@@ -7,6 +7,7 @@ import { cameraReducer, initialCameraState, CameraState, CameraAction } from './
 
 interface CheckpointData {
   stopT: number;
+  objectT: number;
   index: number;
   triggered: boolean;
 }
@@ -66,23 +67,32 @@ export function useJourneyControl({
     };
   }, [state.phase, autoResumeDelayMs]);
   
-  // ── Checkpoint Collision Detection ──
+  // ── Checkpoint Collision Detection: Allow during traveling AND resuming ──
   const checkForCheckpointCollision = useCallback((cameraT: number) => {
-    if (state.phase !== 'traveling') return;
+    console.log(`🔍 collision check: phase=${state.phase}, cameraT=${cameraT.toFixed(3)}`);
     
-    // Find the next untriggered checkpoint
-    for (let i = lastCheckpointIndex.current + 1; i < checkpoints.length; i++) {
+    // Allow collision detection during both traveling and resuming phases
+    if ((state.phase !== 'traveling' && state.phase !== 'resuming') || checkpoints.length === 0) {
+      if (state.phase !== 'traveling' && state.phase !== 'resuming') {
+        console.log(`🚫 Collision check blocked - not in traveling/resuming phase (current: ${state.phase})`);
+      }
+      return;
+    }
+    
+    // Find the next untriggered checkpoint based on stopT
+    for (let i = 0; i < checkpoints.length; i++) {
       const checkpoint = checkpoints[i];
       
+      // Only trigger if we've reached stopT and haven't triggered this checkpoint yet
       if (cameraT >= checkpoint.stopT && !checkpoint.triggered) {
-        console.log(`🎯 Checkpoint ${i} collision detected at cameraT=${cameraT}, stopT=${checkpoint.stopT}`);
+        console.log(`🎯 Checkpoint ${i} collision detected at cameraT=${cameraT.toFixed(3)}, stopT=${checkpoint.stopT.toFixed(3)} - FSM phase: ${state.phase}`);
         
         // Mark as triggered to prevent re-triggering
         checkpoint.triggered = true;
         lastCheckpointIndex.current = i;
         
         dispatch({ type: 'REACH_CHECKPOINT', index: i });
-        break;
+        break; // Only trigger one checkpoint at a time
       }
     }
   }, [state.phase, checkpoints]);
@@ -102,7 +112,7 @@ export function useJourneyControl({
       const isCaughtUp = Math.abs(cameraT - targetT) < catchUpThreshold;
       
       if (isCaughtUp) {
-        console.log(`✅ Catch-up complete: cameraT=${cameraT}, targetT=${targetT}`);
+        console.log(`✅ Catch-up complete: cameraT=${cameraT.toFixed(3)}, targetT=${targetT.toFixed(3)}`);
         dispatch({ type: 'CATCH_UP_COMPLETE' });
       }
     }
