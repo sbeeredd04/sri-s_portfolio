@@ -26,25 +26,25 @@ const CHECKPOINT_PAUSE_DURATION = 2000; // 2 seconds pause at each checkpoint
 // ── FRAME THICKNESS & PADDING ──
 const FRAME_THICKNESS = 1; // Main frame border thickness (viewBox units)
 const FRAME_STROKE_WIDTH = 0.4; // SVG stroke width for borders
-const FRAME_PADDING_TOP = 2; // Distance from top edge
+const FRAME_PADDING_TOP = 1.5; // Distance from top edge
 const FRAME_PADDING_RIGHT = 1; // Distance from right edge  
-const FRAME_PADDING_BOTTOM = 2; // Distance from bottom edge
+const FRAME_PADDING_BOTTOM = 1.5; // Distance from bottom edge
 const FRAME_PADDING_LEFT = 1; // Distance from left edge
 
 // ── TRAPEZOID DIMENSIONS ──
-const TRAPEZOID_TOP_LENGTH = 40; // Length of top trapezoid (viewBox units)
-const TRAPEZOID_BOTTOM_LENGTH = 40; // Length of bottom trapezoid
-const TRAPEZOID_LEFT_LENGTH = 40; // Length of left trapezoid
-const TRAPEZOID_RIGHT_LENGTH = 40; // Length of right trapezoid
+const TRAPEZOID_TOP_LENGTH = 32; // Length of top trapezoid (viewBox units)
+const TRAPEZOID_BOTTOM_LENGTH = 32; // Length of bottom trapezoid
+const TRAPEZOID_LEFT_LENGTH = 16; // Length of left trapezoid
+const TRAPEZOID_RIGHT_LENGTH = 16; // Length of right trapezoid
 
-const TRAPEZOID_TOP_HEIGHT = 4; // Height/depth of top trapezoid
-const TRAPEZOID_BOTTOM_HEIGHT = 4; // Height/depth of bottom trapezoid
-const TRAPEZOID_LEFT_HEIGHT = 1; // Width/depth of left trapezoid
-const TRAPEZOID_RIGHT_HEIGHT = 1; // Width/depth of right trapezoid
+const TRAPEZOID_TOP_HEIGHT = 2; // Height/depth of top trapezoid
+const TRAPEZOID_BOTTOM_HEIGHT = 6; // Height/depth of bottom trapezoid
+const TRAPEZOID_LEFT_HEIGHT = 0.75; // Width/depth of left trapezoid
+const TRAPEZOID_RIGHT_HEIGHT = 0.75; // Width/depth of right trapezoid
 
 // ── TRAPEZOID SLANT/ANGLE ──
 const TRAPEZOID_TOP_SLANT = 2; // How much the top trapezoid slants inward
-const TRAPEZOID_BOTTOM_SLANT = 2; // How much the bottom trapezoid slants inward
+const TRAPEZOID_BOTTOM_SLANT = 4; // How much the bottom trapezoid slants inward
 const TRAPEZOID_LEFT_SLANT = 2; // How much the left trapezoid slants inward
 const TRAPEZOID_RIGHT_SLANT = 2; // How much the right trapezoid slants inward
 
@@ -338,17 +338,78 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     }
   }, []);
 
-  // ── Document height setup ──
+  // ── Document height setup with hidden scrollbars ──
   useEffect(() => {
     if (typeof document !== 'undefined') {
+      // Set document height for virtual scrolling
       document.body.style.height = `${totalHeight}vh`;
       document.body.style.overflow = 'auto';
+      
+      // Hide scrollbars completely across all browsers
+      document.body.style.scrollbarWidth = 'none'; // Firefox
+      document.body.style.msOverflowStyle = 'none'; // IE/Edge
+      
+      // Webkit browsers (Chrome, Safari, newer Edge)
+      const style = document.createElement('style');
+      style.textContent = `
+        /* Hide scrollbars globally */
+        ::-webkit-scrollbar {
+          width: 0px;
+          height: 0px;
+          background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: transparent;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        /* Ensure no scrollbars on any element */
+        * {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        
+        *::-webkit-scrollbar {
+          width: 0px;
+          height: 0px;
+          background: transparent;
+        }
+        
+        /* Hide scrollbars on html and body */
+        html, body {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          overflow-x: hidden;
+        }
+        
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          width: 0px;
+          height: 0px;
+          background: transparent;
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Store reference for cleanup
+      document.body._scrollbarHideStyle = style;
     }
     
     return () => {
       if (typeof document !== 'undefined') {
         document.body.style.height = '';
         document.body.style.overflow = '';
+        document.body.style.scrollbarWidth = '';
+        document.body.style.msOverflowStyle = '';
+        
+        // Remove the injected style
+        if (document.body._scrollbarHideStyle) {
+          document.head.removeChild(document.body._scrollbarHideStyle);
+          delete document.body._scrollbarHideStyle;
+        }
       }
     };
   }, [totalHeight]);
@@ -827,19 +888,34 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           
           return (
             <>
-              {/* Black frame fill with trapezoid cutouts */}
-              <path 
-                d={`
-                  M 0 0 
-                  L 100 0 
-                  L 100 100 
-                  L 0 100 
-                  Z
-                  ${framePath}
-                `}
-                fill="black"
-                fillRule="evenodd"
-              />
+              {/* Liquid glass frame fill with trapezoid cutouts */}
+              <defs>
+                <mask id="frameMask">
+                  <rect width="100" height="100" fill="white"/>
+                  <path 
+                    d={framePath}
+                    fill="black"
+                  />
+                </mask>
+              </defs>
+              
+              {/* Glass effect background */}
+              <foreignObject 
+                x="0" 
+                y="0" 
+                width="100%" 
+                height="100%"
+                mask="url(#frameMask)"
+              >
+                <div 
+                  className="w-full h-full bg-black/60 backdrop-blur-sm"
+                  style={{
+                    background: 'rgba(0, 0, 0, 0.9)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)'
+                  }}
+                />
+              </foreignObject>
               
               {/* White border outline */}
               <path 
@@ -861,6 +937,32 @@ export default function Journey3D({ onComplete, preloadedResources }) {
                 strokeWidth={FRAME_STROKE_WIDTH}
                 vectorEffect="non-scaling-stroke"
               />
+              
+              {/* Additional glass enhancement effects */}
+              <defs>
+                <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="rgba(0,0,0,0.12)" />
+                  <stop offset="50%" stopColor="rgba(0,0,0,0.1)" />
+                  <stop offset="100%" stopColor="rgba(0,0,0,0.08)" />
+                </linearGradient>
+              </defs>
+              
+              {/* Subtle glass highlight */}
+              <foreignObject 
+                x="0" 
+                y="0" 
+                width="100%" 
+                height="100%"
+                mask="url(#frameMask)"
+              >
+                <div 
+                  className="w-full h-full"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.02) 100%)',
+                    mixBlendMode: 'overlay'
+                  }}
+                />
+              </foreignObject>
             </>
           );
         })()}
