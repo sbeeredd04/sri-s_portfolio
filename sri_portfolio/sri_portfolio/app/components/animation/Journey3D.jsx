@@ -20,6 +20,38 @@ const MAX_SCROLL_SPEED = 3.0; // Maximum scroll speed multiplier for responsiven
 const CHECKPOINT_PAUSE_DURATION = 2000; // 2 seconds pause at each checkpoint
 
 // ──────────────────────────────────────────────────────────────────────────────
+// FRAME DESIGN CONSTANTS - Customizable trapezoid frame parameters
+// ──────────────────────────────────────────────────────────────────────────────
+
+// ── FRAME THICKNESS & PADDING ──
+const FRAME_THICKNESS = 1; // Main frame border thickness (viewBox units)
+const FRAME_STROKE_WIDTH = 0.4; // SVG stroke width for borders
+const FRAME_PADDING_TOP = 2; // Distance from top edge
+const FRAME_PADDING_RIGHT = 1; // Distance from right edge  
+const FRAME_PADDING_BOTTOM = 2; // Distance from bottom edge
+const FRAME_PADDING_LEFT = 1; // Distance from left edge
+
+// ── TRAPEZOID DIMENSIONS ──
+const TRAPEZOID_TOP_LENGTH = 40; // Length of top trapezoid (viewBox units)
+const TRAPEZOID_BOTTOM_LENGTH = 40; // Length of bottom trapezoid
+const TRAPEZOID_LEFT_LENGTH = 40; // Length of left trapezoid
+const TRAPEZOID_RIGHT_LENGTH = 40; // Length of right trapezoid
+
+const TRAPEZOID_TOP_HEIGHT = 4; // Height/depth of top trapezoid
+const TRAPEZOID_BOTTOM_HEIGHT = 4; // Height/depth of bottom trapezoid
+const TRAPEZOID_LEFT_HEIGHT = 1; // Width/depth of left trapezoid
+const TRAPEZOID_RIGHT_HEIGHT = 1; // Width/depth of right trapezoid
+
+// ── TRAPEZOID SLANT/ANGLE ──
+const TRAPEZOID_TOP_SLANT = 2; // How much the top trapezoid slants inward
+const TRAPEZOID_BOTTOM_SLANT = 2; // How much the bottom trapezoid slants inward
+const TRAPEZOID_LEFT_SLANT = 2; // How much the left trapezoid slants inward
+const TRAPEZOID_RIGHT_SLANT = 2; // How much the right trapezoid slants inward
+
+// ── EVENT CAPTURE ZONE ──
+const EVENT_ZONE_PADDING = 8; // Padding for scroll/mouse event capture zone (CSS units)
+
+// ──────────────────────────────────────────────────────────────────────────────
 // CHECKPOINT HEADER COMPONENT
 // ──────────────────────────────────────────────────────────────────────────────
 
@@ -73,6 +105,57 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   // ── Core References ──
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
+
+  // ── TRAPEZOID COORDINATE CALCULATOR ──
+  const calculateTrapezoidCoords = () => {
+    // Calculate frame boundaries
+    const frameLeft = FRAME_PADDING_LEFT;
+    const frameRight = 100 - FRAME_PADDING_RIGHT;
+    const frameTop = FRAME_PADDING_TOP;
+    const frameBottom = 100 - FRAME_PADDING_BOTTOM;
+    
+    // Calculate trapezoid centers
+    const topCenter = 50;
+    const bottomCenter = 50;
+    const leftCenter = 50;
+    const rightCenter = 50;
+    
+    // Top trapezoid coordinates
+    const topStart = topCenter - (TRAPEZOID_TOP_LENGTH / 2);
+    const topEnd = topCenter + (TRAPEZOID_TOP_LENGTH / 2);
+    const topSlantStart = topStart + TRAPEZOID_TOP_SLANT;
+    const topSlantEnd = topEnd - TRAPEZOID_TOP_SLANT;
+    
+    // Bottom trapezoid coordinates  
+    const bottomStart = bottomCenter - (TRAPEZOID_BOTTOM_LENGTH / 2);
+    const bottomEnd = bottomCenter + (TRAPEZOID_BOTTOM_LENGTH / 2);
+    const bottomSlantStart = bottomStart + TRAPEZOID_BOTTOM_SLANT;
+    const bottomSlantEnd = bottomEnd - TRAPEZOID_BOTTOM_SLANT;
+    
+    // Left trapezoid coordinates
+    const leftStart = leftCenter - (TRAPEZOID_LEFT_LENGTH / 2);
+    const leftEnd = leftCenter + (TRAPEZOID_LEFT_LENGTH / 2);
+    const leftSlantStart = leftStart + TRAPEZOID_LEFT_SLANT;
+    const leftSlantEnd = leftEnd - TRAPEZOID_LEFT_SLANT;
+    
+    // Right trapezoid coordinates
+    const rightStart = rightCenter - (TRAPEZOID_RIGHT_LENGTH / 2);
+    const rightEnd = rightCenter + (TRAPEZOID_RIGHT_LENGTH / 2);
+    const rightSlantStart = rightStart + TRAPEZOID_RIGHT_SLANT;
+    const rightSlantEnd = rightEnd - TRAPEZOID_RIGHT_SLANT;
+    
+    return {
+      frameLeft, frameRight, frameTop, frameBottom,
+      // Top trapezoid
+      topPath: `L ${topStart} ${frameTop} L ${topSlantStart} ${frameTop + TRAPEZOID_TOP_HEIGHT} L ${topSlantEnd} ${frameTop + TRAPEZOID_TOP_HEIGHT} L ${topEnd} ${frameTop}`,
+      // Right trapezoid  
+      rightPath: `L ${frameRight} ${rightStart} L ${frameRight - TRAPEZOID_RIGHT_HEIGHT} ${rightSlantStart} L ${frameRight - TRAPEZOID_RIGHT_HEIGHT} ${rightSlantEnd} L ${frameRight} ${rightEnd}`,
+      // Bottom trapezoid
+      bottomPath: `L ${bottomEnd} ${frameBottom} L ${bottomSlantEnd} ${frameBottom - TRAPEZOID_BOTTOM_HEIGHT} L ${bottomSlantStart} ${frameBottom - TRAPEZOID_BOTTOM_HEIGHT} L ${bottomStart} ${frameBottom}`,
+      // Left trapezoid
+      leftPath: `L ${frameLeft} ${leftEnd} L ${frameLeft + TRAPEZOID_LEFT_HEIGHT} ${leftSlantEnd} L ${frameLeft + TRAPEZOID_LEFT_HEIGHT} ${leftSlantStart} L ${frameLeft} ${leftStart}`
+    };
+  };
   
   // ── UI State ──
   const [progress, setProgress] = useState(0);
@@ -115,6 +198,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     
     // ── WHEEL HANDLER: Smooth scroll with max speed control ──
     const handleWheel = (e) => {
+      console.log('🖱️ Wheel event detected:', e.deltaY);
       e.preventDefault(); // Take full control of scrolling
       
       // ABSOLUTELY BLOCK scroll during checkpoint animations or journey completion
@@ -130,12 +214,17 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       const raw = e.deltaY;
       const docHeight = getDocHeight();
       
+      console.log('📏 Document height:', docHeight, 'Current virtual scroll:', virtualScrollY.current);
+      
       // Apply max speed limiting for smooth control
       const clampedDelta = Math.max(-MAX_SCROLL_SPEED * 50, Math.min(MAX_SCROLL_SPEED * 50, raw));
       
       // Update virtual scroll position
-      virtualScrollY.current = Math.max(0, Math.min(docHeight, virtualScrollY.current + clampedDelta));
+      const newScrollY = Math.max(0, Math.min(docHeight, virtualScrollY.current + clampedDelta));
+      virtualScrollY.current = newScrollY;
       window.scrollTo(0, virtualScrollY.current);
+      
+      console.log('🎯 Updated scroll position to:', virtualScrollY.current);
     };
     
     // ── KEYBOARD HANDLER: Absolutely block scroll keys during animations ──
@@ -174,12 +263,14 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     };
     
     // Attach scroll event listeners
+    console.log('🎧 Attaching scroll event listeners');
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('keydown', handleKeyDown, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: false });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     
     return () => {
+      console.log('🧹 Removing scroll event listeners');
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('touchstart', handleTouchStart);
@@ -275,7 +366,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   // MAIN ANIMATION LOOP - Simplified camera movement with smooth interpolation
   // ──────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (isTransitioning || !preloadedResources) return;
+    console.log('🎬 Main animation effect running. isTransitioning:', isTransitioning, 'preloadedResources:', !!preloadedResources);
+    if (isTransitioning || !preloadedResources) {
+      console.log('🚫 Main animation effect skipped - transition or no resources');
+      return;
+    }
 
     // ── Core THREE.js objects ──
     let scene, camera, renderer, cssRenderer, cssScene;
@@ -501,12 +596,12 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           journeyCompletedRef.current = true;
           scrollBlockedRef.current = true; // Block all scroll input
           
-          setIsCompleting(true);
+        setIsCompleting(true);
           
           // Smooth transition to main page from end position
-          setTimeout(() => {
+        setTimeout(() => {
             console.log('🏠 Transitioning to main page from journey end');
-            if (onComplete) onComplete();
+          if (onComplete) onComplete();
           }, 1500); // Slightly shorter delay for smoother UX
         }
       }
@@ -708,6 +803,142 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       
       {/* THREE.js container */}
       <div ref={containerRef} className="w-full h-full" />
+      
+            {/* ───── SVG Notched Frame Overlay - Configurable Trapezoid Design ───── */}
+      <svg 
+        className="absolute inset-0 w-full h-full pointer-events-none z-[100]"
+        viewBox="0 0 100 100" 
+        preserveAspectRatio="none"
+        style={{ width: '100vw', height: '100vh' }}
+      >
+        {(() => {
+          const coords = calculateTrapezoidCoords();
+          const framePath = `
+            M ${coords.frameLeft} ${coords.frameTop} 
+            ${coords.topPath}
+            L ${coords.frameRight} ${coords.frameTop} 
+            ${coords.rightPath}
+            L ${coords.frameRight} ${coords.frameBottom} 
+            ${coords.bottomPath}
+            L ${coords.frameLeft} ${coords.frameBottom} 
+            ${coords.leftPath}
+            Z
+          `;
+          
+          return (
+            <>
+              {/* Black frame fill with trapezoid cutouts */}
+              <path 
+                d={`
+                  M 0 0 
+                  L 100 0 
+                  L 100 100 
+                  L 0 100 
+                  Z
+                  ${framePath}
+                `}
+                fill="black"
+                fillRule="evenodd"
+              />
+              
+              {/* White border outline */}
+              <path 
+                d={framePath}
+                fill="none"
+                stroke="white"
+                strokeWidth={FRAME_STROKE_WIDTH}
+                vectorEffect="non-scaling-stroke"
+              />
+              
+              {/* Outer border */}
+              <rect 
+                x="0" 
+                y="0" 
+                width="100" 
+                height="100" 
+                fill="none" 
+                stroke="white" 
+                strokeWidth={FRAME_STROKE_WIDTH}
+                vectorEffect="non-scaling-stroke"
+              />
+            </>
+          );
+        })()}
+      </svg>
+      
+      {/* ───── Interactive Event Zones ───── */}
+      {/* Scroll Event Capture Zone */}
+      <div 
+        className="absolute pointer-events-auto z-[50]"
+        style={{ 
+          background: 'transparent',
+          top: `${EVENT_ZONE_PADDING}px`,
+          right: `${EVENT_ZONE_PADDING}px`,
+          bottom: `${EVENT_ZONE_PADDING}px`,
+          left: `${EVENT_ZONE_PADDING}px`
+        }}
+        onWheel={(e) => {
+          // Forward wheel events to window for scroll handling
+          const wheelEvent = new WheelEvent('wheel', {
+            deltaY: e.deltaY,
+            deltaX: e.deltaX,
+            deltaZ: e.deltaZ,
+            deltaMode: e.deltaMode,
+            bubbles: true,
+            cancelable: true
+          });
+          window.dispatchEvent(wheelEvent);
+          e.preventDefault();
+        }}
+        onTouchStart={(e) => {
+          // Forward touch events to window
+          const touchEvent = new TouchEvent('touchstart', {
+            touches: e.touches,
+            targetTouches: e.targetTouches,
+            changedTouches: e.changedTouches,
+            bubbles: true,
+            cancelable: true
+          });
+          window.dispatchEvent(touchEvent);
+        }}
+        onTouchMove={(e) => {
+          // Forward touch events to window
+          const touchEvent = new TouchEvent('touchmove', {
+            touches: e.touches,
+            targetTouches: e.targetTouches,
+            changedTouches: e.changedTouches,
+            bubbles: true,
+            cancelable: true
+          });
+          window.dispatchEvent(touchEvent);
+          e.preventDefault();
+        }}
+        onMouseMove={(e) => {
+          // Forward mouse move events to THREE.js container for look-around
+          const container = containerRef.current;
+          if (container) {
+            const mouseEvent = new MouseEvent('mousemove', {
+              clientX: e.clientX,
+              clientY: e.clientY,
+              bubbles: true,
+              cancelable: true
+            });
+            container.dispatchEvent(mouseEvent);
+          }
+        }}
+        onMouseLeave={(e) => {
+          // Forward mouse leave events to THREE.js container
+          const container = containerRef.current;
+          if (container) {
+            const mouseEvent = new MouseEvent('mouseleave', {
+              bubbles: true,
+              cancelable: true
+            });
+            container.dispatchEvent(mouseEvent);
+          }
+        }}
+      />
+      {/* ──────────────────────────────────────── */}
     </div>
   );
 } 
