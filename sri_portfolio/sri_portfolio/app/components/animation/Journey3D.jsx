@@ -89,6 +89,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   const pauseStartTimeRef = useRef(null); // When current pause started
   const scrollBlockedRef = useRef(false); // Is scroll currently blocked?
   const virtualScrollY = useRef(0); // Virtual scroll position
+  const journeyCompletedRef = useRef(false); // Journey completion lock
 
   // ── Initialize checkpoint data from preloaded resources ──
   useEffect(() => {
@@ -116,9 +117,13 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     const handleWheel = (e) => {
       e.preventDefault(); // Take full control of scrolling
       
-      // ABSOLUTELY BLOCK scroll during checkpoint animations - no movement allowed
+      // ABSOLUTELY BLOCK scroll during checkpoint animations or journey completion
       if (scrollBlockedRef.current) {
-        console.log('🚫 Scroll absolutely blocked during checkpoint animation');
+        if (journeyCompletedRef.current) {
+          console.log('🏁 Scroll blocked - journey completed, transitioning to main page');
+        } else {
+          console.log('🚫 Scroll absolutely blocked during checkpoint animation');
+        }
         return;
       }
       
@@ -383,6 +388,10 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     // DURING CHECKPOINT ANIMATIONS:
     // ✅ ALLOW: Camera look-around (mouse movement for immersive experience)
     // 🚫 BLOCK: All scroll movement (wheel, keyboard, touch - absolutely no position changes)
+    // 
+    // DURING JOURNEY COMPLETION:
+    // 🔒 LOCK: Camera position at end (0.999) to prevent glitches
+    // 🏠 SMOOTH: Direct transition to main page from journey end
     // ──────────────────────────────────────────────────────────────────────────────
     function updateCameraAndObjects(deltaTime) {
       if (!isAlive) return;
@@ -390,14 +399,33 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       const sRef = sceneRef.current;
       if (!sRef) return;
       
+      // ── JOURNEY COMPLETION: Absolute lock to prevent glitches ──
+      if (journeyCompletedRef.current) {
+        // CRITICAL: Keep camera absolutely locked at end position during completion
+        sRef.cameraT = 0.999;
+        sRef.targetT = 0.999;
+        // Skip all other position updates to prevent any camera movement during transition
+        return updateCameraPosition(sRef, deltaTime);
+      }
+      
       // ── CHECKPOINT PAUSE HANDLING ──
       let isPaused = false;
       if (currentCheckpointRef.current && pauseStartTimeRef.current) {
         const pauseElapsed = performance.now() - pauseStartTimeRef.current;
         
         if (pauseElapsed >= CHECKPOINT_PAUSE_DURATION) {
-          // Resume after 2 seconds
+          // Resume after 2 seconds - SYNC virtual scroll with camera position
           console.log(`⏰ Resuming after checkpoint: ${currentCheckpointRef.current.data.title}`);
+          
+          // CRITICAL FIX: Sync virtual scroll position with actual camera position
+          // This prevents the scroll jump when resuming from checkpoint pause
+          const docHeight = document.body.scrollHeight - window.innerHeight;
+          if (docHeight > 0) {
+            virtualScrollY.current = sRef.cameraT * docHeight;
+            window.scrollTo(0, virtualScrollY.current);
+            console.log(`🔄 Synced virtual scroll to ${virtualScrollY.current.toFixed(1)} (camera at ${sRef.cameraT.toFixed(3)})`);
+          }
+          
           currentCheckpointRef.current = null;
           pauseStartTimeRef.current = null;
           scrollBlockedRef.current = false;
@@ -409,7 +437,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         }
       }
       
-      // ── POSITION UPDATES: Only when not paused ──
+      // ── POSITION UPDATES: Only when not paused and journey not completed ──
       if (!isPaused) {
         // ── CONVERT SCROLL TO CAMERA TARGET ──
         const docHeight = document.body.scrollHeight - window.innerHeight;
@@ -437,9 +465,16 @@ export default function Journey3D({ onComplete, preloadedResources }) {
               pauseStartTimeRef.current = performance.now();
               scrollBlockedRef.current = true;
               
-              // Snap camera to exact checkpoint position
+              // Snap camera to exact checkpoint position and sync virtual scroll
               sRef.cameraT = cp.stopT;
               sRef.targetT = cp.stopT;
+              
+              // CRITICAL: Update virtual scroll to match camera position immediately
+              const docHeight = document.body.scrollHeight - window.innerHeight;
+              if (docHeight > 0) {
+                virtualScrollY.current = sRef.cameraT * docHeight;
+                window.scrollTo(0, virtualScrollY.current);
+              }
               
               // Start checkpoint animations
               playCheckpointSequence(cp);
@@ -448,62 +483,87 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           }
         }
         
-        // ── JOURNEY COMPLETION ──
-        if (sRef.cameraT >= 0.95 && !isCompleting) {
-          console.log('🏁 Journey completed');
+        // ── JOURNEY COMPLETION: Lock camera at end position ──
+        if (sRef.cameraT >= 0.95 && !isCompleting && !journeyCompletedRef.current) {
+          console.log('🏁 Journey completed - locking camera at end position');
+          
+          // Lock camera at exact end position to prevent glitches
+          sRef.cameraT = 0.999;
+          sRef.targetT = 0.999;
+          
+          // Sync virtual scroll to end position
+          const docHeight = document.body.scrollHeight - window.innerHeight;
+          if (docHeight > 0) {
+            virtualScrollY.current = docHeight;
+            window.scrollTo(0, virtualScrollY.current);
+          }
+          
+          journeyCompletedRef.current = true;
+          scrollBlockedRef.current = true; // Block all scroll input
+          
           setIsCompleting(true);
+          
+          // Smooth transition to main page from end position
           setTimeout(() => {
+            console.log('🏠 Transitioning to main page from journey end');
             if (onComplete) onComplete();
-          }, 2000);
+          }, 1500); // Slightly shorter delay for smoother UX
         }
       }
-
-      // ── CAMERA POSITIONING & ORIENTATION: Always active, even during animations ──
-      const position = sRef.roadCurve.getPointAt(sRef.cameraT);
-      const frameIndex = Math.floor(sRef.cameraT * sRef.frenetFrames.tangents.length);
-      const normal = sRef.frenetFrames.normals[frameIndex];
       
-      // Position camera above the road
-      sRef.camera.position.copy(position).add(normal.clone().multiplyScalar(CAMERA_BASE_OFFSET_Y * SCENE_SCALE));
-      
-      // ── LOOK-AROUND BEHAVIOR: Always enabled for immersive experience ──
-      if (!isLookingAround) {
-        targetLookDirection.copy(new THREE.Vector3(0, 0, -1));
-      }
-      
-      currentLookDirection.lerp(targetLookDirection, LOOK_AROUND_LERP_FACTOR);
-      currentLookDirection.normalize();
-      
-      // Apply base camera orientation along the road
-      const roadMatrix = new THREE.Matrix4();
-      const lookAtPosition = sRef.roadCurve.getPointAt(Math.min(sRef.cameraT + 0.01, 1));
-      roadMatrix.lookAt(sRef.camera.position, lookAtPosition, normal);
-      
-      sRef.camera.quaternion.setFromRotationMatrix(roadMatrix);
-      
-      // Apply look-around offset for interactive camera control
-      if (isLookingAround || !currentLookDirection.equals(new THREE.Vector3(0, 0, -1))) {
-        const worldLookDirection = currentLookDirection.clone();
-        worldLookDirection.applyQuaternion(sRef.camera.quaternion);
-        
-        const finalLookAt = sRef.camera.position.clone().add(worldLookDirection.multiplyScalar(100));
-        
-        const finalMatrix = new THREE.Matrix4();
-        finalMatrix.lookAt(sRef.camera.position, finalLookAt, normal);
-        sRef.camera.quaternion.setFromRotationMatrix(finalMatrix);
-        
-        // Log during animations for feedback
-        if (isPaused && isLookingAround) {
-          console.log(`👀 Look-around active during checkpoint animation`);
-        }
-      }
-
-      // Keep checkpoint objects facing camera for proper visibility
-      sRef.checkpoints.forEach((cp) => {
-        cp.cardObject.rotation.copy(sRef.camera.rotation);
-        cp.headerObject.rotation.copy(sRef.camera.rotation);
-      });
+      // Continue with camera positioning
+      updateCameraPosition(sRef, deltaTime);
     }
+    
+    // ── SEPARATED CAMERA POSITIONING LOGIC ──
+    function updateCameraPosition(sRef, deltaTime) {
+
+        // ── CAMERA POSITIONING & ORIENTATION: Always active, even during animations ──
+        const position = sRef.roadCurve.getPointAt(sRef.cameraT);
+        const frameIndex = Math.floor(sRef.cameraT * sRef.frenetFrames.tangents.length);
+        const normal = sRef.frenetFrames.normals[frameIndex];
+        
+        // Position camera above the road
+        sRef.camera.position.copy(position).add(normal.clone().multiplyScalar(CAMERA_BASE_OFFSET_Y * SCENE_SCALE));
+        
+        // ── LOOK-AROUND BEHAVIOR: Always enabled for immersive experience ──
+        if (!isLookingAround) {
+          targetLookDirection.copy(new THREE.Vector3(0, 0, -1));
+        }
+        
+        currentLookDirection.lerp(targetLookDirection, LOOK_AROUND_LERP_FACTOR);
+        currentLookDirection.normalize();
+        
+        // Apply base camera orientation along the road
+        const roadMatrix = new THREE.Matrix4();
+        const lookAtPosition = sRef.roadCurve.getPointAt(Math.min(sRef.cameraT + 0.01, 1));
+        roadMatrix.lookAt(sRef.camera.position, lookAtPosition, normal);
+        
+        sRef.camera.quaternion.setFromRotationMatrix(roadMatrix);
+        
+        // Apply look-around offset for interactive camera control
+        if (isLookingAround || !currentLookDirection.equals(new THREE.Vector3(0, 0, -1))) {
+          const worldLookDirection = currentLookDirection.clone();
+          worldLookDirection.applyQuaternion(sRef.camera.quaternion);
+          
+          const finalLookAt = sRef.camera.position.clone().add(worldLookDirection.multiplyScalar(100));
+          
+          const finalMatrix = new THREE.Matrix4();
+          finalMatrix.lookAt(sRef.camera.position, finalLookAt, normal);
+          sRef.camera.quaternion.setFromRotationMatrix(finalMatrix);
+          
+          // Log during animations for feedback (check if we're in a paused state)
+          if (currentCheckpointRef.current && pauseStartTimeRef.current && isLookingAround) {
+            console.log(`👀 Look-around active during checkpoint animation`);
+          }
+        }
+
+        // Keep checkpoint objects facing camera for proper visibility
+        sRef.checkpoints.forEach((cp) => {
+          cp.cardObject.rotation.copy(sRef.camera.rotation);
+          cp.headerObject.rotation.copy(sRef.camera.rotation);
+        });
+      }
 
     // ── RENDER LOOP ──
     function animate(now = performance.now()) {
@@ -559,24 +619,37 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         cancelAnimationFrame(rafId);
       }
 
-      // Reset checkpoint state
+      // Reset checkpoint and journey state - Enhanced cleanup
       currentCheckpointRef.current = null;
       pauseStartTimeRef.current = null;
       scrollBlockedRef.current = false;
+      journeyCompletedRef.current = false;
+      virtualScrollY.current = 0; // Reset virtual scroll position
       checkpointsRef.current.forEach(cp => cp.triggered = false);
+
+      // Reset document body scroll behavior
+      if (typeof document !== 'undefined') {
+        document.body.style.height = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, 0); // Reset scroll position to prevent issues
+      }
 
       // Dispose React roots
       if (resourceManager && resourceManager.disposeReactRoots) {
         resourceManager.disposeReactRoots();
       }
 
-      // Remove DOM elements
+      // Remove DOM elements safely
       if (containerRef.current) {
-        if (renderer && renderer.domElement && renderer.domElement.parentNode === containerRef.current) {
-          containerRef.current.removeChild(renderer.domElement);
-        }
-        if (cssRenderer && cssRenderer.domElement && cssRenderer.domElement.parentNode === containerRef.current) {
-          containerRef.current.removeChild(cssRenderer.domElement);
+        try {
+          if (renderer && renderer.domElement && renderer.domElement.parentNode === containerRef.current) {
+            containerRef.current.removeChild(renderer.domElement);
+          }
+          if (cssRenderer && cssRenderer.domElement && cssRenderer.domElement.parentNode === containerRef.current) {
+            containerRef.current.removeChild(cssRenderer.domElement);
+          }
+        } catch (error) {
+          console.warn('⚠️ Error during DOM cleanup:', error);
         }
       }
 
@@ -597,13 +670,23 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         transition={{ duration: 1.5, ease: "easeOut" }}
       />
 
-      {/* Completion overlay */}
+      {/* Completion overlay - Enhanced to prevent journey completion glitch */}
       <motion.div
         className="absolute inset-0 bg-black z-60 pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: isCompleting ? 1 : 0 }}
-        transition={{ duration: 2, ease: "easeInOut" }}
+        transition={{ duration: 1.8, ease: "easeInOut" }}
       />
+      
+      {/* Additional completion safety overlay to ensure smooth transition */}
+      {isCompleting && (
+        <motion.div
+          className="absolute inset-0 bg-black z-70 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1.2 }}
+        />
+      )}
 
       {/* Journey title during transition */}
       {isTransitioning && (
