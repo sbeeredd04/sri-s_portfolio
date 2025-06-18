@@ -184,6 +184,14 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   const [currentCheckpointIndex, setCurrentCheckpointIndex] = useState(-1);
   const [showCheckpointNav, setShowCheckpointNav] = useState(true); // Show from start
   const [isBeforeFirstCheckpoint, setIsBeforeFirstCheckpoint] = useState(true);
+  
+  // ── SMOOTH NAVIGATION STATE ──
+  const [isNavigatingToCheckpoint, setIsNavigatingToCheckpoint] = useState(false);
+  const navigationAnimationRef = useRef(null);
+  const navigationStartTimeRef = useRef(null);
+  const navigationStartT = useRef(0);
+  const navigationTargetT = useRef(0);
+  const navigationDurationRef = useRef(2000); // 2 seconds default
 
   // ── Journey Configuration ──
   const journeyLength = journeyData.length;
@@ -230,10 +238,12 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       console.log('🖱️ Wheel event detected:', e.deltaY);
       e.preventDefault(); // Take full control of scrolling
       
-      // ABSOLUTELY BLOCK scroll during checkpoint animations or journey completion
+      // ABSOLUTELY BLOCK scroll during checkpoint animations, navigation, or journey completion
       if (scrollBlockedRef.current) {
         if (journeyCompletedRef.current) {
           console.log('🏁 Scroll blocked - journey completed, transitioning to main page');
+        } else if (isNavigatingToCheckpoint) {
+          console.log('🎬 Scroll blocked during smooth navigation animation');
         } else {
           console.log('🚫 Scroll absolutely blocked during checkpoint animation');
         }
@@ -261,7 +271,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       if (scrollBlockedRef.current) {
         if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Space'].includes(e.code)) {
           e.preventDefault();
-          console.log('⌨️ Keyboard scroll absolutely blocked during checkpoint animation');
+          if (isNavigatingToCheckpoint) {
+            console.log('⌨️ Keyboard scroll blocked during smooth navigation');
+          } else {
+            console.log('⌨️ Keyboard scroll absolutely blocked during checkpoint animation');
+          }
         }
       }
     };
@@ -275,7 +289,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     const handleTouchMove = (e) => {
       if (scrollBlockedRef.current) {
         e.preventDefault();
-        console.log('📱 Touch scroll absolutely blocked during checkpoint animation');
+        if (isNavigatingToCheckpoint) {
+          console.log('📱 Touch scroll blocked during smooth navigation');
+        } else {
+          console.log('📱 Touch scroll absolutely blocked during checkpoint animation');
+        }
         return;
       }
 
@@ -305,7 +323,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, []);
+  }, [isNavigatingToCheckpoint]); // Add dependency for navigation state
 
   // ──────────────────────────────────────────────────────────────────────────────
   // CHECKPOINT ANIMATION SEQUENCE - Triggered when camera reaches stopT
@@ -325,7 +343,19 @@ export default function Journey3D({ onComplete, preloadedResources }) {
             resolve();
           }
         };
-        cp.cardObject.element.addEventListener('transitionend', handleTransition, { once: true });
+        
+        // Add timeout fallback in case transition never fires
+        const timeout = setTimeout(() => {
+          console.warn('Card transition timeout - resolving anyway');
+          resolve();
+        }, 2000);
+        
+        cp.cardObject.element.addEventListener('transitionend', (event) => {
+          if (event.propertyName === 'transform') {
+            clearTimeout(timeout);
+            handleTransition(event);
+          }
+        }, { once: true });
       });
 
       const headerPromise = new Promise(resolve => {
@@ -334,7 +364,19 @@ export default function Journey3D({ onComplete, preloadedResources }) {
             resolve();
           }
         };
-        cp.headerObject.element.addEventListener('transitionend', handleTransition, { once: true });
+        
+        // Add timeout fallback in case transition never fires
+        const timeout = setTimeout(() => {
+          console.warn('Header transition timeout - resolving anyway');
+          resolve();
+        }, 2000);
+        
+        cp.headerObject.element.addEventListener('transitionend', (event) => {
+          if (event.propertyName === 'transform') {
+            clearTimeout(timeout);
+            handleTransition(event);
+          }
+        }, { once: true });
       });
 
       // Start typewriter animation for header text
@@ -368,10 +410,115 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   }, []);
 
   // ──────────────────────────────────────────────────────────────────────────────
+  // SMOOTH NAVIGATION ANIMATION SYSTEM
+  // ──────────────────────────────────────────────────────────────────────────────
+  
+  const startSmoothNavigation = useCallback((startT, targetT, duration = 2000) => {
+    console.log(`🎬 Starting smooth navigation from ${startT.toFixed(3)} to ${targetT.toFixed(3)} over ${duration}ms`);
+    
+    // Calculate dynamic duration based on distance for more natural movement
+    const distance = Math.abs(targetT - startT);
+    const dynamicDuration = Math.max(1000, Math.min(4000, distance * 3000)); // 1-4 seconds based on distance
+    
+    console.log(`📏 Navigation distance: ${distance.toFixed(3)}, dynamic duration: ${dynamicDuration}ms`);
+    
+    // Set navigation state
+    setIsNavigatingToCheckpoint(true);
+    scrollBlockedRef.current = true; // Block scroll during navigation
+    
+    // Store navigation parameters
+    navigationStartT.current = startT;
+    navigationTargetT.current = targetT;
+    navigationDurationRef.current = dynamicDuration;
+    navigationStartTimeRef.current = performance.now();
+    
+    console.log(`✅ Navigation state initialized - start time: ${navigationStartTimeRef.current}`);
+  }, []);
+  
+  const updateSmoothNavigation = useCallback((currentTime) => {
+    // Check if navigation is active using refs instead of state to avoid closure issues
+    if (!navigationStartTimeRef.current) {
+      return null; // No navigation in progress
+    }
+    
+    const elapsed = currentTime - navigationStartTimeRef.current;
+    const progress = Math.min(elapsed / navigationDurationRef.current, 1.0);
+    
+    // Use easeInOutCubic for smooth acceleration/deceleration
+    const easeInOutCubic = (t) => {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    };
+    
+    const easedProgress = easeInOutCubic(progress);
+    const currentT = navigationStartT.current + (navigationTargetT.current - navigationStartT.current) * easedProgress;
+    
+    console.log(`🎬 Navigation progress: ${(progress * 100).toFixed(1)}%, T=${currentT.toFixed(3)}`);
+    
+    // Update camera position along the path
+    if (sceneRef.current) {
+      sceneRef.current.cameraT = currentT;
+      sceneRef.current.targetT = currentT;
+    }
+    
+    // Update virtual scroll to match camera position
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    if (docHeight > 0) {
+      virtualScrollY.current = currentT * docHeight;
+      window.scrollTo(0, virtualScrollY.current);
+    }
+    
+    // Update progress bar
+    setProgress(Math.round(currentT * 100));
+    
+    // Check if navigation is complete
+    if (progress >= 1.0) {
+      console.log(`✅ Smooth navigation completed at T=${currentT.toFixed(3)}`);
+      
+      // Handle checkpoint animation if we navigated to a checkpoint
+      if (navigationAnimationRef.current) {
+        const { targetCheckpoint } = navigationAnimationRef.current;
+        
+        if (!targetCheckpoint.triggered) {
+          console.log(`🎯 Triggering checkpoint sequence after navigation: ${targetCheckpoint.data.title}`);
+          targetCheckpoint.triggered = true;
+          currentCheckpointRef.current = targetCheckpoint;
+          pauseStartTimeRef.current = performance.now();
+          scrollBlockedRef.current = true;
+          
+          // Clear navigation reference
+          navigationAnimationRef.current = null;
+          
+          // Trigger checkpoint sequence
+          try {
+            playCheckpointSequence(targetCheckpoint);
+          } catch (error) {
+            console.error('Error triggering checkpoint sequence:', error);
+            // Fallback: reset scroll blocking
+            scrollBlockedRef.current = false;
+          }
+        } else {
+          navigationAnimationRef.current = null;
+        }
+      }
+      
+      // End navigation state
+      setIsNavigatingToCheckpoint(false);
+      if (!currentCheckpointRef.current) {
+        scrollBlockedRef.current = false; // Only unblock if no checkpoint animation
+      }
+      navigationStartTimeRef.current = null;
+      
+      return navigationTargetT.current; // Return final position
+    }
+    
+    return currentT; // Return current position
+  }, []); // Remove dependency to avoid closure issues
+
+  // ──────────────────────────────────────────────────────────────────────────────
   // CHECKPOINT NAVIGATION FUNCTIONS - Defined after playCheckpointSequence
   // ──────────────────────────────────────────────────────────────────────────────
   
-  const navigateToCheckpoint = useCallback((targetIndex) => {
+  const navigateToCheckpoint = useCallback((targetIndex, useAnimation = true) => {
     if (!checkpointsRef.current || targetIndex < 0 || targetIndex >= checkpointsRef.current.length) {
       return;
     }
@@ -379,63 +526,75 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     const targetCheckpoint = checkpointsRef.current[targetIndex];
     const targetT = targetCheckpoint.stopT;
     
-    console.log(`📍 Navigating to checkpoint ${targetIndex}: ${targetCheckpoint.data.title}`);
+    console.log(`📍 Navigating to checkpoint ${targetIndex}: ${targetCheckpoint.data.title} (animated: ${useAnimation})`);
     
-    // Update camera position immediately
-    if (sceneRef.current) {
-      sceneRef.current.cameraT = targetT;
-      sceneRef.current.targetT = targetT;
-    }
+    // Get current camera position
+    const currentT = sceneRef.current ? sceneRef.current.cameraT : 0;
     
-    // Sync virtual scroll position
-    const docHeight = document.body.scrollHeight - window.innerHeight;
-    if (docHeight > 0) {
-      virtualScrollY.current = targetT * docHeight;
-      window.scrollTo(0, virtualScrollY.current);
-    }
-    
-    // Update UI state
+    // Update UI state immediately
     setCurrentCheckpointIndex(targetIndex);
-    setProgress(Math.round(targetT * 100));
     setIsBeforeFirstCheckpoint(false);
     
-    // Mark this checkpoint as triggered and trigger its animation
-    if (!targetCheckpoint.triggered) {
-      targetCheckpoint.triggered = true;
-      currentCheckpointRef.current = targetCheckpoint;
-      pauseStartTimeRef.current = performance.now();
-      scrollBlockedRef.current = true;
-      playCheckpointSequence(targetCheckpoint);
+    if (useAnimation && Math.abs(targetT - currentT) > 0.01) {
+      // Use smooth navigation for chevron button clicks
+      startSmoothNavigation(currentT, targetT);
+      
+      // Store checkpoint reference for navigation completion handling
+      navigationAnimationRef.current = {
+        targetCheckpoint,
+        targetIndex
+      };
+      
+    } else {
+      // Instant navigation for scroll-based movement (existing behavior)
+      if (sceneRef.current) {
+        sceneRef.current.cameraT = targetT;
+        sceneRef.current.targetT = targetT;
+      }
+      
+      // Sync virtual scroll position
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      if (docHeight > 0) {
+        virtualScrollY.current = targetT * docHeight;
+        window.scrollTo(0, virtualScrollY.current);
+      }
+      
+      setProgress(Math.round(targetT * 100));
+      
+      // Mark this checkpoint as triggered and trigger its animation
+      if (!targetCheckpoint.triggered) {
+        targetCheckpoint.triggered = true;
+        currentCheckpointRef.current = targetCheckpoint;
+        pauseStartTimeRef.current = performance.now();
+        scrollBlockedRef.current = true;
+        playCheckpointSequence(targetCheckpoint);
+      }
     }
-  }, [playCheckpointSequence]);
+  }, [playCheckpointSequence, startSmoothNavigation]);
   
   const navigateToPreviousCheckpoint = useCallback(() => {
     if (currentCheckpointIndex > 0) {
-      navigateToCheckpoint(currentCheckpointIndex - 1);
+      navigateToCheckpoint(currentCheckpointIndex - 1, true); // Use animation
     } else if (currentCheckpointIndex === 0) {
-      // Go back to initial "Scroll to learn more" state
+      // Smoothly go back to initial "Scroll to learn more" state
+      const currentT = sceneRef.current ? sceneRef.current.cameraT : 0;
+      
+      // Update UI state
       setCurrentCheckpointIndex(-1);
       setIsBeforeFirstCheckpoint(true);
       
-      // Move camera to beginning
-      if (sceneRef.current) {
-        sceneRef.current.cameraT = 0;
-        sceneRef.current.targetT = 0;
-      }
-      
-      // Reset virtual scroll
-      virtualScrollY.current = 0;
-      window.scrollTo(0, 0);
-      setProgress(0);
+      // Use smooth navigation to beginning
+      startSmoothNavigation(currentT, 0);
     }
-  }, [currentCheckpointIndex, navigateToCheckpoint]);
+  }, [currentCheckpointIndex, navigateToCheckpoint, startSmoothNavigation]);
   
   const navigateToNextCheckpoint = useCallback(() => {
     if (isBeforeFirstCheckpoint && checkpointsRef.current.length > 0) {
-      // Navigate from initial state to first checkpoint
-      navigateToCheckpoint(0);
+      // Navigate from initial state to first checkpoint with animation
+      navigateToCheckpoint(0, true);
     } else if (currentCheckpointIndex < checkpointsRef.current.length - 1) {
-      navigateToCheckpoint(currentCheckpointIndex + 1);
+      // Navigate to next checkpoint with animation
+      navigateToCheckpoint(currentCheckpointIndex + 1, true);
     }
   }, [currentCheckpointIndex, isBeforeFirstCheckpoint, navigateToCheckpoint]);
 
@@ -656,6 +815,15 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       const sRef = sceneRef.current;
       if (!sRef) return;
       
+      // ── SMOOTH NAVIGATION: Update navigation animation if active ──
+      const navigationResult = updateSmoothNavigation(performance.now());
+      if (navigationResult !== null) {
+        // Navigation is active, skip normal scroll-based updates
+        console.log(`🎬 Navigation active - current T: ${navigationResult.toFixed(3)}`);
+        updateCameraPosition(sRef, deltaTime);
+        return;
+      }
+      
       // ── JOURNEY COMPLETION: Absolute lock to prevent glitches ──
       if (journeyCompletedRef.current) {
         // CRITICAL: Keep camera absolutely locked at end position during completion
@@ -740,7 +908,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
                 window.scrollTo(0, virtualScrollY.current);
               }
               
-              // Start checkpoint animations
+              // Start checkpoint animations (use instant navigation for scroll-based triggers)
               playCheckpointSequence(cp);
               break;
             }
@@ -907,6 +1075,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       setCurrentCheckpointIndex(-1);
       setShowCheckpointNav(true); // Keep showing for initial state
       setIsBeforeFirstCheckpoint(true);
+      
+      // Reset smooth navigation state
+      setIsNavigatingToCheckpoint(false);
+      navigationStartTimeRef.current = null;
+      navigationAnimationRef.current = null;
 
       // Reset document body scroll behavior
       if (typeof document !== 'undefined') {
@@ -936,7 +1109,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
 
       window.removeEventListener('resize', onWindowResize);
     };
-  }, [isTransitioning, onComplete, isCompleting, preloadedResources, playCheckpointSequence]);
+  }, [isTransitioning, onComplete, isCompleting, preloadedResources, playCheckpointSequence, updateSmoothNavigation]);
 
   // ──────────────────────────────────────────────────────────────────────────────
   // RENDER: Clean UI
