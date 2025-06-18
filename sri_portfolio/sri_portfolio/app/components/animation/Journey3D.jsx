@@ -32,7 +32,7 @@ const FRAME_PADDING_BOTTOM = 1.5; // Distance from bottom edge
 const FRAME_PADDING_LEFT = 1; // Distance from left edge
 
 // ── TRAPEZOID DIMENSIONS ──
-const TRAPEZOID_TOP_LENGTH = 32; // Length of top trapezoid (viewBox units)
+const TRAPEZOID_TOP_LENGTH = 24; // Length of top trapezoid (viewBox units)
 const TRAPEZOID_BOTTOM_LENGTH = 32; // Length of bottom trapezoid
 const TRAPEZOID_LEFT_LENGTH = 16; // Length of left trapezoid
 const TRAPEZOID_RIGHT_LENGTH = 16; // Length of right trapezoid
@@ -50,6 +50,25 @@ const TRAPEZOID_RIGHT_SLANT = 2; // How much the right trapezoid slants inward
 
 // ── EVENT CAPTURE ZONE ──
 const EVENT_ZONE_PADDING = 8; // Padding for scroll/mouse event capture zone (CSS units)
+
+// ──────────────────────────────────────────────────────────────────────────────
+// PROGRESS BAR DESIGN CONSTANTS - Independent positioning from main frame
+// ──────────────────────────────────────────────────────────────────────────────
+
+// ── PROGRESS BAR FRAME ALIGNMENT ──
+const PROGRESS_FRAME_PADDING_TOP = 1.5; // Distance from top edge for progress bar
+const PROGRESS_FRAME_PADDING_RIGHT = 1; // Distance from right edge for progress bar
+const PROGRESS_FRAME_PADDING_BOTTOM = 1.5; // Distance from bottom edge for progress bar  
+const PROGRESS_FRAME_PADDING_LEFT = 1; // Distance from left edge for progress bar
+
+// ── PROGRESS BAR TRAPEZOID DIMENSIONS ──
+const PROGRESS_TRAPEZOID_TOP_LENGTH = 26; // Length of progress bar trapezoid
+const PROGRESS_TRAPEZOID_TOP_HEIGHT = 2; // Height/depth of progress bar trapezoid
+const PROGRESS_TRAPEZOID_TOP_SLANT = 1.5; // How much the progress bar trapezoid slants
+
+// ── PROGRESS BAR POSITIONING ──
+const PROGRESS_BAR_VERTICAL_OFFSET = 1.5; // Additional spacing from trapezoid notch
+const PROGRESS_BAR_EXTENSION_LENGTH = 8; // How far to extend beyond trapezoid
 
 // ──────────────────────────────────────────────────────────────────────────────
 // CHECKPOINT HEADER COMPONENT
@@ -173,6 +192,9 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   const scrollBlockedRef = useRef(false); // Is scroll currently blocked?
   const virtualScrollY = useRef(0); // Virtual scroll position
   const journeyCompletedRef = useRef(false); // Journey completion lock
+
+  // ── SMOOTH PROGRESS TRACKING ──
+  const smoothProgressRef = useRef(0); // Smoothed progress for consistent updates
 
   // ── Initialize checkpoint data from preloaded resources ──
   useEffect(() => {
@@ -599,8 +621,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         const docHeight = document.body.scrollHeight - window.innerHeight;
         if (docHeight > 0) {
           sRef.targetT = Math.min(virtualScrollY.current / docHeight, 1);
-          const newProgress = Math.round(sRef.targetT * 100);
-          setProgress(newProgress);
         }
         
         // ── SMOOTH CAMERA INTERPOLATION ──
@@ -608,6 +628,10 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         const lerpFactor = 1 - Math.pow(1 - CAMERA_LERP_FACTOR, deltaTime * 60);
         sRef.cameraT += (sRef.targetT - sRef.cameraT) * lerpFactor;
         sRef.cameraT = Math.min(Math.max(sRef.cameraT, 0), 0.999);
+        
+        // ── UPDATE PROGRESS BASED ON ACTUAL CAMERA POSITION ──
+        const newProgress = Math.round(sRef.cameraT * 100);
+        setProgress(newProgress);
         
         // ── CHECKPOINT DETECTION ──
         if (!currentCheckpointRef.current) {
@@ -665,6 +689,13 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           if (onComplete) onComplete();
           }, 1500); // Slightly shorter delay for smoother UX
         }
+      }
+      
+      // ── ALWAYS UPDATE PROGRESS FOR SMOOTH BAR FILLING ──
+      // Update progress based on actual camera position for consistent visual feedback
+      const currentProgress = Math.round(sRef.cameraT * 100);
+      if (currentProgress !== progress) {
+        setProgress(currentProgress);
       }
       
       // Continue with camera positioning
@@ -885,6 +916,17 @@ export default function Journey3D({ onComplete, preloadedResources }) {
             ${coords.leftPath}
             Z
           `;
+
+          // ────────── PROGRESS BAR CALCULATIONS ──────────
+          // Calculate the inner flat segment of the top trapezoid
+          const topCenter = 50;
+          const halfInner = (TRAPEZOID_TOP_LENGTH / 2) - TRAPEZOID_TOP_SLANT;
+          const innerSegStart = topCenter - halfInner;
+          const innerSegEnd = topCenter + halfInner;
+          const centerX = (innerSegStart + innerSegEnd) / 2;
+          const halfLen = (innerSegEnd - innerSegStart) / 2;
+          const barLen = halfLen * (progress / 100);
+          const progressBarY = coords.frameTop + TRAPEZOID_TOP_HEIGHT + 1; // Added spacing from notch
           
           return (
             <>
@@ -963,10 +1005,170 @@ export default function Journey3D({ onComplete, preloadedResources }) {
                   }}
                 />
               </foreignObject>
+
+              {/* ──────── CENTER-OUT PROGRESS BAR ──────── */}
+              {(() => {
+                // ── PROGRESS BAR COORDINATE CALCULATIONS ──
+                // Calculate progress bar frame boundaries (independent from main frame)
+                const progressFrameLeft = PROGRESS_FRAME_PADDING_LEFT;
+                const progressFrameRight = 100 - PROGRESS_FRAME_PADDING_RIGHT;
+                const progressFrameTop = PROGRESS_FRAME_PADDING_TOP;
+                const progressFrameBottom = 100 - PROGRESS_FRAME_PADDING_BOTTOM;
+                
+                // Calculate progress bar trapezoid coordinates
+                const progressTopCenter = 50;
+                const progressHalfInner = (PROGRESS_TRAPEZOID_TOP_LENGTH / 2) - PROGRESS_TRAPEZOID_TOP_SLANT;
+                const progressInnerSegStart = progressTopCenter - progressHalfInner;
+                const progressInnerSegEnd = progressTopCenter + progressHalfInner;
+                const progressCenterX = (progressInnerSegStart + progressInnerSegEnd) / 2;
+                const progressHalfLen = (progressInnerSegEnd - progressInnerSegStart) / 2;
+                const progressBarLen = progressHalfLen * (progress / 100);
+                const progressBarY = progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT + PROGRESS_BAR_VERTICAL_OFFSET;
+                
+                // Calculate extended path boundaries
+                const leftExtendedStart = Math.max(progressFrameLeft, progressInnerSegStart - PROGRESS_BAR_EXTENSION_LENGTH);
+                const rightExtendedEnd = Math.min(progressFrameRight, progressInnerSegEnd + PROGRESS_BAR_EXTENSION_LENGTH);
+                
+                // Create trapezoid-shaped background track (flipped)
+                const backgroundPath = `
+                  M ${leftExtendedStart} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}
+                  L ${progressInnerSegStart - PROGRESS_TRAPEZOID_TOP_SLANT} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}
+                  L ${progressInnerSegStart} ${progressBarY}
+                  L ${progressInnerSegEnd} ${progressBarY}
+                  L ${progressInnerSegEnd + PROGRESS_TRAPEZOID_TOP_SLANT} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}
+                  L ${rightExtendedEnd} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}
+                `;
+                
+                // Calculate total track length and progress positioning
+                // Total track sections: left extension + left slant + flat center + right slant + right extension
+                const flatCenterLength = progressInnerSegEnd - progressInnerSegStart;
+                const slantLength = Math.sqrt(PROGRESS_TRAPEZOID_TOP_SLANT * PROGRESS_TRAPEZOID_TOP_SLANT + PROGRESS_TRAPEZOID_TOP_HEIGHT * PROGRESS_TRAPEZOID_TOP_HEIGHT);
+                const totalTrackLength = PROGRESS_BAR_EXTENSION_LENGTH + slantLength + flatCenterLength + slantLength + PROGRESS_BAR_EXTENSION_LENGTH;
+                
+                // Calculate how much of the track should be filled based on progress
+                // Add minimum fill (10% of total track) so bar always shows some progress
+                const minFillPercentage = 10;
+                const adjustedProgress = Math.max(minFillPercentage, progress);
+                const fillLength = totalTrackLength * (adjustedProgress / 100);
+                const halfFillLength = fillLength / 2; // Since we fill from center outward
+                
+                // Right side progress path (flipped) - Enhanced filling logic
+                let rightProgressPath = `M ${progressCenterX} ${progressBarY}`;
+                if (halfFillLength > 0) {
+                  const flatHalfLength = flatCenterLength / 2;
+                  
+                  if (halfFillLength <= flatHalfLength) {
+                    // Fill only within flat section
+                    rightProgressPath += ` L ${progressCenterX + halfFillLength} ${progressBarY}`;
+                  } else {
+                    // Fill through flat section
+                    rightProgressPath += ` L ${progressInnerSegEnd} ${progressBarY}`;
+                    
+                    const remainingFill = halfFillLength - flatHalfLength;
+                    
+                    if (remainingFill <= slantLength) {
+                      // Fill partway through slant (going upward toward frame) - improved precision
+                      const slantRatio = remainingFill / slantLength;
+                      const slantProgressX = slantRatio * PROGRESS_TRAPEZOID_TOP_SLANT;
+                      const slantProgressY = slantRatio * PROGRESS_TRAPEZOID_TOP_HEIGHT;
+                      const slantY = progressBarY - slantProgressY;
+                      rightProgressPath += ` L ${progressInnerSegEnd + slantProgressX} ${slantY}`;
+                    } else {
+                      // Fill through entire slant
+                      rightProgressPath += ` L ${progressInnerSegEnd + PROGRESS_TRAPEZOID_TOP_SLANT} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}`;
+                      
+                      const remainingExtension = remainingFill - slantLength;
+                      if (remainingExtension > 0) {
+                        // Fill into extension
+                        const extensionProgress = Math.min(remainingExtension, PROGRESS_BAR_EXTENSION_LENGTH);
+                        rightProgressPath += ` L ${progressInnerSegEnd + PROGRESS_TRAPEZOID_TOP_SLANT + extensionProgress} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}`;
+                      }
+                    }
+                  }
+                }
+                
+                // Left side progress path (flipped) - Enhanced filling logic
+                let leftProgressPath = `M ${progressCenterX} ${progressBarY}`;
+                if (halfFillLength > 0) {
+                  const flatHalfLength = flatCenterLength / 2;
+                  
+                  if (halfFillLength <= flatHalfLength) {
+                    // Fill only within flat section
+                    leftProgressPath += ` L ${progressCenterX - halfFillLength} ${progressBarY}`;
+                  } else {
+                    // Fill through flat section
+                    leftProgressPath += ` L ${progressInnerSegStart} ${progressBarY}`;
+                    
+                    const remainingFill = halfFillLength - flatHalfLength;
+                    
+                    if (remainingFill <= slantLength) {
+                      // Fill partway through slant - improved precision
+                      const slantRatio = remainingFill / slantLength;
+                      const slantProgressX = slantRatio * PROGRESS_TRAPEZOID_TOP_SLANT;
+                      const slantProgressY = slantRatio * PROGRESS_TRAPEZOID_TOP_HEIGHT;
+                      const slantY = progressBarY - slantProgressY;
+                      leftProgressPath += ` L ${progressInnerSegStart - slantProgressX} ${slantY}`;
+                    } else {
+                      // Fill through entire slant
+                      leftProgressPath += ` L ${progressInnerSegStart - PROGRESS_TRAPEZOID_TOP_SLANT} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}`;
+                      
+                      const remainingExtension = remainingFill - slantLength;
+                      if (remainingExtension > 0) {
+                        // Fill into extension
+                        const extensionProgress = Math.min(remainingExtension, PROGRESS_BAR_EXTENSION_LENGTH);
+                        leftProgressPath += ` L ${progressInnerSegStart - PROGRESS_TRAPEZOID_TOP_SLANT - extensionProgress} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}`;
+                      }
+                    }
+                  }
+                }
+                
+                return (
+                  <>
+                    {/* Right side progress fill */}
+                    <path
+                      d={rightProgressPath}
+                      stroke="white"
+                      strokeWidth={FRAME_STROKE_WIDTH * 8}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    
+                    {/* Left side progress fill */}
+                    <path
+                      d={leftProgressPath}
+                      stroke="white"
+                      strokeWidth={FRAME_STROKE_WIDTH * 8}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </>
+                );
+              })()}
+
+
             </>
           );
         })()}
       </svg>
+      
+      {/* ───── PROGRESS PERCENTAGE TEXT OVERLAY ───── */}
+      <div className="absolute top-2 left-0 w-full pointer-events-none z-[110] flex justify-center">
+        <div 
+          className="text-white text-center"
+          style={{
+            fontFamily: 'Iceland, monospace',
+            fontSize: '18px',
+            fontWeight: '400',
+            letterSpacing: '0.1em'
+          }}
+        >
+          {progress}%
+          </div>
+      </div>
       
       {/* ───── Interactive Event Zones ───── */}
       {/* Scroll Event Capture Zone */}
