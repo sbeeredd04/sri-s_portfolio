@@ -309,12 +309,11 @@ body {
 /* Journey3D Component Styles - Enhanced for prominence */
 .journey-card {
   position: relative;
-  width: 1200px;          /* ↑ from 400px - much larger presence */
-  height: 900px;         /* ↑ from 300px - more content space */
-  background: rgba(0, 0, 0, 0.9);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  width: 800px;          /* ↑ from 400px - much larger presence */
+  height: 800px;         /* ↑ from 300px - more content space */
+  background: transparent;
   border-radius: 12px;   /* Slightly larger rounding */
-  padding: 30px;         /* ↑ from 20px - more breathing room */
+  padding: 20px;         /* ↑ from 20px - more breathing room */
   opacity: 0;
   transform: translateX(var(--offscreen-x, -100px));
   transition: transform 0.8s ease-out, opacity 0.8s ease-out;
@@ -335,6 +334,7 @@ body {
   flex-direction: column;
   gap: 25px;             /* ↑ from 15px - more spacing between elements */
   height: 100%;
+  font-family: 'Ubuntu Mono', monospace;
 }
 
 .journey-image-container {
@@ -356,10 +356,10 @@ body {
 
 .journey-description {
   color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;       /* ↑ from 14px - much more readable */
+  font-size: 32px;       /* ↑ from 14px - much more readable */
   line-height: 1.6;
   margin: 0;
-  font-family: 'Major Mono Display', monospace;
+  font-family: 'Ubuntu Mono', monospace;
 }
 
 .journey-header-overlay {
