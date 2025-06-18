@@ -42,8 +42,8 @@ const CheckpointHeader = ({ title, heading, onAnimationComplete }) => {
             maxIterations={15}
             sequential={true}
             revealDirection="center"
-            className="journey-title"
-            encryptedClassName="text-white/30"
+            className="journey-title decrypted-text"
+            encryptedClassName="journey-title encrypted-text text-white/30"
             animateOn="view"
             onAnimationComplete={() => setTitleDone(true)}
         />
@@ -55,8 +55,8 @@ const CheckpointHeader = ({ title, heading, onAnimationComplete }) => {
             maxIterations={12}
             sequential={true}
             revealDirection="start"
-            className="journey-heading"
-            encryptedClassName="text-white/30"
+            className="journey-heading decrypted-text"
+            encryptedClassName="journey-heading encrypted-text text-white/30"
             animateOn="view"
             onAnimationComplete={() => setHeadingDone(true)}
         />
