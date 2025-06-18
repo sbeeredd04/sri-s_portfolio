@@ -222,20 +222,20 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         if (!cp.root) {
           resolve();
           return;
-        }
-        
-        try {
-          cp.root.render(
-            <CheckpointHeader 
-              title={cp.data.title}
-              heading={cp.data.heading}
+          }
+          
+          try {
+            cp.root.render(
+              <CheckpointHeader 
+                title={cp.data.title}
+                heading={cp.data.heading}
               onAnimationComplete={resolve}
-            />
-          );
-        } catch (error) {
-          console.error('Error rendering checkpoint header:', error);
-          resolve();
-        }
+              />
+            );
+          } catch (error) {
+            console.error('Error rendering checkpoint header:', error);
+            resolve();
+          }
       });
       
       // Wait for all animations to complete
@@ -519,13 +519,13 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     function updateCameraPosition(sRef, deltaTime) {
 
         // ── CAMERA POSITIONING & ORIENTATION: Always active, even during animations ──
-        const position = sRef.roadCurve.getPointAt(sRef.cameraT);
-        const frameIndex = Math.floor(sRef.cameraT * sRef.frenetFrames.tangents.length);
-        const normal = sRef.frenetFrames.normals[frameIndex];
-        
+      const position = sRef.roadCurve.getPointAt(sRef.cameraT);
+      const frameIndex = Math.floor(sRef.cameraT * sRef.frenetFrames.tangents.length);
+      const normal = sRef.frenetFrames.normals[frameIndex];
+      
         // Position camera above the road
-        sRef.camera.position.copy(position).add(normal.clone().multiplyScalar(CAMERA_BASE_OFFSET_Y * SCENE_SCALE));
-        
+      sRef.camera.position.copy(position).add(normal.clone().multiplyScalar(CAMERA_BASE_OFFSET_Y * SCENE_SCALE));
+      
         // ── LOOK-AROUND BEHAVIOR: Always enabled for immersive experience ──
         if (!isLookingAround) {
           targetLookDirection.copy(new THREE.Vector3(0, 0, -1));
@@ -533,36 +533,36 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         
         currentLookDirection.lerp(targetLookDirection, LOOK_AROUND_LERP_FACTOR);
         currentLookDirection.normalize();
-        
+      
         // Apply base camera orientation along the road
-        const roadMatrix = new THREE.Matrix4();
-        const lookAtPosition = sRef.roadCurve.getPointAt(Math.min(sRef.cameraT + 0.01, 1));
-        roadMatrix.lookAt(sRef.camera.position, lookAtPosition, normal);
-        
-        sRef.camera.quaternion.setFromRotationMatrix(roadMatrix);
-        
+      const roadMatrix = new THREE.Matrix4();
+      const lookAtPosition = sRef.roadCurve.getPointAt(Math.min(sRef.cameraT + 0.01, 1));
+      roadMatrix.lookAt(sRef.camera.position, lookAtPosition, normal);
+      
+      sRef.camera.quaternion.setFromRotationMatrix(roadMatrix);
+      
         // Apply look-around offset for interactive camera control
         if (isLookingAround || !currentLookDirection.equals(new THREE.Vector3(0, 0, -1))) {
-          const worldLookDirection = currentLookDirection.clone();
-          worldLookDirection.applyQuaternion(sRef.camera.quaternion);
-          
-          const finalLookAt = sRef.camera.position.clone().add(worldLookDirection.multiplyScalar(100));
-          
-          const finalMatrix = new THREE.Matrix4();
-          finalMatrix.lookAt(sRef.camera.position, finalLookAt, normal);
-          sRef.camera.quaternion.setFromRotationMatrix(finalMatrix);
+        const worldLookDirection = currentLookDirection.clone();
+        worldLookDirection.applyQuaternion(sRef.camera.quaternion);
+        
+        const finalLookAt = sRef.camera.position.clone().add(worldLookDirection.multiplyScalar(100));
+        
+        const finalMatrix = new THREE.Matrix4();
+        finalMatrix.lookAt(sRef.camera.position, finalLookAt, normal);
+        sRef.camera.quaternion.setFromRotationMatrix(finalMatrix);
           
           // Log during animations for feedback (check if we're in a paused state)
           if (currentCheckpointRef.current && pauseStartTimeRef.current && isLookingAround) {
             console.log(`👀 Look-around active during checkpoint animation`);
           }
-        }
+      }
 
         // Keep checkpoint objects facing camera for proper visibility
-        sRef.checkpoints.forEach((cp) => {
-          cp.cardObject.rotation.copy(sRef.camera.rotation);
-          cp.headerObject.rotation.copy(sRef.camera.rotation);
-        });
+      sRef.checkpoints.forEach((cp) => {
+        cp.cardObject.rotation.copy(sRef.camera.rotation);
+        cp.headerObject.rotation.copy(sRef.camera.rotation);
+      });
       }
 
     // ── RENDER LOOP ──
@@ -642,11 +642,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       // Remove DOM elements safely
       if (containerRef.current) {
         try {
-          if (renderer && renderer.domElement && renderer.domElement.parentNode === containerRef.current) {
-            containerRef.current.removeChild(renderer.domElement);
-          }
-          if (cssRenderer && cssRenderer.domElement && cssRenderer.domElement.parentNode === containerRef.current) {
-            containerRef.current.removeChild(cssRenderer.domElement);
+        if (renderer && renderer.domElement && renderer.domElement.parentNode === containerRef.current) {
+          containerRef.current.removeChild(renderer.domElement);
+        }
+        if (cssRenderer && cssRenderer.domElement && cssRenderer.domElement.parentNode === containerRef.current) {
+          containerRef.current.removeChild(cssRenderer.domElement);
           }
         } catch (error) {
           console.warn('⚠️ Error during DOM cleanup:', error);
@@ -663,18 +663,18 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   return (
     <div className="fixed inset-0 bg-black major-mono-display-regular overflow-hidden">
       {/* Transition overlay */}
-      <motion.div
-        className="absolute inset-0 bg-black z-50 pointer-events-none"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: isTransitioning ? 1 : 0 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-      />
+          <motion.div
+            className="absolute inset-0 bg-black z-50 pointer-events-none"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: isTransitioning ? 1 : 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+          />
 
       {/* Completion overlay - Enhanced to prevent journey completion glitch */}
-      <motion.div
-        className="absolute inset-0 bg-black z-60 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isCompleting ? 1 : 0 }}
+          <motion.div
+            className="absolute inset-0 bg-black z-60 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isCompleting ? 1 : 0 }}
         transition={{ duration: 1.8, ease: "easeInOut" }}
       />
       

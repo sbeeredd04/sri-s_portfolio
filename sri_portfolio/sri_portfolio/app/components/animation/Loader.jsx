@@ -10,17 +10,8 @@ import journeyData from '../../json/journey.json';
 const Beams = dynamic(() => import('../background/Beams'), { ssr: false });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// LOADING STATES - Real resource creation phases mapped to UI progress
+// CLEAN UI - No verbose loading states, just smooth progress indication
 // ──────────────────────────────────────────────────────────────────────────────
-const loadingStates = [
-  { text: 'Initializing 3D environment...', checkpoint: 5 },
-  { text: 'Creating geometry buffers...', checkpoint: 20 },
-  { text: 'Building starfield mesh...', checkpoint: 35 },
-  { text: 'Generating journey path...', checkpoint: 50 },
-  { text: 'Loading journey assets...', checkpoint: 70 },
-  { text: 'Compiling shaders...', checkpoint: 85 },
-  { text: 'Finalizing scene...', checkpoint: 95 },
-];
 
 // ──────────────────────────────────────────────────────────────────────────────
 // SCENE CONSTANTS - Must match Journey3D constants exactly
@@ -46,75 +37,261 @@ const LATERAL_OFFSET_DISTANCE_CARD = 200;   // ↓ from 250 - bring cards closer
 const LATERAL_OFFSET_DISTANCE_HEADER = 150; // ↓ from 250 - bring headers closer to road
 
 // ──────────────────────────────────────────────────────────────────────────────
-// UI COMPONENTS - Loading interface elements
+// UI COMPONENTS - Clean interface elements
 // ──────────────────────────────────────────────────────────────────────────────
-const CheckIcon = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-4 h-4 ${className}`}> 
-    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" fill="none" /> 
-  </svg>
-);
-
-const CheckFilled = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-4 h-4 ${className}`}> 
-    <circle cx="12" cy="12" r="9" fill="currentColor" /> 
-  </svg>
-);
 
 // ──────────────────────────────────────────────────────────────────────────────
-// LOADING PROGRESS DISPLAY - Shows real-time resource creation status
+// CIRCULAR PROGRESS COMPONENT - Clean progress indicator
 // ──────────────────────────────────────────────────────────────────────────────
-function LoaderCore({ loadingStates, progress, currentText }) {
-  // Find which loading state is currently active
-  const currentIdx = loadingStates.findIndex((s, i) => progress < s.checkpoint && (i === 0 || progress >= loadingStates[i - 1].checkpoint));
-  const scrollIdx = currentIdx === -1 ? loadingStates.length - 1 : currentIdx;
-  const offset = Math.max(0, scrollIdx - 2);
-  
-  // Use external text if provided, otherwise use default loading states
-  const displayStates = currentText ? [
-    ...loadingStates.slice(0, -1),
-    { text: currentText, checkpoint: 100 }
-  ] : loadingStates;
-  
+function CircularProgress({ progress, showStartButton, onStartClick }) {
+  const radius = 90;
+  const strokeWidth = 5;
+  const normalizedRadius = radius - strokeWidth * 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const strokeDasharray = `${circumference} ${circumference}`;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0, angle: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  const [fillProgress, setFillProgress] = useState(0);
+  const containerRef = useRef(null);
+  const fillRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const mouseX = e.clientX - centerX;
+      const mouseY = e.clientY - centerY;
+      const angle = Math.atan2(mouseY, mouseX);
+      
+      // Convert to percentage position within circle
+      const distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+      const normalizedDistance = Math.min(distance / radius, 1);
+      
+      setMousePosition({ 
+        x: mouseX, 
+        y: mouseY, 
+        angle: angle,
+        distance: normalizedDistance,
+        centerX: centerX,
+        centerY: centerY
+      });
+    }
+  };
+
+  // Handle fill animation
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    setFillProgress(1);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setFillProgress(0);
+  };
+
   return (
-    <div className="overflow-hidden h-[200px] w-full flex flex-col items-end pr-6 select-none">
+    <motion.div 
+      ref={containerRef}
+      className="relative flex items-center justify-center group"
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.5)) drop-shadow(0 4px 15px rgba(0,0,0,0.3))',
+        transform: 'translateZ(0)'
+      }}
+    >
+      {/* Three.js style depth shadow */}
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: 'radial-gradient(ellipse 80% 60% at 40% 40%, rgba(0,0,0,0.4) 0%, transparent 70%)',
+          transform: 'translateY(8px) translateX(4px) scale(1.1)',
+          zIndex: -1,
+          filter: 'blur(12px)'
+        }}
+      />
+
+      {/* Liquid glass background */}
       <motion.div
-        animate={{ y: -offset * 40 }}
-        transition={{ type: 'spring', stiffness: 60, damping: 18 }}
-        className="flex flex-col gap-4 pb-8">
-        {displayStates.map((loadingState, index) => {
-          const isComplete = progress >= loadingState.checkpoint;
-          const isCurrent =
-            progress < loadingState.checkpoint &&
-            (index === 0 || progress >= displayStates[index - 1].checkpoint);
-          return (
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: 'rgba(255, 255, 255, 0.03)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          transform: 'scale(0.9)'
+        }}
+        animate={{
+          background: isHovered 
+            ? 'rgba(255, 255, 255, 0.08)' 
+            : 'rgba(255, 255, 255, 0.03)'
+        }}
+        transition={{ duration: 0.3 }}
+      />
+      
+      {/* Circular Progress Ring */}
+      <svg
+        height={radius * 2}
+        width={radius * 2}
+        className="transform -rotate-90 relative z-10"
+        style={{
+          filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))'
+        }}
+      >
+        <defs>
+          {/* Gradient for directional fill */}
+          <radialGradient 
+            id="directionalFill" 
+            cx={showStartButton ? `${50 + (mousePosition.x / radius) * 50}%` : "50%"}
+            cy={showStartButton ? `${50 + (mousePosition.y / radius) * 50}%` : "50%"}
+            r="100%"
+          >
+            <stop offset="0%" stopColor="white" stopOpacity="1" />
+            <stop offset="40%" stopColor="white" stopOpacity="0.95" />
+            <stop offset="80%" stopColor="white" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="white" stopOpacity="0.6" />
+          </radialGradient>
+          
+          {/* Mask for directional reveal */}
+          <mask id="directionalMask">
+            <rect width="100%" height="100%" fill="black" />
+            <motion.circle
+              fill="white"
+              initial={{ 
+                r: 0,
+                cx: radius,
+                cy: radius
+              }}
+              animate={{ 
+                r: fillProgress * (normalizedRadius * 1.5), // Expand beyond circle bounds to ensure full fill
+                cx: radius + mousePosition.x,
+                cy: radius + mousePosition.y
+              }}
+              transition={{ 
+                duration: 0.6, 
+                ease: [0.25, 0.1, 0.25, 1],
+                type: "tween"
+              }}
+            />
+          </mask>
+        </defs>
+
+        {/* Background circle */}
+        <circle
+          stroke="rgba(255, 255, 255, 0.08)"
+          fill="transparent"
+          strokeWidth={strokeWidth}
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+        />
+        
+        {/* Directional fill circle */}
+        {showStartButton && (
+          <circle
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+            fill="url(#directionalFill)"
+            stroke="none"
+            mask="url(#directionalMask)"
+            style={{
+              filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.4))'
+            }}
+          />
+        )}
+        
+        {/* Progress circle */}
+        <motion.circle
+          stroke="white"
+          fill="transparent"
+          strokeWidth={strokeWidth}
+          strokeDasharray={strokeDasharray}
+          strokeLinecap="round"
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: strokeDashoffset }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          style={{
+            filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.3))',
+            zIndex: 2
+          }}
+        />
+      </svg>
+      
+      {/* Center content */}
+      <div className="absolute inset-0 flex items-center justify-center z-20">
+        {!showStartButton ? (
+          <motion.div
+            className="flex flex-col items-center justify-center"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: progress === 100 ? 0 : 1 }}
+            transition={{ duration: 0.4 }}
+            style={{
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+            }}
+          >
+            <DecryptedText
+              text={Math.floor(progress).toString()}
+              speed={30}
+              maxIterations={8}
+              sequential={false}
+              revealDirection="center"
+              className="major-mono-display-regular text-4xl md:text-5xl font-bold text-white select-none tracking-wider"
+              encryptedClassName="text-white/20"
+              animateOn="view"
+            />
             <motion.div
-              key={index}
-              className="flex items-center gap-3 min-h-[40px]"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}>
-              <span>
-                {isComplete ? (
-                  <CheckFilled className="text-white" />
-                ) : (
-                  <CheckIcon className="text-white opacity-40" />
-                )}
-              </span>
+              className="mt-2 w-8 h-0.5 bg-white/30"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.6, delay: 1.2 }}
+              style={{
+                filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
+              }}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative"
+          >
+            <motion.button
+              onClick={onStartClick}
+              className="relative px-8 py-4 transition-all duration-300 cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              style={{
+                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))'
+              }}
+            >
               <DecryptedText
-                text={loadingState.text}
-                speed={60}
-                maxIterations={16}
+                text="START"
+                speed={40}
+                maxIterations={12}
                 sequential={true}
-                revealDirection="start"
-                className={`major-mono-display-regular text-sm md:text-base tracking-widest ${isComplete ? 'text-white' : isCurrent ? 'text-white/80' : 'text-white/50'}`}
-                encryptedClassName="text-white/30"
+                revealDirection="center"
+                className={`major-mono-display-regular text-lg md:text-xl font-bold tracking-widest relative z-10 transition-colors duration-300 ${
+                  isHovered ? 'text-black' : 'text-white'
+                }`}
+                encryptedClassName={isHovered ? "text-black/50" : "text-white/30"}
                 animateOn="view"
               />
-            </motion.div>
-          );
-        })}
-      </motion.div>
-    </div>
+            </motion.button>
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
   );
 }
 
@@ -188,16 +365,16 @@ class ThreeJSResourceManager {
     this.onResourcesReady = onResourcesReady;
     
     this.manager.onStart = () => {
-      if (this.onProgress) this.onProgress(0, 'Starting resource creation...');
+      if (this.onProgress) this.onProgress(0);
     };
     
     this.manager.onProgress = (url, loaded, total) => {
       const progressPercentage = Math.round((loaded / total) * 100);
-      if (this.onProgress) this.onProgress(progressPercentage, `Loading resources... (${loaded}/${total})`);
+      if (this.onProgress) this.onProgress(progressPercentage);
     };
     
     this.manager.onLoad = () => {
-      if (this.onProgress) this.onProgress(100, 'All resources loaded successfully!');
+      if (this.onProgress) this.onProgress(100);
       setTimeout(() => {
         if (this.onComplete) this.onComplete();
       }, 500);
@@ -710,10 +887,15 @@ class ThreeJSResourceManager {
 export default function Loader({ onComplete, onResourcesReady }) {
   // ── UI State Management ──
   const [progress, setProgress] = useState(0);
-  const [currentLoadingText, setCurrentLoadingText] = useState('Booting up portfolio...');
-  const [cameraPhase, setCameraPhase] = useState('initial');
-  const [showButton, setShowButton] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [showStartButton, setShowStartButton] = useState(false);
+  const [textAnimationsComplete, setTextAnimationsComplete] = useState({
+    localTime: false,
+    portfolio: false,
+    since: false,
+    welcome1: false,
+    welcome2: false
+  });
   
   // ── Component References ──
   const containerRef = useRef(null);
@@ -724,6 +906,27 @@ export default function Loader({ onComplete, onResourcesReady }) {
   useEffect(() => {
     setShowContent(true);
   }, []);
+
+  // ── Track text animation completion ──
+  const handleTextAnimationComplete = (textKey) => {
+    setTextAnimationsComplete(prev => ({
+      ...prev,
+      [textKey]: true
+    }));
+  };
+
+  // ── Check if all text animations are complete ──
+  const allTextAnimationsComplete = Object.values(textAnimationsComplete).every(Boolean);
+
+  // ── Show start button when both progress is 100% and text animations are complete ──
+  useEffect(() => {
+    if (progress >= 100 && allTextAnimationsComplete) {
+      // Add a small delay to ensure smooth transition
+      setTimeout(() => {
+        setShowStartButton(true);
+      }, 800);
+    }
+  }, [progress, allTextAnimationsComplete]);
 
   // ──────────────────────────────────────────────────────────────────────────────
   // RESOURCE INITIALIZATION: Single call to build complete 3D environment
@@ -746,32 +949,21 @@ export default function Loader({ onComplete, onResourcesReady }) {
       // Configure progress callbacks to drive UI
       resourceManager.setCallbacks(
         // Progress updates from actual resource creation
-        (progressValue, text) => {
+        (progressValue) => {
           if (isMounted) {
             setProgress(progressValue);
-            setCurrentLoadingText(text);
           }
         },
-        // Completion triggers button phase
+        // Completion - no additional actions needed
         () => {
           console.log('🎉 LoadingManager onLoad fired');
-          if (isMounted) {
-          setTimeout(() => {
-              console.log('📱 Setting camera phase to moveToButton');
-            setCameraPhase('moveToButton');
-          }, 500);
-          }
         },
         // Error handling with recovery
         (error) => {
           console.error('🚨 Resource loading error:', error);
           if (isMounted) {
-            setCurrentLoadingText('Resource loading failed. Attempting recovery...');
-            // Still allow progression after error with fallback resources
-            setTimeout(() => {
-              console.log('🔄 Error recovery: Moving to button phase anyway');
-              setCameraPhase('moveToButton');
-            }, 2000);
+            // Still allow progression after error
+            setProgress(100);
           }
         },
         // Resources ready callback - ALWAYS CALLED
@@ -816,230 +1008,201 @@ export default function Loader({ onComplete, onResourcesReady }) {
     };
   }, []); // Run only once - no dependencies to prevent re-initialization loops
 
-  // ── Button Display Logic ──
-  useEffect(() => {
-    if (cameraPhase === 'moveToButton') {
-      console.log('📱 Camera phase changed to moveToButton, showing button in 1.5s');
-      setTimeout(() => {
-        console.log('🔘 Showing "Let\'s Go" button');
-        setShowButton(true);
-      }, 1500);
-    }
-  }, [cameraPhase]);
-
-  // ── Fallback Mechanism: Ensure UI always progresses ──
-  useEffect(() => {
-    // If we're still loading after 15 seconds, force progression
-    const fallbackTimer = setTimeout(() => {
-      if (cameraPhase === 'initial') {
-        console.log('⏰ Fallback timer: Forcing progression after 15 seconds');
-        setCameraPhase('moveToButton');
-      }
-    }, 15000);
-
-    return () => clearTimeout(fallbackTimer);
-  }, [cameraPhase]);
-
   // ── Transition to Journey3D ──
-  const handleLetSGoClick = () => {
-    console.log('👆 "Let\'s Go" button clicked, starting transition');
-    setShowButton(false);
-    setCameraPhase('fadeToBlack');
-    
-    setTimeout(() => {
-      console.log('🎬 Transition complete, calling onComplete');
-      setCameraPhase('complete');
-      if (onComplete) {
-        onComplete();
-      } else {
-        console.warn('⚠️ onComplete callback not provided');
-      }
-    }, 2000);
+  const handleStartClick = () => {
+    console.log('👆 START button clicked, starting transition');
+    if (onComplete) {
+      onComplete();
+    } else {
+      console.warn('⚠️ onComplete callback not provided');
+    }
   };
 
-  // ── Hide component when loading complete ──
-  if (cameraPhase === 'complete') return null;
-
   // ──────────────────────────────────────────────────────────────────────────────
-  // RENDER: Elegant loading UI with real resource creation in background
+  // RENDER: Enhanced loading interface with Major Mono styling and animations
   // ──────────────────────────────────────────────────────────────────────────────
   return (
     <div 
       ref={containerRef}
-      className="fixed inset-0 z-[100] flex flex-col min-h-screen min-w-full bg-black major-mono-display-regular overflow-hidden"
+      className="fixed inset-0 z-[100] min-h-screen min-w-full bg-black overflow-hidden major-mono-display-regular"
     >
-      {/* Background animation */}
+      {/* Clean background animation */}
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
         <Beams beamWidth={0.8} beamHeight={14} beamNumber={4} lightColor="#fff" speed={2} noiseIntensity={1.75} scale={0.18} rotation={200} />
       </div>
 
-      {/* Main UI container with camera movement animation */}
-      <motion.div
-        className="relative w-full h-full z-10"
-        animate={{
-          y: cameraPhase === 'initial' ? 0 : 
-             cameraPhase === 'moveToButton' ? '-100vh' :
-             cameraPhase === 'fadeToBlack' ? '-200vh' : '-200vh'
-        }}
-        transition={{
-          duration: cameraPhase === 'moveToButton' ? 2 : 
-                   cameraPhase === 'fadeToBlack' ? 1.5 : 0,
-          ease: [0.25, 0.1, 0.25, 1]
-        }}
-      >
-        {/* Loading Screen */}
-        <div className="relative w-full h-screen flex flex-col">
-          {/* Current time display */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: showContent ? 1 : 0 }}
-            transition={{ duration: 0.8 }}
-            className="absolute top-6 left-8 text-xs md:text-sm opacity-80 tracking-widest flex flex-col gap-1"
+      {/* Main container with enhanced spacing */}
+      <div className="relative w-full h-screen flex flex-col z-10 p-6 md:p-12">
+        {/* Current time display with slide-in animation */}
+        <motion.div 
+          initial={{ opacity: 0, x: -50, y: -20 }}
+          animate={{ opacity: showContent ? 1 : 0, x: showContent ? 0 : -50, y: showContent ? 0 : -20 }}
+          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+          className="absolute top-8 left-8 md:top-12 md:left-12 group cursor-default"
+          style={{
+            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
+            transform: 'translateZ(0)'
+          }}
+        >
+          <motion.div
+            className="relative"
+            whileHover={{ scale: 1.02, y: -2 }}
+            transition={{ duration: 0.3 }}
           >
+            {/* Three.js style shadow */}
+            <div
+              className="absolute -inset-2 rounded-lg opacity-60"
+              style={{
+                background: 'linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+                transform: 'translateY(3px) translateX(2px)',
+                filter: 'blur(4px)',
+                zIndex: -1
+              }}
+            />
+            
             <DecryptedText
               text={`Local time: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
-              speed={40}
-              maxIterations={10}
+              speed={35}
+              maxIterations={12}
               sequential={true}
               revealDirection="start"
-              className="major-mono-display-regular text-xs md:text-sm text-white/70"
-              encryptedClassName="text-white/30"
+              className="major-mono-display-regular text-sm md:text-base text-white/70 font-medium tracking-wider relative z-10 px-2 py-1"
+              encryptedClassName="text-white/20"
               animateOn="view"
+              onAnimationComplete={() => handleTextAnimationComplete('localTime')}
             />
           </motion.div>
+        </motion.div>
 
-          {/* Portfolio branding */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: showContent ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="absolute bottom-8 left-8 text-lg md:text-2xl font-bold tracking-widest flex flex-col gap-1"
+        {/* Portfolio branding with slide-in animation */}
+        <motion.div 
+          initial={{ opacity: 0, x: -60, y: 30 }}
+          animate={{ opacity: showContent ? 1 : 0, x: showContent ? 0 : -60, y: showContent ? 0 : 30 }}
+          transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
+          className="absolute bottom-8 left-8 md:bottom-12 md:left-12 flex flex-col gap-3 group cursor-default"
+          style={{
+            filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.5)) drop-shadow(0 3px 10px rgba(0,0,0,0.3))',
+            transform: 'translateZ(0)'
+          }}
+        >
+          <motion.div
+            className="relative"
+            whileHover={{ scale: 1.02, x: 5, y: -3 }}
+            transition={{ duration: 0.4 }}
           >
-            <DecryptedText
-              text={"sriujjwalreddy.com"}
-              speed={40}
-              maxIterations={10}
-              sequential={true}
-              revealDirection="start"
-              className="major-mono-display-regular text-lg md:text-2xl text-white"
-              encryptedClassName="text-white/30"
-              animateOn="view"
+            {/* Three.js style depth shadow */}
+            <div
+              className="absolute -inset-3 rounded-lg opacity-50"
+              style={{
+                background: 'linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)',
+                transform: 'translateY(4px) translateX(3px)',
+                filter: 'blur(8px)',
+                zIndex: -1
+              }}
             />
-            <DecryptedText
-              text={"since 2022"}
-              speed={40}
-              maxIterations={10}
-              sequential={true}
-              revealDirection="start"
-              className="major-mono-display-regular text-xs mt-2 text-white/70"
-              encryptedClassName="text-white/30"
-              animateOn="view"
-            />
-          </motion.div>
-
-          {/* Welcome message */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: showContent ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="absolute right-8 top-1/2 -translate-y-1/2 text-xs md:text-sm text-right opacity-80 tracking-widest flex flex-col gap-1"
-          >
-            <DecryptedText
-              text={"Welcome"}
-              speed={40}
-              maxIterations={10}
-              sequential={true}
-              revealDirection="start"
-              className="major-mono-display-regular text-xs md:text-sm text-white"
-              encryptedClassName="text-white/30"
-              animateOn="view"
-            />
-            <DecryptedText
-              text={"To My Portfolio"}
-              speed={40}
-              maxIterations={10}
-              sequential={true}
-              revealDirection="start"
-              className="major-mono-display-regular text-xs md:text-sm text-white"
-              encryptedClassName="text-white/30"
-              animateOn="view"
-            />
-          </motion.div>
-
-          {/* Loading progress display - Shows real resource creation progress */}
-          <div className="flex flex-1 max-w-8xl mx-auto items-center justify-center">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: showContent ? 1 : 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex flex-row items-center justify-center w-full max-w-4xl mx-auto gap-16 md:gap-32"
-            >
-              {/* Loading states list (desktop only) */}
-              <div className="hidden md:flex flex-col items-end mb-10 justify-center min-w-[260px]">
-                <LoaderCore loadingStates={loadingStates} progress={progress} currentText={currentLoadingText} />
-              </div>
+            
+            <div className="relative z-10 px-3 py-2">
+              <DecryptedText
+                text={"sriujjwalreddy.com"}
+                speed={35}
+                maxIterations={15}
+                sequential={true}
+                revealDirection="start"
+                className="major-mono-display-regular text-2xl md:text-4xl text-white font-bold tracking-widest"
+                encryptedClassName="text-white/20"
+                animateOn="view"
+                onAnimationComplete={() => handleTextAnimationComplete('portfolio')}
+              />
               
-              {/* Progress percentage and bar */}
-              <div className="flex flex-col items-center justify-center w-[260px]">
-                <span className="text-5xl md:text-6xl font-bold text-white select-none tracking-widest mb-4" style={{ letterSpacing: '0.15em' }}>
-                  {Math.floor(progress)}
-                </span>
-                <div className="w-44 h-[2px] bg-white/20 mb-6 relative overflow-hidden">
-                  <motion.div
-                    className="absolute left-0 top-0 h-full bg-white"
-                    style={{ width: `${progress}%` }}
-                    initial={false}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.4, ease: 'easeInOut' }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
+              <motion.div
+                className="mt-2 mb-1 h-0.5 bg-gradient-to-r from-white/40 to-transparent"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 1.5 }}
+                style={{
+                  filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.4))'
+                }}
+              />
+              
+              <DecryptedText
+                text={"since 2022"}
+                speed={35}
+                maxIterations={10}
+                sequential={true}
+                revealDirection="start"
+                className="major-mono-display-regular text-sm md:text-lg text-white/60 font-medium tracking-wider"
+                encryptedClassName="text-white/15"
+                animateOn="view"
+                onAnimationComplete={() => handleTextAnimationComplete('since')}
+              />
+            </div>
+          </motion.div>
+        </motion.div>
 
-        {/* "Let's Go" Button Screen */}
-        <div className="relative w-full h-screen flex items-center justify-center">
-          {showButton && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8, y: 50 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                y: 0,
-                boxShadow: [
-                  "0 0 20px rgba(255, 255, 255, 0.3)",
-                  "0 0 40px rgba(255, 255, 255, 0.5)",
-                  "0 0 20px rgba(255, 255, 255, 0.3)"
-                ]
+        {/* Welcome message with slide-in animation */}
+        <motion.div 
+          initial={{ opacity: 0, x: 60, y: -20 }}
+          animate={{ opacity: showContent ? 1 : 0, x: showContent ? 0 : 60, y: showContent ? 0 : -20 }}
+          transition={{ duration: 1.1, delay: 0.6, ease: "easeOut" }}
+          className="absolute right-8 top-1/2 md:right-12 -translate-y-1/2 text-right flex flex-col gap-3 group cursor-default"
+          style={{
+            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
+            transform: 'translateZ(0)'
+          }}
+        >
+          <motion.div
+            className="relative"
+            whileHover={{ scale: 1.02, x: -5, y: -2 }}
+            transition={{ duration: 0.4 }}
+          >
+            {/* Three.js style shadow */}
+            <div
+              className="absolute -inset-3 rounded-lg opacity-60"
+              style={{
+                background: 'linear-gradient(225deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+                transform: 'translateY(3px) translateX(-2px)',
+                filter: 'blur(4px)',
+                zIndex: -1
               }}
-              transition={{ 
-                duration: 0.8,
-                boxShadow: {
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }
-              }}
-              onClick={handleLetSGoClick}
-              className="major-mono-display-regular px-12 py-6 bg-white text-black rounded-lg text-2xl font-bold tracking-widest hover:bg-white/90 transition-all active:scale-95 border-2 border-white"
-              style={{ letterSpacing: '0.1em' }}
-            >
-              LET'S GO
-            </motion.button>
-          )}
-        </div>
-      </motion.div>
+            />
+            
+            <div className="relative z-10 px-3 py-2">
+              <DecryptedText
+                text={"Welcome"}
+                speed={35}
+                maxIterations={12}
+                sequential={true}
+                revealDirection="end"
+                className="major-mono-display-regular text-lg md:text-xl text-white font-medium tracking-widest"
+                encryptedClassName="text-white/20"
+                animateOn="view"
+                onAnimationComplete={() => handleTextAnimationComplete('welcome1')}
+              />
+              
+              <DecryptedText
+                text={"To My Portfolio"}
+                speed={35}
+                maxIterations={12}
+                sequential={true}
+                revealDirection="end"
+                className="major-mono-display-regular text-lg md:text-xl text-white/80 font-medium tracking-widest"
+                encryptedClassName="text-white/20"
+                animateOn="view"
+                onAnimationComplete={() => handleTextAnimationComplete('welcome2')}
+              />
+            </div>
+          </motion.div>
+        </motion.div>
 
-      {/* Final fade to black transition */}
-      <motion.div
-        className="absolute inset-0 bg-black z-20 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ 
-          opacity: cameraPhase === 'fadeToBlack' ? 1 : 0 
-        }}
-        transition={{ duration: 1.5, delay: 0.5 }}
-      />
+        {/* Center circular progress */}
+        <div className="flex-1 flex items-center justify-center">
+          <CircularProgress 
+            progress={progress} 
+            showStartButton={showStartButton}
+            onStartClick={handleStartClick}
+          />
+        </div>
+      </div>
     </div>
   );
 }
