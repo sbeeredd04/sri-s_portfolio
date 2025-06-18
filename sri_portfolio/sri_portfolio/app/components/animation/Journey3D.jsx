@@ -180,6 +180,10 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   const [progress, setProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
+  // ── CHECKPOINT NAVIGATION STATE ──
+  const [currentCheckpointIndex, setCurrentCheckpointIndex] = useState(-1);
+  const [showCheckpointNav, setShowCheckpointNav] = useState(true); // Show from start
+  const [isBeforeFirstCheckpoint, setIsBeforeFirstCheckpoint] = useState(true);
 
   // ── Journey Configuration ──
   const journeyLength = journeyData.length;
@@ -196,7 +200,10 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   // ── SMOOTH PROGRESS TRACKING ──
   const smoothProgressRef = useRef(0); // Smoothed progress for consistent updates
 
-  // ── Initialize checkpoint data from preloaded resources ──
+
+
+  // ──────────────────────────────────────────────────────────────────────────────
+  // INITIALIZE checkpoint data from preloaded resources ──
   useEffect(() => {
     if (preloadedResources?.checkpoints) {
       checkpointsRef.current = preloadedResources.checkpoints.map((cp, i) => ({
@@ -359,6 +366,78 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       console.error('Error in checkpoint sequence:', error);
     }
   }, []);
+
+  // ──────────────────────────────────────────────────────────────────────────────
+  // CHECKPOINT NAVIGATION FUNCTIONS - Defined after playCheckpointSequence
+  // ──────────────────────────────────────────────────────────────────────────────
+  
+  const navigateToCheckpoint = useCallback((targetIndex) => {
+    if (!checkpointsRef.current || targetIndex < 0 || targetIndex >= checkpointsRef.current.length) {
+      return;
+    }
+    
+    const targetCheckpoint = checkpointsRef.current[targetIndex];
+    const targetT = targetCheckpoint.stopT;
+    
+    console.log(`📍 Navigating to checkpoint ${targetIndex}: ${targetCheckpoint.data.title}`);
+    
+    // Update camera position immediately
+    if (sceneRef.current) {
+      sceneRef.current.cameraT = targetT;
+      sceneRef.current.targetT = targetT;
+    }
+    
+    // Sync virtual scroll position
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    if (docHeight > 0) {
+      virtualScrollY.current = targetT * docHeight;
+      window.scrollTo(0, virtualScrollY.current);
+    }
+    
+    // Update UI state
+    setCurrentCheckpointIndex(targetIndex);
+    setProgress(Math.round(targetT * 100));
+    setIsBeforeFirstCheckpoint(false);
+    
+    // Mark this checkpoint as triggered and trigger its animation
+    if (!targetCheckpoint.triggered) {
+      targetCheckpoint.triggered = true;
+      currentCheckpointRef.current = targetCheckpoint;
+      pauseStartTimeRef.current = performance.now();
+      scrollBlockedRef.current = true;
+      playCheckpointSequence(targetCheckpoint);
+    }
+  }, [playCheckpointSequence]);
+  
+  const navigateToPreviousCheckpoint = useCallback(() => {
+    if (currentCheckpointIndex > 0) {
+      navigateToCheckpoint(currentCheckpointIndex - 1);
+    } else if (currentCheckpointIndex === 0) {
+      // Go back to initial "Scroll to learn more" state
+      setCurrentCheckpointIndex(-1);
+      setIsBeforeFirstCheckpoint(true);
+      
+      // Move camera to beginning
+      if (sceneRef.current) {
+        sceneRef.current.cameraT = 0;
+        sceneRef.current.targetT = 0;
+      }
+      
+      // Reset virtual scroll
+      virtualScrollY.current = 0;
+      window.scrollTo(0, 0);
+      setProgress(0);
+    }
+  }, [currentCheckpointIndex, navigateToCheckpoint]);
+  
+  const navigateToNextCheckpoint = useCallback(() => {
+    if (isBeforeFirstCheckpoint && checkpointsRef.current.length > 0) {
+      // Navigate from initial state to first checkpoint
+      navigateToCheckpoint(0);
+    } else if (currentCheckpointIndex < checkpointsRef.current.length - 1) {
+      navigateToCheckpoint(currentCheckpointIndex + 1);
+    }
+  }, [currentCheckpointIndex, isBeforeFirstCheckpoint, navigateToCheckpoint]);
 
   // ── Document height setup with hidden scrollbars ──
   useEffect(() => {
@@ -645,6 +724,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
               pauseStartTimeRef.current = performance.now();
               scrollBlockedRef.current = true;
               
+              // Update checkpoint navigation state
+              setCurrentCheckpointIndex(cp.index);
+              setShowCheckpointNav(true);
+              setIsBeforeFirstCheckpoint(false);
+              
               // Snap camera to exact checkpoint position and sync virtual scroll
               sRef.cameraT = cp.stopT;
               sRef.targetT = cp.stopT;
@@ -670,6 +754,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           // Lock camera at exact end position to prevent glitches
           sRef.cameraT = 0.999;
           sRef.targetT = 0.999;
+          
+          // Show final checkpoint navigation (last checkpoint)
+          const lastCheckpointIndex = checkpointsRef.current.length - 1;
+          setCurrentCheckpointIndex(lastCheckpointIndex);
+          setShowCheckpointNav(true);
           
           // Sync virtual scroll to end position
           const docHeight = document.body.scrollHeight - window.innerHeight;
@@ -813,6 +902,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       journeyCompletedRef.current = false;
       virtualScrollY.current = 0; // Reset virtual scroll position
       checkpointsRef.current.forEach(cp => cp.triggered = false);
+      
+      // Reset checkpoint navigation UI state
+      setCurrentCheckpointIndex(-1);
+      setShowCheckpointNav(true); // Keep showing for initial state
+      setIsBeforeFirstCheckpoint(true);
 
       // Reset document body scroll behavior
       if (typeof document !== 'undefined') {
@@ -893,6 +987,19 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         </motion.div>
       )}
       
+      {/* Breathing animation styles */}
+      <style jsx>{`
+        @keyframes breathe {
+          0% { opacity: 0.7; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.02); }
+          100% { opacity: 0.7; transform: scale(1); }
+        }
+        
+        .breathing-text {
+          animation: breathe 2s ease-in-out infinite;
+        }
+      `}</style>
+
       {/* THREE.js container */}
       <div ref={containerRef} className="w-full h-full" />
       
@@ -1046,10 +1153,8 @@ export default function Journey3D({ onComplete, preloadedResources }) {
                 const totalTrackLength = PROGRESS_BAR_EXTENSION_LENGTH + slantLength + flatCenterLength + slantLength + PROGRESS_BAR_EXTENSION_LENGTH;
                 
                 // Calculate how much of the track should be filled based on progress
-                // Add minimum fill (10% of total track) so bar always shows some progress
-                const minFillPercentage = 10;
-                const adjustedProgress = Math.max(minFillPercentage, progress);
-                const fillLength = totalTrackLength * (adjustedProgress / 100);
+                // FIXED: Use actual progress without minimum fill to track properly from 0 to 100%
+                const fillLength = totalTrackLength * (progress / 100);
                 const halfFillLength = fillLength / 2; // Since we fill from center outward
                 
                 // Right side progress path (flipped) - Enhanced filling logic
@@ -1169,6 +1274,89 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           {progress}%
           </div>
       </div>
+
+      {/* ───── CHECKPOINT NAVIGATION OVERLAY ───── */}
+      {showCheckpointNav && (
+        <motion.div 
+          className="absolute bottom-2 left-0 w-full pointer-events-auto z-[110] flex justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <div className="flex items-center gap-6 bg-black/80 backdrop-blur-sm rounded-lg px-6 py-3">
+            {/* Previous Checkpoint Button */}
+            <button
+              onClick={navigateToPreviousCheckpoint}
+              disabled={isBeforeFirstCheckpoint}
+              className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-200 ${
+                isBeforeFirstCheckpoint
+                  ? 'border-white/20 text-white/30 cursor-not-allowed' 
+                  : 'border-white/60 text-white hover:border-white hover:bg-white/10 hover:scale-110 active:scale-95'
+              }`}
+              style={{
+                fontFamily: 'Iceland, monospace',
+                fontSize: '18px'
+              }}
+            >
+              &#8249;
+            </button>
+
+            {/* Current Checkpoint Title or Initial Message */}
+            <div 
+              className="text-white text-center min-w-[200px] max-w-[400px]"
+              style={{
+                fontFamily: 'Iceland, monospace',
+                fontSize: '16px',
+                fontWeight: '400',
+                letterSpacing: '0.05em'
+              }}
+            >
+              {isBeforeFirstCheckpoint ? (
+                <>
+                  <div className="text-white/60 text-sm mb-1">
+                    Journey Awaits
+                  </div>
+                  <div 
+                    className="truncate breathing-text"
+                    style={{
+                      animation: 'breathe 2s ease-in-out infinite'
+                    }}
+                  >
+                    Scroll to learn more
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-white/60 text-sm mb-1">
+                    {currentCheckpointIndex + 1} / {checkpointsRef.current.length}
+                  </div>
+                  <div className="truncate">
+                    {checkpointsRef.current[currentCheckpointIndex]?.data?.title || 'Unknown Checkpoint'}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Next Checkpoint Button */}
+            <button
+              onClick={navigateToNextCheckpoint}
+              disabled={!isBeforeFirstCheckpoint && currentCheckpointIndex >= checkpointsRef.current.length - 1}
+              className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-200 ${
+                (!isBeforeFirstCheckpoint && currentCheckpointIndex >= checkpointsRef.current.length - 1)
+                  ? 'border-white/20 text-white/30 cursor-not-allowed' 
+                  : 'border-white/60 text-white hover:border-white hover:bg-white/10 hover:scale-110 active:scale-95'
+              }`}
+              style={{
+                fontFamily: 'Iceland, monospace',
+                fontSize: '18px'
+              }}
+            >
+              &#8250;
+            </button>
+          </div>
+        </motion.div>
+      )}
       
       {/* ───── Interactive Event Zones ───── */}
       {/* Scroll Event Capture Zone */}
