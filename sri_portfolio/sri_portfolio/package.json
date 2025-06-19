@@ -47,5 +47,8 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "5.8.3"
+  },
+  "resolutions": {
+    "three": "0.177.0"
   }
 }

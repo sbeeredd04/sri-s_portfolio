@@ -8,8 +8,8 @@ import { RGBELoader } from 'three-stdlib';
 import { createRoot } from 'react-dom/client';
 import journeyData from '../../json/journey.json';
 
-// Import three-nebula for volumetric effects
-import { System, Emitter, Rate, Life, Position, Mass, Radius, Alpha, Color, Gravity, SphereZone, PointZone, RadialVelocity } from 'three-nebula/build/esm/index.js';
+// Import three-nebula for volumetric effects - FIXED: Use correct API imports
+import Nebula, { Emitter, Rate, Life, Position, Mass, Radius, Alpha, Color, Gravity, SphereZone, PointZone, RadialVelocity, Vector3D, SpriteRenderer, Span, Body, RandomDrift } from 'three-nebula';
 
 const Beams = dynamic(() => import('../background/Beams'), { ssr: false });
 
@@ -759,82 +759,133 @@ class ThreeJSResourceManager {
   /**
    * PHASE 5: Create three-nebula volumetric effects for atmospheric depth
    * 
-   * PERFORMANCE OPTIMIZATION:
-   * - Uses RadialVelocity instead of problematic VectorVelocity
-   * - Simplified particle system with reliable API calls
-   * - Subtle atmospheric enhancement without performance impact
+   * CORRECT IMPLEMENTATION:
+   * - Uses proper Nebula constructor with scene and THREE
+   * - Creates Emitter instances with proper configuration
+   * - Calls emit() on emitters with lifecycle callbacks
+   * - Adds renderers to SYSTEM, not emitters
+   * - Adds emitters to system after configuration
    */
   async createNebula() {
     return new Promise((resolve) => {
-      console.log('☁️ Creating volumetric effects (procedural, instant)');
+      console.log('☁️ Creating volumetric effects with correct three-nebula API');
       
       try {
-        // Create the particle system
-        this.nebulaSystem = new System();
+        // CORRECT: Create Nebula system with scene and THREE
+        this.nebulaSystem = new Nebula(this.scene, THREE);
+        console.log('✅ Nebula system created successfully');
         
-        // Create main atmospheric emitter
+        // Create main atmospheric emitter with proper configuration
         const atmosphericEmitter = new Emitter();
         
-        // Configure emission - subtle and atmospheric
-        atmosphericEmitter.setRate(new Rate(8, 0.3)); // 8 particles every 0.3 seconds
-        atmosphericEmitter.setLife(new Life(10, 15)); // 10-15 second lifespan
+        // Configure emission rate
+        atmosphericEmitter.setRate(new Rate(new Span(5, 8), new Span(0.3, 0.5)));
         
-        // Position around the journey path
+        // Configure emitter lifecycle with proper lifespan
+        atmosphericEmitter.setLife(new Life(10, 15));
+        
+        // Set emission position using SphereZone
         const emissionZone = new SphereZone(0, 0, 0, 600 * SCENE_SCALE);
         atmosphericEmitter.setPosition(new Position(emissionZone));
         
-        // CORRECT API: Initialize particles with working velocity
+        // Add initializers - FIXED: Use addInitializers method
         atmosphericEmitter.addInitializers([
+          new Body(),
           new Mass(1),
           new Radius(25 * SCENE_SCALE, 50 * SCENE_SCALE),
-          new Alpha(0.05, 0.2), // Very subtle transparency
-          new Color('#ffffff', '#e0e6ff', '#ffe0f0'), // Slight color variation
-          new RadialVelocity({
-            speed: { min: 5 * SCENE_SCALE, max: 15 * SCENE_SCALE },
-            center: new THREE.Vector3(0, 0, 0)
-          })
+          new Alpha(0.05, 0.2),
+          new Color('#ffffff', '#e0e6ff', '#ffe0f0')
         ]);
         
-        // Add atmospheric behaviors
+        // Add velocity if RadialVelocity works, otherwise use RandomDrift
+        try {
+          const centerVector = new Vector3D(0, 0, 0);
+          const radialVelocity = new RadialVelocity(5 * SCENE_SCALE, centerVector, 0);
+          atmosphericEmitter.addInitializers([radialVelocity]);
+          console.log('✅ RadialVelocity added successfully');
+        } catch (velocityError) {
+          console.warn('⚠️ RadialVelocity failed, using RandomDrift:', velocityError);
+          atmosphericEmitter.addInitializers([
+            new RandomDrift(3 * SCENE_SCALE, 3 * SCENE_SCALE, 3 * SCENE_SCALE)
+          ]);
+        }
+        
+        // Add behaviors - FIXED: Use addBehaviours method
         atmosphericEmitter.addBehaviours([
           new Alpha(0.2, 0), // Fade to transparent
           new Gravity(0, -3 * SCENE_SCALE, 0), // Gentle upward drift
           new Radius(1.5) // Gentle expansion
         ]);
         
-        this.nebulaSystem.addEmitter(atmosphericEmitter);
+        // FIXED: Start emission with proper lifecycle callbacks
+        atmosphericEmitter.emit({
+          onStart: () => {
+            console.log('🌌 Atmospheric particles started');
+          },
+          onUpdate: () => {
+            // Optional: Handle updates if needed
+          },
+          onComplete: () => {
+            console.log('🌌 Atmospheric particles completed');
+          }
+        });
         
-        // Create secondary dust emitter
+        // Create dust emitter with similar configuration
         const dustEmitter = new Emitter();
         
-        dustEmitter.setRate(new Rate(20, 0.1)); // More frequent, smaller particles
+        dustEmitter.setRate(new Rate(new Span(15, 20), new Span(0.1, 0.2)));
         dustEmitter.setLife(new Life(8, 12));
         
         const dustZone = new SphereZone(0, 0, 0, 1000 * SCENE_SCALE);
         dustEmitter.setPosition(new Position(dustZone));
         
         dustEmitter.addInitializers([
+          new Body(),
           new Mass(0.3),
           new Radius(8 * SCENE_SCALE, 20 * SCENE_SCALE),
-          new Alpha(0.02, 0.08), // Very subtle dust
-          new Color('#ffffff', '#f8f8ff'),
-          new RadialVelocity({
-            speed: { min: 2 * SCENE_SCALE, max: 8 * SCENE_SCALE },
-            center: new THREE.Vector3(0, 0, 0)
-          })
+          new Alpha(0.02, 0.08),
+          new Color('#ffffff', '#f8f8ff')
         ]);
+        
+        // Add dust velocity or fallback
+        try {
+          const centerVector = new Vector3D(0, 0, 0);
+          const dustRadialVelocity = new RadialVelocity(2 * SCENE_SCALE, centerVector, 0);
+          dustEmitter.addInitializers([dustRadialVelocity]);
+          console.log('✅ Dust RadialVelocity added successfully');
+        } catch (dustVelocityError) {
+          console.warn('⚠️ Dust RadialVelocity failed, using RandomDrift:', dustVelocityError);
+          dustEmitter.addInitializers([
+            new RandomDrift(1 * SCENE_SCALE, 1 * SCENE_SCALE, 1 * SCENE_SCALE)
+          ]);
+        }
         
         dustEmitter.addBehaviours([
           new Alpha(0.08, 0),
-          new Gravity(0, -1 * SCENE_SCALE, 0) // Very gentle drift
+          new Gravity(0, -1 * SCENE_SCALE, 0)
         ]);
         
-        this.nebulaSystem.addEmitter(dustEmitter);
+        // FIXED: Start dust emission with proper lifecycle callbacks
+        dustEmitter.emit({
+          onStart: () => {
+            console.log('✨ Dust particles started');
+          },
+          onUpdate: () => {
+            // Optional: Handle updates if needed
+          },
+          onComplete: () => {
+            console.log('✨ Dust particles completed');
+          }
+        });
         
-        // Add to scene
-        this.scene.add(this.nebulaSystem.mesh);
+        // CORRECT: Add emitters to system first, then add renderer to system
+        this.nebulaSystem
+          .addEmitter(atmosphericEmitter)
+          .addEmitter(dustEmitter)
+          .addRenderer(new SpriteRenderer(this.scene, THREE)); // Renderer goes on SYSTEM, not emitters
         
-        console.log('✅ Simplified nebula system created with', this.nebulaSystem.emitters.length, 'emitters');
+        console.log('✅ Three-nebula system created with correct API and', this.nebulaSystem.emitters.length, 'emitters');
+        console.log('🌌 Nebula particles will be rendered automatically via system SpriteRenderer');
         
       } catch (error) {
         console.warn('⚠️ Error creating nebula system:', error);
@@ -1116,9 +1167,18 @@ class ThreeJSResourceManager {
     }
     
     if (this.nebulaSystem) {
-      // three-nebula cleanup
-      this.nebulaSystem.destroy();
-      console.log('🗑️ Disposed nebula system');
+      // Manually remove all emitters from the system
+      this.nebulaSystem.emitters.slice().forEach(emitter => {
+        this.nebulaSystem.removeEmitter(emitter);
+        // if your emitters have their own destroy APIs, call them here:
+        if (typeof emitter.destroy === 'function') {
+          emitter.destroy();
+        }
+      });
+      // Null‐out the renderer so GC can collect it
+      this.nebulaSystem.renderer = null;
+      this.nebulaSystem = null;
+      console.log('🗑️ Disposed three-nebula system manually');
     }
     
     if (this.renderer) {
