@@ -824,6 +824,14 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       frenetFrames = preloadedResources.frenetFrames;
       checkpoints = preloadedResources.checkpoints;
       resourceManager = preloadedResources.resourceManager;
+      
+      // ── VOLUMETRIC EFFECTS: Extract nebula system if available ──
+      const nebulaSystem = preloadedResources.nebulaSystem;
+      if (nebulaSystem) {
+        console.log('☁️ Nebula system found and ready for animation updates');
+      } else {
+        console.log('ℹ️ No nebula system available - continuing with standard environment');
+      }
 
       // Attach DOM elements
       if (renderer && renderer.domElement && !renderer.domElement.parentNode) {
@@ -840,6 +848,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       sceneRef.current = {
         scene, camera, renderer, cssRenderer, cssScene,
         roadCurve, frenetFrames, checkpoints,
+        nebulaSystem, // Add nebula system to scene references
         targetT, cameraT
       };
 
@@ -1100,6 +1109,17 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       lastTime = now;
       
       updateCameraAndObjects(deltaTime);
+      
+      // ── UPDATE VOLUMETRIC EFFECTS: Animate nebula particles ──
+      if (sceneRef.current?.nebulaSystem) {
+        try {
+          sceneRef.current.nebulaSystem.update();
+        } catch (error) {
+          console.warn('⚠️ Nebula update error, disabling:', error);
+          // Disable nebula system to prevent further errors
+          sceneRef.current.nebulaSystem = null;
+        }
+      }
       
       try {
         renderer.render(scene, camera);
@@ -1624,78 +1644,132 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       )}
       
       {/* ───── Interactive Event Zones ───── */}
-      {/* Scroll Event Capture Zone */}
-      <div 
-        className="absolute pointer-events-auto z-[50]"
-        style={{ 
-          background: 'transparent',
-          top: `${EVENT_ZONE_PADDING}px`,
-          right: `${EVENT_ZONE_PADDING}px`,
-          bottom: `${EVENT_ZONE_PADDING}px`,
-          left: `${EVENT_ZONE_PADDING}px`
-        }}
-        onWheel={(e) => {
-          // Forward wheel events to window for scroll handling
-          const wheelEvent = new WheelEvent('wheel', {
-            deltaY: e.deltaY,
-            deltaX: e.deltaX,
-            deltaZ: e.deltaZ,
-            deltaMode: e.deltaMode,
-            bubbles: true,
-            cancelable: true
-          });
-          window.dispatchEvent(wheelEvent);
-          e.preventDefault();
-        }}
-        onTouchStart={(e) => {
-          // Forward touch events to window
-          const touchEvent = new TouchEvent('touchstart', {
-            touches: e.touches,
-            targetTouches: e.targetTouches,
-            changedTouches: e.changedTouches,
-            bubbles: true,
-            cancelable: true
-          });
-          window.dispatchEvent(touchEvent);
-        }}
-        onTouchMove={(e) => {
-          // Forward touch events to window
-          const touchEvent = new TouchEvent('touchmove', {
-            touches: e.touches,
-            targetTouches: e.targetTouches,
-            changedTouches: e.changedTouches,
-            bubbles: true,
-            cancelable: true
-          });
-          window.dispatchEvent(touchEvent);
-          e.preventDefault();
-        }}
-        onMouseMove={(e) => {
-          // Forward mouse move events to THREE.js container for look-around
-          const container = containerRef.current;
-          if (container) {
-            const mouseEvent = new MouseEvent('mousemove', {
-              clientX: e.clientX,
-              clientY: e.clientY,
-              bubbles: true,
-              cancelable: true
-            });
-            container.dispatchEvent(mouseEvent);
-          }
-        }}
-        onMouseLeave={(e) => {
-          // Forward mouse leave events to THREE.js container
-          const container = containerRef.current;
-          if (container) {
-            const mouseEvent = new MouseEvent('mouseleave', {
-              bubbles: true,
-              cancelable: true
-            });
-            container.dispatchEvent(mouseEvent);
-          }
-        }}
-      />
+      {/* Scroll Event Capture Zone - FIXED: Native event listeners with { passive: false } */}
+      <ScrollCaptureZone containerRef={containerRef} />
       {/* ──────────────────────────────────────── */}
     </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// SCROLL CAPTURE COMPONENT - Native event listeners to bypass React's passive defaults
+// ──────────────────────────────────────────────────────────────────────────────
+function ScrollCaptureZone({ containerRef }) {
+  const scrollCaptureRef = useRef(null);
+
+  useEffect(() => {
+    const el = scrollCaptureRef.current;
+    if (!el) return;
+
+    console.log('🎧 Attaching native scroll event listeners with { passive: false }');
+
+    // ── WHEEL HANDLER: Non-passive to allow preventDefault() ──
+    const onWheel = (e) => {
+      // CRITICAL: This preventDefault() now actually works because { passive: false }
+      e.preventDefault();
+      
+      // Forward wheel events to window for main scroll handling
+      const wheelEvent = new WheelEvent('wheel', {
+        deltaY: e.deltaY,
+        deltaX: e.deltaX,
+        deltaZ: e.deltaZ,
+        deltaMode: e.deltaMode,
+        bubbles: true,
+        cancelable: true
+      });
+      window.dispatchEvent(wheelEvent);
+    };
+
+    // ── TOUCH HANDLERS: Non-passive for mobile scroll control ──
+    const onTouchStart = (e) => {
+      // Forward touch events to window for main touch handling
+      const touchEvent = new TouchEvent('touchstart', {
+        touches: e.touches,
+        targetTouches: e.targetTouches,
+        changedTouches: e.changedTouches,
+        bubbles: true,
+        cancelable: true
+      });
+      window.dispatchEvent(touchEvent);
+    };
+
+    const onTouchMove = (e) => {
+      // CRITICAL: This preventDefault() now actually works because { passive: false }
+      e.preventDefault();
+      
+      // Forward touch events to window for main touch handling
+      const touchEvent = new TouchEvent('touchmove', {
+        touches: e.touches,
+        targetTouches: e.targetTouches,
+        changedTouches: e.changedTouches,
+        bubbles: true,
+        cancelable: true
+      });
+      window.dispatchEvent(touchEvent);
+    };
+
+    // ── MOUSE HANDLERS: Can be passive since we don't need to prevent defaults ──
+    const onMouseMove = (e) => {
+      // Forward mouse move events to THREE.js container for look-around
+      const container = containerRef.current;
+      if (container) {
+        const mouseEvent = new MouseEvent('mousemove', {
+          clientX: e.clientX,
+          clientY: e.clientY,
+          bubbles: true,
+          cancelable: true
+        });
+        container.dispatchEvent(mouseEvent);
+      }
+    };
+
+    const onMouseLeave = (e) => {
+      // Forward mouse leave events to THREE.js container
+      const container = containerRef.current;
+      if (container) {
+        const mouseEvent = new MouseEvent('mouseleave', {
+          bubbles: true,
+          cancelable: true
+        });
+        container.dispatchEvent(mouseEvent);
+      }
+    };
+
+    // ── ATTACH NATIVE EVENT LISTENERS WITH EXPLICIT PASSIVE SETTINGS ──
+    
+    // Critical scroll events: { passive: false } to allow preventDefault()
+    el.addEventListener('wheel', onWheel, { passive: false });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    
+    // Non-critical events: can be passive for better performance
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('mousemove', onMouseMove, { passive: true });
+    el.addEventListener('mouseleave', onMouseLeave, { passive: true });
+
+    console.log('✅ Native event listeners attached successfully');
+
+    // ── CLEANUP ──
+    return () => {
+      console.log('🧹 Removing native scroll event listeners');
+      el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('mousemove', onMouseMove);
+      el.removeEventListener('mouseleave', onMouseLeave);
+    };
+  }, [containerRef]);
+
+  return (
+    <div 
+      ref={scrollCaptureRef}
+      className="absolute pointer-events-auto z-[50]"
+      style={{ 
+        background: 'transparent',
+        top: `${EVENT_ZONE_PADDING}px`,
+        right: `${EVENT_ZONE_PADDING}px`,
+        bottom: `${EVENT_ZONE_PADDING}px`,
+        left: `${EVENT_ZONE_PADDING}px`
+      }}
+    />
   );
 } 

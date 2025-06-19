@@ -37,7 +37,9 @@
     "remark-math": "^6.0.0",
     "sri_portfolio": "file:",
     "tailwind-merge": "^2.5.4",
-    "three": "^0.177.0"
+    "three": "^0.177.0",
+    "three-nebula": "^10.0.3",
+    "three-stdlib": "^2.36.0"
   },
   "devDependencies": {
     "@types/node": "24.0.1",
