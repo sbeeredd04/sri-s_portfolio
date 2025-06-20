@@ -149,6 +149,14 @@ const CheckpointHeader = ({ title, heading, onAnimationComplete, isFinalCheckpoi
 
 // ──────────────────────────────────────────────────────────────────────────────
 // MAIN JOURNEY3D COMPONENT - Simplified Movement System
+// 
+// Core Responsibilities:
+// • Camera movement and positioning along prebuilt road curve
+// • Checkpoint detection and animation triggers  
+// • Smooth navigation between checkpoints
+// • Virtual scroll management with event blocking
+// • CSS3D checkpoint rendering and interaction
+// • Progress tracking and UI state management
 // ──────────────────────────────────────────────────────────────────────────────
 
 export default function Journey3D({ onComplete, preloadedResources }) {
@@ -237,9 +245,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   const virtualScrollY = useRef(0); // Virtual scroll position
   const journeyCompletedRef = useRef(false); // Journey completion lock
 
-  // ── SMOOTH PROGRESS TRACKING ──
-  const smoothProgressRef = useRef(0); // Smoothed progress for consistent updates
-
   // ── PROGRESS CALCULATION HELPER ──
   const calculateProgress = useCallback((currentT) => {
     if (!checkpointsRef.current || checkpointsRef.current.length === 0) {
@@ -257,7 +262,8 @@ export default function Journey3D({ onComplete, preloadedResources }) {
 
 
   // ──────────────────────────────────────────────────────────────────────────────
-  // INITIALIZE checkpoint data from preloaded resources ──
+  // INITIALIZE checkpoint data from preloaded resources
+  // ──────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (preloadedResources?.checkpoints) {
       checkpointsRef.current = preloadedResources.checkpoints.map((cp, i) => ({
@@ -269,46 +275,40 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         headerObject: cp.headerObject, // 3D header element
         root: cp.root // React root for dynamic content
       }));
-      console.log('🎯 Simple checkpoint system initialized:', checkpointsRef.current.length, 'checkpoints');
     }
   }, [preloadedResources]);
 
   // ──────────────────────────────────────────────────────────────────────────────
   // SMOOTH SCROLL CONTROL - High responsiveness with checkpoint pausing
+  //
+  // Scroll Blocking Logic:
+  // • Block ALL scroll during checkpoint animations for smooth experience
+  // • Block forward scroll at final checkpoint (only allow backward)
+  // • Block scroll during smooth navigation animations
+  // • Block scroll when journey is completed
   // ──────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     const getDocHeight = () => Math.max(0, document.body.scrollHeight - window.innerHeight);
     
     // ── WHEEL HANDLER: Smooth scroll with max speed control ──
     const handleWheel = (e) => {
-      console.log('🖱️ Wheel event detected:', e.deltaY);
       e.preventDefault(); // Take full control of scrolling
       
-      // ABSOLUTELY BLOCK scroll during checkpoint animations, navigation, or journey completion
+      // Block scroll during checkpoint animations, navigation, or journey completion
       if (scrollBlockedRef.current) {
-        if (journeyCompletedRef.current) {
-          console.log('🏁 Scroll blocked - journey completed, transitioning to main page');
-        } else if (isNavigatingToCheckpoint) {
-          console.log('🎬 Scroll blocked during smooth navigation animation');
-        } else {
-          console.log('🚫 Scroll absolutely blocked during checkpoint animation');
-        }
         return;
       }
       
-      // BLOCK FORWARD SCROLL at final checkpoint - only allow backward movement
+      // Block forward scroll at final checkpoint - only allow backward movement
       if (currentCheckpointRef.current && 
           currentCheckpointRef.current.index === checkpointsRef.current.length - 1 && 
           e.deltaY > 0) {
-        console.log('🔒 Forward scroll blocked at final checkpoint - only backward allowed');
         e.preventDefault();
         return;
       }
       
       const raw = e.deltaY;
       const docHeight = getDocHeight();
-      
-      console.log('📏 Document height:', docHeight, 'Current virtual scroll:', virtualScrollY.current);
       
       // Apply max speed limiting for smooth control
       const clampedDelta = Math.max(-MAX_SCROLL_SPEED * 50, Math.min(MAX_SCROLL_SPEED * 50, raw));
@@ -317,28 +317,20 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       const newScrollY = Math.max(0, Math.min(docHeight, virtualScrollY.current + clampedDelta));
       virtualScrollY.current = newScrollY;
       window.scrollTo(0, virtualScrollY.current);
-      
-      console.log('🎯 Updated scroll position to:', virtualScrollY.current);
     };
     
-    // ── KEYBOARD HANDLER: Absolutely block scroll keys during animations ──
+    // ── KEYBOARD HANDLER: Block scroll keys during animations ──
     const handleKeyDown = (e) => {
       if (scrollBlockedRef.current) {
         if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Space'].includes(e.code)) {
           e.preventDefault();
-          if (isNavigatingToCheckpoint) {
-            console.log('⌨️ Keyboard scroll blocked during smooth navigation');
-          } else {
-            console.log('⌨️ Keyboard scroll absolutely blocked during checkpoint animation');
-          }
         }
       }
       
-      // BLOCK FORWARD KEYBOARD MOVEMENT at final checkpoint
+      // Block forward keyboard movement at final checkpoint
       if (currentCheckpointRef.current && 
           currentCheckpointRef.current.index === checkpointsRef.current.length - 1 && 
           ['ArrowDown', 'PageDown', 'Space'].includes(e.code)) {
-        console.log('⌨️ Forward keyboard movement blocked at final checkpoint');
         e.preventDefault();
         return;
       }
@@ -353,11 +345,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     const handleTouchMove = (e) => {
       if (scrollBlockedRef.current) {
         e.preventDefault();
-        if (isNavigatingToCheckpoint) {
-          console.log('📱 Touch scroll blocked during smooth navigation');
-        } else {
-          console.log('📱 Touch scroll absolutely blocked during checkpoint animation');
-        }
         return;
       }
 
@@ -365,11 +352,10 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       const deltaY = touchStartY - touchY;
       touchStartY = touchY;
       
-      // BLOCK FORWARD TOUCH MOVEMENT at final checkpoint
+      // Block forward touch movement at final checkpoint
       if (currentCheckpointRef.current && 
           currentCheckpointRef.current.index === checkpointsRef.current.length - 1 && 
           deltaY > 0) {
-        console.log('📱 Forward touch movement blocked at final checkpoint');
         e.preventDefault();
         return;
       }
@@ -383,14 +369,12 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     };
     
     // Attach scroll event listeners
-    console.log('🎧 Attaching scroll event listeners');
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('keydown', handleKeyDown, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: false });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     
     return () => {
-      console.log('🧹 Removing scroll event listeners');
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('touchstart', handleTouchStart);
@@ -402,8 +386,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   // CHECKPOINT ANIMATION SEQUENCE - Triggered when camera reaches stopT
   // ──────────────────────────────────────────────────────────────────────────────
   const playCheckpointSequence = useCallback(async (cp) => {
-    console.log(`🎬 Starting checkpoint sequence: ${cp.data.title}`);
-    
     try {
       // Trigger slide-in animations for card and header
       cp.cardObject.element.classList.add('visible');
@@ -419,7 +401,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         
         // Add timeout fallback in case transition never fires
         const timeout = setTimeout(() => {
-          console.warn('Card transition timeout - resolving anyway');
           resolve();
         }, 2000);
         
@@ -440,7 +421,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         
         // Add timeout fallback in case transition never fires
         const timeout = setTimeout(() => {
-          console.warn('Header transition timeout - resolving anyway');
           resolve();
         }, 2000);
         
@@ -478,7 +458,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       
       // Wait for all animations to complete
       await Promise.all([cardPromise, headerPromise, typewriterPromise]);
-      console.log(`✅ Checkpoint ${cp.index} animations completed`);
       
     } catch (error) {
       console.error('Error in checkpoint sequence:', error);
@@ -490,13 +469,9 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   // ──────────────────────────────────────────────────────────────────────────────
   
   const startSmoothNavigation = useCallback((startT, targetT, duration = 2000) => {
-    console.log(`🎬 Starting smooth navigation from ${startT.toFixed(3)} to ${targetT.toFixed(3)} over ${duration}ms`);
-    
     // Calculate dynamic duration based on distance for more natural movement
     const distance = Math.abs(targetT - startT);
     const dynamicDuration = Math.max(1000, Math.min(4000, distance * 3000)); // 1-4 seconds based on distance
-    
-    console.log(`📏 Navigation distance: ${distance.toFixed(3)}, dynamic duration: ${dynamicDuration}ms`);
     
     // Set navigation state
     setIsNavigatingToCheckpoint(true);
@@ -507,8 +482,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     navigationTargetT.current = targetT;
     navigationDurationRef.current = dynamicDuration;
     navigationStartTimeRef.current = performance.now();
-    
-    console.log(`✅ Navigation state initialized - start time: ${navigationStartTimeRef.current}`);
   }, []);
   
   const updateSmoothNavigation = useCallback((currentTime) => {
@@ -527,8 +500,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     
     const easedProgress = easeInOutCubic(progress);
     const currentT = navigationStartT.current + (navigationTargetT.current - navigationStartT.current) * easedProgress;
-    
-    console.log(`🎬 Navigation progress: ${(progress * 100).toFixed(1)}%, T=${currentT.toFixed(3)}`);
     
     // Update camera position along the path
     if (sceneRef.current) {
@@ -549,14 +520,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     
     // Check if navigation is complete
     if (progress >= 1.0) {
-      console.log(`✅ Smooth navigation completed at T=${currentT.toFixed(3)}`);
-      
       // Handle checkpoint animation if we navigated to a checkpoint
       if (navigationAnimationRef.current) {
         const { targetCheckpoint } = navigationAnimationRef.current;
         
         if (!targetCheckpoint.triggered) {
-          console.log(`🎯 Triggering checkpoint sequence after navigation: ${targetCheckpoint.data.title}`);
           targetCheckpoint.triggered = true;
           currentCheckpointRef.current = targetCheckpoint;
           pauseStartTimeRef.current = performance.now();
@@ -602,8 +570,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     
     const targetCheckpoint = checkpointsRef.current[targetIndex];
     const targetT = targetCheckpoint.stopT;
-    
-    console.log(`📍 Navigating to checkpoint ${targetIndex}: ${targetCheckpoint.data.title} (animated: ${useAnimation})`);
     
     // Get current camera position
     const currentT = sceneRef.current ? sceneRef.current.cameraT : 0;
@@ -684,8 +650,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
 
   // ── ENTER PORTFOLIO FUNCTION ──
   const handleEnterPortfolio = useCallback(() => {
-    console.log('🏠 Entering portfolio from final checkpoint');
-    
     // Set completion flags
     journeyCompletedRef.current = true;
     scrollBlockedRef.current = true;
@@ -786,9 +750,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   // MAIN ANIMATION LOOP - Simplified camera movement with smooth interpolation
   // ──────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    console.log('🎬 Main animation effect running. isTransitioning:', isTransitioning, 'preloadedResources:', !!preloadedResources);
     if (isTransitioning || !preloadedResources) {
-      console.log('🚫 Main animation effect skipped - transition or no resources');
       return;
     }
 
@@ -812,8 +774,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     function initThreeJS() {
       const container = containerRef.current;
       if (!container || !preloadedResources) return;
-
-      console.log('🚀 Initializing simplified Journey3D');
 
       // Get all prebuilt resources
       scene = preloadedResources.scene;
@@ -902,13 +862,16 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     // ──────────────────────────────────────────────────────────────────────────────
     // CAMERA UPDATE LOGIC - Smooth movement with checkpoint detection
     // 
-    // DURING CHECKPOINT ANIMATIONS:
-    // ✅ ALLOW: Camera look-around (mouse movement for immersive experience)
-    // 🚫 BLOCK: All scroll movement (wheel, keyboard, touch - absolutely no position changes)
-    // 
-    // DURING JOURNEY COMPLETION:
-    // 🔒 LOCK: Camera position at end (0.999) to prevent glitches
-    // 🏠 SMOOTH: Direct transition to main page from journey end
+    // Movement States:
+    // • SMOOTH NAVIGATION: Override scroll with animated movement to target
+    // • CHECKPOINT PAUSE: Block position updates, allow look-around only  
+    // • NORMAL SCROLL: Convert scroll to camera movement with smooth interpolation
+    // • JOURNEY COMPLETE: Allow normal movement during completion transition
+    //
+    // Checkpoint Detection:
+    // • Detect when camera reaches checkpoint stopT position
+    // • Trigger animations and pause camera movement
+    // • Update UI navigation state and progress tracking
     // ──────────────────────────────────────────────────────────────────────────────
     function updateCameraAndObjects(deltaTime) {
       if (!isAlive) return;
@@ -920,7 +883,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       const navigationResult = updateSmoothNavigation(performance.now());
       if (navigationResult !== null) {
         // Navigation is active, skip normal scroll-based updates
-        console.log(`🎬 Navigation active - current T: ${navigationResult.toFixed(3)}`);
         updateCameraPosition(sRef, deltaTime);
         return;
       }
@@ -939,15 +901,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         
         if (pauseElapsed >= CHECKPOINT_PAUSE_DURATION) {
           // Resume after 2 seconds - SYNC virtual scroll with camera position
-          console.log(`⏰ Resuming after checkpoint: ${currentCheckpointRef.current.data.title}`);
-          
-          // CRITICAL FIX: Sync virtual scroll position with actual camera position
           // This prevents the scroll jump when resuming from checkpoint pause
           const docHeight = document.body.scrollHeight - window.innerHeight;
           if (docHeight > 0) {
             virtualScrollY.current = sRef.cameraT * docHeight;
             window.scrollTo(0, virtualScrollY.current);
-            console.log(`🔄 Synced virtual scroll to ${virtualScrollY.current.toFixed(1)} (camera at ${sRef.cameraT.toFixed(3)})`);
           }
           
           currentCheckpointRef.current = null;
@@ -957,7 +915,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         } else {
           // Stay paused - block position updates but allow look-around
           isPaused = true;
-          console.log(`🔒 Camera position locked during animation (${(pauseElapsed/1000).toFixed(1)}s elapsed)`);
         }
       }
       
@@ -983,8 +940,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         if (!currentCheckpointRef.current) {
           for (let cp of checkpointsRef.current) {
             if (sRef.cameraT >= cp.stopT && !cp.triggered) {
-              console.log(`🎯 Reached checkpoint ${cp.index} at ${cp.stopT.toFixed(3)}`);
-              
               // Trigger checkpoint pause
               cp.triggered = true;
               currentCheckpointRef.current = cp;
@@ -1000,15 +955,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
               const isFinalCheckpoint = cp.index === checkpointsRef.current.length - 1;
               setIsAtFinalCheckpoint(isFinalCheckpoint);
               
-              if (isFinalCheckpoint) {
-                console.log('🏁 Reached final "Enter Portfolio" checkpoint');
-              }
-              
               // Snap camera to exact checkpoint position and sync virtual scroll
               sRef.cameraT = cp.stopT;
               sRef.targetT = cp.stopT;
               
-              // CRITICAL: Update virtual scroll to match camera position immediately
+              // Update virtual scroll to match camera position immediately
               const docHeight = document.body.scrollHeight - window.innerHeight;
               if (docHeight > 0) {
                 virtualScrollY.current = sRef.cameraT * docHeight;
@@ -1075,10 +1026,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         finalMatrix.lookAt(sRef.camera.position, finalLookAt, normal);
         sRef.camera.quaternion.setFromRotationMatrix(finalMatrix);
           
-          // Log during animations for feedback (check if we're in a paused state)
-          if (currentCheckpointRef.current && pauseStartTimeRef.current && isLookingAround) {
-            console.log(`👀 Look-around active during checkpoint animation`);
-          }
+
       }
 
         // Keep checkpoint objects facing camera for proper visibility
@@ -1110,11 +1058,10 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           renderer.render(scene, camera);
           cssRenderer.render(cssScene, camera);
         } else {
-          console.warn('⚠️ WebGL context lost, stopping animation');
           isAlive = false;
         }
       } catch (error) {
-        console.error('🚨 Render error:', error);
+        console.error('Render error:', error);
         isAlive = false;
       }
     }
@@ -1140,8 +1087,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
 
     // ── CLEANUP ──
     return () => {
-      console.log('🧹 Journey3D cleanup');
-      
       isAlive = false;
       
       if (rafId) {
@@ -1189,7 +1134,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           containerRef.current.removeChild(cssRenderer.domElement);
           }
         } catch (error) {
-          console.warn('⚠️ Error during DOM cleanup:', error);
+          console.warn('Error during DOM cleanup:', error);
         }
       }
 
@@ -1650,11 +1595,11 @@ function ScrollCaptureZone({ containerRef }) {
     const el = scrollCaptureRef.current;
     if (!el) return;
 
-    console.log('🎧 Attaching native scroll event listeners with { passive: false }');
+
 
     // ── WHEEL HANDLER: Non-passive to allow preventDefault() ──
     const onWheel = (e) => {
-      // CRITICAL: This preventDefault() now actually works because { passive: false }
+      // This preventDefault() works because { passive: false }
       e.preventDefault();
       
       // Forward wheel events to window for main scroll handling
@@ -1683,7 +1628,7 @@ function ScrollCaptureZone({ containerRef }) {
     };
 
     const onTouchMove = (e) => {
-      // CRITICAL: This preventDefault() now actually works because { passive: false }
+      // This preventDefault() works because { passive: false }
       e.preventDefault();
       
       // Forward touch events to window for main touch handling
@@ -1735,11 +1680,10 @@ function ScrollCaptureZone({ containerRef }) {
     el.addEventListener('mousemove', onMouseMove, { passive: true });
     el.addEventListener('mouseleave', onMouseLeave, { passive: true });
 
-    console.log('✅ Native event listeners attached successfully');
+
 
     // ── CLEANUP ──
     return () => {
-      console.log('🧹 Removing native scroll event listeners');
       el.removeEventListener('wheel', onWheel);
       el.removeEventListener('touchstart', onTouchStart);
       el.removeEventListener('touchmove', onTouchMove);
