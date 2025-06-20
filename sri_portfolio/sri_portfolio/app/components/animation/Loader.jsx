@@ -11,10 +11,6 @@ import journeyData from '../../json/journey.json';
 const Beams = dynamic(() => import('../background/Beams'), { ssr: false });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// CLEAN UI - No verbose loading states, just smooth progress indication
-// ──────────────────────────────────────────────────────────────────────────────
-
-// ──────────────────────────────────────────────────────────────────────────────
 // SCENE CONSTANTS - Must match Journey3D constants exactly
 // ──────────────────────────────────────────────────────────────────────────────
 const SCENE_SCALE = 5;
@@ -38,11 +34,7 @@ const LATERAL_OFFSET_DISTANCE_CARD = 200;   // ↓ from 250 - bring cards closer
 const LATERAL_OFFSET_DISTANCE_HEADER = 150; // ↓ from 250 - bring headers closer to road
 
 // ──────────────────────────────────────────────────────────────────────────────
-// UI COMPONENTS - Clean interface elements
-// ──────────────────────────────────────────────────────────────────────────────
-
-// ──────────────────────────────────────────────────────────────────────────────
-// CIRCULAR PROGRESS COMPONENT - Clean progress indicator
+// CIRCULAR PROGRESS COMPONENT - Clean progress indicator with interactive elements
 // ──────────────────────────────────────────────────────────────────────────────
 function CircularProgress({ progress, showStartButton, onStartClick }) {
   const radius = 90;
@@ -51,15 +43,14 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDasharray = `${circumference} ${circumference}`;
   
-  // FIX: Ensure progress bar correctly reflects the actual progress percentage
-  const clampedProgress = Math.min(Math.max(progress, 0), 100); // Clamp between 0-100
+  // Ensure progress bar correctly reflects the actual progress percentage
+  const clampedProgress = Math.min(Math.max(progress, 0), 100);
   const strokeDashoffset = circumference - (clampedProgress / 100) * circumference;
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0, angle: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [fillProgress, setFillProgress] = useState(0);
   const containerRef = useRef(null);
-  const fillRef = useRef(null);
 
   const handleMouseMove = (e) => {
     if (containerRef.current) {
@@ -375,8 +366,6 @@ class ThreeJSResourceManager {
     if (this.onProgress) {
       this.onProgress(this.overallProgress);
     }
-    
-    console.log(`📊 Phase ${this.currentPhase + 1}/${this.totalPhases} (${(this.phaseProgress * 100).toFixed(1)}%) - Overall: ${this.overallProgress.toFixed(1)}%`);
   }
 
   /**
@@ -385,7 +374,7 @@ class ThreeJSResourceManager {
   completePhase() {
     this.currentPhase++;
     this.phaseProgress = 0;
-    this.updateProgress(1.0); // Complete the phase
+    this.updateProgress(1.0);
   }
 
   /**
@@ -396,49 +385,44 @@ class ThreeJSResourceManager {
     if (this.onProgress) {
       this.onProgress(100);
     }
-    console.log('✅ All phases completed - 100%');
   }
 
   /**
    * MAIN INITIALIZATION: Execute all resource creation phases
-   * ENHANCED ERROR HANDLING: Each phase wrapped in try-catch
-   * GUARANTEED COMPLETION: onResourcesReady always fires
+   * Error handling for each phase with guaranteed completion callback
    */
   async initializeResources(container) {
-    console.log('🚀 ThreeJSResourceManager: Starting resource initialization');
-    let lastKnownResources = null;
-    
     try {
-      console.log('📋 Phase 1/8: Creating renderers...');
+      // Phase 1: Create renderers
       this.updateProgress(0);
       await this.createRenderers(container);
       this.completePhase();
       
-      console.log('📋 Phase 2/8: Creating scene...');
+      // Phase 2: Create scene
       await this.createScene();
       this.completePhase();
       
-      console.log('📋 Phase 3/8: Creating camera...');
+      // Phase 3: Create camera
       await this.createCamera();
       this.completePhase();
       
-      console.log('📋 Phase 4/8: Setting up environment...');
+      // Phase 4: Setup environment
       await this.createEnvironment();
       this.completePhase();
       
-      console.log('📋 Phase 5/8: Creating starfield...');
+      // Phase 5: Create starfield
       await this.createStarfieldInstancedMesh();
       this.completePhase();
       
-      console.log('📋 Phase 6/8: Creating road geometry...');
+      // Phase 6: Create road geometry
       await this.createRoadGeometry();
       this.completePhase();
       
-      console.log('📋 Phase 7/8: Creating checkpoints...');
+      // Phase 7: Create checkpoints
       await this.createCheckpointObjects();
       this.completePhase();
       
-      console.log('📋 Phase 8/8: Compiling shaders...');
+      // Phase 8: Compile shaders
       await this.compileShaders();
       this.completePhase();
       
@@ -452,29 +436,24 @@ class ThreeJSResourceManager {
         roadCurve: this.roadCurve,
         frenetFrames: this.frenetFrames,
         checkpoints: this.checkpoints,
-        resourceManager: this // Pass reference for React root cleanup
+        resourceManager: this
       };
-      
-      lastKnownResources = resources;
-      console.log('✅ All resources created successfully');
       
       // Mark loading as complete (100%)
       this.completeAllPhases();
       
-      // Trigger LoadingManager completion with resources
+      // Trigger callbacks
       if (this.onResourcesReady) {
-        console.log('📦 Calling onResourcesReady with complete resources');
         this.onResourcesReady(resources);
       }
       
-      // Trigger completion callback
       if (this.onComplete) {
         this.onComplete();
       }
       
       return resources;
     } catch (error) {
-      console.error('🚨 Resource initialization failed:', error);
+      console.error('Resource initialization failed:', error);
       
       // Create partial resource package for error recovery
       const partialResources = {
@@ -487,10 +466,9 @@ class ThreeJSResourceManager {
         frenetFrames: this.frenetFrames,
         checkpoints: this.checkpoints || [],
         resourceManager: this,
-        isPartial: true // Flag to indicate incomplete resources
+        isPartial: true
       };
       
-      console.log('📦 Calling onResourcesReady with partial resources for error recovery');
       if (this.onResourcesReady) {
         this.onResourcesReady(partialResources);
       }
@@ -504,19 +482,17 @@ class ThreeJSResourceManager {
   }
 
   /**
-   * PHASE 1: Create and configure both renderers, attach to DOM
+   * PHASE 1: Create and configure both renderers
    * WebGL renderer handles 3D objects, CSS3D handles HTML elements in 3D space
-   * PERFORMANCE: Cap pixel ratio to prevent GPU overload on high-DPI displays
+   * Performance optimized with capped pixel ratio for high-DPI displays
    */
   async createRenderers(container) {
     return new Promise((resolve, reject) => {
       try {
-        console.log('🎮 Creating WebGL and CSS3D renderers');
-        
         // WebGL renderer for stars, road, and 3D geometry
         this.renderer = new THREE.WebGLRenderer({ 
           antialias: true, 
-          alpha: false, // Remove transparency to show HDRI background
+          alpha: false,
           powerPreference: "high-performance"
         });
         
@@ -526,11 +502,8 @@ class ThreeJSResourceManager {
         this.renderer.domElement.style.zIndex = '1';
         
         // Performance optimizations
-        this.renderer.shadowMap.enabled = false; // Disable shadows for better performance
+        this.renderer.shadowMap.enabled = false;
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-        
-        console.log('🎮 WebGL renderer created with pixel ratio:', this.renderer.getPixelRatio());
-        // Note: DOM attachment will be handled by Journey3D
 
         // CSS3D renderer for checkpoint cards and headers
         this.cssRenderer = new CSS3DRenderer();
@@ -538,9 +511,7 @@ class ThreeJSResourceManager {
         this.cssRenderer.domElement.style.position = 'absolute';
         this.cssRenderer.domElement.style.top = 0;
         this.cssRenderer.domElement.style.zIndex = '2';
-        // Note: DOM attachment will be handled by Journey3D
         
-        console.log('🎨 CSS3D renderer created');
         resolve();
       } catch (error) {
         reject(error);
@@ -553,8 +524,6 @@ class ThreeJSResourceManager {
    */
   async createScene() {
     return new Promise((resolve) => {
-      console.log('🎬 Creating main 3D scene and CSS3D scene');
-      
       // Main 3D scene with fog for atmospheric depth
       this.scene = new THREE.Scene();
       this.scene.background = new THREE.Color(0x000000);
@@ -572,8 +541,6 @@ class ThreeJSResourceManager {
    */
   async createCamera() {
     return new Promise((resolve) => {
-      console.log('📷 Setting up perspective camera');
-      
       this.camera = new THREE.PerspectiveCamera(
         75, // Field of view for immersive experience
         window.innerWidth / window.innerHeight, 
@@ -595,11 +562,9 @@ class ThreeJSResourceManager {
    */
   async createEnvironment() {
     return new Promise((resolve) => {
-      console.log('🌌 Setting up environment system with asset loading progress');
       this.updateProgress(0.01);
       
       const createProceduralEnvironment = () => {
-        console.log('🎨 Creating procedural environment');
         this.updateProgress(0.8);
         
         // Simple gradient background as fallback
@@ -622,7 +587,6 @@ class ThreeJSResourceManager {
         this.scene.background = texture;
         this.scene.environment = texture;
         
-        console.log('✅ Procedural environment with atmospheric clouds created');
         this.updateProgress(1.0);
         resolve();
       };
@@ -633,11 +597,9 @@ class ThreeJSResourceManager {
       rgbeLoader.load(
         'space_environment.hdr',
         (hdrTexture) => {
-          console.log('🌌 HDRI loaded successfully');
           this.updateProgress(0.5);
           
-          // FIX: Let RGBELoader handle texture format automatically
-          // Only set essential properties, don't override format/type
+          // Let RGBELoader handle texture format automatically
           hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
           hdrTexture.colorSpace = THREE.SRGBColorSpace;
           
@@ -648,15 +610,14 @@ class ThreeJSResourceManager {
           
           // Generate PMREM cubemap for lighting
           try {
-          const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
-          this.scene.environment = envMap;
-          this.environmentMap = envMap;
-          
-          console.log('✅ HDRI environment correctly applied: crisp background + PBR lighting');
+            const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
+            this.scene.environment = envMap;
+            this.environmentMap = envMap;
+            
             this.updateProgress(1.0);
-          resolve();
+            resolve();
           } catch (error) {
-            console.warn('⚠️ PMREM generation failed, using texture directly:', error);
+            console.warn('PMREM generation failed, using texture directly:', error);
             this.scene.environment = hdrTexture;
             this.environmentMap = hdrTexture;
             this.updateProgress(1.0);
@@ -667,11 +628,10 @@ class ThreeJSResourceManager {
           // HDRI loading progress
           if (progress.total > 0) {
             const progressRatio = progress.loaded / progress.total;
-            this.updateProgress(progressRatio * 0.5); // HDRI takes up first 50% of this phase
+            this.updateProgress(progressRatio * 0.5);
           }
         },
         (error) => {
-          console.log('⚠️ HDRI not found, falling back to procedural environment:', error.message);
           createProceduralEnvironment();
           resolve();
         }
@@ -690,69 +650,67 @@ class ThreeJSResourceManager {
    */
   async createStarfieldInstancedMesh() {
     return new Promise((resolve) => {
-      console.log('⭐ Creating starfield geometry');
       this.updateProgress(0);
         
-        // Calculate star count based on journey length (reduced for performance)
-        const starCount = Math.max(STAR_FIELD_MAX_INITIAL_STARS * 0.7, this.journeyLength * STAR_DENSITY_PER_CHECKPOINT * 0.8);
+      // Calculate star count based on journey length (reduced for performance)
+      const starCount = Math.max(STAR_FIELD_MAX_INITIAL_STARS * 0.7, this.journeyLength * STAR_DENSITY_PER_CHECKPOINT * 0.8);
+      
+      this.updateProgress(0.1);
+      
+      // Use low-poly geometry for better performance
+      const starGeometry = new THREE.SphereGeometry(1, 6, 6);
+      const starMaterial = new THREE.MeshBasicMaterial({ 
+        transparent: true, 
+        opacity: 0.8,
+        depthWrite: false // Performance optimization for transparent objects
+      });
+      
+      this.updateProgress(0.2);
+      
+      // InstancedMesh: One mesh, thousands of instances
+      this.starfieldMesh = new THREE.InstancedMesh(starGeometry, starMaterial, starCount);
+      
+      const dummy = new THREE.Object3D();
+      
+      this.updateProgress(0.3);
+      
+      // Configure each star instance: position, scale, color
+      for (let i = 0; i < starCount; i++) {
+        // Random 3D position
+        const x = THREE.MathUtils.randFloatSpread(4000 * SCENE_SCALE);
+        const y = THREE.MathUtils.randFloatSpread(4000 * SCENE_SCALE);
+        const z = THREE.MathUtils.randFloatSpread(4000 * SCENE_SCALE);
+        dummy.position.set(x, y, z);
         
-        this.updateProgress(0.1);
+        // Random scale for variety
+        const scale = THREE.MathUtils.randFloat(0.5, 2.5) * SCENE_SCALE * 0.2;
+        dummy.scale.set(scale, scale, scale);
         
-        // PERFORMANCE: Use low-poly geometry for better performance
-        const starGeometry = new THREE.SphereGeometry(1, 6, 6); // Reduced from 8x8 to 6x6
-        const starMaterial = new THREE.MeshBasicMaterial({ 
-          transparent: true, 
-          opacity: 0.8,
-          depthWrite: false // Performance optimization for transparent objects
-        });
+        // Update matrix and store
+        dummy.updateMatrix();
+        this.starfieldMesh.setMatrixAt(i, dummy.matrix);
         
-        this.updateProgress(0.2);
+        // Random brightness
+        const intensity = THREE.MathUtils.randFloat(STAR_COLOR_MIN_INTENSITY, STAR_COLOR_MAX_INTENSITY);
+        this.starfieldMesh.setColorAt(i, new THREE.Color(intensity, intensity, intensity));
         
-        // InstancedMesh: One mesh, thousands of instances
-        this.starfieldMesh = new THREE.InstancedMesh(starGeometry, starMaterial, starCount);
-        
-        const dummy = new THREE.Object3D();
-        
-        this.updateProgress(0.3);
-        
-        // Configure each star instance: position, scale, color
-        for (let i = 0; i < starCount; i++) {
-          // Random 3D position
-          const x = THREE.MathUtils.randFloatSpread(4000 * SCENE_SCALE);
-          const y = THREE.MathUtils.randFloatSpread(4000 * SCENE_SCALE);
-          const z = THREE.MathUtils.randFloatSpread(4000 * SCENE_SCALE);
-          dummy.position.set(x, y, z);
-          
-          // Random scale for variety
-          const scale = THREE.MathUtils.randFloat(0.5, 2.5) * SCENE_SCALE * 0.2;
-          dummy.scale.set(scale, scale, scale);
-          
-          // Update matrix and store
-          dummy.updateMatrix();
-          this.starfieldMesh.setMatrixAt(i, dummy.matrix);
-          
-          // Random brightness
-          const intensity = THREE.MathUtils.randFloat(STAR_COLOR_MIN_INTENSITY, STAR_COLOR_MAX_INTENSITY);
-          this.starfieldMesh.setColorAt(i, new THREE.Color(intensity, intensity, intensity));
-          
-          // Update progress during generation
-          if (i % 5000 === 0) {
-            const starProgress = i / starCount;
-            this.updateProgress(0.3 + starProgress * 0.6);
-          }
+        // Update progress during generation
+        if (i % 5000 === 0) {
+          const starProgress = i / starCount;
+          this.updateProgress(0.3 + starProgress * 0.6);
         }
-        
-        this.updateProgress(0.9);
-        
-        // Upload to GPU
-        this.starfieldMesh.instanceMatrix.needsUpdate = true;
-        this.starfieldMesh.instanceColor.needsUpdate = true;
-        
-        this.scene.add(this.starfieldMesh);
-        
-      console.log('✅ Starfield created successfully with', starCount, 'stars');
-        this.updateProgress(1.0);
-        resolve();
+      }
+      
+      this.updateProgress(0.9);
+      
+      // Upload to GPU
+      this.starfieldMesh.instanceMatrix.needsUpdate = true;
+      this.starfieldMesh.instanceColor.needsUpdate = true;
+      
+      this.scene.add(this.starfieldMesh);
+      
+      this.updateProgress(1.0);
+      resolve();
     });
   }
 
@@ -762,57 +720,55 @@ class ThreeJSResourceManager {
    */
   async createRoadGeometry() {
     return new Promise((resolve) => {
-      console.log('🛤️ Creating road geometry');
       this.updateProgress(0);
       
-        // PERFORMANCE: Reduce road complexity by 50% for better performance
-        const roadPoints = Math.max(600, this.journeyLength * ROAD_POINTS_PER_CHECKPOINT * 0.5);
-        const points = [];
+      // Reduce road complexity by 50% for better performance
+      const roadPoints = Math.max(600, this.journeyLength * ROAD_POINTS_PER_CHECKPOINT * 0.5);
+      const points = [];
+      
+      this.updateProgress(0.1);
+      
+      // Generate curved path using sinusoidal functions for natural movement
+      for (let i = 0; i <= roadPoints; i++) {
+        const t = (i / roadPoints) * Math.PI * (this.journeyLength + ROAD_CURVE_LENGTH_MULTIPLIER);
         
-        this.updateProgress(0.1);
+        // Layered sine/cosine waves create organic, flowing curves
+        const x = Math.sin(t * ROAD_X_FREQUENCY_1) * ROAD_X_AMPLITUDE_1 + 
+                 Math.cos(t * ROAD_X_FREQUENCY_2) * ROAD_X_AMPLITUDE_2;
+        const y = Math.cos(t * ROAD_Y_FREQUENCY_1) * ROAD_Y_AMPLITUDE_1 + 
+                 Math.sin(t * ROAD_Y_FREQUENCY_2) * ROAD_Y_AMPLITUDE_2;
+        const z = i * ROAD_Z_SPACING - (roadPoints * 2);
         
-        // Generate curved path using sinusoidal functions for natural movement
-        for (let i = 0; i <= roadPoints; i++) {
-          const t = (i / roadPoints) * Math.PI * (this.journeyLength + ROAD_CURVE_LENGTH_MULTIPLIER);
-          
-          // Layered sine/cosine waves create organic, flowing curves
-          const x = Math.sin(t * ROAD_X_FREQUENCY_1) * ROAD_X_AMPLITUDE_1 + 
-                   Math.cos(t * ROAD_X_FREQUENCY_2) * ROAD_X_AMPLITUDE_2;
-          const y = Math.cos(t * ROAD_Y_FREQUENCY_1) * ROAD_Y_AMPLITUDE_1 + 
-                   Math.sin(t * ROAD_Y_FREQUENCY_2) * ROAD_Y_AMPLITUDE_2;
-          const z = i * ROAD_Z_SPACING - (roadPoints * 2);
-          
-          points.push(new THREE.Vector3(x, y, z).multiplyScalar(SCENE_SCALE));
-          
-          // Update progress during point generation
-          if (i % 100 === 0) {
-            const pointProgress = i / roadPoints;
-            this.updateProgress(0.1 + pointProgress * 0.4);
-          }
+        points.push(new THREE.Vector3(x, y, z).multiplyScalar(SCENE_SCALE));
+        
+        // Update progress during point generation
+        if (i % 100 === 0) {
+          const pointProgress = i / roadPoints;
+          this.updateProgress(0.1 + pointProgress * 0.4);
         }
-        
-        this.updateProgress(0.5);
-        
-        // Create smooth spline curve and compute Frenet frames for camera orientation
-        this.roadCurve = new THREE.CatmullRomCurve3(points);
-        this.updateProgress(0.7);
-        
-        this.frenetFrames = this.roadCurve.computeFrenetFrames(roadPoints + 500, false);
-        this.updateProgress(0.8);
+      }
+      
+      this.updateProgress(0.5);
+      
+      // Create smooth spline curve and compute Frenet frames for camera orientation
+      this.roadCurve = new THREE.CatmullRomCurve3(points);
+      this.updateProgress(0.7);
+      
+      this.frenetFrames = this.roadCurve.computeFrenetFrames(roadPoints + 500, false);
+      this.updateProgress(0.8);
 
-        // Create visible road line
-        this.roadMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 3 });
-        const linePoints = this.roadCurve.getPoints(roadPoints + 500);
-        this.roadGeometry = new THREE.BufferGeometry().setFromPoints(linePoints);
-        this.roadLine = new THREE.Line(this.roadGeometry, this.roadMaterial);
-        
-        this.updateProgress(0.9);
-        
-        this.scene.add(this.roadLine);
-        
-      console.log('✅ Road curve created successfully with', roadPoints, 'points');
-        this.updateProgress(1.0);
-        resolve();
+      // Create visible road line
+      this.roadMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 3 });
+      const linePoints = this.roadCurve.getPoints(roadPoints + 500);
+      this.roadGeometry = new THREE.BufferGeometry().setFromPoints(linePoints);
+      this.roadLine = new THREE.Line(this.roadGeometry, this.roadMaterial);
+      
+      this.updateProgress(0.9);
+      
+      this.scene.add(this.roadLine);
+      
+      this.updateProgress(1.0);
+      resolve();
     });
   }
 
@@ -825,26 +781,19 @@ class ThreeJSResourceManager {
    */
   async createCheckpointObjects() {
     return new Promise((resolve) => {
-      console.log('🎯 Creating CSS3D checkpoint objects');
       this.updateProgress(0);
       
-        // ── GUARD: Prevent duplicate checkpoint creation ──
-        if (this.checkpoints.length > 0) {
-          console.log('🚫 Checkpoints already exist, skipping creation. Current count:', this.checkpoints.length);
-          console.log('📊 CSS3D scene children before skip:', this.cssScene.children.length);
-          this.updateProgress(1.0);
-          resolve();
-          return;
-        }
+      // Guard: Prevent duplicate checkpoint creation
+      if (this.checkpoints.length > 0) {
+        this.updateProgress(1.0);
+        resolve();
+        return;
+      }
         
-      console.log('🎯 Starting checkpoint creation for', journeyData.length, 'items');
-        console.log('📊 CSS3D scene children before creation:', this.cssScene.children.length);
-        this.updateProgress(0.1);
+      this.updateProgress(0.1);
         
         journeyData.forEach((data, i) => {
-          console.log(`📍 Creating checkpoint ${i}:`, data.title);
-          
-          // ── POSITIONING: Compute exactly once ──
+          // Positioning: Compute exactly once
           const stopT = (i + 1) / (this.journeyLength + 1);
           const objectT = stopT + OBJECT_PLACEMENT_OFFSET_T;
           
@@ -852,25 +801,23 @@ class ThreeJSResourceManager {
           const frameIndex = Math.floor(objectT * (this.frenetFrames.binormals.length - 1));
           const binormal = this.frenetFrames.binormals[frameIndex];
 
-          // ── ALTERNATING SIDES: Even = right (1), Odd = left (-1) ──
+          // Alternating sides: Even = right (1), Odd = left (-1)
           const side = i % 2 === 0 ? 1 : -1;
-          console.log(`📍 Checkpoint ${i} side:`, side === 1 ? 'RIGHT' : 'LEFT');
           
-          // ── WORLD-SPACE OFFSETS: Compute using binormal ──
+          // World-space offsets: Compute using binormal
           const cardOffsetDistance = LATERAL_OFFSET_DISTANCE_CARD * SCENE_SCALE;
           const headerOffsetDistance = LATERAL_OFFSET_DISTANCE_HEADER * SCENE_SCALE;
           
           const cardOffset = binormal.clone().multiplyScalar(cardOffsetDistance * side);
           const headerOffset = binormal.clone().multiplyScalar(headerOffsetDistance * -side);
 
-          // ── CARD ELEMENT: Create with CSS custom property ──
+          // Card element: Create with CSS custom property
           const cardElement = document.createElement('div');
           cardElement.className = 'journey-card';
           
           // Set CSS custom property for slide-in direction
-          const cardOffscreenX = side > 0 ? '150px' : '-150px'; // Right side slides from right, left from left
+          const cardOffscreenX = side > 0 ? '150px' : '-150px';
           cardElement.style.setProperty('--offscreen-x', cardOffscreenX);
-          console.log(`🎨 Card ${i} --offscreen-x:`, cardOffscreenX);
           
           cardElement.innerHTML = `
             <div class="journey-content">
@@ -883,35 +830,31 @@ class ThreeJSResourceManager {
             </div>
           `;
           
-          // ── HEADER ELEMENT: Create with opposite slide direction ──
+          // Header element: Create with opposite slide direction
           const headerElement = document.createElement('div');
           headerElement.className = 'journey-header-overlay';
           
           // Header slides from opposite side of card
           const headerOffscreenX = side > 0 ? '-150px' : '150px';
           headerElement.style.setProperty('--offscreen-x', headerOffscreenX);
-          console.log(`🎨 Header ${i} --offscreen-x:`, headerOffscreenX);
 
-          // ── CSS3D OBJECTS: Position and scale in 3D space ──
+          // CSS3D objects: Position and scale in 3D space
           const cardObject = new CSS3DObject(cardElement);
           cardObject.position.copy(position).add(cardOffset);
-          cardObject.scale.set(1.5, 1.5, 1); // 150% size - blow up for prominence
+          cardObject.scale.set(1.5, 1.5, 1); // 150% size for prominence
           
           const headerObject = new CSS3DObject(headerElement);
           headerObject.position.copy(position).add(headerOffset);
-          headerObject.scale.set(1.3, 1.3, 1); // 130% size - prominent but balanced
+          headerObject.scale.set(1.3, 1.3, 1); // 130% size for balance
           
-          // ── ADD TO CSS3D SCENE: Single addition, no re-appending ──
+          // Add to CSS3D scene
           this.cssScene.add(cardObject);
           this.cssScene.add(headerObject);
-          console.log(`✅ Added checkpoint ${i} objects to CSS3D scene`);
-          console.log(`📏 Card ${i} dimensions: ${cardElement.style.width || '600px'} × ${cardElement.style.height || '450px'}, 3D scale: 1.5x`);
-          console.log(`📏 Header ${i} dimensions: ${headerElement.style.width || '500px'} × ${headerElement.style.height || '180px'}, 3D scale: 1.3x`);
 
-          // ── REACT ROOT: Create for dynamic content rendering ──
+          // React root: Create for dynamic content rendering
           const root = createRoot(headerElement);
 
-          // ── STORE: Single creation, stored in checkpoints array ──
+          // Store: Single creation, stored in checkpoints array
           this.checkpoints.push({ 
             stopT, 
             cardObject, 
@@ -927,8 +870,6 @@ class ThreeJSResourceManager {
           this.updateProgress(0.1 + checkpointProgress * 0.8);
         });
         
-        console.log('✅ createCheckpointObjects: All', this.checkpoints.length, 'checkpoints created and stored');
-        console.log('📊 CSS3D scene children after creation:', this.cssScene.children.length);
         this.updateProgress(1.0);
         resolve();
     });
@@ -936,30 +877,26 @@ class ThreeJSResourceManager {
 
   /**
    * PHASE 8: Pre-compile all shaders on GPU
-   * 
-   * PERFORMANCE BENEFIT:
    * Eliminates runtime shader compilation stutters that cause frame drops
    * All materials are compiled and cached on GPU during loading
    */
   async compileShaders() {
     return new Promise((resolve) => {
-      console.log('🎨 Compiling shaders');
       this.updateProgress(0);
       
-        // Simulate compilation progress
-        setTimeout(() => {
-          this.updateProgress(0.3);
-      
+      // Simulate compilation progress
+      setTimeout(() => {
+        this.updateProgress(0.3);
+    
         // Force compilation of all scene materials/shaders
         this.renderer.compile(this.scene, this.camera);
-          this.updateProgress(0.7);
-          
+        this.updateProgress(0.7);
+        
         this.isCompiled = true;
         
-      console.log('✅ Shader compilation completed successfully');
-          this.updateProgress(1.0);
+        this.updateProgress(1.0);
         resolve();
-        }, 100); // Small delay to show progress
+      }, 100); // Small delay to show progress
     });
   }
 
@@ -968,94 +905,71 @@ class ThreeJSResourceManager {
    * Does NOT dispose React roots - that's handled by Journey3D
    */
   disposeThreeJSResources() {
-    console.log('🧹 ThreeJSResourceManager: Disposing THREE.js resources only');
-    
     try {
-      // ── CHECK WEBGL CONTEXT ──
+      // Check WebGL context
       if (this.renderer && this.renderer.getContext()) {
         const gl = this.renderer.getContext();
         if (gl.isContextLost && gl.isContextLost()) {
-          console.log('⚠️ WebGL context already lost, skipping resource disposal');
           return;
         }
       }
     
-    // ── THREE.JS RESOURCES: Dispose geometries and materials ──
-    if (this.starfieldMesh) {
+      // THREE.js resources: Dispose geometries and materials
+      if (this.starfieldMesh) {
         if (this.starfieldMesh.geometry) this.starfieldMesh.geometry.dispose();
         if (this.starfieldMesh.material) this.starfieldMesh.material.dispose();
-      console.log('🗑️ Disposed starfield mesh resources');
-    }
-    
-    if (this.roadGeometry) {
-      this.roadGeometry.dispose();
-      console.log('🗑️ Disposed road geometry');
-    }
-    
-    if (this.roadMaterial) {
-      this.roadMaterial.dispose();
-      console.log('🗑️ Disposed road material');
-    }
-    
-      // ── ENVIRONMENT RESOURCES: Dispose HDRI ──
-    if (this.pmremGenerator) {
-      this.pmremGenerator.dispose();
-      console.log('🗑️ Disposed PMREM generator');
-    }
-    
-    if (this.environmentMap) {
-      this.environmentMap.dispose();
-      console.log('🗑️ Disposed environment map');
-    }
-    
-    if (this.renderer) {
-      this.renderer.dispose();
-      console.log('🗑️ Disposed WebGL renderer');
-      // Note: DOM elements are managed by Journey3D
-    }
-    
-    if (this.cssRenderer) {
-      console.log('🗑️ CSS3D renderer cleanup complete');
-      // Note: DOM elements are managed by Journey3D
-    }
-    
-    console.log('✅ ThreeJSResourceManager: THREE.js cleanup completed');
+      }
+      
+      if (this.roadGeometry) {
+        this.roadGeometry.dispose();
+      }
+      
+      if (this.roadMaterial) {
+        this.roadMaterial.dispose();
+      }
+      
+      // Environment resources: Dispose HDRI
+      if (this.pmremGenerator) {
+        this.pmremGenerator.dispose();
+      }
+      
+      if (this.environmentMap) {
+        this.environmentMap.dispose();
+      }
+      
+      if (this.renderer) {
+        this.renderer.dispose();
+      }
     } catch (error) {
-      console.warn('⚠️ Error during THREE.js resource disposal:', error);
+      console.warn('Error during THREE.js resource disposal:', error);
       // Continue cleanup even if some resources fail to dispose
     }
   }
 
   /**
    * Dispose React roots only (called from Journey3D cleanup)
-   * PERFORMANCE: Lazy cleanup to allow quick re-entry without thrashing
+   * Lazy cleanup to allow quick re-entry without thrashing
    */
   disposeReactRoots() {
-    console.log('🧹 ThreeJSResourceManager: Scheduling lazy React root disposal');
-    
-    // ── REACT ROOTS: Lazy cleanup allows quick re-entry without thrashing ──
+    // React roots: Lazy cleanup allows quick re-entry without thrashing
     this.checkpoints.forEach((cp, index) => {
       if (cp.root) {
-        // PERFORMANCE: Delay cleanup to allow potential re-entry
+        // Delay cleanup to allow potential re-entry
         setTimeout(() => {
           try {
             cp.root.unmount();
-            console.log(`🗑️ Lazily unmounted React root for checkpoint ${index}`);
           } catch (error) {
-            console.warn(`⚠️ Error unmounting React root for checkpoint ${index}:`, error);
+            console.warn(`Error unmounting React root for checkpoint ${index}:`, error);
           }
         }, 1000); // 1 second delay instead of immediate
       }
     });
-    
-    console.log('✅ ThreeJSResourceManager: Lazy React roots cleanup scheduled');
   }
 
   /**
    * Legacy method - prefer disposeThreeJSResources() or disposeReactRoots()
    */
   dispose() {
-    console.log('⚠️ ThreeJSResourceManager: Using legacy dispose() method');
     this.disposeThreeJSResources();
     this.disposeReactRoots();
   }
@@ -1137,42 +1051,29 @@ export default function Loader({ onComplete, onResourcesReady }) {
         cancelAnimationFrame(progressAnimationRef.current);
       }
     };
-  }, [targetProgress]); // FIX: Remove 'progress' from dependency array to prevent infinite loops
+      }, [targetProgress]);
 
-  // ── Initialize UI animations ──
+  // Initialize UI animations
   useEffect(() => {
-    console.log('🎬 Starting UI loading sequence');
     setShowContent(true);
     
     // Mark background as loaded immediately
-    setUILoadingSteps(prev => {
-      const updated = { ...prev, background: true };
-      console.log('✅ Background loaded');
-      return updated;
-    });
+    setUILoadingSteps(prev => ({ ...prev, background: true }));
     
     // Simulate beams loading with small delay
     setTimeout(() => {
-      setUILoadingSteps(prev => {
-        const updated = { ...prev, beams: true };
-        console.log('✅ Beams component loaded');
-        return updated;
-      });
+      setUILoadingSteps(prev => ({ ...prev, beams: true }));
     }, 100);
     
     // Mark circular progress as loaded after a brief delay
     setTimeout(() => {
-      setUILoadingSteps(prev => {
-        const updated = { ...prev, circularProgress: true };
-        console.log('✅ Circular progress component loaded');
-        return updated;
-      });
+      setUILoadingSteps(prev => ({ ...prev, circularProgress: true }));
     }, 200);
   }, []);
 
-  // ── Track text animation completion ──
+  // Track text animation completion
   const handleTextAnimationComplete = useCallback((textKey) => {
-    // GUARD: Prevent multiple calls for the same animation
+    // Guard: Prevent multiple calls for the same animation
     if (textAnimationsComplete[textKey]) {
       return; // Already completed, ignore duplicate calls
     }
@@ -1183,70 +1084,53 @@ export default function Loader({ onComplete, onResourcesReady }) {
         return prev; // No change needed
       }
       
-      const updated = {
-      ...prev,
-      [textKey]: true
+      return {
+        ...prev,
+        [textKey]: true
       };
-      
-      // Only log once when the animation actually completes
-      console.log(`✅ Text: ${textKey}`);
-      
-      return updated;
     });
   }, [textAnimationsComplete]);
 
-  // ── Check when all text animations are complete ──
+  // Check when all text animations are complete
   useEffect(() => {
     const allTextComplete = Object.values(textAnimationsComplete).every(Boolean);
     if (allTextComplete && !uiLoadingSteps.textElements) {
-      console.log('✅ All text animations complete');
       setUILoadingSteps(prev => ({ ...prev, textElements: true }));
     }
   }, [textAnimationsComplete, uiLoadingSteps.textElements]);
 
-  // ── Check when all text animations are complete (for start button) ──
+  // Check when all text animations are complete (for start button)
   const allTextAnimationsComplete = Object.values(textAnimationsComplete).every(Boolean);
 
-  // ── Check when all UI loading steps are complete ──
+  // Check when all UI loading steps are complete
   useEffect(() => {
     const allUIStepsComplete = Object.values(uiLoadingSteps).every(Boolean);
-    console.log('🔍 UI Loading Status:', uiLoadingSteps, 'All complete?', allUIStepsComplete);
     
     if (allUIStepsComplete && !uiLoadingComplete) {
-      console.log('🎉 UI READY - Starting asset loading!');
       setUILoadingComplete(true);
     }
   }, [uiLoadingSteps, uiLoadingComplete]);
 
-  // ── Show start button when both progress is 100% and text animations are complete ──
+  // Show start button when both progress is 100% and text animations are complete
   useEffect(() => {
     if (progress >= 100 && allTextAnimationsComplete) {
       // Add a small delay to ensure smooth transition
       setTimeout(() => {
-        console.log('✅ Showing START button - ready for user interaction');
         setShowStartButton(true);
       }, 800);
     }
   }, [progress, allTextAnimationsComplete]);
 
-  // ──────────────────────────────────────────────────────────────────────────────
-  // RESOURCE INITIALIZATION: Only starts AFTER UI is completely loaded
-  // ──────────────────────────────────────────────────────────────────────────────
+  // Resource initialization: Only starts AFTER UI is completely loaded
   useEffect(() => {
-    // GUARD: Don't start until UI is completely loaded
+    // Guard: Don't start until UI is completely loaded
     if (!uiLoadingComplete || hasInitializedRef.current || !containerRef.current) {
-      if (!uiLoadingComplete) {
-        console.log('⏳ Waiting for UI to complete loading before starting asset loading...');
-      }
-        return;
-      }
-      
+      return;
+    }
+    
     let isMounted = true;
     
     const initializeResources = async () => {
-      console.log('🚀 UI LOADING COMPLETE - Starting asset loading pipeline');
-      console.log('📦 Beginning 3D resource initialization');
-      
       const resourceManager = new ThreeJSResourceManager();
       resourceManagerRef.current = resourceManager;
       
@@ -1255,29 +1139,24 @@ export default function Loader({ onComplete, onResourcesReady }) {
         // Progress updates from actual resource creation
         (progressValue) => {
           if (isMounted) {
-            console.log(`📊 Asset progress: ${progressValue.toFixed(1)}`);
-            setTargetProgress(progressValue); // Use target progress for smooth animation
+            setTargetProgress(progressValue);
           }
         },
         // Completion - all assets loaded
         () => {
-          console.log('🎉 Asset loading complete');
           if (isMounted) {
             setTargetProgress(100);
           }
         },
         // Error handling with recovery
         (error) => {
-          console.error('🚨 Asset loading error:', error);
+          console.error('Asset loading error:', error);
           if (isMounted) {
-            // Still allow progression after error
             setTargetProgress(95); // Stick at 95% on error
           }
         },
-        // Resources ready callback - ALWAYS CALLED
+        // Resources ready callback - always called
         (resources) => {
-          console.log('📦 Resources ready');
-          
           if (isMounted && onResourcesReady) {
             onResourcesReady(resources);
           }
@@ -1285,44 +1164,39 @@ export default function Loader({ onComplete, onResourcesReady }) {
       );
       
       try {
-        // ASSET LOADING PHASE - Everything built here
+        // Asset loading phase - everything built here
         await resourceManager.initializeResources(containerRef.current);
         
         // Only set flag after successful completion
         hasInitializedRef.current = true;
-        console.log('✅ Complete asset loading pipeline finished successfully');
       } catch (error) {
-        console.error('🚨 Failed to initialize assets:', error);
+        console.error('Failed to initialize assets:', error);
         // Don't set hasInitialized flag on error - allow retry
       }
     };
     
     initializeResources();
     
-    // Cleanup on unmount - DO NOT dispose React roots here
+    // Cleanup on unmount - do not dispose React roots here
     return () => {
-      console.log('🧹 Loader: Component unmounting');
       isMounted = false;
       if (resourceManagerRef.current) {
-        // Only dispose THREE.js resources, NOT React roots
+        // Only dispose THREE.js resources, not React roots
         resourceManagerRef.current.disposeThreeJSResources();
       }
     };
-  }, [uiLoadingComplete, onResourcesReady]); // Only depend on UI completion
+  }, [uiLoadingComplete, onResourcesReady]);
 
-  // ── Transition to Journey3D ──
+  // Transition to Journey3D
   const handleStartClick = () => {
-    console.log('👆 START button clicked - Transitioning to Journey3D');
     if (onComplete) {
       onComplete();
     } else {
-      console.warn('⚠️ onComplete callback not provided');
+      console.warn('onComplete callback not provided');
     }
   };
 
-  // ──────────────────────────────────────────────────────────────────────────────
-  // RENDER: Enhanced loading interface with Major Mono styling and animations
-  // ──────────────────────────────────────────────────────────────────────────────
+  // Enhanced loading interface with Major Mono styling and animations
   return (
     <div 
       ref={containerRef}

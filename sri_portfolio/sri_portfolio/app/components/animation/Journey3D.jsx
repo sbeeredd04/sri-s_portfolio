@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DecryptedText from './DecryptedText';
 import journeyData from '../../json/journey.json';
 import * as THREE from 'three';
@@ -123,7 +124,7 @@ const CheckpointHeader = ({ title, heading, onAnimationComplete, isFinalCheckpoi
               borderRadius: '4px',
               padding: '8px 16px',
               color: '#ffffff',
-              fontFamily: 'Iceland, monospace',
+              fontFamily: 'Ubuntu Mono, monospace',
               fontSize: '14px',
               letterSpacing: '0.05em',
               cursor: 'pointer',
@@ -1523,7 +1524,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         <div 
           className="text-white text-center"
           style={{
-            fontFamily: 'Iceland, monospace',
+            fontFamily: 'Ubuntu Mono, monospace',
             fontSize: '18px',
             fontWeight: '400',
             letterSpacing: '0.1em'
@@ -1542,29 +1543,29 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <div className="flex items-center gap-6 bg-black/80 backdrop-blur-sm rounded-lg px-6 py-3">
+          <div className="flex items-center gap-6 rounded-lg px-6 py-3">
             {/* Previous Checkpoint Button */}
             <button
               onClick={navigateToPreviousCheckpoint}
               disabled={isBeforeFirstCheckpoint}
-              className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-200 ${
+              className={`flex items-center justify-center w-10 h-10 transition-all duration-200 ${
                 isBeforeFirstCheckpoint
-                  ? 'border-white/20 text-white/30 cursor-not-allowed' 
-                  : 'border-white/60 text-white hover:border-white hover:bg-white/10 hover:scale-110 active:scale-95'
+                  ? 'text-white/30 cursor-not-allowed' 
+                  : 'text-white hover:text-white hover:scale-110 active:scale-95'
               }`}
               style={{
-                fontFamily: 'Iceland, monospace',
+                fontFamily: 'Ubuntu Mono, monospace',
                 fontSize: '18px'
               }}
             >
-              &#8249;
+              <FaChevronLeft />
             </button>
 
             {/* Current Checkpoint Title or Initial Message */}
             <div 
               className="text-white text-center min-w-[200px] max-w-[400px]"
               style={{
-                fontFamily: 'Iceland, monospace',
+                fontFamily: 'Ubuntu Mono, monospace',
                 fontSize: '16px',
                 fontWeight: '400',
                 letterSpacing: '0.05em'
@@ -1602,7 +1603,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
                 onClick={handleEnterPortfolio}
                 className="flex items-center justify-center px-4 py-2 rounded-lg border border-white/60 text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200"
                 style={{
-                  fontFamily: 'Iceland, monospace',
+                  fontFamily: 'Ubuntu Mono, monospace',
                   fontSize: '14px',
                   letterSpacing: '0.05em',
                   minWidth: '120px'
@@ -1614,17 +1615,17 @@ export default function Journey3D({ onComplete, preloadedResources }) {
               <button
                 onClick={navigateToNextCheckpoint}
                 disabled={!isBeforeFirstCheckpoint && currentCheckpointIndex >= checkpointsRef.current.length - 1}
-                className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-200 ${
+                className={`flex items-center justify-center w-10 h-10 transition-all duration-200 ${
                   (!isBeforeFirstCheckpoint && currentCheckpointIndex >= checkpointsRef.current.length - 1)
-                    ? 'border-white/20 text-white/30 cursor-not-allowed' 
-                    : 'border-white/60 text-white hover:border-white hover:bg-white/10 hover:scale-110 active:scale-95'
+                    ? 'text-white/30 cursor-not-allowed' 
+                    : 'text-white hover:text-white hover:scale-110 active:scale-95'
                 }`}
                 style={{
-                  fontFamily: 'Iceland, monospace',
+                  fontFamily: 'Ubuntu Mono, monospace',
                   fontSize: '18px'
                 }}
               >
-                &#8250;
+                <FaChevronRight />
               </button>
             )}
           </div>
