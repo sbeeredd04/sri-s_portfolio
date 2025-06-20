@@ -825,13 +825,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       checkpoints = preloadedResources.checkpoints;
       resourceManager = preloadedResources.resourceManager;
       
-      // ── VOLUMETRIC EFFECTS: Extract nebula system if available ──
-      const nebulaSystem = preloadedResources.nebulaSystem;
-      if (nebulaSystem) {
-        console.log('☁️ Nebula system found and ready for animation updates');
-      } else {
-        console.log('ℹ️ No nebula system available - continuing with standard environment');
-      }
+
 
       // Attach DOM elements
       if (renderer && renderer.domElement && !renderer.domElement.parentNode) {
@@ -848,7 +842,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       sceneRef.current = {
         scene, camera, renderer, cssRenderer, cssScene,
         roadCurve, frenetFrames, checkpoints,
-        nebulaSystem, // Add nebula system to scene references
         targetT, cameraT
       };
 
@@ -1110,20 +1103,15 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       
       updateCameraAndObjects(deltaTime);
       
-      // ── UPDATE VOLUMETRIC EFFECTS: Animate nebula particles ──
-      if (sceneRef.current?.nebulaSystem) {
-        try {
-          sceneRef.current.nebulaSystem.update();
-        } catch (error) {
-          console.warn('⚠️ Nebula update error, disabling:', error);
-          // Disable nebula system to prevent further errors
-          sceneRef.current.nebulaSystem = null;
-        }
-      }
-      
       try {
-        renderer.render(scene, camera);
-        cssRenderer.render(cssScene, camera);
+        // Check if renderer is still valid before rendering
+        if (renderer.getContext() && !renderer.getContext().isContextLost()) {
+          renderer.render(scene, camera);
+          cssRenderer.render(cssScene, camera);
+        } else {
+          console.warn('⚠️ WebGL context lost, stopping animation');
+          isAlive = false;
+        }
       } catch (error) {
         console.error('🚨 Render error:', error);
         isAlive = false;

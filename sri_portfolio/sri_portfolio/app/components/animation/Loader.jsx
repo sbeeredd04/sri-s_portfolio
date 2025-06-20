@@ -8,9 +8,6 @@ import { RGBELoader } from 'three-stdlib';
 import { createRoot } from 'react-dom/client';
 import journeyData from '../../json/journey.json';
 
-// Import three-nebula for volumetric effects - FIXED: Use correct API imports
-import Nebula, { Emitter, Rate, Life, Position, Mass, Radius, Alpha, Color, Gravity, SphereZone, PointZone, RadialVelocity, Vector3D, SpriteRenderer, Span, Body, RandomDrift } from 'three-nebula';
-
 const Beams = dynamic(() => import('../background/Beams'), { ssr: false });
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -53,7 +50,10 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
   const normalizedRadius = radius - strokeWidth * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDasharray = `${circumference} ${circumference}`;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
+  
+  // FIX: Ensure progress bar correctly reflects the actual progress percentage
+  const clampedProgress = Math.min(Math.max(progress, 0), 100); // Clamp between 0-100
+  const strokeDashoffset = circumference - (clampedProgress / 100) * circumference;
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0, angle: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -107,7 +107,7 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
-        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.5)) drop-shadow(0 4px 15px rgba(0,0,0,0.3))',
+        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.1)) drop-shadow(0 4px 15px rgba(0,0,0,0.1))',
         transform: 'translateZ(0)'
       }}
     >
@@ -188,7 +188,7 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
 
         {/* Background circle */}
         <circle
-          stroke="rgba(255, 255, 255, 0.08)"
+          stroke="rgba(255, 255, 255, 0)"
           fill="transparent"
           strokeWidth={strokeWidth}
           r={normalizedRadius}
@@ -222,10 +222,16 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
           cx={radius}
           cy={radius}
           initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: strokeDashoffset }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          animate={{ 
+            strokeDashoffset: strokeDashoffset,
+            // Add subtle glow effect as progress increases
+            filter: `drop-shadow(0 0 ${8 + (clampedProgress / 100) * 12}px rgba(255,255,255,${0.3 + (clampedProgress / 100) * 0.4}))`
+          }}
+          transition={{ 
+            strokeDashoffset: { duration: 0.3, ease: "easeOut" }, // Faster response to progress changes
+            filter: { duration: 0.5, ease: "easeInOut" }
+          }}
           style={{
-            filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.3))',
             zIndex: 2
           }}
         />
@@ -237,27 +243,27 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
           <motion.div
             className="flex flex-col items-center justify-center"
             initial={{ opacity: 1 }}
-            animate={{ opacity: progress === 100 ? 0 : 1 }}
+            animate={{ opacity: clampedProgress >= 100 ? 0 : 1 }}
             transition={{ duration: 0.4 }}
             style={{
               filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
             }}
           >
-            <DecryptedText
-              text={Math.floor(progress).toString()}
-              speed={30}
-              maxIterations={8}
-              sequential={false}
-              revealDirection="center"
+            <motion.div
               className="major-mono-display-regular text-4xl md:text-5xl font-bold text-white select-none tracking-wider"
-              encryptedClassName="text-white/20"
-              animateOn="view"
-            />
+              key={Math.floor(clampedProgress)} // Re-render when progress changes significantly
+              initial={{ scale: 0.9, opacity: 0.8 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              {Math.floor(clampedProgress)}
+              <span className="text-lg md:text-xl text-white/60 ml-1">%</span>
+            </motion.div>
             <motion.div
               className="mt-2 w-8 h-0.5 bg-white/30"
               initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
+              animate={{ scaleX: clampedProgress / 100 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               style={{
                 filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
               }}
@@ -346,9 +352,8 @@ class ThreeJSResourceManager {
     this.roadMaterial = null;
     this.roadLine = null;
     
-    // Environment and volumetric effects
+    // Environment effects
     this.pmremGenerator = null;
-    this.nebulaSystem = null;
     this.environmentMap = null;
     
     // State and lifecycle management
@@ -364,8 +369,7 @@ class ThreeJSResourceManager {
   }
 
   /**
-   * Configure callbacks for UI updates
-   * Progress will ONLY track actual asset loading, not procedural setup
+   * Configure callbacks for unified smooth progress tracking
    */
   setCallbacks(onProgress, onComplete, onError, onResourcesReady) {
     this.onProgress = onProgress;
@@ -373,23 +377,54 @@ class ThreeJSResourceManager {
     this.onError = onError;
     this.onResourcesReady = onResourcesReady;
     
-    // DISABLE global progress tracking - we'll use dedicated managers for real assets
-    this.manager.onStart = () => {
-      console.log('🔧 Starting procedural setup (silent)');
-    };
+    // Total phases for progress calculation
+    this.totalPhases = 8; // renderers, scene, camera, environment, starfield, road, checkpoints, shaders
+    this.currentPhase = 0;
     
-    this.manager.onProgress = () => {
-      // Silent - procedural work doesn't count as "progress"
-    };
+    // Progress tracking
+    this.phaseProgress = 0; // Progress within current phase (0-1)
+    this.overallProgress = 0; // Overall progress (0-100)
+  }
+
+  /**
+   * Update progress based on current phase and phase progress
+   */
+  updateProgress(phaseProgress = 1.0) {
+    this.phaseProgress = Math.min(phaseProgress, 1.0);
     
-    this.manager.onLoad = () => {
-      console.log('🔧 Procedural setup complete (silent)');
-    };
+    // Calculate overall progress: (completed phases + current phase progress) / total phases
+    const completedPhases = this.currentPhase;
+    const currentPhaseContribution = this.phaseProgress;
+    const rawProgress = (completedPhases + currentPhaseContribution) / this.totalPhases;
     
-    this.manager.onError = (url) => {
-      console.error('❌ Failed to load resource:', url);
-      if (this.onError) this.onError(`Failed to load: ${url}`);
-    };
+    // Cap at 95% until everything is truly complete
+    this.overallProgress = Math.min(rawProgress * 95, 95);
+    
+    if (this.onProgress) {
+      this.onProgress(this.overallProgress);
+    }
+    
+    console.log(`📊 Phase ${this.currentPhase + 1}/${this.totalPhases} (${(this.phaseProgress * 100).toFixed(1)}%) - Overall: ${this.overallProgress.toFixed(1)}%`);
+  }
+
+  /**
+   * Complete current phase and move to next
+   */
+  completePhase() {
+    this.currentPhase++;
+    this.phaseProgress = 0;
+    this.updateProgress(1.0); // Complete the phase
+  }
+
+  /**
+   * Mark all phases as complete (100%)
+   */
+  completeAllPhases() {
+    this.overallProgress = 100;
+    if (this.onProgress) {
+      this.onProgress(100);
+    }
+    console.log('✅ All phases completed - 100%');
   }
 
   /**
@@ -402,32 +437,38 @@ class ThreeJSResourceManager {
     let lastKnownResources = null;
     
     try {
-      console.log('📋 Phase 1: Creating renderers...');
+      console.log('📋 Phase 1/8: Creating renderers...');
+      this.updateProgress(0);
       await this.createRenderers(container);
+      this.completePhase();
       
-      console.log('📋 Phase 2: Creating scene...');
+      console.log('📋 Phase 2/8: Creating scene...');
       await this.createScene();
+      this.completePhase();
       
-      console.log('📋 Phase 3: Creating camera...');
+      console.log('📋 Phase 3/8: Creating camera...');
       await this.createCamera();
+      this.completePhase();
       
-      console.log('📋 Phase 4: Setting up environment...');
+      console.log('📋 Phase 4/8: Setting up environment...');
       await this.createEnvironment();
+      this.completePhase();
       
-      console.log('📋 Phase 5: Creating volumetric effects...');
-      await this.createNebula();
-      
-      console.log('📋 Phase 6: Creating starfield...');
+      console.log('📋 Phase 5/8: Creating starfield...');
       await this.createStarfieldInstancedMesh();
+      this.completePhase();
       
-      console.log('📋 Phase 7: Creating road geometry...');
+      console.log('📋 Phase 6/8: Creating road geometry...');
       await this.createRoadGeometry();
+      this.completePhase();
       
-      console.log('📋 Phase 8: Creating checkpoints...');
+      console.log('📋 Phase 7/8: Creating checkpoints...');
       await this.createCheckpointObjects();
+      this.completePhase();
       
-      console.log('📋 Phase 9: Compiling shaders...');
+      console.log('📋 Phase 8/8: Compiling shaders...');
       await this.compileShaders();
+      this.completePhase();
       
       // Create complete resource package
       const resources = {
@@ -439,12 +480,14 @@ class ThreeJSResourceManager {
         roadCurve: this.roadCurve,
         frenetFrames: this.frenetFrames,
         checkpoints: this.checkpoints,
-        nebulaSystem: this.nebulaSystem, // Add nebula system for animation updates
         resourceManager: this // Pass reference for React root cleanup
       };
       
       lastKnownResources = resources;
       console.log('✅ All resources created successfully');
+      
+      // Mark loading as complete (100%)
+      this.completeAllPhases();
       
       // Trigger LoadingManager completion with resources
       if (this.onResourcesReady) {
@@ -452,8 +495,10 @@ class ThreeJSResourceManager {
         this.onResourcesReady(resources);
       }
       
-      // Trigger LoadingManager onLoad
-      this.manager.onLoad();
+      // Trigger completion callback
+      if (this.onComplete) {
+        this.onComplete();
+      }
       
       return resources;
     } catch (error) {
@@ -579,174 +624,80 @@ class ThreeJSResourceManager {
   async createEnvironment() {
     return new Promise((resolve) => {
       console.log('🌌 Setting up environment system with asset loading progress');
-      
-      // Initialize PMREM generator for environment map processing
-      this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-      this.pmremGenerator.compileEquirectangularShader();
-      
-      // Create enhanced procedural star environment as fallback
+      this.updateProgress(0.01);
+
       const createProceduralEnvironment = () => {
-        console.log('🌟 Creating enhanced procedural star environment (instant)');
+        console.log('🎨 Creating procedural environment');
+        this.updateProgress(0.8);
         
-        // Create high-resolution starfield canvas
+        // Simple gradient background as fallback
         const canvas = document.createElement('canvas');
-        canvas.width = 2048;
-        canvas.height = 1024;
-        const ctx = canvas.getContext('2d');
+        canvas.width = 512;
+        canvas.height = 512;
+        const context = canvas.getContext('2d');
         
-        // Create deep space gradient background
-        const gradient = ctx.createRadialGradient(
-          canvas.width / 2, canvas.height / 2, 0,
-          canvas.width / 2, canvas.height / 2, canvas.height / 2
-        );
+        // Create gradient from dark blue to purple
+        const gradient = context.createLinearGradient(0, 0, 0, 512);
         gradient.addColorStop(0, '#0a0a2e');
-        gradient.addColorStop(0.3, '#000011');
-        gradient.addColorStop(0.7, '#000000');
-        gradient.addColorStop(1, '#000033');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(1, '#16213e');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 512, 512);
         
-        // Add varied star field
-        for (let i = 0; i < 3000; i++) {
-          const x = Math.random() * canvas.width;
-          const y = Math.random() * canvas.height;
-          const brightness = Math.random();
-          const size = Math.random() * 2 + 0.5;
-          
-          // Color variation for stars
-          if (brightness > 0.9) {
-            ctx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
-          } else if (brightness > 0.7) {
-            ctx.fillStyle = `rgba(200, 220, 255, ${brightness})`;
-          } else {
-            ctx.fillStyle = `rgba(255, 240, 200, ${brightness * 0.8})`;
-          }
-          
-          ctx.fillRect(x, y, size, size);
-        }
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        texture.colorSpace = THREE.SRGBColorSpace;
         
-        // Add nebula clouds
-        for (let i = 0; i < 50; i++) {
-          const x = Math.random() * canvas.width;
-          const y = Math.random() * canvas.height;
-          const radius = Math.random() * 100 + 20;
-          
-          const nebulaGradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-          nebulaGradient.addColorStop(0, 'rgba(100, 50, 200, 0.1)');
-          nebulaGradient.addColorStop(0.5, 'rgba(50, 100, 255, 0.05)');
-          nebulaGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-          
-          ctx.fillStyle = nebulaGradient;
-          ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
-        }
+        this.scene.background = texture;
+        this.scene.environment = texture;
         
-        // Create texture with proper settings
-        const backgroundTexture = new THREE.CanvasTexture(canvas);
-        backgroundTexture.mapping = THREE.EquirectangularReflectionMapping;
-        backgroundTexture.colorSpace = THREE.SRGBColorSpace;
-        backgroundTexture.generateMipmaps = false;
-        backgroundTexture.minFilter = THREE.LinearFilter;
-        backgroundTexture.magFilter = THREE.LinearFilter;
-        
-        // Generate PMREM cubemap for lighting
-        const envMap = this.pmremGenerator.fromEquirectangular(backgroundTexture).texture;
-        
-        // CORRECT ASSIGNMENT: Original texture for background, PMREM for lighting
-        this.scene.background = backgroundTexture;  // Crisp background
-        this.scene.environment = envMap;            // PBR lighting
-        this.environmentMap = envMap;
-        
-        console.log('✅ Enhanced procedural star environment created (instant)');
-        
-        // Signal completion immediately since this is procedural
-        console.log('📊 Using procedural fallback');
-        if (this.onProgress) {
-          // Simulate progress for UI consistency with smooth animation
-          setTimeout(() => {
-            this.onProgress(0);
-          }, 300);
-          setTimeout(() => {
-            this.onProgress(50);
-          }, 800);
-          setTimeout(() => {
-            this.onProgress(100);
-          }, 1500);
-        }
-        
-        if (this.onComplete) {
-          setTimeout(() => {
-            console.log('✅ Procedural complete');
-            this.onComplete();
-          }, 1200);
-        }
+        console.log('✅ Procedural environment with atmospheric clouds created');
+        this.updateProgress(1.0);
+        resolve();
       };
-      
-      // DEDICATED LOADING MANAGER FOR ACTUAL ASSET LOADING
-      const assetLoadingManager = new THREE.LoadingManager();
-      
-      // Hook progress tracking to ONLY the asset loading phase
-      assetLoadingManager.onStart = () => {
-        console.log('📥 HDRI loading started');
-        if (this.onProgress) {
-          // Delay to ensure UI is completely rendered and ready
-          setTimeout(() => {
-            this.onProgress(0);
-          }, 300);
-        }
-      };
-      
-      assetLoadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-        const progressPercent = Math.round((itemsLoaded / itemsTotal) * 100);
-        if (this.onProgress) {
-          this.onProgress(progressPercent);
-        }
-      };
-      
-      assetLoadingManager.onLoad = () => {
-        console.log('✅ HDRI loaded');
-        if (this.onProgress) {
-          this.onProgress(100);
-        }
-        if (this.onComplete) {
-          setTimeout(() => {
-            this.onComplete();
-          }, 500);
-        }
-      };
-      
-      assetLoadingManager.onError = (url) => {
-        console.warn('❌ HDRI failed:', url);
-        if (this.onError) {
-          this.onError(`Failed to load: ${url}`);
-        }
-      };
-      
-      // Try to load HDRI with dedicated progress tracking
-      const rgbeLoader = new RGBELoader(assetLoadingManager);
+
+      const rgbeLoader = new RGBELoader();
       rgbeLoader.setPath('/hdr/');
       
       rgbeLoader.load(
         'space_environment.hdr',
         (hdrTexture) => {
           console.log('🌌 HDRI loaded successfully');
+          this.updateProgress(0.5);
           
-          // CORRECT HDRI IMPLEMENTATION
-          // 1. Set mapping for background rendering
+          // FIX: Let RGBELoader handle texture format automatically
+          // Only set essential properties, don't override format/type
           hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
           hdrTexture.colorSpace = THREE.SRGBColorSpace;
           
-          // 2. Use original texture for crisp background
+          // Use original texture for crisp background
           this.scene.background = hdrTexture;
           
-          // 3. Generate PMREM cubemap for lighting
-          const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
-          this.scene.environment = envMap;
-          this.environmentMap = envMap;
+          this.updateProgress(0.8);
           
-          console.log('✅ HDRI environment correctly applied: crisp background + PBR lighting');
-          resolve();
+          // Generate PMREM cubemap for lighting
+          try {
+            const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
+            this.scene.environment = envMap;
+            this.environmentMap = envMap;
+            
+            console.log('✅ HDRI environment correctly applied: crisp background + PBR lighting');
+            this.updateProgress(1.0);
+            resolve();
+          } catch (error) {
+            console.warn('⚠️ PMREM generation failed, using texture directly:', error);
+            this.scene.environment = hdrTexture;
+            this.environmentMap = hdrTexture;
+            this.updateProgress(1.0);
+            resolve();
+          }
         },
-        undefined, // onProgress (handled by LoadingManager)
+        (progress) => {
+          // HDRI loading progress
+          if (progress.total > 0) {
+            const progressRatio = progress.loaded / progress.total;
+            this.updateProgress(progressRatio * 0.5); // HDRI takes up first 50% of this phase
+          }
+        },
         (error) => {
           console.log('⚠️ HDRI not found, falling back to procedural environment:', error.message);
           createProceduralEnvironment();
@@ -757,148 +708,7 @@ class ThreeJSResourceManager {
   }
 
   /**
-   * PHASE 5: Create three-nebula volumetric effects for atmospheric depth
-   * 
-   * CORRECT IMPLEMENTATION:
-   * - Uses proper Nebula constructor with scene and THREE
-   * - Creates Emitter instances with proper configuration
-   * - Calls emit() on emitters with lifecycle callbacks
-   * - Adds renderers to SYSTEM, not emitters
-   * - Adds emitters to system after configuration
-   */
-  async createNebula() {
-    return new Promise((resolve) => {
-      console.log('☁️ Creating volumetric effects with correct three-nebula API');
-      
-      try {
-        // CORRECT: Create Nebula system with scene and THREE
-        this.nebulaSystem = new Nebula(this.scene, THREE);
-        console.log('✅ Nebula system created successfully');
-        
-        // Create main atmospheric emitter with proper configuration
-        const atmosphericEmitter = new Emitter();
-        
-        // Configure emission rate
-        atmosphericEmitter.setRate(new Rate(new Span(5, 8), new Span(0.3, 0.5)));
-        
-        // Configure emitter lifecycle with proper lifespan
-        atmosphericEmitter.setLife(new Life(10, 15));
-        
-        // Set emission position using SphereZone
-        const emissionZone = new SphereZone(0, 0, 0, 600 * SCENE_SCALE);
-        atmosphericEmitter.setPosition(new Position(emissionZone));
-        
-        // Add initializers - FIXED: Use addInitializers method
-        atmosphericEmitter.addInitializers([
-          new Body(),
-          new Mass(1),
-          new Radius(25 * SCENE_SCALE, 50 * SCENE_SCALE),
-          new Alpha(0.05, 0.2),
-          new Color('#ffffff', '#e0e6ff', '#ffe0f0')
-        ]);
-        
-        // Add velocity if RadialVelocity works, otherwise use RandomDrift
-        try {
-          const centerVector = new Vector3D(0, 0, 0);
-          const radialVelocity = new RadialVelocity(5 * SCENE_SCALE, centerVector, 0);
-          atmosphericEmitter.addInitializers([radialVelocity]);
-          console.log('✅ RadialVelocity added successfully');
-        } catch (velocityError) {
-          console.warn('⚠️ RadialVelocity failed, using RandomDrift:', velocityError);
-          atmosphericEmitter.addInitializers([
-            new RandomDrift(3 * SCENE_SCALE, 3 * SCENE_SCALE, 3 * SCENE_SCALE)
-          ]);
-        }
-        
-        // Add behaviors - FIXED: Use addBehaviours method
-        atmosphericEmitter.addBehaviours([
-          new Alpha(0.2, 0), // Fade to transparent
-          new Gravity(0, -3 * SCENE_SCALE, 0), // Gentle upward drift
-          new Radius(1.5) // Gentle expansion
-        ]);
-        
-        // FIXED: Start emission with proper lifecycle callbacks
-        atmosphericEmitter.emit({
-          onStart: () => {
-            console.log('🌌 Atmospheric particles started');
-          },
-          onUpdate: () => {
-            // Optional: Handle updates if needed
-          },
-          onComplete: () => {
-            console.log('🌌 Atmospheric particles completed');
-          }
-        });
-        
-        // Create dust emitter with similar configuration
-        const dustEmitter = new Emitter();
-        
-        dustEmitter.setRate(new Rate(new Span(15, 20), new Span(0.1, 0.2)));
-        dustEmitter.setLife(new Life(8, 12));
-        
-        const dustZone = new SphereZone(0, 0, 0, 1000 * SCENE_SCALE);
-        dustEmitter.setPosition(new Position(dustZone));
-        
-        dustEmitter.addInitializers([
-          new Body(),
-          new Mass(0.3),
-          new Radius(8 * SCENE_SCALE, 20 * SCENE_SCALE),
-          new Alpha(0.02, 0.08),
-          new Color('#ffffff', '#f8f8ff')
-        ]);
-        
-        // Add dust velocity or fallback
-        try {
-          const centerVector = new Vector3D(0, 0, 0);
-          const dustRadialVelocity = new RadialVelocity(2 * SCENE_SCALE, centerVector, 0);
-          dustEmitter.addInitializers([dustRadialVelocity]);
-          console.log('✅ Dust RadialVelocity added successfully');
-        } catch (dustVelocityError) {
-          console.warn('⚠️ Dust RadialVelocity failed, using RandomDrift:', dustVelocityError);
-          dustEmitter.addInitializers([
-            new RandomDrift(1 * SCENE_SCALE, 1 * SCENE_SCALE, 1 * SCENE_SCALE)
-          ]);
-        }
-        
-        dustEmitter.addBehaviours([
-          new Alpha(0.08, 0),
-          new Gravity(0, -1 * SCENE_SCALE, 0)
-        ]);
-        
-        // FIXED: Start dust emission with proper lifecycle callbacks
-        dustEmitter.emit({
-          onStart: () => {
-            console.log('✨ Dust particles started');
-          },
-          onUpdate: () => {
-            // Optional: Handle updates if needed
-          },
-          onComplete: () => {
-            console.log('✨ Dust particles completed');
-          }
-        });
-        
-        // CORRECT: Add emitters to system first, then add renderer to system
-        this.nebulaSystem
-          .addEmitter(atmosphericEmitter)
-          .addEmitter(dustEmitter)
-          .addRenderer(new SpriteRenderer(this.scene, THREE)); // Renderer goes on SYSTEM, not emitters
-        
-        console.log('✅ Three-nebula system created with correct API and', this.nebulaSystem.emitters.length, 'emitters');
-        console.log('🌌 Nebula particles will be rendered automatically via system SpriteRenderer');
-        
-      } catch (error) {
-        console.warn('⚠️ Error creating nebula system:', error);
-        console.warn('⚠️ Continuing without volumetric effects');
-        this.nebulaSystem = null;
-      }
-      
-      resolve();
-    });
-  }
-
-  /**
-   * PHASE 6: Create optimized starfield using InstancedMesh
+   * PHASE 5: Create optimized starfield using InstancedMesh
    * 
    * PERFORMANCE OPTIMIZATION:
    * Before: 6000+ individual THREE.Mesh objects = 6000+ draw calls
@@ -908,10 +718,13 @@ class ThreeJSResourceManager {
    */
   async createStarfieldInstancedMesh() {
     return new Promise((resolve) => {
-      console.log('⭐ Creating starfield geometry (procedural, instant)');
+      console.log('⭐ Creating starfield geometry');
+      this.updateProgress(0);
         
         // Calculate star count based on journey length (reduced for performance)
         const starCount = Math.max(STAR_FIELD_MAX_INITIAL_STARS * 0.7, this.journeyLength * STAR_DENSITY_PER_CHECKPOINT * 0.8);
+        
+        this.updateProgress(0.1);
         
         // PERFORMANCE: Use low-poly geometry for better performance
         const starGeometry = new THREE.SphereGeometry(1, 6, 6); // Reduced from 8x8 to 6x6
@@ -921,10 +734,14 @@ class ThreeJSResourceManager {
           depthWrite: false // Performance optimization for transparent objects
         });
         
+        this.updateProgress(0.2);
+        
         // InstancedMesh: One mesh, thousands of instances
         this.starfieldMesh = new THREE.InstancedMesh(starGeometry, starMaterial, starCount);
         
         const dummy = new THREE.Object3D();
+        
+        this.updateProgress(0.3);
         
         // Configure each star instance: position, scale, color
         for (let i = 0; i < starCount; i++) {
@@ -945,7 +762,15 @@ class ThreeJSResourceManager {
           // Random brightness
           const intensity = THREE.MathUtils.randFloat(STAR_COLOR_MIN_INTENSITY, STAR_COLOR_MAX_INTENSITY);
           this.starfieldMesh.setColorAt(i, new THREE.Color(intensity, intensity, intensity));
+          
+          // Update progress during generation
+          if (i % 5000 === 0) {
+            const starProgress = i / starCount;
+            this.updateProgress(0.3 + starProgress * 0.6);
+          }
         }
+        
+        this.updateProgress(0.9);
         
         // Upload to GPU
         this.starfieldMesh.instanceMatrix.needsUpdate = true;
@@ -953,22 +778,26 @@ class ThreeJSResourceManager {
         
         this.scene.add(this.starfieldMesh);
         
-      console.log('✅ Starfield created successfully with', starCount, 'stars');
+        console.log('✅ Starfield created successfully with', starCount, 'stars');
+        this.updateProgress(1.0);
         resolve();
     });
   }
 
   /**
-   * PHASE 7: Generate complex road curve using mathematical functions
+   * PHASE 6: Generate complex road curve using mathematical functions
    * Creates smooth, interesting path through 3D space with computed Frenet frames
    */
   async createRoadGeometry() {
     return new Promise((resolve) => {
-      console.log('🛤️ Creating road geometry (procedural, instant)');
+      console.log('🛤️ Creating road geometry');
+      this.updateProgress(0);
       
         // PERFORMANCE: Reduce road complexity by 50% for better performance
         const roadPoints = Math.max(600, this.journeyLength * ROAD_POINTS_PER_CHECKPOINT * 0.5);
         const points = [];
+        
+        this.updateProgress(0.1);
         
         // Generate curved path using sinusoidal functions for natural movement
         for (let i = 0; i <= roadPoints; i++) {
@@ -982,11 +811,22 @@ class ThreeJSResourceManager {
           const z = i * ROAD_Z_SPACING - (roadPoints * 2);
           
           points.push(new THREE.Vector3(x, y, z).multiplyScalar(SCENE_SCALE));
+          
+          // Update progress during point generation
+          if (i % 100 === 0) {
+            const pointProgress = i / roadPoints;
+            this.updateProgress(0.1 + pointProgress * 0.4);
+          }
         }
+        
+        this.updateProgress(0.5);
         
         // Create smooth spline curve and compute Frenet frames for camera orientation
         this.roadCurve = new THREE.CatmullRomCurve3(points);
+        this.updateProgress(0.7);
+        
         this.frenetFrames = this.roadCurve.computeFrenetFrames(roadPoints + 500, false);
+        this.updateProgress(0.8);
 
         // Create visible road line
         this.roadMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 3 });
@@ -994,15 +834,18 @@ class ThreeJSResourceManager {
         this.roadGeometry = new THREE.BufferGeometry().setFromPoints(linePoints);
         this.roadLine = new THREE.Line(this.roadGeometry, this.roadMaterial);
         
+        this.updateProgress(0.9);
+        
         this.scene.add(this.roadLine);
         
-      console.log('✅ Road curve created successfully with', roadPoints, 'points');
+        console.log('✅ Road curve created successfully with', roadPoints, 'points');
+        this.updateProgress(1.0);
         resolve();
     });
   }
 
   /**
-   * PHASE 8: Create CSS3D checkpoint objects with React roots
+   * PHASE 7: Create CSS3D checkpoint objects with React roots
    * SINGLE CREATION: Elements created once, stored in checkpoints array
    * CSS CUSTOM PROPERTIES: --offscreen-x set for slide-in direction
    * NO DOM ATTACHMENT: Deferred to Journey3D initialization
@@ -1010,18 +853,21 @@ class ThreeJSResourceManager {
    */
   async createCheckpointObjects() {
     return new Promise((resolve) => {
-      console.log('🎯 Creating CSS3D checkpoint objects (procedural, instant)');
+      console.log('🎯 Creating CSS3D checkpoint objects');
+      this.updateProgress(0);
       
         // ── GUARD: Prevent duplicate checkpoint creation ──
         if (this.checkpoints.length > 0) {
           console.log('🚫 Checkpoints already exist, skipping creation. Current count:', this.checkpoints.length);
           console.log('📊 CSS3D scene children before skip:', this.cssScene.children.length);
+          this.updateProgress(1.0);
           resolve();
           return;
         }
         
-      console.log('🎯 Starting checkpoint creation for', journeyData.length, 'items');
+        console.log('🎯 Starting checkpoint creation for', journeyData.length, 'items');
         console.log('📊 CSS3D scene children before creation:', this.cssScene.children.length);
+        this.updateProgress(0.1);
         
         journeyData.forEach((data, i) => {
           console.log(`📍 Creating checkpoint ${i}:`, data.title);
@@ -1103,16 +949,21 @@ class ThreeJSResourceManager {
             root,
             index: i
           });
+          
+          // Update progress for each checkpoint created
+          const checkpointProgress = (i + 1) / journeyData.length;
+          this.updateProgress(0.1 + checkpointProgress * 0.8);
         });
         
         console.log('✅ createCheckpointObjects: All', this.checkpoints.length, 'checkpoints created and stored');
         console.log('📊 CSS3D scene children after creation:', this.cssScene.children.length);
+        this.updateProgress(1.0);
         resolve();
     });
   }
 
   /**
-   * PHASE 9: Pre-compile all shaders on GPU
+   * PHASE 8: Pre-compile all shaders on GPU
    * 
    * PERFORMANCE BENEFIT:
    * Eliminates runtime shader compilation stutters that cause frame drops
@@ -1120,14 +971,23 @@ class ThreeJSResourceManager {
    */
   async compileShaders() {
     return new Promise((resolve) => {
-      console.log('🎨 Compiling shaders (instant)');
+      console.log('🎨 Compiling shaders');
+      this.updateProgress(0);
       
-        // Force compilation of all scene materials/shaders
-        this.renderer.compile(this.scene, this.camera);
-        this.isCompiled = true;
-        
-      console.log('✅ Shader compilation completed successfully');
-        resolve();
+        // Simulate compilation progress
+        setTimeout(() => {
+          this.updateProgress(0.3);
+          
+          // Force compilation of all scene materials/shaders
+          this.renderer.compile(this.scene, this.camera);
+          this.updateProgress(0.7);
+          
+          this.isCompiled = true;
+          
+          console.log('✅ Shader compilation completed successfully');
+          this.updateProgress(1.0);
+          resolve();
+        }, 100); // Small delay to show progress
     });
   }
 
@@ -1138,61 +998,60 @@ class ThreeJSResourceManager {
   disposeThreeJSResources() {
     console.log('🧹 ThreeJSResourceManager: Disposing THREE.js resources only');
     
-    // ── THREE.JS RESOURCES: Dispose geometries and materials ──
-    if (this.starfieldMesh) {
-      this.starfieldMesh.geometry.dispose();
-      this.starfieldMesh.material.dispose();
-      console.log('🗑️ Disposed starfield mesh resources');
-    }
-    
-    if (this.roadGeometry) {
-      this.roadGeometry.dispose();
-      console.log('🗑️ Disposed road geometry');
-    }
-    
-    if (this.roadMaterial) {
-      this.roadMaterial.dispose();
-      console.log('🗑️ Disposed road material');
-    }
-    
-    // ── ENVIRONMENT & VOLUMETRIC RESOURCES: Dispose HDRI and nebula ──
-    if (this.pmremGenerator) {
-      this.pmremGenerator.dispose();
-      console.log('🗑️ Disposed PMREM generator');
-    }
-    
-    if (this.environmentMap) {
-      this.environmentMap.dispose();
-      console.log('🗑️ Disposed environment map');
-    }
-    
-    if (this.nebulaSystem) {
-      // Manually remove all emitters from the system
-      this.nebulaSystem.emitters.slice().forEach(emitter => {
-        this.nebulaSystem.removeEmitter(emitter);
-        // if your emitters have their own destroy APIs, call them here:
-        if (typeof emitter.destroy === 'function') {
-          emitter.destroy();
+    try {
+      // ── CHECK WEBGL CONTEXT ──
+      if (this.renderer && this.renderer.getContext()) {
+        const gl = this.renderer.getContext();
+        if (gl.isContextLost && gl.isContextLost()) {
+          console.log('⚠️ WebGL context already lost, skipping resource disposal');
+          return;
         }
-      });
-      // Null‐out the renderer so GC can collect it
-      this.nebulaSystem.renderer = null;
-      this.nebulaSystem = null;
-      console.log('🗑️ Disposed three-nebula system manually');
+      }
+      
+      // ── THREE.JS RESOURCES: Dispose geometries and materials ──
+      if (this.starfieldMesh) {
+        if (this.starfieldMesh.geometry) this.starfieldMesh.geometry.dispose();
+        if (this.starfieldMesh.material) this.starfieldMesh.material.dispose();
+        console.log('🗑️ Disposed starfield mesh resources');
+      }
+      
+      if (this.roadGeometry) {
+        this.roadGeometry.dispose();
+        console.log('🗑️ Disposed road geometry');
+      }
+      
+      if (this.roadMaterial) {
+        this.roadMaterial.dispose();
+        console.log('🗑️ Disposed road material');
+      }
+      
+      // ── ENVIRONMENT RESOURCES: Dispose HDRI ──
+      if (this.pmremGenerator) {
+        this.pmremGenerator.dispose();
+        console.log('🗑️ Disposed PMREM generator');
+      }
+      
+      if (this.environmentMap) {
+        this.environmentMap.dispose();
+        console.log('🗑️ Disposed environment map');
+      }
+      
+      if (this.renderer) {
+        this.renderer.dispose();
+        console.log('🗑️ Disposed WebGL renderer');
+        // Note: DOM elements are managed by Journey3D
+      }
+      
+      if (this.cssRenderer) {
+        console.log('🗑️ CSS3D renderer cleanup complete');
+        // Note: DOM elements are managed by Journey3D
+      }
+      
+      console.log('✅ ThreeJSResourceManager: THREE.js cleanup completed');
+    } catch (error) {
+      console.warn('⚠️ Error during THREE.js resource disposal:', error);
+      // Continue cleanup even if some resources fail to dispose
     }
-    
-    if (this.renderer) {
-      this.renderer.dispose();
-      console.log('🗑️ Disposed WebGL renderer');
-      // Note: DOM elements are managed by Journey3D
-    }
-    
-    if (this.cssRenderer) {
-      console.log('🗑️ CSS3D renderer cleanup complete');
-      // Note: DOM elements are managed by Journey3D
-    }
-    
-    console.log('✅ ThreeJSResourceManager: THREE.js cleanup completed');
   }
 
   /**
@@ -1265,33 +1124,40 @@ export default function Loader({ onComplete, onResourcesReady }) {
   const progressAnimationRef = useRef(null); // For smooth progress animation
 
   // ── Smooth Progress Animation System ──
-  const MAX_PROGRESS_SPEED = 2.5; // Maximum progress increase per frame (adjust for speed)
+  const MAX_PROGRESS_SPEED = 1.5; // Smooth constant speed progression
   
   useEffect(() => {
     const animateProgress = () => {
       setProgress(currentProgress => {
         const difference = targetProgress - currentProgress;
         
-        // If we're close enough, snap to target
-        if (Math.abs(difference) < 0.1) {
+        // If we're very close, snap to target
+        if (Math.abs(difference) < 0.05) {
           return targetProgress;
         }
         
-        // Smooth interpolation with speed limit
+        // Smooth constant-speed interpolation
         const step = Math.sign(difference) * Math.min(Math.abs(difference), MAX_PROGRESS_SPEED);
-        return currentProgress + step;
+        const newProgress = currentProgress + step;
+        
+        // Ensure we never exceed targetProgress
+        const finalProgress = Math.min(newProgress, targetProgress);
+        
+        // Continue animation if we haven't reached target (using current value)
+        if (Math.abs(targetProgress - finalProgress) > 0.05) {
+          progressAnimationRef.current = requestAnimationFrame(animateProgress);
+        }
+        
+        return finalProgress;
       });
-      
-      // Continue animation if we haven't reached target
-      if (Math.abs(targetProgress - progress) > 0.1) {
-        progressAnimationRef.current = requestAnimationFrame(animateProgress);
-      }
     };
     
-    // Start animation when target changes
-    if (targetProgress !== progress) {
-      progressAnimationRef.current = requestAnimationFrame(animateProgress);
+    // Start animation when target changes (check against current target, not progress state)
+    if (progressAnimationRef.current) {
+      cancelAnimationFrame(progressAnimationRef.current);
     }
+    
+    progressAnimationRef.current = requestAnimationFrame(animateProgress);
     
     // Cleanup animation on unmount
     return () => {
@@ -1299,7 +1165,7 @@ export default function Loader({ onComplete, onResourcesReady }) {
         cancelAnimationFrame(progressAnimationRef.current);
       }
     };
-  }, [targetProgress, progress]);
+  }, [targetProgress]); // FIX: Remove 'progress' from dependency array to prevent infinite loops
 
   // ── Initialize UI animations ──
   useEffect(() => {
@@ -1412,25 +1278,28 @@ export default function Loader({ onComplete, onResourcesReady }) {
       const resourceManager = new ThreeJSResourceManager();
       resourceManagerRef.current = resourceManager;
       
-      // Configure progress callbacks to drive UI ONLY after UI is ready
+      // Configure progress callbacks for smooth UI updates
       resourceManager.setCallbacks(
         // Progress updates from actual resource creation
         (progressValue) => {
           if (isMounted) {
-            console.log(`📊 Asset progress target: ${progressValue}%`);
+            console.log(`📊 Asset progress: ${progressValue.toFixed(1)}`);
             setTargetProgress(progressValue); // Use target progress for smooth animation
           }
         },
         // Completion - all assets loaded
         () => {
           console.log('🎉 Asset loading complete');
+          if (isMounted) {
+            setTargetProgress(100);
+          }
         },
         // Error handling with recovery
         (error) => {
           console.error('🚨 Asset loading error:', error);
           if (isMounted) {
             // Still allow progression after error
-            setTargetProgress(100);
+            setTargetProgress(95); // Stick at 95% on error
           }
         },
         // Resources ready callback - ALWAYS CALLED
