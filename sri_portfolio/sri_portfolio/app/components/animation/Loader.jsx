@@ -106,47 +106,32 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{
-        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.1)) drop-shadow(0 4px 15px rgba(0,0,0,0.1))',
-        transform: 'translateZ(0)'
-      }}
     >
-      {/* Three.js style depth shadow */}
-      <div
-        className="absolute inset-0 rounded-full"
-        style={{
-          background: 'radial-gradient(ellipse 80% 60% at 40% 40%, rgba(0,0,0,0.4) 0%, transparent 70%)',
-          transform: 'translateY(8px) translateX(4px) scale(1.1)',
-          zIndex: -1,
-          filter: 'blur(12px)'
-        }}
-      />
 
-      {/* Liquid glass background */}
-      <motion.div
-        className="absolute inset-0 rounded-full"
-        style={{
-          background: 'rgba(255, 255, 255, 0.03)',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          transform: 'scale(0.9)'
-        }}
-        animate={{
-          background: isHovered 
-            ? 'rgba(255, 255, 255, 0.08)' 
-            : 'rgba(255, 255, 255, 0.03)'
-        }}
-        transition={{ duration: 0.3 }}
-      />
+
+      {/* Liquid glass background - only show when START button is visible */}
+              {showStartButton && (
+          <motion.div
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              transform: 'scale(0.9)'
+            }}
+            animate={{
+              background: isHovered 
+                ? 'rgba(255, 255, 255, 0.08)' 
+                : 'rgba(255, 255, 255, 0.03)'
+            }}
+            transition={{ duration: 0.3 }}
+          />
+        )}
       
       {/* Circular Progress Ring */}
       <svg
         height={radius * 2}
         width={radius * 2}
         className="transform -rotate-90 relative z-10"
-        style={{
-          filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))'
-        }}
       >
         <defs>
           {/* Gradient for directional fill */}
@@ -196,8 +181,8 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
           cy={radius}
         />
         
-        {/* Directional fill circle */}
-        {showStartButton && (
+        {/* Directional fill circle - only visible on hover when START button is shown */}
+        {showStartButton && isHovered && (
           <circle
             r={normalizedRadius}
             cx={radius}
@@ -205,9 +190,6 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
             fill="url(#directionalFill)"
             stroke="none"
             mask="url(#directionalMask)"
-            style={{
-              filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.4))'
-            }}
           />
         )}
         
@@ -223,13 +205,10 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
           cy={radius}
           initial={{ strokeDashoffset: circumference }}
           animate={{ 
-            strokeDashoffset: strokeDashoffset,
-            // Add subtle glow effect as progress increases
-            filter: `drop-shadow(0 0 ${8 + (clampedProgress / 100) * 12}px rgba(255,255,255,${0.3 + (clampedProgress / 100) * 0.4}))`
+            strokeDashoffset: strokeDashoffset
           }}
           transition={{ 
-            strokeDashoffset: { duration: 0.3, ease: "easeOut" }, // Faster response to progress changes
-            filter: { duration: 0.5, ease: "easeInOut" }
+            strokeDashoffset: { duration: 0.3, ease: "easeOut" }
           }}
           style={{
             zIndex: 2
@@ -245,9 +224,6 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
             initial={{ opacity: 1 }}
             animate={{ opacity: clampedProgress >= 100 ? 0 : 1 }}
             transition={{ duration: 0.4 }}
-            style={{
-              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-            }}
           >
             <motion.div
               className="major-mono-display-regular text-4xl md:text-5xl font-bold text-white select-none tracking-wider"
@@ -257,16 +233,12 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
               transition={{ duration: 0.2 }}
             >
               {Math.floor(clampedProgress)}
-              <span className="text-lg md:text-xl text-white/60 ml-1">%</span>
             </motion.div>
             <motion.div
               className="mt-2 w-8 h-0.5 bg-white/30"
               initial={{ scaleX: 0 }}
               animate={{ scaleX: clampedProgress / 100 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              style={{
-                filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
-              }}
             />
           </motion.div>
         ) : (
@@ -278,11 +250,11 @@ function CircularProgress({ progress, showStartButton, onStartClick }) {
           >
             <motion.button
               onClick={onStartClick}
-              className="relative px-8 py-4 transition-all duration-300 cursor-pointer"
+              className="relative px-8 py-4 transition-all duration-300 cursor-pointer bg-transparent border-none"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               style={{
-                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))'
+                background: 'transparent'
               }}
             >
               <DecryptedText
@@ -625,7 +597,7 @@ class ThreeJSResourceManager {
     return new Promise((resolve) => {
       console.log('🌌 Setting up environment system with asset loading progress');
       this.updateProgress(0.01);
-
+      
       const createProceduralEnvironment = () => {
         console.log('🎨 Creating procedural environment');
         this.updateProgress(0.8);
@@ -676,13 +648,13 @@ class ThreeJSResourceManager {
           
           // Generate PMREM cubemap for lighting
           try {
-            const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
-            this.scene.environment = envMap;
-            this.environmentMap = envMap;
-            
-            console.log('✅ HDRI environment correctly applied: crisp background + PBR lighting');
+          const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
+          this.scene.environment = envMap;
+          this.environmentMap = envMap;
+          
+          console.log('✅ HDRI environment correctly applied: crisp background + PBR lighting');
             this.updateProgress(1.0);
-            resolve();
+          resolve();
           } catch (error) {
             console.warn('⚠️ PMREM generation failed, using texture directly:', error);
             this.scene.environment = hdrTexture;
@@ -778,7 +750,7 @@ class ThreeJSResourceManager {
         
         this.scene.add(this.starfieldMesh);
         
-        console.log('✅ Starfield created successfully with', starCount, 'stars');
+      console.log('✅ Starfield created successfully with', starCount, 'stars');
         this.updateProgress(1.0);
         resolve();
     });
@@ -838,7 +810,7 @@ class ThreeJSResourceManager {
         
         this.scene.add(this.roadLine);
         
-        console.log('✅ Road curve created successfully with', roadPoints, 'points');
+      console.log('✅ Road curve created successfully with', roadPoints, 'points');
         this.updateProgress(1.0);
         resolve();
     });
@@ -865,7 +837,7 @@ class ThreeJSResourceManager {
           return;
         }
         
-        console.log('🎯 Starting checkpoint creation for', journeyData.length, 'items');
+      console.log('🎯 Starting checkpoint creation for', journeyData.length, 'items');
         console.log('📊 CSS3D scene children before creation:', this.cssScene.children.length);
         this.updateProgress(0.1);
         
@@ -977,16 +949,16 @@ class ThreeJSResourceManager {
         // Simulate compilation progress
         setTimeout(() => {
           this.updateProgress(0.3);
-          
-          // Force compilation of all scene materials/shaders
-          this.renderer.compile(this.scene, this.camera);
+      
+        // Force compilation of all scene materials/shaders
+        this.renderer.compile(this.scene, this.camera);
           this.updateProgress(0.7);
           
-          this.isCompiled = true;
-          
-          console.log('✅ Shader compilation completed successfully');
+        this.isCompiled = true;
+        
+      console.log('✅ Shader compilation completed successfully');
           this.updateProgress(1.0);
-          resolve();
+        resolve();
         }, 100); // Small delay to show progress
     });
   }
@@ -1007,47 +979,47 @@ class ThreeJSResourceManager {
           return;
         }
       }
-      
-      // ── THREE.JS RESOURCES: Dispose geometries and materials ──
-      if (this.starfieldMesh) {
+    
+    // ── THREE.JS RESOURCES: Dispose geometries and materials ──
+    if (this.starfieldMesh) {
         if (this.starfieldMesh.geometry) this.starfieldMesh.geometry.dispose();
         if (this.starfieldMesh.material) this.starfieldMesh.material.dispose();
-        console.log('🗑️ Disposed starfield mesh resources');
-      }
-      
-      if (this.roadGeometry) {
-        this.roadGeometry.dispose();
-        console.log('🗑️ Disposed road geometry');
-      }
-      
-      if (this.roadMaterial) {
-        this.roadMaterial.dispose();
-        console.log('🗑️ Disposed road material');
-      }
-      
+      console.log('🗑️ Disposed starfield mesh resources');
+    }
+    
+    if (this.roadGeometry) {
+      this.roadGeometry.dispose();
+      console.log('🗑️ Disposed road geometry');
+    }
+    
+    if (this.roadMaterial) {
+      this.roadMaterial.dispose();
+      console.log('🗑️ Disposed road material');
+    }
+    
       // ── ENVIRONMENT RESOURCES: Dispose HDRI ──
-      if (this.pmremGenerator) {
-        this.pmremGenerator.dispose();
-        console.log('🗑️ Disposed PMREM generator');
-      }
-      
-      if (this.environmentMap) {
-        this.environmentMap.dispose();
-        console.log('🗑️ Disposed environment map');
-      }
-      
-      if (this.renderer) {
-        this.renderer.dispose();
-        console.log('🗑️ Disposed WebGL renderer');
-        // Note: DOM elements are managed by Journey3D
-      }
-      
-      if (this.cssRenderer) {
-        console.log('🗑️ CSS3D renderer cleanup complete');
-        // Note: DOM elements are managed by Journey3D
-      }
-      
-      console.log('✅ ThreeJSResourceManager: THREE.js cleanup completed');
+    if (this.pmremGenerator) {
+      this.pmremGenerator.dispose();
+      console.log('🗑️ Disposed PMREM generator');
+    }
+    
+    if (this.environmentMap) {
+      this.environmentMap.dispose();
+      console.log('🗑️ Disposed environment map');
+    }
+    
+    if (this.renderer) {
+      this.renderer.dispose();
+      console.log('🗑️ Disposed WebGL renderer');
+      // Note: DOM elements are managed by Journey3D
+    }
+    
+    if (this.cssRenderer) {
+      console.log('🗑️ CSS3D renderer cleanup complete');
+      // Note: DOM elements are managed by Journey3D
+    }
+    
+    console.log('✅ ThreeJSResourceManager: THREE.js cleanup completed');
     } catch (error) {
       console.warn('⚠️ Error during THREE.js resource disposal:', error);
       // Continue cleanup even if some resources fail to dispose
@@ -1145,8 +1117,8 @@ export default function Loader({ onComplete, onResourcesReady }) {
         
         // Continue animation if we haven't reached target (using current value)
         if (Math.abs(targetProgress - finalProgress) > 0.05) {
-          progressAnimationRef.current = requestAnimationFrame(animateProgress);
-        }
+        progressAnimationRef.current = requestAnimationFrame(animateProgress);
+      }
         
         return finalProgress;
       });
