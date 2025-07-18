@@ -13,7 +13,7 @@ export function TimelineDemo({ theme }) {
       <TracingBeam className="px-2">
         <div className="w-full mx-auto antialiased pt-4 relative">
           {/* Experience 1 - Geometric Media Lab */}
-          <div className="mb-24">
+          <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               Jul 2024 – Present
             </h2>
@@ -50,7 +50,7 @@ export function TimelineDemo({ theme }) {
           </div>
 
           {/* Experience 2 - SoDA */}
-          <div className="mb-24">
+          <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               Jan 2024 – Present
             </h2>
@@ -85,24 +85,28 @@ export function TimelineDemo({ theme }) {
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                     <div className="text-white/60 text-xs ml-2">thesoda.io</div>
                   </div>
-                  <iframe 
-                    src="https://thesoda.io/" 
-                    width="100%" 
-                    height="540"
-                    className="border-0 w-full aspect-video"
-                    title="Software Developers Association Website"
-                    style={{
-                      minHeight: '540px',
-                      aspectRatio: '16/9'
-                    }}
-                  />
+                  <div className="w-full aspect-video overflow-hidden">
+                    <iframe 
+                      src="https://thesoda.io/" 
+                      width="200%" 
+                      height="200%"
+                      className="border-0"
+                      title="Software Developers Association Website"
+                      style={{
+                        transform: 'scale(0.5)',
+                        transformOrigin: 'top left',
+                        width: '200%',
+                        height: '200%'
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Experience 3 - Mesa Historical Museum */}
-          <div className="mb-24">
+          <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               Aug 2024 – May 2025
             </h2>
@@ -145,7 +149,7 @@ export function TimelineDemo({ theme }) {
           </div>
 
           {/* Experience 4 - ASU Biodesign Institute */}
-          <div className="mb-24">
+          <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               Jan 2023 – Dec 2024
             </h2>
@@ -165,7 +169,7 @@ export function TimelineDemo({ theme }) {
                     <strong>Reduced analysis time from 4 hours to 10–30 minutes</strong> per image by building a scalable pipeline and REST API, delivering a user-friendly web interface for non-engineers to access advanced ML and visualization features.
                   </li>
                   <li>
-                    <strong>Collaborated with engineers and researchers</strong> to maintain and document the codebase, support team onboarding, and deliver custom analytics scripts, ensuring smooth adoption and impactful data-driven insights.
+                    <strong>Collaborated with researchers</strong> to maintain and document the codebase, support team onboarding, and deliver custom analytics scripts, ensuring smooth adoption and impactful data-driven insights.
                   </li>
                 </ul>
                 <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
@@ -180,7 +184,7 @@ export function TimelineDemo({ theme }) {
                   src="/ex(2).jpeg"
                   alt="ASU Biodesign Institute ML Intern"
                   width={800}
-                  height={600}
+                  height={400}
                   className="rounded-lg object-cover w-full h-auto shadow-md"
                 />
               </div>

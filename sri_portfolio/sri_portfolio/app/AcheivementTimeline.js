@@ -15,7 +15,7 @@ export function AchievementTimelineDemo({ theme }) {
       <TracingBeam className="px-2">
         <div className="w-full mx-auto antialiased pt-4 relative">
           {/* Achievement 1 - Programming Foundation */}
-          <div className="mb-24">
+          <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               2022
             </h2>
@@ -50,7 +50,7 @@ export function AchievementTimelineDemo({ theme }) {
           </div>
 
           {/* Achievement 2 - Hackathon Success */}
-          <div className="mb-24">
+          <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               2023
             </h2>
@@ -87,7 +87,7 @@ export function AchievementTimelineDemo({ theme }) {
           </div>
 
           {/* Achievement 3 - Machine Learning Growth */}
-          <div className="mb-24">
+          <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               2023
             </h2>
@@ -125,7 +125,7 @@ export function AchievementTimelineDemo({ theme }) {
           </div>
 
           {/* Achievement 4 - Software Engineering Mastery */}
-          <div className="mb-24">
+          <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               2024
             </h2>
