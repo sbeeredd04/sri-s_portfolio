@@ -1043,64 +1043,39 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       {!isTransitioning && (
         <>
           {/* Progress Bar Island - Top Center */}
-          <motion.div
-            className="absolute top-6 left-1/2 transform -translate-x-1/2 pointer-events-none z-[100]"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <div className="bg-black/80 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-3 shadow-xl">
-              <div className="flex items-center gap-4">
-                <div className="text-white/60 text-sm font-mono">PROGRESS</div>
-                <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-white rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                  />
-                </div>
-                <div className="text-white text-sm font-mono min-w-[3rem] text-right">
-                  {progress}%
+          <div className="fixed top-6 left-0 right-0 flex justify-center pointer-events-none z-[100]">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div className="bg-black/80 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-3 shadow-xl">
+                <div className="flex items-center gap-4">
+                  <div className="text-white/60 text-sm font-mono">PROGRESS</div>
+                  <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-white rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    />
+                  </div>
+                  <div className="text-white text-sm font-mono min-w-[3rem] text-right">
+                    {progress}%
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
-          {/* Combined Navigation & Status Island - Bottom Center */}
-          <motion.div
-            className="absolute bottom-6 left-1/2 transform -translate-x-1/2 pointer-events-auto z-[100]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-          >
-            <div className="bg-black/80 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 shadow-xl">
-              <div className="flex flex-col gap-4">
-                {/* Status Info Row */}
-                <div className="flex items-center justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <div className="text-white/60 text-xs font-mono">CHECKPOINT</div>
-                    <div className="text-white text-sm font-mono">
-                      {isBeforeFirstCheckpoint ? 
-                        "START" : 
-                        `${currentCheckpointIndex + 1} / ${checkpointsRef.current.length}`
-                      }
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-white/60 text-xs font-mono">STATUS</div>
-                    <div className="text-white text-sm font-mono">
-                      {isBeforeFirstCheckpoint ? 
-                        "EXPLORING" : 
-                        isAtFinalCheckpoint ? 
-                          "COMPLETE" : 
-                          "LEARNING"
-                      }
-                    </div>
-                  </div>
-                </div>
-
-                {/* Navigation Row */}
+          {/* Minimal Navigation & Status Island - Bottom Center */}
+          <div className="fixed bottom-6 left-0 right-0 flex justify-center pointer-events-auto z-[100]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+            >
+              <div className="bg-black/80 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-3 shadow-xl">
                 <div className="flex items-center gap-6">
                   {/* Previous Button */}
                   <button
@@ -1115,21 +1090,21 @@ export default function Journey3D({ onComplete, preloadedResources }) {
                     <FaChevronLeft size={16} />
                   </button>
 
-                  {/* Status Text */}
-                  <div className="text-center min-w-[200px] max-w-[300px]">
+                  {/* Minimal Status Display */}
+                  <div className="text-center min-w-[180px]">
                     {isBeforeFirstCheckpoint ? (
                       <div className="text-white/80 text-sm font-mono">
                         Scroll to begin journey
                       </div>
                     ) : (
-                      <>
-                        <div className="text-white/60 text-xs font-mono mb-1">
-                          CURRENT
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="text-white/60 text-xs font-mono">
+                          {currentCheckpointIndex + 1} / {checkpointsRef.current.length}
                         </div>
-                        <div className="text-white text-sm font-mono truncate">
+                        <div className="text-white text-sm font-mono truncate max-w-[120px]">
                           {checkpointsRef.current[currentCheckpointIndex]?.data?.title || 'Unknown'}
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
 
@@ -1156,8 +1131,8 @@ export default function Journey3D({ onComplete, preloadedResources }) {
                   )}
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </>
       )}
 
