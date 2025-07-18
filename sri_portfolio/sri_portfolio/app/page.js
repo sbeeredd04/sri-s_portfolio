@@ -37,12 +37,12 @@ import {
 } from "@tabler/icons-react";
 // Import IconVolumeOff instead of IconVolumeMute (which appears to be unavailable)
 import { IconVolumeOff } from "@tabler/icons-react"; 
-
+import { PinContainer } from "./components/3d-pin";
+import { Carousel } from "./components/apple-cards-carousel";
 import createGlobe from "cobe";
 import { CardSpotlight } from "./components/card-spotlight";
 import { Card, ExCarousel } from "./components/ExpandableCard";
 import { InfiniteMovingCards } from "./components/infinite-moving-cards";
-import { Timeline} from "./components/timeline";
 import { TimelineDemo } from "./timeline";
 import { AchievementTimelineDemo } from "./AcheivementTimeline";
 import { Cover } from "./components/cover";
@@ -79,8 +79,8 @@ export default function Home() {
   const [previewUrl, setPreviewUrl] = useState("");
   const [isMobile, setIsMobile] = useState(false);
 
-  const [skillsActiveTab, setSkillsActiveTab] = useState("overview");
-  
+  const [skillsActiveTab, setSkillsActiveTab] = useState("github");
+    
   // Important: Make sure these hooks are called at the top level
   const { showPlayer, togglePlayerVisibility } = useMusic();
   const { isSoundEnabled, toggleSound, playClickSound } = useSound();
