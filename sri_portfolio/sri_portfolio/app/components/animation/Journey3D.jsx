@@ -21,61 +21,10 @@ const MAX_SCROLL_SPEED = 3.0; // Maximum scroll speed multiplier for responsiven
 const CHECKPOINT_PAUSE_DURATION = 2000; // 2 seconds pause at each checkpoint
 
 // ──────────────────────────────────────────────────────────────────────────────
-// FRAME DESIGN CONSTANTS - Customizable trapezoid frame parameters
-// ──────────────────────────────────────────────────────────────────────────────
-
-// ── FRAME THICKNESS & PADDING ──
-const FRAME_THICKNESS = 1; // Main frame border thickness (viewBox units)
-const FRAME_STROKE_WIDTH = 0.4; // SVG stroke width for borders
-const FRAME_PADDING_TOP = 1.5; // Distance from top edge
-const FRAME_PADDING_RIGHT = 1; // Distance from right edge  
-const FRAME_PADDING_BOTTOM = 1.5; // Distance from bottom edge
-const FRAME_PADDING_LEFT = 1; // Distance from left edge
-
-// ── TRAPEZOID DIMENSIONS ──
-const TRAPEZOID_TOP_LENGTH = 24; // Length of top trapezoid (viewBox units)
-const TRAPEZOID_BOTTOM_LENGTH = 36; // Length of bottom trapezoid
-const TRAPEZOID_LEFT_LENGTH = 16; // Length of left trapezoid
-const TRAPEZOID_RIGHT_LENGTH = 16; // Length of right trapezoid
-
-const TRAPEZOID_TOP_HEIGHT = 2; // Height/depth of top trapezoid
-const TRAPEZOID_BOTTOM_HEIGHT = 6; // Height/depth of bottom trapezoid
-const TRAPEZOID_LEFT_HEIGHT = 0.75; // Width/depth of left trapezoid
-const TRAPEZOID_RIGHT_HEIGHT = 0.75; // Width/depth of right trapezoid
-
-// ── TRAPEZOID SLANT/ANGLE ──
-const TRAPEZOID_TOP_SLANT = 2; // How much the top trapezoid slants inward
-const TRAPEZOID_BOTTOM_SLANT = 4; // How much the bottom trapezoid slants inward
-const TRAPEZOID_LEFT_SLANT = 2; // How much the left trapezoid slants inward
-const TRAPEZOID_RIGHT_SLANT = 2; // How much the right trapezoid slants inward
-
-// ── EVENT CAPTURE ZONE ──
-const EVENT_ZONE_PADDING = 8; // Padding for scroll/mouse event capture zone (CSS units)
-
-// ──────────────────────────────────────────────────────────────────────────────
-// PROGRESS BAR DESIGN CONSTANTS - Independent positioning from main frame
-// ──────────────────────────────────────────────────────────────────────────────
-
-// ── PROGRESS BAR FRAME ALIGNMENT ──
-const PROGRESS_FRAME_PADDING_TOP = 1.5; // Distance from top edge for progress bar
-const PROGRESS_FRAME_PADDING_RIGHT = 1; // Distance from right edge for progress bar
-const PROGRESS_FRAME_PADDING_BOTTOM = 1.5; // Distance from bottom edge for progress bar  
-const PROGRESS_FRAME_PADDING_LEFT = 1; // Distance from left edge for progress bar
-
-// ── PROGRESS BAR TRAPEZOID DIMENSIONS ──
-const PROGRESS_TRAPEZOID_TOP_LENGTH = 26; // Length of progress bar trapezoid
-const PROGRESS_TRAPEZOID_TOP_HEIGHT = 2; // Height/depth of progress bar trapezoid
-const PROGRESS_TRAPEZOID_TOP_SLANT = 1.5; // How much the progress bar trapezoid slants
-
-// ── PROGRESS BAR POSITIONING ──
-const PROGRESS_BAR_VERTICAL_OFFSET = 1.5; // Additional spacing from trapezoid notch
-const PROGRESS_BAR_EXTENSION_LENGTH = 8; // How far to extend beyond trapezoid
-
-// ──────────────────────────────────────────────────────────────────────────────
 // CHECKPOINT HEADER COMPONENT
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CheckpointHeader = ({ title, heading, onAnimationComplete, isFinalCheckpoint, onEnterPortfolio }) => {
+const CheckpointHeader = ({ title, heading, onAnimationComplete }) => {
   const [titleDone, setTitleDone] = useState(false);
   const [headingDone, setHeadingDone] = useState(false);
 
@@ -113,36 +62,6 @@ const CheckpointHeader = ({ title, heading, onAnimationComplete, isFinalCheckpoi
             onAnimationComplete={() => setHeadingDone(true)}
         />
       </div>
-      {isFinalCheckpoint && (
-        <div className="journey-enter-button-container" style={{ marginTop: '20px', textAlign: 'center' }}>
-          <button
-            onClick={onEnterPortfolio}
-            className="enter-portfolio-3d-button"
-            style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              borderRadius: '4px',
-              padding: '8px 16px',
-              color: '#ffffff',
-              fontFamily: 'Ubuntu Mono, monospace',
-              fontSize: '14px',
-              letterSpacing: '0.05em',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255,255,255,0.2)';
-              e.target.style.borderColor = 'rgba(255,255,255,0.5)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255,255,255,0.1)';
-              e.target.style.borderColor = 'rgba(255,255,255,0.3)';
-            }}
-          >
-            ENTER PORTFOLIO
-          </button>
-        </div>
-      )}
     </>
   );
 };
@@ -163,57 +82,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   // ── Core References ──
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
-
-  // ── TRAPEZOID COORDINATE CALCULATOR ──
-  const calculateTrapezoidCoords = () => {
-    // Calculate frame boundaries
-    const frameLeft = FRAME_PADDING_LEFT;
-    const frameRight = 100 - FRAME_PADDING_RIGHT;
-    const frameTop = FRAME_PADDING_TOP;
-    const frameBottom = 100 - FRAME_PADDING_BOTTOM;
-    
-    // Calculate trapezoid centers
-    const topCenter = 50;
-    const bottomCenter = 50;
-    const leftCenter = 50;
-    const rightCenter = 50;
-    
-    // Top trapezoid coordinates
-    const topStart = topCenter - (TRAPEZOID_TOP_LENGTH / 2);
-    const topEnd = topCenter + (TRAPEZOID_TOP_LENGTH / 2);
-    const topSlantStart = topStart + TRAPEZOID_TOP_SLANT;
-    const topSlantEnd = topEnd - TRAPEZOID_TOP_SLANT;
-    
-    // Bottom trapezoid coordinates  
-    const bottomStart = bottomCenter - (TRAPEZOID_BOTTOM_LENGTH / 2);
-    const bottomEnd = bottomCenter + (TRAPEZOID_BOTTOM_LENGTH / 2);
-    const bottomSlantStart = bottomStart + TRAPEZOID_BOTTOM_SLANT;
-    const bottomSlantEnd = bottomEnd - TRAPEZOID_BOTTOM_SLANT;
-    
-    // Left trapezoid coordinates
-    const leftStart = leftCenter - (TRAPEZOID_LEFT_LENGTH / 2);
-    const leftEnd = leftCenter + (TRAPEZOID_LEFT_LENGTH / 2);
-    const leftSlantStart = leftStart + TRAPEZOID_LEFT_SLANT;
-    const leftSlantEnd = leftEnd - TRAPEZOID_LEFT_SLANT;
-    
-    // Right trapezoid coordinates
-    const rightStart = rightCenter - (TRAPEZOID_RIGHT_LENGTH / 2);
-    const rightEnd = rightCenter + (TRAPEZOID_RIGHT_LENGTH / 2);
-    const rightSlantStart = rightStart + TRAPEZOID_RIGHT_SLANT;
-    const rightSlantEnd = rightEnd - TRAPEZOID_RIGHT_SLANT;
-    
-    return {
-      frameLeft, frameRight, frameTop, frameBottom,
-      // Top trapezoid
-      topPath: `L ${topStart} ${frameTop} L ${topSlantStart} ${frameTop + TRAPEZOID_TOP_HEIGHT} L ${topSlantEnd} ${frameTop + TRAPEZOID_TOP_HEIGHT} L ${topEnd} ${frameTop}`,
-      // Right trapezoid  
-      rightPath: `L ${frameRight} ${rightStart} L ${frameRight - TRAPEZOID_RIGHT_HEIGHT} ${rightSlantStart} L ${frameRight - TRAPEZOID_RIGHT_HEIGHT} ${rightSlantEnd} L ${frameRight} ${rightEnd}`,
-      // Bottom trapezoid
-      bottomPath: `L ${bottomEnd} ${frameBottom} L ${bottomSlantEnd} ${frameBottom - TRAPEZOID_BOTTOM_HEIGHT} L ${bottomSlantStart} ${frameBottom - TRAPEZOID_BOTTOM_HEIGHT} L ${bottomStart} ${frameBottom}`,
-      // Left trapezoid
-      leftPath: `L ${frameLeft} ${leftEnd} L ${frameLeft + TRAPEZOID_LEFT_HEIGHT} ${leftSlantEnd} L ${frameLeft + TRAPEZOID_LEFT_HEIGHT} ${leftSlantStart} L ${frameLeft} ${leftStart}`
-    };
-  };
   
   // ── UI State ──
   const [progress, setProgress] = useState(0);
@@ -258,8 +126,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     const progressRatio = Math.min(currentT / lastCheckpointStopT, 1.0);
     return Math.round(progressRatio * 100);
   }, []);
-
-
 
   // ──────────────────────────────────────────────────────────────────────────────
   // INITIALIZE checkpoint data from preloaded resources
@@ -440,14 +306,11 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           }
           
           try {
-            const isFinalCheckpoint = cp.index === checkpointsRef.current.length - 1;
             cp.root.render(
               <CheckpointHeader 
                 title={cp.data.title}
                 heading={cp.data.heading}
                 onAnimationComplete={resolve}
-                isFinalCheckpoint={isFinalCheckpoint}
-                onEnterPortfolio={handleEnterPortfolio}
               />
             );
           } catch (error) {
@@ -648,7 +511,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     }
   }, [currentCheckpointIndex, isBeforeFirstCheckpoint, navigateToCheckpoint]);
 
-  // ── ENTER PORTFOLIO FUNCTION ──
+  // ── JOURNEY COMPLETION FUNCTION ──
   const handleEnterPortfolio = useCallback(() => {
     // Set completion flags
     journeyCompletedRef.current = true;
@@ -786,8 +649,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       checkpoints = preloadedResources.checkpoints;
       resourceManager = preloadedResources.resourceManager;
       
-
-
       // Attach DOM elements
       if (renderer && renderer.domElement && !renderer.domElement.parentNode) {
         container.appendChild(renderer.domElement);
@@ -951,7 +812,7 @@ export default function Journey3D({ onComplete, preloadedResources }) {
               setShowCheckpointNav(true);
               setIsBeforeFirstCheckpoint(false);
               
-              // Check if this is the final "Enter Portfolio" checkpoint
+              // Check if this is the final checkpoint
               const isFinalCheckpoint = cp.index === checkpointsRef.current.length - 1;
               setIsAtFinalCheckpoint(isFinalCheckpoint);
               
@@ -972,9 +833,6 @@ export default function Journey3D({ onComplete, preloadedResources }) {
             }
           }
         }
-        
-        // ── JOURNEY END: Check if we reached the final "Enter Portfolio" checkpoint ──
-        // Remove auto-completion logic - now handled by final checkpoint button
       }
       
       // ── ALWAYS UPDATE PROGRESS FOR SMOOTH BAR FILLING ──
@@ -991,32 +849,31 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     
     // ── SEPARATED CAMERA POSITIONING LOGIC ──
     function updateCameraPosition(sRef, deltaTime) {
-
-        // ── CAMERA POSITIONING & ORIENTATION: Always active, even during animations ──
+      // ── CAMERA POSITIONING & ORIENTATION: Always active, even during animations ──
       const position = sRef.roadCurve.getPointAt(sRef.cameraT);
       const frameIndex = Math.floor(sRef.cameraT * sRef.frenetFrames.tangents.length);
       const normal = sRef.frenetFrames.normals[frameIndex];
       
-        // Position camera above the road
+      // Position camera above the road
       sRef.camera.position.copy(position).add(normal.clone().multiplyScalar(CAMERA_BASE_OFFSET_Y * SCENE_SCALE));
       
-        // ── LOOK-AROUND BEHAVIOR: Always enabled for immersive experience ──
-        if (!isLookingAround) {
-          targetLookDirection.copy(new THREE.Vector3(0, 0, -1));
-        }
-        
-        currentLookDirection.lerp(targetLookDirection, LOOK_AROUND_LERP_FACTOR);
-        currentLookDirection.normalize();
+      // ── LOOK-AROUND BEHAVIOR: Always enabled for immersive experience ──
+      if (!isLookingAround) {
+        targetLookDirection.copy(new THREE.Vector3(0, 0, -1));
+      }
       
-        // Apply base camera orientation along the road
+      currentLookDirection.lerp(targetLookDirection, LOOK_AROUND_LERP_FACTOR);
+      currentLookDirection.normalize();
+      
+      // Apply base camera orientation along the road
       const roadMatrix = new THREE.Matrix4();
       const lookAtPosition = sRef.roadCurve.getPointAt(Math.min(sRef.cameraT + 0.01, 1));
       roadMatrix.lookAt(sRef.camera.position, lookAtPosition, normal);
       
       sRef.camera.quaternion.setFromRotationMatrix(roadMatrix);
       
-        // Apply look-around offset for interactive camera control
-        if (isLookingAround || !currentLookDirection.equals(new THREE.Vector3(0, 0, -1))) {
+      // Apply look-around offset for interactive camera control
+      if (isLookingAround || !currentLookDirection.equals(new THREE.Vector3(0, 0, -1))) {
         const worldLookDirection = currentLookDirection.clone();
         worldLookDirection.applyQuaternion(sRef.camera.quaternion);
         
@@ -1025,16 +882,14 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         const finalMatrix = new THREE.Matrix4();
         finalMatrix.lookAt(sRef.camera.position, finalLookAt, normal);
         sRef.camera.quaternion.setFromRotationMatrix(finalMatrix);
-          
-
       }
 
-        // Keep checkpoint objects facing camera for proper visibility
+      // Keep checkpoint objects facing camera for proper visibility
       sRef.checkpoints.forEach((cp) => {
         cp.cardObject.rotation.copy(sRef.camera.rotation);
         cp.headerObject.rotation.copy(sRef.camera.rotation);
       });
-      }
+    }
 
     // ── RENDER LOOP ──
     function animate(now = performance.now()) {
@@ -1143,35 +998,25 @@ export default function Journey3D({ onComplete, preloadedResources }) {
   }, [isTransitioning, onComplete, isCompleting, preloadedResources, playCheckpointSequence, updateSmoothNavigation, calculateProgress]);
 
   // ──────────────────────────────────────────────────────────────────────────────
-  // RENDER: Clean UI
+  // RENDER: Clean UI with Isolated Islands
   // ──────────────────────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 bg-black major-mono-display-regular overflow-hidden">
       {/* Transition overlay */}
-          <motion.div
-            className="absolute inset-0 bg-black z-50 pointer-events-none"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: isTransitioning ? 1 : 0 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-          />
+      <motion.div
+        className="absolute inset-0 bg-black z-50 pointer-events-none"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: isTransitioning ? 1 : 0 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+      />
 
-      {/* Completion overlay - Enhanced to prevent journey completion glitch */}
-          <motion.div
-            className="absolute inset-0 bg-black z-60 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isCompleting ? 1 : 0 }}
+      {/* Completion overlay */}
+      <motion.div
+        className="absolute inset-0 bg-black z-60 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isCompleting ? 1 : 0 }}
         transition={{ duration: 1.8, ease: "easeInOut" }}
       />
-      
-      {/* Additional completion safety overlay to ensure smooth transition */}
-      {isCompleting && (
-        <motion.div
-          className="absolute inset-0 bg-black z-70 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 1.2 }}
-        />
-      )}
 
       {/* Journey title during transition */}
       {isTransitioning && (
@@ -1190,397 +1035,134 @@ export default function Journey3D({ onComplete, preloadedResources }) {
           </div>
         </motion.div>
       )}
-      
-      {/* Breathing animation styles */}
-      <style jsx>{`
-        @keyframes breathe {
-          0% { opacity: 0.7; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.02); }
-          100% { opacity: 0.7; transform: scale(1); }
-        }
-        
-        .breathing-text {
-          animation: breathe 2s ease-in-out infinite;
-        }
-      `}</style>
 
       {/* THREE.js container */}
       <div ref={containerRef} className="w-full h-full" />
-      
-            {/* ───── SVG Notched Frame Overlay - Configurable Trapezoid Design ───── */}
-      <svg 
-        className="absolute inset-0 w-full h-full pointer-events-none z-[100]"
-        viewBox="0 0 100 100" 
-        preserveAspectRatio="none"
-        style={{ width: '100vw', height: '100vh' }}
-      >
-        {(() => {
-          const coords = calculateTrapezoidCoords();
-          const framePath = `
-            M ${coords.frameLeft} ${coords.frameTop} 
-            ${coords.topPath}
-            L ${coords.frameRight} ${coords.frameTop} 
-            ${coords.rightPath}
-            L ${coords.frameRight} ${coords.frameBottom} 
-            ${coords.bottomPath}
-            L ${coords.frameLeft} ${coords.frameBottom} 
-            ${coords.leftPath}
-            Z
-          `;
 
-          // ────────── PROGRESS BAR CALCULATIONS ──────────
-          // Calculate the inner flat segment of the top trapezoid
-          const topCenter = 50;
-          const halfInner = (TRAPEZOID_TOP_LENGTH / 2) - TRAPEZOID_TOP_SLANT;
-          const innerSegStart = topCenter - halfInner;
-          const innerSegEnd = topCenter + halfInner;
-          const centerX = (innerSegStart + innerSegEnd) / 2;
-          const halfLen = (innerSegEnd - innerSegStart) / 2;
-          const barLen = halfLen * (progress / 100);
-          const progressBarY = coords.frameTop + TRAPEZOID_TOP_HEIGHT + 1; // Added spacing from notch
-          
-          return (
-            <>
-              {/* Liquid glass frame fill with trapezoid cutouts */}
-              <defs>
-                <mask id="frameMask">
-                  <rect width="100" height="100" fill="white"/>
-                  <path 
-                    d={framePath}
-                    fill="black"
+      {/* ───── ISOLATED PROGRESS ISLANDS ───── */}
+      {!isTransitioning && (
+        <>
+          {/* Progress Bar Island - Top Center */}
+          <motion.div
+            className="absolute top-6 left-1/2 transform -translate-x-1/2 pointer-events-none z-[100]"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="bg-black/80 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-3 shadow-xl">
+              <div className="flex items-center gap-4">
+                <div className="text-white/60 text-sm font-mono">PROGRESS</div>
+                <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-white rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
                   />
-                </mask>
-              </defs>
-              
-              {/* Glass effect background */}
-              <foreignObject 
-                x="0" 
-                y="0" 
-                width="100%" 
-                height="100%"
-                mask="url(#frameMask)"
-              >
-                <div 
-                  className="w-full h-full bg-black/60 backdrop-blur-sm"
-                  style={{
-                    background: 'rgba(0, 0, 0, 0.9)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)'
-                  }}
-                />
-              </foreignObject>
-              
-              {/* White border outline */}
-              <path 
-                d={framePath}
-                fill="none"
-                stroke="white"
-                strokeWidth={FRAME_STROKE_WIDTH}
-                vectorEffect="non-scaling-stroke"
-              />
-              
-              {/* Outer border */}
-              <rect 
-                x="0" 
-                y="0" 
-                width="100" 
-                height="100" 
-                fill="none" 
-                stroke="white" 
-                strokeWidth={FRAME_STROKE_WIDTH}
-                vectorEffect="non-scaling-stroke"
-              />
-              
-              {/* Additional glass enhancement effects */}
-              <defs>
-                <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(0,0,0,0.12)" />
-                  <stop offset="50%" stopColor="rgba(0,0,0,0.1)" />
-                  <stop offset="100%" stopColor="rgba(0,0,0,0.08)" />
-                </linearGradient>
-              </defs>
-              
-              {/* Subtle glass highlight */}
-              <foreignObject 
-                x="0" 
-                y="0" 
-                width="100%" 
-                height="100%"
-                mask="url(#frameMask)"
-              >
-                <div 
-                  className="w-full h-full"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.02) 100%)',
-                    mixBlendMode: 'overlay'
-                  }}
-                />
-              </foreignObject>
-
-              {/* ──────── CENTER-OUT PROGRESS BAR ──────── */}
-              {(() => {
-                // ── PROGRESS BAR COORDINATE CALCULATIONS ──
-                // Calculate progress bar frame boundaries (independent from main frame)
-                const progressFrameLeft = PROGRESS_FRAME_PADDING_LEFT;
-                const progressFrameRight = 100 - PROGRESS_FRAME_PADDING_RIGHT;
-                const progressFrameTop = PROGRESS_FRAME_PADDING_TOP;
-                const progressFrameBottom = 100 - PROGRESS_FRAME_PADDING_BOTTOM;
-                
-                // Calculate progress bar trapezoid coordinates
-                const progressTopCenter = 50;
-                const progressHalfInner = (PROGRESS_TRAPEZOID_TOP_LENGTH / 2) - PROGRESS_TRAPEZOID_TOP_SLANT;
-                const progressInnerSegStart = progressTopCenter - progressHalfInner;
-                const progressInnerSegEnd = progressTopCenter + progressHalfInner;
-                const progressCenterX = (progressInnerSegStart + progressInnerSegEnd) / 2;
-                const progressHalfLen = (progressInnerSegEnd - progressInnerSegStart) / 2;
-                const progressBarLen = progressHalfLen * (progress / 100);
-                const progressBarY = progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT + PROGRESS_BAR_VERTICAL_OFFSET;
-                
-                // Calculate extended path boundaries
-                const leftExtendedStart = Math.max(progressFrameLeft, progressInnerSegStart - PROGRESS_BAR_EXTENSION_LENGTH);
-                const rightExtendedEnd = Math.min(progressFrameRight, progressInnerSegEnd + PROGRESS_BAR_EXTENSION_LENGTH);
-                
-                // Create trapezoid-shaped background track (flipped)
-                const backgroundPath = `
-                  M ${leftExtendedStart} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}
-                  L ${progressInnerSegStart - PROGRESS_TRAPEZOID_TOP_SLANT} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}
-                  L ${progressInnerSegStart} ${progressBarY}
-                  L ${progressInnerSegEnd} ${progressBarY}
-                  L ${progressInnerSegEnd + PROGRESS_TRAPEZOID_TOP_SLANT} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}
-                  L ${rightExtendedEnd} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}
-                `;
-                
-                // Calculate total track length and progress positioning
-                // Total track sections: left extension + left slant + flat center + right slant + right extension
-                const flatCenterLength = progressInnerSegEnd - progressInnerSegStart;
-                const slantLength = Math.sqrt(PROGRESS_TRAPEZOID_TOP_SLANT * PROGRESS_TRAPEZOID_TOP_SLANT + PROGRESS_TRAPEZOID_TOP_HEIGHT * PROGRESS_TRAPEZOID_TOP_HEIGHT);
-                const totalTrackLength = PROGRESS_BAR_EXTENSION_LENGTH + slantLength + flatCenterLength + slantLength + PROGRESS_BAR_EXTENSION_LENGTH;
-                
-                // Calculate how much of the track should be filled based on progress
-                // FIXED: Use actual progress without minimum fill to track properly from 0 to 100%
-                const fillLength = totalTrackLength * (progress / 100);
-                const halfFillLength = fillLength / 2; // Since we fill from center outward
-                
-                // Right side progress path (flipped) - Enhanced filling logic
-                let rightProgressPath = `M ${progressCenterX} ${progressBarY}`;
-                if (halfFillLength > 0) {
-                  const flatHalfLength = flatCenterLength / 2;
-                  
-                  if (halfFillLength <= flatHalfLength) {
-                    // Fill only within flat section
-                    rightProgressPath += ` L ${progressCenterX + halfFillLength} ${progressBarY}`;
-                  } else {
-                    // Fill through flat section
-                    rightProgressPath += ` L ${progressInnerSegEnd} ${progressBarY}`;
-                    
-                    const remainingFill = halfFillLength - flatHalfLength;
-                    
-                    if (remainingFill <= slantLength) {
-                      // Fill partway through slant (going upward toward frame) - improved precision
-                      const slantRatio = remainingFill / slantLength;
-                      const slantProgressX = slantRatio * PROGRESS_TRAPEZOID_TOP_SLANT;
-                      const slantProgressY = slantRatio * PROGRESS_TRAPEZOID_TOP_HEIGHT;
-                      const slantY = progressBarY - slantProgressY;
-                      rightProgressPath += ` L ${progressInnerSegEnd + slantProgressX} ${slantY}`;
-                    } else {
-                      // Fill through entire slant
-                      rightProgressPath += ` L ${progressInnerSegEnd + PROGRESS_TRAPEZOID_TOP_SLANT} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}`;
-                      
-                      const remainingExtension = remainingFill - slantLength;
-                      if (remainingExtension > 0) {
-                        // Fill into extension
-                        const extensionProgress = Math.min(remainingExtension, PROGRESS_BAR_EXTENSION_LENGTH);
-                        rightProgressPath += ` L ${progressInnerSegEnd + PROGRESS_TRAPEZOID_TOP_SLANT + extensionProgress} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}`;
-                      }
-                    }
-                  }
-                }
-                
-                // Left side progress path (flipped) - Enhanced filling logic
-                let leftProgressPath = `M ${progressCenterX} ${progressBarY}`;
-                if (halfFillLength > 0) {
-                  const flatHalfLength = flatCenterLength / 2;
-                  
-                  if (halfFillLength <= flatHalfLength) {
-                    // Fill only within flat section
-                    leftProgressPath += ` L ${progressCenterX - halfFillLength} ${progressBarY}`;
-                  } else {
-                    // Fill through flat section
-                    leftProgressPath += ` L ${progressInnerSegStart} ${progressBarY}`;
-                    
-                    const remainingFill = halfFillLength - flatHalfLength;
-                    
-                    if (remainingFill <= slantLength) {
-                      // Fill partway through slant - improved precision
-                      const slantRatio = remainingFill / slantLength;
-                      const slantProgressX = slantRatio * PROGRESS_TRAPEZOID_TOP_SLANT;
-                      const slantProgressY = slantRatio * PROGRESS_TRAPEZOID_TOP_HEIGHT;
-                      const slantY = progressBarY - slantProgressY;
-                      leftProgressPath += ` L ${progressInnerSegStart - slantProgressX} ${slantY}`;
-                    } else {
-                      // Fill through entire slant
-                      leftProgressPath += ` L ${progressInnerSegStart - PROGRESS_TRAPEZOID_TOP_SLANT} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}`;
-                      
-                      const remainingExtension = remainingFill - slantLength;
-                      if (remainingExtension > 0) {
-                        // Fill into extension
-                        const extensionProgress = Math.min(remainingExtension, PROGRESS_BAR_EXTENSION_LENGTH);
-                        leftProgressPath += ` L ${progressInnerSegStart - PROGRESS_TRAPEZOID_TOP_SLANT - extensionProgress} ${progressFrameTop + PROGRESS_TRAPEZOID_TOP_HEIGHT}`;
-                      }
-                    }
-                  }
-                }
-                
-                return (
-                  <>
-                    {/* Right side progress fill */}
-                    <path
-                      d={rightProgressPath}
-                      stroke="white"
-                      strokeWidth={FRAME_STROKE_WIDTH * 8}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      fill="none"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                    
-                    {/* Left side progress fill */}
-                    <path
-                      d={leftProgressPath}
-                      stroke="white"
-                      strokeWidth={FRAME_STROKE_WIDTH * 8}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      fill="none"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </>
-                );
-              })()}
-
-
-            </>
-          );
-        })()}
-      </svg>
-      
-      {/* ───── PROGRESS PERCENTAGE TEXT OVERLAY ───── */}
-      <div className="absolute top-2 left-0 w-full pointer-events-none z-[110] flex justify-center">
-        <div 
-          className="text-white text-center"
-          style={{
-            fontFamily: 'Ubuntu Mono, monospace',
-            fontSize: '18px',
-            fontWeight: '400',
-            letterSpacing: '0.1em'
-          }}
-        >
-          {progress}%
-          </div>
-      </div>
-
-      {/* ───── CHECKPOINT NAVIGATION OVERLAY ───── */}
-      {showCheckpointNav && (
-        <motion.div 
-          className="absolute bottom-2 left-0 w-full pointer-events-auto z-[110] flex justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-        >
-          <div className="flex items-center gap-6 rounded-lg px-6 py-3">
-            {/* Previous Checkpoint Button */}
-            <button
-              onClick={navigateToPreviousCheckpoint}
-              disabled={isBeforeFirstCheckpoint}
-              className={`flex items-center justify-center w-10 h-10 transition-all duration-200 ${
-                isBeforeFirstCheckpoint
-                  ? 'text-white/30 cursor-not-allowed' 
-                  : 'text-white hover:text-white hover:scale-110 active:scale-95'
-              }`}
-              style={{
-                fontFamily: 'Ubuntu Mono, monospace',
-                fontSize: '18px'
-              }}
-            >
-              <FaChevronLeft />
-            </button>
-
-            {/* Current Checkpoint Title or Initial Message */}
-            <div 
-              className="text-white text-center min-w-[200px] max-w-[400px]"
-              style={{
-                fontFamily: 'Ubuntu Mono, monospace',
-                fontSize: '16px',
-                fontWeight: '400',
-                letterSpacing: '0.05em'
-              }}
-            >
-              {isBeforeFirstCheckpoint ? (
-                <>
-                  <div className="text-white/60 text-sm mb-1">
-                    Journey Awaits
-                  </div>
-                  <div 
-                    className="truncate breathing-text"
-                    style={{
-                      animation: 'breathe 2s ease-in-out infinite'
-                    }}
-                  >
-                    Scroll to learn more
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="text-white/60 text-sm mb-1">
-                    {currentCheckpointIndex + 1} / {checkpointsRef.current.length}
-                  </div>
-                  <div className="truncate">
-                    {checkpointsRef.current[currentCheckpointIndex]?.data?.title || 'Unknown Checkpoint'}
-                  </div>
-                </>
-              )}
+                </div>
+                <div className="text-white text-sm font-mono min-w-[3rem] text-right">
+                  {progress}%
+                </div>
+              </div>
             </div>
+          </motion.div>
 
-            {/* Next Checkpoint Button or Enter Portfolio Button */}
-            {isAtFinalCheckpoint ? (
-              <button
-                onClick={handleEnterPortfolio}
-                className="flex items-center justify-center px-4 py-2 rounded-lg border border-white/60 text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200"
-                style={{
-                  fontFamily: 'Ubuntu Mono, monospace',
-                  fontSize: '14px',
-                  letterSpacing: '0.05em',
-                  minWidth: '120px'
-                }}
-              >
-                ENTER PORTFOLIO
-              </button>
-            ) : (
-              <button
-                onClick={navigateToNextCheckpoint}
-                disabled={!isBeforeFirstCheckpoint && currentCheckpointIndex >= checkpointsRef.current.length - 1}
-                className={`flex items-center justify-center w-10 h-10 transition-all duration-200 ${
-                  (!isBeforeFirstCheckpoint && currentCheckpointIndex >= checkpointsRef.current.length - 1)
-                    ? 'text-white/30 cursor-not-allowed' 
-                    : 'text-white hover:text-white hover:scale-110 active:scale-95'
-                }`}
-                style={{
-                  fontFamily: 'Ubuntu Mono, monospace',
-                  fontSize: '18px'
-                }}
-              >
-                <FaChevronRight />
-              </button>
-            )}
-          </div>
-        </motion.div>
+          {/* Combined Navigation & Status Island - Bottom Center */}
+          <motion.div
+            className="absolute bottom-6 left-1/2 transform -translate-x-1/2 pointer-events-auto z-[100]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            <div className="bg-black/80 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 shadow-xl">
+              <div className="flex flex-col gap-4">
+                {/* Status Info Row */}
+                <div className="flex items-center justify-between gap-6">
+                  <div className="flex items-center gap-4">
+                    <div className="text-white/60 text-xs font-mono">CHECKPOINT</div>
+                    <div className="text-white text-sm font-mono">
+                      {isBeforeFirstCheckpoint ? 
+                        "START" : 
+                        `${currentCheckpointIndex + 1} / ${checkpointsRef.current.length}`
+                      }
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-white/60 text-xs font-mono">STATUS</div>
+                    <div className="text-white text-sm font-mono">
+                      {isBeforeFirstCheckpoint ? 
+                        "EXPLORING" : 
+                        isAtFinalCheckpoint ? 
+                          "COMPLETE" : 
+                          "LEARNING"
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation Row */}
+                <div className="flex items-center gap-6">
+                  {/* Previous Button */}
+                  <button
+                    onClick={navigateToPreviousCheckpoint}
+                    disabled={isBeforeFirstCheckpoint}
+                    className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 ${
+                      isBeforeFirstCheckpoint
+                        ? 'text-white/30 cursor-not-allowed bg-white/5' 
+                        : 'text-white hover:text-white hover:bg-white/10 active:scale-95'
+                    }`}
+                  >
+                    <FaChevronLeft size={16} />
+                  </button>
+
+                  {/* Status Text */}
+                  <div className="text-center min-w-[200px] max-w-[300px]">
+                    {isBeforeFirstCheckpoint ? (
+                      <div className="text-white/80 text-sm font-mono">
+                        Scroll to begin journey
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-white/60 text-xs font-mono mb-1">
+                          CURRENT
+                        </div>
+                        <div className="text-white text-sm font-mono truncate">
+                          {checkpointsRef.current[currentCheckpointIndex]?.data?.title || 'Unknown'}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Next Button or Complete Journey */}
+                  {isAtFinalCheckpoint ? (
+                    <button
+                      onClick={handleEnterPortfolio}
+                      className="flex items-center justify-center px-4 py-2 rounded-xl border border-white/40 text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200"
+                    >
+                      <span className="text-sm font-mono">Press Enter to Continue</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={navigateToNextCheckpoint}
+                      disabled={!isBeforeFirstCheckpoint && currentCheckpointIndex >= checkpointsRef.current.length - 1}
+                      className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 ${
+                        (!isBeforeFirstCheckpoint && currentCheckpointIndex >= checkpointsRef.current.length - 1)
+                          ? 'text-white/30 cursor-not-allowed bg-white/5' 
+                          : 'text-white hover:text-white hover:bg-white/10 active:scale-95'
+                      }`}
+                    >
+                      <FaChevronRight size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </>
       )}
-      
+
       {/* ───── Interactive Event Zones ───── */}
-      {/* Scroll Event Capture Zone - FIXED: Native event listeners with { passive: false } */}
       <ScrollCaptureZone containerRef={containerRef} />
-      {/* ──────────────────────────────────────── */}
     </div>
   );
 }
@@ -1594,8 +1176,6 @@ function ScrollCaptureZone({ containerRef }) {
   useEffect(() => {
     const el = scrollCaptureRef.current;
     if (!el) return;
-
-
 
     // ── WHEEL HANDLER: Non-passive to allow preventDefault() ──
     const onWheel = (e) => {
@@ -1680,8 +1260,6 @@ function ScrollCaptureZone({ containerRef }) {
     el.addEventListener('mousemove', onMouseMove, { passive: true });
     el.addEventListener('mouseleave', onMouseLeave, { passive: true });
 
-
-
     // ── CLEANUP ──
     return () => {
       el.removeEventListener('wheel', onWheel);
@@ -1695,13 +1273,9 @@ function ScrollCaptureZone({ containerRef }) {
   return (
     <div 
       ref={scrollCaptureRef}
-      className="absolute pointer-events-auto z-[50]"
+      className="absolute pointer-events-auto z-[50] inset-4"
       style={{ 
-        background: 'transparent',
-        top: `${EVENT_ZONE_PADDING}px`,
-        right: `${EVENT_ZONE_PADDING}px`,
-        bottom: `${EVENT_ZONE_PADDING}px`,
-        left: `${EVENT_ZONE_PADDING}px`
+        background: 'transparent'
       }}
     />
   );

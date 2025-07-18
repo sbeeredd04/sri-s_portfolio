@@ -32,7 +32,8 @@ import {
   IconMessageCircle,
   IconLink,
   IconShare2,
-  IconEye // Added IconEye
+  IconEye, // Added IconEye
+  IconRoute // Added IconRoute for journey
 } from "@tabler/icons-react";
 // Import IconVolumeOff instead of IconVolumeMute (which appears to be unavailable)
 import { IconVolumeOff } from "@tabler/icons-react"; 
@@ -462,6 +463,7 @@ export default function Home() {
   const [showMainPortfolio, setShowMainPortfolio] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [preloadedResources, setPreloadedResources] = useState(null);
+  const [isFirstTimeVisitor, setIsFirstTimeVisitor] = useState(false);
 
   useEffect(() => {
     // Initialize navigation history when main portfolio loads
@@ -470,6 +472,28 @@ export default function Home() {
       setCurrentHistoryIndex(0);
     }
   }, [showMainPortfolio, navigationHistory.length]);
+
+  // Check if this is a first-time visitor
+  useEffect(() => {
+    const checkFirstTimeVisitor = () => {
+      try {
+        const hasSeenTutorial = localStorage.getItem('portfolio_tutorial_shown') === 'true';
+        setIsFirstTimeVisitor(!hasSeenTutorial);
+      } catch (error) {
+        console.error('Error checking first-time visitor status:', error);
+        setIsFirstTimeVisitor(true); // Default to showing journey if error
+      }
+    };
+    
+    checkFirstTimeVisitor();
+  }, []);
+
+  // Manual journey invocation
+  const handleManualJourney = () => {
+    setShowMainPortfolio(false);
+    setShowJourney(true);
+    setIsTransitioning(false);
+  };
 
   const handleResourcesReady = (resources) => {
     setPreloadedResources(resources);
@@ -481,14 +505,30 @@ export default function Home() {
     
     // Small delay to ensure smooth transition
     setTimeout(() => {
-      setShowJourney(true);
-      setIsTransitioning(false);
+      if (isFirstTimeVisitor) {
+        setShowJourney(true);
+        setIsTransitioning(false);
+      } else {
+        // Skip journey for returning visitors
+        setShowMainPortfolio(true);
+        setIsTransitioning(false);
+      }
     }, 100);
   };
 
   const handleJourneyComplete = () => {
     setIsTransitioning(true);
     setShowJourney(false);
+    
+    // Mark as no longer first-time visitor when journey completes
+    if (isFirstTimeVisitor) {
+      try {
+        localStorage.setItem('portfolio_tutorial_shown', 'true');
+        setIsFirstTimeVisitor(false);
+      } catch (error) {
+        console.error('Error saving tutorial status:', error);
+      }
+    }
     
     // Longer delay to match the Journey3D fade out
     setTimeout(() => {
@@ -689,6 +729,16 @@ export default function Home() {
                   <IconPalette size={20} stroke={1.5} className="md:hidden" />
                   <IconPalette size={24} stroke={1.5} className="hidden md:block" />
                   <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
+                </button>
+              </div>
+              <div className="relative">
+                <button
+                  onClick={handleManualJourney}
+                  className="flex items-center justify-center w-8 h-8 text-neutral-400 hover:text-white transition-colors"
+                  title="Experience Journey"
+                >
+                  <IconRoute size={20} stroke={1.5} className="md:hidden" />
+                  <IconRoute size={24} stroke={1.5} className="hidden md:block" />
                 </button>
               </div>
             </div>
