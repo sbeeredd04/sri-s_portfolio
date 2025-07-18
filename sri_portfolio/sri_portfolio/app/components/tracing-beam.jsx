@@ -10,7 +10,7 @@ export const TracingBeam = ({
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start start", "end start"],
+    offset: ["start center", "end center"],
   });
 
   const contentRef = useRef(null);
@@ -34,8 +34,8 @@ export const TracingBeam = ({
   return (
     <motion.div
       ref={ref}
-      className={cn("relative mx-auto h-full w-full max-w-4xl", className)}>
-      <div className="absolute top-3 -left-4 md:-left-20">
+      className={cn("relative w-full min-h-screen", className)}>
+      <div className="absolute top-3 left-4 md:left-8 z-10">
         <motion.div
           transition={{
             duration: 0.2,
@@ -47,22 +47,21 @@ export const TracingBeam = ({
                 ? "none"
                 : "rgba(0, 0, 0, 0.24) 0px 3px 8px",
           }}
-          className="border-netural-200 ml-[27px] flex h-4 w-4 items-center justify-center rounded-full border shadow-sm">
+          className="border-netural-200 ml-[27px] flex h-4 w-4 items-center justify-center rounded-full border shadow-sm bg-gray-900">
           <motion.div
             transition={{
               duration: 0.2,
               delay: 0.5,
             }}
             animate={{
-              backgroundColor: scrollYProgress.get() > 0 ? "white" : "#10b981",
-              borderColor: scrollYProgress.get() > 0 ? "white" : "#059669",
+              backgroundColor: scrollYProgress.get() > 0 ? "#06b6d4" : "#06b6d4",
+              borderColor: scrollYProgress.get() > 0 ? "#0891b2" : "#0891b2",
             }}
-            className="h-2 w-2 rounded-full border border-neutral-300 bg-white" />
+            className="h-2 w-2 rounded-full border border-cyan-500 bg-cyan-500" />
         </motion.div>
         <svg
           viewBox={`0 0 20 ${svgHeight}`}
           width="20"
-          // Set the SVG height
           height={svgHeight}
           className="ml-4 block"
           aria-hidden="true">
@@ -89,19 +88,17 @@ export const TracingBeam = ({
               gradientUnits="userSpaceOnUse"
               x1="0"
               x2="0"
-              // set y1 for gradient
               y1={y1}
-              // set y2 for gradient
               y2={y2}>
-              <stop stopColor="#18CCFC" stopOpacity="0"></stop>
-              <stop stopColor="#18CCFC"></stop>
-              <stop offset="0.325" stopColor="#6344F5"></stop>
-              <stop offset="1" stopColor="#AE48FF" stopOpacity="0"></stop>
+              <stop stopColor="#06b6d4" stopOpacity="0"></stop>
+              <stop stopColor="#06b6d4"></stop>
+              <stop offset="0.325" stopColor="#3b82f6"></stop>
+              <stop offset="1" stopColor="#1e40af" stopOpacity="0"></stop>
             </motion.linearGradient>
           </defs>
         </svg>
       </div>
-      <div ref={contentRef}>{children}</div>
+      <div ref={contentRef} className="pl-20 md:pl-32 overflow-visible">{children}</div>
     </motion.div>
   );
 };

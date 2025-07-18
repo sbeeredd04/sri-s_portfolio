@@ -1010,7 +1010,7 @@ export default function Home() {
 
                 {activeSection === "experience" && (
                   <section className="w-full h-full">
-                    <div className="w-full h-full">
+                    <div className="w-full h-full overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                           key={activeTab}

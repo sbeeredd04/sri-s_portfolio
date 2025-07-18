@@ -4,179 +4,186 @@ import { TracingBeam } from './components/tracing-beam';
 
 export function TimelineDemo({ theme }) {
   return (
-    <div className="w-full h-full">
-      <TracingBeam className="px-6">
-        <div className="max-w-2xl mx-auto antialiased pt-4 relative">
-          {/* Experience 1 */}
-          <div className="mb-10">
+    <div className="w-full h-full overflow-auto">
+      <div className="text-center mb-8 pt-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Professional Experience</h1>
+        <p className="text-white/60 text-sm md:text-base">My journey in software engineering and machine learning</p>
+      </div>
+      
+      <TracingBeam className="px-2">
+        <div className="w-full mx-auto antialiased pt-4 relative">
+          {/* Experience 1 - Geometric Media Lab */}
+          <div className="mb-24">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               Jul 2024 – Present
             </h2>
-            <p className="text-xl mb-4 text-white font-semibold">
-              Software Engineering Intern (Machine Learning)
-            </p>
-            <div className="text-sm prose prose-sm dark:prose-invert mb-4">
-              <h3 className="text-lg font-semibold mb-2 text-white">
-                Geometric Media Lab
-              </h3>
-              <ul className="list-disc pl-5 text-white/80 space-y-2 mb-4">
-                <li>
-                  <strong>Developed an end-to-end ML pipeline</strong> for gunshot detection by fusing unsupervised k-means clustering with a supervised neural network. Leveraged Librosa for robust feature extraction and iterative refinements, boosting accuracy from 20% to 80% across 10+ hours of audio data.
-                </li>
-                <li>
-                  <strong>Optimized the system for real-time edge deployment</strong> on Raspberry Pi through precise hardware adjustments and custom microphone setups, directly supporting conservation efforts by preventing jaguar poaching in South American rain-forests.
-                </li>
-                <li>
-                  <strong>Spearheading research</strong> on innovative video generation models that integrate visual language models and scene graphs with lighting and depth maps within diffusion frameworks.
-                </li>
-              </ul>
-              <div className="mb-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                <p className="text-sm font-medium text-blue-400 mb-1">Currently Working:</p>
-                <p className="text-sm text-blue-300">
-                  Looking into video generation models and working on leveraging VLM (Vision Language Models) and scene graph predictions as controls for longer video generation.
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <div className="order-2 lg:order-1">
+                <p className="text-xl mb-3 text-white font-semibold">
+                  Software Engineering Intern (Machine Learning)
                 </p>
+                <h3 className="text-lg font-semibold mb-4 text-cyan-400">
+                  Geometric Media Lab • Tempe, AZ
+                </h3>
+                <ul className="list-disc pl-5 text-white/80 space-y-3 mb-4 text-sm">
+                  <li>
+                    <strong>Developed and maintained 4+ scalable ML pipelines</strong> and backend APIs for research projects spanning CelebVQ, CIFAR100, Visual Genome, and custom audio datasets.
+                  </li>
+                  <li>
+                    <strong>Improved gunshot detection accuracy from 20% to 80%</strong> on a project supporting anti-poaching efforts in the South American rainforest, and enabled large-scale experimentation for other projects by deploying and testing pretrained models (Gemini VLM, BLIP) via API.
+                  </li>
+                  <li>
+                    <strong>Collaborated with PhD researchers</strong> to implement and optimize these solutions using CUDA, deploying all experiments and pipelines on ASU's A100 GPU cluster for efficient, reproducible results.
+                  </li>
+                </ul>
+                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <p className="text-sm font-medium text-blue-400 mb-1">Focus Areas:</p>
+                  <p className="text-sm text-blue-300">
+                    Machine Learning Pipelines, Computer Vision, GPU Computing, Research Collaboration
+                  </p>
+                </div>
+              </div>
+              <div className="order-1 lg:order-2">
+                {/* Empty transparent placeholder for Geometric Media Lab */}
               </div>
             </div>
-            <Image
-              src="/ex (4).webp"
-              alt="Geometric Media Lab ML Intern"
-              width={1200}
-              height={800}
-              className="rounded-lg object-cover h-48 md:h-60 w-full mb-4"
-            />
           </div>
 
-          {/* Experience 2 */}
-          <div className="mb-10">
+          {/* Experience 2 - SoDA */}
+          <div className="mb-24">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               Jan 2024 – Present
             </h2>
-            <p className="text-xl mb-4 text-white font-semibold">
-              Associate Director of Technology
-            </p>
-            <div className="text-sm prose prose-sm dark:prose-invert mb-4">
-              <h3 className="text-lg font-semibold mb-2 text-white">
-                Software Developers Association (SoDA)
-              </h3>
-              <ul className="list-disc pl-5 text-white/80 space-y-2 mb-4">
-                <li>
-                  <strong>Architected and facilitated engaging weekly meetings</strong> and hands-on workshops on Python/Jupyter Notebook, Git 101, Object Recognition (YOLO), Flask, AI-Powered Chrome, AI Integration APIs, and SQL, empowering over 600+ student members with essential technical skills.
-                </li>
-                <li>
-                  <strong>Led and coordinated</strong> the technical team to maintain the thesoda.io website and internal tools, managing a distinguished member program for a club of 3000+ members and driving initiatives for hackathons, code challenges, and mentorship program.
-                </li>
-              </ul>
-              <div className="mb-4 p-3 bg-blue-900/20 rounded-lg border border-blue-800">
-                <p className="text-sm font-medium text-blue-200 mb-1">Current Initiatives:</p>
-                <p className="text-sm text-blue-300">
-                  Spearheading comprehensive technical workshops on YOLO object detection, Flask web development, and Python programming to enhance member skill development.
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <div className="order-2 lg:order-1">
+                <p className="text-xl mb-3 text-white font-semibold">
+                  Director of ASU's SoDA (Software Developers Association)
                 </p>
+                <h3 className="text-lg font-semibold mb-4 text-cyan-400">
+                  thesoda.io • Tempe, AZ
+                </h3>
+                <ul className="list-disc pl-5 text-white/80 space-y-3 mb-4 text-sm">
+                  <li>
+                    <strong>Engineered and scaled SoDA's internal tools platform</strong> (including a Discord OAuth2.0-secured admin site, summarizer bot, and member rewards/storefront) to support 3,000+ members across multiple clubs (ACM, WiCS), enabling secure and automated management for users.
+                  </li>
+                  <li>
+                    <strong>Led an 11-member team</strong> to deliver 12+ technical workshops and hackathons (Docker, Chrome Extensions, Flask), removing roadblocks and fostering a creative, collaborative culture, empowering 600+ active students to build, learn, and launch projects with confidence.
+                  </li>
+                </ul>
+                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <p className="text-sm font-medium text-blue-400 mb-1">Impact:</p>
+                  <p className="text-sm text-blue-300">
+                    3,000+ members managed, 600+ active students empowered, 12+ workshops delivered
+                  </p>
+                </div>
+              </div>
+              <div className="order-1 lg:order-2">
+                <div className="rounded-lg overflow-hidden border border-white/10 w-full shadow-lg">
+                  <div className="bg-gray-800 px-4 py-2 flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div className="text-white/60 text-xs ml-2">thesoda.io</div>
+                  </div>
+                  <iframe 
+                    src="https://thesoda.io/" 
+                    width="100%" 
+                    height="540"
+                    className="border-0 w-full aspect-video"
+                    title="Software Developers Association Website"
+                    style={{
+                      minHeight: '540px',
+                      aspectRatio: '16/9'
+                    }}
+                  />
+                </div>
               </div>
             </div>
-            <a 
-              href="https://thesoda.io/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block hover:opacity-90 transition-opacity mb-2"
-            >
-              <Image
-                src="/ex (3).png"
-                alt="SoDA Software Engineer"
-                width={1200}
-                height={1000}
-                className="rounded-lg object-cover h-48 md:h-60 w-full"
-              />
-            </a>
-            <a 
-              href="https://thesoda.io/"
-              className="text-blue-500 hover:text-blue-600 underline text-sm"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Software Developers Association (SoDA)
-            </a>
           </div>
 
-          {/* Experience 3 */}
-          <div className="mb-10">
+          {/* Experience 3 - Mesa Historical Museum */}
+          <div className="mb-24">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
-              Aug 2024 – Present
+              Aug 2024 – May 2025
             </h2>
-            <p className="text-xl mb-4 text-white font-semibold">
-              Software Engineer
-            </p>
-            <div className="text-sm prose prose-sm dark:prose-invert mb-4">
-              <h3 className="text-lg font-semibold mb-2 text-white">
-                Mesa Historical Museum (EPICS)
-              </h3>
-              <ul className="list-disc pl-5 text-white/80 space-y-2 mb-4">
-                <li>
-                  <strong>Developed and architectured</strong> an interactive digital experience using React and Three.js, crafting a dynamic digital tour of museum collections.
-                </li>
-                <li>
-                  <strong>Led a 7-member team</strong> as the lead Software Engineer, designing the website architecture, coordinating deliverables with community partners, and delegating tasks among a designer and software engineers to meet client requirements.
-                </li>
-                <li>
-                  <strong>Digitized museum archives</strong> to transform static content into an engaging online experience, enabling users to explore key individuals and landmarks while preserving invaluable knowledge.
-                </li>
-              </ul>
-              <div className="mb-4 p-3 bg-blue-900/20 rounded-lg border border-blue-800">
-                <p className="text-sm font-medium text-blue-200 mb-1">Project Status:</p>
-                <p className="text-sm text-blue-300">
-                  Finalizing user experience optimizations based on comprehensive feedback analysis. Preparing for production deployment with enhanced features and improved performance metrics.
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <div className="order-2 lg:order-1">
+                <p className="text-xl mb-3 text-white font-semibold">
+                  Software Engineer
                 </p>
+                <h3 className="text-lg font-semibold mb-4 text-cyan-400">
+                  Mesa Historical Museum (EPICS) • Tempe, AZ
+                </h3>
+                <ul className="list-disc pl-5 text-white/80 space-y-3 mb-4 text-sm">
+                  <li>
+                    <strong>Engineered and deployed an interactive 3D museum exhibit</strong> using React, Three.js, and Vercel, digitizing 12+ archives and spaces into immersive web experiences for enhanced user engagement.
+                  </li>
+                  <li>
+                    <strong>Led a 7-member team</strong> to digitize museum archives, enabling visitors to explore collections online and increasing accessibility, by applying agile practices and resolving technical roadblocks through clear client communication.
+                  </li>
+                  <li>
+                    <strong>Optimized for cost and performance</strong> by architecting a static-site solution with zero-dollar maintenance, leveraging JSON-based data, modern build tools, and Vercel deployment for fast, reliable access.
+                  </li>
+                </ul>
+                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <p className="text-sm font-medium text-blue-400 mb-1">Technologies:</p>
+                  <p className="text-sm text-blue-300">
+                    React, Three.js, Vercel, JSON APIs, Agile Development
+                  </p>
+                </div>
+              </div>
+              <div className="order-1 lg:order-2 w-full">
+                <Image
+                  src="/ex(1).png"
+                  alt="Mesa Historical Museum EPICS"
+                  width={800}
+                  height={600}
+                  className="rounded-lg object-cover w-full h-auto shadow-md"
+                />
               </div>
             </div>
-            <Image
-              src="/ex(1).png"
-              alt="Mesa Historical Museum EPICS"
-              width={800}
-              height={800}
-              className="rounded-lg object-cover h-48 md:h-60 w-full shadow-md mb-2"
-            />
-            <a 
-              href="https://github.com/chelsealiannegomez/New-Mesa-Interactive-Exhibit"
-              className="text-blue-500 hover:text-blue-400 underline text-sm inline-block transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub Repository
-            </a>
           </div>
 
-          {/* Experience 4 */}
-          <div className="mb-10">
+          {/* Experience 4 - ASU Biodesign Institute */}
+          <div className="mb-24">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
               Jan 2023 – Dec 2024
             </h2>
-            <p className="text-xl mb-4 text-white font-semibold">
-              Software Engineering Intern (Machine Learning)
-            </p>
-            <div className="text-sm prose prose-sm dark:prose-invert mb-4">
-              <h3 className="text-lg font-semibold mb-2 text-white">
-                ASU Biodesign Institute
-              </h3>
-              <ul className="list-disc pl-5 text-white/80 space-y-2 mb-4">
-                <li>
-                  <strong>Engineered an end-to-end data pipeline</strong> for DNA-PAINT image analysis using k-means clustering and custom tracking algorithms, reducing processing time from 4 hours to 10–30 minutes per image.
-                </li>
-                <li>
-                  <strong>Implemented a standardized, ML-driven approach</strong> to quantify qualitative data, removing any possible human error in data analysis.
-                </li>
-                <li>
-                  <strong>Facilitated accurate calculations</strong> of robot movement kinetics to deliver essential metrics on both individual robot movements and population dynamics, enabling informed decision-making and impactful research outcomes.
-                </li>
-              </ul>
-            </div>
-            <Image
-              src="/ex(2).jpeg"
-              alt="ASU Biodesign Institute ML Intern"
-              width={800}
-              height={800}
-              className="rounded-lg object-cover h-48 md:h-60 w-full shadow-md mb-2"
-            />
-            <div className="text-xs font-normal text-neutral-400 break-words">
-              A cargo-sorting DNA robot. (n.d.). https://www.science.org/doi/10.1126/science.aan6558 
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <div className="order-2 lg:order-1">
+                <p className="text-xl mb-3 text-white font-semibold">
+                  Software Engineering Intern (Machine Learning)
+                </p>
+                <h3 className="text-lg font-semibold mb-4 text-cyan-400">
+                  ASU Biodesign Institute • Tempe, AZ
+                </h3>
+                <ul className="list-disc pl-5 text-white/80 space-y-3 mb-4 text-sm">
+                  <li>
+                    <strong>Developed and deployed a Django/FastAPI backend tool</strong> to automate DNA-PAINT image analysis for 100+ datasets, enabling researchers to process 2000+ nanorobot entities per image with ML-driven clustering and tracking algorithms.
+                  </li>
+                  <li>
+                    <strong>Reduced analysis time from 4 hours to 10–30 minutes</strong> per image by building a scalable pipeline and REST API, delivering a user-friendly web interface for non-engineers to access advanced ML and visualization features.
+                  </li>
+                  <li>
+                    <strong>Collaborated with engineers and researchers</strong> to maintain and document the codebase, support team onboarding, and deliver custom analytics scripts, ensuring smooth adoption and impactful data-driven insights.
+                  </li>
+                </ul>
+                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <p className="text-sm font-medium text-blue-400 mb-1">Achievement:</p>
+                  <p className="text-sm text-blue-300">
+                    93% reduction in processing time (4 hours → 10-30 minutes)
+                  </p>
+                </div>
+              </div>
+              <div className="order-1 lg:order-2 w-full">
+                <Image
+                  src="/ex(2).jpeg"
+                  alt="ASU Biodesign Institute ML Intern"
+                  width={800}
+                  height={600}
+                  className="rounded-lg object-cover w-full h-auto shadow-md"
+                />
+              </div>
             </div>
           </div>
         </div>
