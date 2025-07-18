@@ -37,8 +37,7 @@ import {
 } from "@tabler/icons-react";
 // Import IconVolumeOff instead of IconVolumeMute (which appears to be unavailable)
 import { IconVolumeOff } from "@tabler/icons-react"; 
-import { PinContainer } from "./components/3d-pin";
-import { Carousel } from "./components/apple-cards-carousel";
+
 import createGlobe from "cobe";
 import { CardSpotlight } from "./components/card-spotlight";
 import { Card, ExCarousel } from "./components/ExpandableCard";
@@ -618,7 +617,7 @@ export default function Home() {
         <Link href="https://open.spotify.com/user/31qr3j45nvoqp4lfh6vuabmlwguq?si=2c62fb75bef644f6" target="_blank">
               <IconBrandSpotify className="text-green-500 hover:text-green-400 mx-1" size={20} />
         </Link>
-        <Link href="/my_resume.pdf" download>
+        <Link href="/sri_resume.pdf" download>
               <button className="px-3 py-1.5 text-xs border border-white/40 text-white font-semibold rounded-md shadow-md hover:border-emerald-500 hover:text-emerald-500 transition-all mx-1 bg-transparent">
             Resume
           </button>
@@ -768,7 +767,9 @@ export default function Home() {
 
         {/* Main Content Area - Takes up remaining space */}
         <div className="flex-1 min-h-0 mx-6">
-          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg overflow-hidden">
+          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg overflow-hidden relative">
+            {/* Vignette overlay */}
+            <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,_rgba(0,0,0,1.0)_0%,_rgba(0,0,0,0)5%,_rgba(0,0,0,0)_95%,_rgba(0,0,0,1.0)_100%)] z-10 rounded-2xl"></div>
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeSection}
@@ -778,7 +779,7 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
                 className="h-full overflow-y-auto overflow-x-hidden px-2 py-2 md:px-4 md:py-4 scrollbar-none"
               >
-        {/* Home Section */}
+                {/* Home Section */}
                 {activeSection === "home" && (
                   <FeaturingSection navigateToSection={navigateToSection} />
                 )}
@@ -803,7 +804,7 @@ export default function Home() {
                           
                           {/* Resume Buttons */}
                           <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 md:gap-4 px-4 z-50 pb-2">
-                            <Link href="/my_resume.pdf" download>
+                            <Link href="/sri_resume.pdf" download>
                               <button className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-500 text-black hover:from-cyan-500 hover:to-emerald-600 transition-all md:px-6 md:py-3 md:text-base shadow-lg hover:shadow-cyan-500/40 active:scale-95">
                                 <IconDownload size="1.1em" strokeWidth={2} className="mr-1.5 md:mr-2 flex-shrink-0" />
                                 Download Resume
@@ -972,7 +973,7 @@ export default function Home() {
                     {/* Resume Preview Modal */}
                     {showResumePreview && (
                       <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
                         onClick={(e) => {
                           if (e.target === e.currentTarget) {
                             setShowResumePreview(false);
@@ -982,7 +983,7 @@ export default function Home() {
                         <div className="w-[90%] h-[90%] bg-white rounded-xl shadow-2xl overflow-hidden">
                           <div className="absolute top-4 right-4 flex items-center gap-2">
                             <Link 
-                              href="/my_resume.pdf" 
+                              href="/sri_resume.pdf" 
                               download
                               className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
                               onClick={(e) => e.stopPropagation()}
@@ -997,7 +998,7 @@ export default function Home() {
               </button>
             </div>
                           <iframe
-                            src="/my_resume.pdf#view=FitH"
+                            src="/sri_resume.pdf#view=FitH"
                             className="w-full h-full"
                             style={{ background: 'white' }}
                           />
@@ -1491,7 +1492,7 @@ export default function Home() {
                   <span className="text-sm font-medium">Spotify</span>
                 </Link>
                 <Link 
-                  href="/my_resume.pdf" 
+                  href="/sri_resume.pdf" 
                   download
                   className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300 transition-all border border-emerald-500/30"
                 >
