@@ -777,8 +777,29 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="h-full overflow-y-auto overflow-x-hidden px-2 py-2 md:px-4 md:py-4 scrollbar-none"
+                id="main-scroll-container"
+                className="h-full overflow-y-auto overflow-x-hidden px-2 py-2 md:px-4 md:py-4"
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none'
+                }}
               >
+                <style jsx global>{`
+                  #main-scroll-container::-webkit-scrollbar {
+                    display: none;
+                  }
+                  #main-scroll-container {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                  }
+                  * {
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+                  }
+                  *::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
                 {/* Home Section */}
                 {activeSection === "home" && (
                   <FeaturingSection navigateToSection={navigateToSection} />

@@ -4,7 +4,12 @@ import { TracingBeam } from './components/tracing-beam';
 
 export function TimelineDemo({ theme }) {
   return (
-    <div className="w-full h-full overflow-auto">
+    <div className="w-full h-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <style jsx>{`
+        div::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
       <div className="text-center mb-8 pt-4">
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Professional Experience</h1>
         <p className="text-white/60 text-sm md:text-base">My journey in software engineering and machine learning</p>
