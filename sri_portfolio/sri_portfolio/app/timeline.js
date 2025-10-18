@@ -5,24 +5,24 @@ import { Timeline } from './components/timeline';
 export function TimelineDemo({ theme }) {
   const data = [
     {
-      title: "Software Engineering Intern (Machine Learning)",
+      title: "AI/ML Software Engineering Intern",
       content: (
         <div>
           <h2 className="text-base md:text-xl font-semibold mb-2 md:mb-3 text-white">
             Geometric Media Lab
           </h2>
           <p className="text-xs md:text-sm font-normal mb-3 md:mb-4 text-white/60">
-            Software Engineering Intern (Machine Learning) | Jul 2024 – Present
+            AI/ML Software Engineering Intern | Jul 2024 – Present
           </p>
           <ul className="list-disc pl-4 md:pl-5 text-xs md:text-sm font-normal mb-4 md:mb-6 text-white/80 space-y-3 md:space-y-4">
             <li>
-              <strong>Developed an end-to-end ML pipeline</strong> for gunshot detection by fusing unsupervised k-means clustering with a supervised neural network. Leveraged Librosa for robust feature extraction and iterative refinements, boosting accuracy from 20% to 80% across 10+ hours of audio data.
+              <strong>Boosted gunshot detection project's accuracy from 20% to 80%</strong> by adapting existing machine learning models and deploying the model on a Raspberry Pi unit for field use in the South American rainforest, supporting anti-poaching efforts.
             </li>
             <li>
-              <strong>Optimized the system for real-time edge deployment</strong> on Raspberry Pi through precise hardware adjustments and custom microphone setups, directly supporting conservation efforts by preventing jaguar poaching in South American rain-forests.
+              <strong>Built ML pipelines and architectures for experimentation</strong>, using pretrained VLM models like Gemini VLM API, Hugging Face, and stable video diffusion models with computer vision across 6+ research projects for rapid prototyping and deployment of ML solutions.
             </li>
             <li>
-              <strong>Spearheading research</strong> on innovative video generation models that integrate visual language models and scene graphs with lighting and depth maps within diffusion frameworks. Aiming to produce more stable, coherent videos, to contribute to revolutionizing digital content creation and real-time simulations.
+              <strong>Developed ML models and efficient pipelines</strong> using Python, PyTorch, and CUDA; optimized large-scale model training/inference on the SOL GPU cluster with multiple A100 GPUs, achieving significantly faster inference through GPU acceleration and utilizing wandb for experiment tracking and seamless production rollouts.
             </li>
           </ul>
           <div className="mb-4 md:mb-6 p-3 md:p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
@@ -34,7 +34,7 @@ export function TimelineDemo({ theme }) {
           <div className="w-full">
             <Image
               src="/ex (4).webp"
-              alt="Geometric Media Lab ML Intern"
+              alt="Geometric Media Lab AI/ML Intern"
               width={1200}
               height={800}
               className="rounded-lg object-cover h-40 sm:h-48 md:h-60 lg:h-72 w-full"
@@ -44,21 +44,21 @@ export function TimelineDemo({ theme }) {
       ),
     },
     {
-      title: "Associate Director of Technology",
+      title: "Director of Technology",
       content: (
         <div>
           <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-3">
             Software Developers Association (SoDA)
           </h2>
           <p className="text-xs font-normal mb-3 md:text-sm md:mb-4">
-            Associate Director of Technology | Jan 2024 – Present
+            Director of Technology | Jan 2024 – Present
           </p>
           <ul className="list-disc pl-4 md:pl-5 text-xs font-normal mb-4 md:mb-6 space-y-3 md:space-y-4">
             <li>
-              <strong>Architected and facilitated engaging weekly meetings</strong> and hands-on workshops on Python/Jupyter Notebook, Git 101, Object Recognition (YOLO), Flask, AI-Powered Chrome, AI Integration APIs, and SQL, empowering over 600+ student members with essential technical skills while cultivating a collaborative community.
+              <strong>Built and scaled SoDA's internal tools platform</strong> (including a Discord OAuth2.0-secured admin site, summarizer bot, and member rewards/storefront) to support 3,000+ members across multiple clubs (ACM, WiCS), enabling secure and automated management.
             </li>
             <li>
-              <strong>Led and coordinated</strong> the technical team to maintain the thesoda.io website and internal tools, managing a distinguished member program for a club of 3000+ members and driving initiatives for hackathons, code challenges, and mentorship program.
+              <strong>Led an 11-member team</strong> to deliver 12+ technical workshops and hackathons (Docker, Chrome Extensions, Flask), removing roadblocks and fostering a creative, collaborative culture, empowering 600+ active students with hands-on software engineering skills.
             </li>
           </ul>
           <div className="mb-4 md:mb-6 p-3 md:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
@@ -103,17 +103,17 @@ export function TimelineDemo({ theme }) {
             Mesa Historical Museum (EPICS)
           </h2>
           <p className="text-xs font-normal mb-3 md:text-sm md:mb-4">
-            Software Engineer | Aug 2024 – Present
+            Software Engineer | Aug 2024 – May 2025
           </p>
           <ul className="list-disc pl-4 md:pl-5 text-xs font-normal mb-4 md:mb-6 space-y-3 md:space-y-4">
             <li>
-              <strong>Developed and architectured</strong> an interactive digital experience using React and Three.js, crafting a dynamic digital tour of museum collections.
+              <strong>Built an interactive 3D museum exhibit</strong> using React, Three.js, and Vercel, digitizing and showcasing detailed stories of historic individuals and landmark places as immersive web experiences for enhanced visitor engagement.
             </li>
             <li>
-              <strong>Led a 7-member team</strong> as the lead Software Engineer, designing the website architecture, coordinating deliverables with community partners, and delegating tasks among a designer and software engineers to meet client requirements.
+              <strong>Led a 7-member team</strong> to digitize museum archives, enabling visitors to explore collections online and increasing accessibility through agile practices and direct client communication.
             </li>
             <li>
-              <strong>Digitized museum archives</strong> to transform static content into an engaging online experience, enabling users to explore key individuals and landmarks while preserving invaluable knowledge.
+              <strong>Optimized for cost and performance</strong> by developing and deploying a static-site solution with no ongoing maintenance, using JSON data and Vercel for fast, reliable access in the museum.
             </li>
           </ul>
           <div className="mb-4 md:mb-6 p-3 md:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
@@ -151,17 +151,17 @@ export function TimelineDemo({ theme }) {
             ASU Biodesign Institute
           </h2>
           <p className="text-xs font-normal mb-3 md:text-sm md:mb-4">
-            Software Engineering Intern (Machine Learning) | Jan 2023 – Dec 2024
+            Software Engineering Intern (Machine Learning) | Jan 2023 – Aug 2024
           </p>
           <ul className="list-disc pl-4 md:pl-5 text-xs font-normal mb-4 md:mb-6 space-y-3 md:space-y-4">
             <li>
-              <strong>Engineered an end-to-end data pipeline</strong> for DNA-PAINT image analysis using k-means clustering and custom tracking algorithms, reducing processing time from 4 hours to 10–30 minutes per image.
+              <strong>Developed a Django/FastAPI backend</strong> to automate DNA-PAINT image analysis for 100+ datasets, enabling researchers to process 2000+ nanorobot entities per image with ML-driven clustering and tracking.
             </li>
             <li>
-              <strong>Implemented a standardized, ML-driven approach</strong> to quantify qualitative data, removing any possible human error in data analysis.
+              <strong>Reduced analysis time from 4 hours to 10–30 minutes per image</strong> by building a scalable pipeline and REST API, delivering a user-friendly web interface for machine learning analysis and visualization.
             </li>
             <li>
-              <strong>Facilitated accurate calculations</strong> of robot movement kinetics to deliver essential metrics on both individual robot movements and population dynamics, enabling informed decision-making and impactful research outcomes.
+              <strong>Collaborated with engineers and researchers</strong> to maintain and document the codebase, support onboarding, and deliver analytics scripts for impactful insights.
             </li>
           </ul>
           <div className="flex flex-col gap-1">
