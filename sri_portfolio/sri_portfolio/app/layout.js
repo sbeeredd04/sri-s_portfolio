@@ -8,25 +8,12 @@ if (process.env.NODE_ENV !== 'production') {
   }
 }
 
-// Import the global CSS and Google Fonts link
+// Import the global CSS
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Major_Mono_Display, Ubuntu_Mono } from "next/font/google";
 import { MusicProvider } from './components/MusicProvider';
 import { SoundProvider } from './components/SoundProvider';
-import './initialize-embeddings'; // Import the embeddings initialization script
-
-const majorMono = Major_Mono_Display({
-  weight: '400',
-  subsets: ["latin"],
-  display: 'swap',
-});
-const ubuntuMono = Ubuntu_Mono({ 
-  weight: ['400', '700'],
-  subsets: ["latin"],
-  display: 'swap',
-});
 
 export const metadata = {
   title: "Sri Ujjwal Reddy",
@@ -73,14 +60,11 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={majorMono.className}>
+    <html lang="en">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        {/* No need for extra link tag as we're using next/font/google */}
         <link rel="icon" type="image/png" href="/logo.png" />
       </head>
-      <body className={ubuntuMono.className}>
+      <body>
         <SoundProvider>
           <MusicProvider>
             {children}

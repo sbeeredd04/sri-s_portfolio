@@ -29,7 +29,6 @@ import {
   IconDownload,
   IconSearch,
   IconLayoutSidebar,
-  IconMessageCircle,
   IconLink,
   IconShare2,
   IconEye, // Added IconEye
@@ -59,7 +58,6 @@ import { SpotifyPlayer } from "./components/SpotifyPlayer";
 import { useMusic } from "./components/MusicProvider";
 import { useSound } from "./components/SoundProvider";
 import { FirstVisitTutorial } from "./components/FirstVisitTutorial";
-import { ChatInterface } from "./components/ChatInterface";
 import { BentoGrid, BentoGridItem } from "./components/bento-grid";
 import { radarSkillsData, detailedSkillsData, gameStatsData, achievementsData } from "./json/skillsData";
 import GameSkillsView from "./components/GameSkillsView";
@@ -188,13 +186,6 @@ export default function Home() {
       onClick: () => navigateToSection("blog"), 
       href: "#",
       isActive: activeSection === "blog"
-    },
-    { 
-      title: "Chat", 
-      icon: <IconMessageCircle />, 
-      onClick: () => navigateToSection("chat"), 
-      href: "#",
-      isActive: activeSection === "chat"
     },
     { 
       title: "Contact", 
@@ -1220,12 +1211,6 @@ export default function Home() {
                   </section>
                 )}
 
-                {activeSection === "chat" && (
-                  <section className="w-full h-full p-1 md:p-4">
-                    <ChatInterface />
-                  </section>
-                )}
-
                 {activeSection === "contact" && (
                   <section className="w-full h-full">
                     <div className="w-full bg-neutral-800/20 backdrop-blur-xl rounded-2xl p-4 md:p-8">
@@ -1453,17 +1438,6 @@ export default function Home() {
                   </button>
                   <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Tutorials
-                  </button>
-                </>
-              )}
-
-              {activeSection === "chat" && (
-                <>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
-                    Chat
-                  </button>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
-                    Assistant
                   </button>
                 </>
               )}

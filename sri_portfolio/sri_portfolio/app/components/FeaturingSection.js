@@ -6,7 +6,6 @@ import {
   IconBulb,
   IconTools,
   IconBook,
-  IconMessageCircle,
   IconMail,
   IconHome
 } from "@tabler/icons-react";
@@ -35,7 +34,6 @@ export const FeaturingSection = ({ navigateToSection }) => {
                   nav.section === 'projects' ? <IconBulb size={20} /> :
                   nav.section === 'skills' ? <IconTools size={20} /> :
                   nav.section === 'blog' ? <IconBook size={20} /> :
-                  nav.section === 'chat' ? <IconMessageCircle size={20} /> :
                   nav.section === 'contact' ? <IconMail size={20} /> :
                   <IconHome size={20} />,
             onClick: () => navigateToSection(nav.section)

@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { IconBrandGithub, IconLink, IconBrandYoutube, IconX, IconExternalLink } from "@tabler/icons-react";
-import { MarkdownRenderer, hasMarkdown } from "./MarkdownRenderer";
 
 export const ProjectCardFeature = ({ project, onClick }) => {
   const [showModal, setShowModal] = useState(false);
@@ -323,12 +322,12 @@ const ProjectModal = ({ project, onClose }) => {
                   </div>
                 )}
 
-                {/* Detailed Content (Enhanced Markdown Support) */}
+                {/* Detailed Content */}
                 {project?.detailedContent && (
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-4">Project Details</h3>
-                    <div className="text-sm leading-relaxed max-w-none">
-                      <MarkdownRenderer content={project.detailedContent} />
+                    <div className="text-sm leading-relaxed max-w-none text-white/80 whitespace-pre-wrap">
+                      {project.detailedContent}
                     </div>
                   </div>
                 )}
