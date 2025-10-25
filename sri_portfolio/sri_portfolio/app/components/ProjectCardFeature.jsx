@@ -45,28 +45,28 @@ export const ProjectCardFeature = ({ project, onClick }) => {
       >
         {/* Preview Section - Top 70% */}
         <div className="relative h-[70%] rounded-t-lg overflow-hidden">
-          {/* Show iframe if available */}
-          {project?.iframe && (
+          {/* Show iframe if available and not empty */}
+          {project?.iframe && project.iframe.trim() !== "" && (
             <div className="w-full h-full overflow-hidden">
               <iframe
                 src={project.iframe}
-                className="pointer-events-none origin-top-left"
+                className="origin-top-left"
                 title={`${project.title} Preview`}
-                sandbox="allow-scripts allow-same-origin"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                 loading="lazy"
-                scrolling="no"
                 style={{ 
-                  overflow: 'hidden',
+                  overflow: 'auto',
                   width: '300%',
                   height: '300%',
                   transform: 'scale(0.33)',
-                  transformOrigin: 'top left'
+                  transformOrigin: 'top left',
+                  pointerEvents: 'none'
                 }}
               />
             </div>
           )}
           {/* Fallback to video if no iframe */}
-          {!project?.iframe && project?.video && (
+          {(!project?.iframe || project.iframe.trim() === "") && project?.video && (
             <video
               ref={videoRef}
               src={project.video}
@@ -77,8 +77,18 @@ export const ProjectCardFeature = ({ project, onClick }) => {
               autoPlay
             />
           )}
-          {/* Fallback to gradient if no iframe or video */}
-          {!project?.iframe && !project?.video && (
+          {/* Fallback to image if no iframe or video */}
+          {(!project?.iframe || project.iframe.trim() === "") && !project?.video && project?.image && (
+            <div className="w-full h-full overflow-hidden">
+              <img
+                src={project.image}
+                alt={project.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          {/* Final fallback to gradient if nothing else */}
+          {(!project?.iframe || project.iframe.trim() === "") && !project?.video && !project?.image && (
             <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
               <span className="text-white/60 text-sm">No Preview</span>
             </div>
@@ -86,17 +96,17 @@ export const ProjectCardFeature = ({ project, onClick }) => {
         </div>
 
         {/* Content Section - Bottom 40% */}
-        <div className="h-[30%] p-3 bg-black/60 backdrop-blur-sm border-t border-white/10">
+        <div className="h-[30%] p-2 md:p-3 bg-black/60 backdrop-blur-sm border-t border-white/10">
           <div className="h-full flex flex-col justify-between">
             {/* Technologies */}
-            <div className="flex flex-wrap gap-1 mb-1">
+            <div className="flex flex-wrap gap-0.5 md:gap-1 mb-0.5 md:mb-1">
               {project?.technologies?.slice(0, 2).map((tech, i) => (
-                <span key={i} className="text-[10px] px-1.5 py-0.5 bg-white/20 rounded-full text-white">
+                <span key={i} className="text-[8px] md:text-[10px] px-1 md:px-1.5 py-0.5 bg-white/20 rounded-full text-white">
                   {tech}
                 </span>
               ))}
               {project?.technologies?.length > 2 && (
-                <span className="text-[10px] px-1.5 py-0.5 bg-white/20 rounded-full text-white">
+                <span className="text-[8px] md:text-[10px] px-1 md:px-1.5 py-0.5 bg-white/20 rounded-full text-white">
                   +{project.technologies.length - 2}
                 </span>
               )}
@@ -104,38 +114,38 @@ export const ProjectCardFeature = ({ project, onClick }) => {
             
             {/* Title and Description */}
             <div className="flex-1">
-              <h3 className="text-white font-semibold text-sm mb-1 line-clamp-1">
+              <h3 className="text-white font-semibold text-xs md:text-sm mb-0.5 md:mb-1 line-clamp-1">
                 {project?.title || 'Untitled Project'}
               </h3>
-              <p className="text-white/80 text-xs line-clamp-2">
+              <p className="text-white/80 text-[10px] md:text-xs line-clamp-2">
                 {shortDescription}
               </p>
             </div>
             
             {/* Action Buttons */}
-            <div className="flex gap-1 mt-2">
+            <div className="flex gap-0.5 md:gap-1 mt-1 md:mt-2">
               {project?.github && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); window.open(project.github, '_blank'); }}
-                  className="p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
+                  className="p-1 md:p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
                 >
-                  <IconBrandGithub size={12} className="text-white" />
+                  <IconBrandGithub size={10} className="text-white md:w-3 md:h-3" />
                 </button>
               )}
               {project?.href && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); window.open(project.href, '_blank'); }}
-                  className="p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
+                  className="p-1 md:p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
                 >
-                  <IconLink size={12} className="text-white" />
+                  <IconLink size={10} className="text-white md:w-3 md:h-3" />
                 </button>
               )}
               {project?.youtube && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); window.open(`https://www.youtube.com/watch?v=${project.youtube}`, '_blank'); }}
-                  className="p-1.5 bg-red-500/20 backdrop-blur-sm rounded hover:bg-red-500/30 transition-colors"
+                  className="p-1 md:p-1.5 bg-red-500/20 backdrop-blur-sm rounded hover:bg-red-500/30 transition-colors"
                 >
-                  <IconBrandYoutube size={12} className="text-white" />
+                  <IconBrandYoutube size={10} className="text-white md:w-3 md:h-3" />
                 </button>
               )}
             </div>
@@ -227,23 +237,19 @@ const ProjectModal = ({ project, onClose }) => {
         <div className="flex flex-col h-full">
           {/* Preview Section - Full width at top */}
           <div className="w-full h-[45vh] bg-black rounded-t-2xl overflow-hidden flex-shrink-0">
-            {/* Priority 1: iframe if available */}
-            {project?.iframe ? (
-              <div className="w-full h-full overflow-hidden">
+            {/* Priority 1: iframe if available and not empty */}
+            {project?.iframe && project.iframe.trim() !== "" ? (
+              <div className="w-full h-full overflow-auto">
                 <iframe
                   src={project.iframe}
-                  className="border-0"
+                  className="border-0 w-full h-full"
                   allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-modals"
                   allowFullScreen
                   title={`${project.title} Live Preview`}
-                  scrolling="no"
                   style={{ 
-                    overflow: 'hidden',
-                    width: '200%',
-                    height: '200%',
-                    transform: 'scale(0.5)',
-                    transformOrigin: 'top left'
+                    minHeight: '100%',
+                    minWidth: '100%'
                   }}
                 />
               </div>
@@ -267,6 +273,14 @@ const ProjectModal = ({ project, onClose }) => {
                 playsInline
                 preload="metadata"
               />
+            ) : project?.image ? (
+              <div className="w-full h-full overflow-hidden">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-white/10">
                 <div className="text-center">

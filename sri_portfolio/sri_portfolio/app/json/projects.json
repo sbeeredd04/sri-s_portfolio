@@ -26,7 +26,7 @@
   {
     "title": "Agentex",
     "description": "An AI-powered Chrome extension that intelligently tailors and optimizes LaTeX resumes for specific job descriptions using Gemini AI. Features instant LaTeX-to-PDF, ATS-check, project swaps, and real-time preview.",
-    "href": "https://github.com/sbeeredd04/Agentex",
+    "href": "https://agentex.sriujjwalreddy.com/",
     "github": "https://github.com/sbeeredd04/Agentex",
     "image": "/projects/projects (2).jpg",
     "technologies": ["JavaScript", "Chrome Extensions", "Google Gemini", "LaTeX", "Node.js"]
@@ -58,7 +58,7 @@
   {
     "title": "auto-git",
     "description": "AI-powered CLI/VSCode extension for smart git commits. Analyzes code changes, generates commit messages, and pushes updates, integrating with Gemini AI and full CI/CD, testing, and VSCode UI.",
-    "href": "https://github.com/sbeeredd04/auto-git",
+    "href": "https://gitcue.sriujjwalreddy.com/",
     "github": "https://github.com/sbeeredd04/auto-git",
     "image": "/projects/projects (5).jpg",
     "technologies": ["TypeScript", "Node.js", "Gemini API", "VSCode Extensions", "CI/CD"]
@@ -82,7 +82,7 @@
   {
     "title": "zsh_plugin",
     "description": "Advanced Zsh plugin with fast native C/C++ autocompletion, ghost text features, productivity commands, emoji removal, and modern CI for shell productivity.",
-    "href": "https://github.com/sbeeredd04/zsh_plugin",
+    "href": "https://zshplugin.sriujjwalreddy.com/",
     "github": "https://github.com/sbeeredd04/zsh_plugin",
     "image": "/projects/projects (2).jpg",
     "technologies": ["C", "Shell", "zsh", "GitHub Actions"]
@@ -94,5 +94,14 @@
     "github": "https://github.com/sbeeredd04/promen",
     "image": "/projects/projects (3).jpg",
     "technologies": ["JavaScript", "Node.js", "CI/CD"]
+  }, 
+  {
+    "title": "Sage",
+    "description": "A GPU-accelerated, enterprise-grade data science platform featuring an advanced AI tutor, secure containerized code execution, real-time collaborative interfaces, and scalable microservices for modern ML workflows.",
+    "href": "https://github.com/sbeeredd04/sage",
+    "github": "https://github.com/sbeeredd04/sage",
+    "image": "/projects/projects (8).jpg",
+    "technologies": ["React", "Flask", "Docker", "Google Gemini", "WebSockets", "Redis", "Celery", "FAISS"]
   }
+
 ]

@@ -2,6 +2,7 @@
   "navigation": [
     {
       "id": 3,
+      "mobileId": 2,
       "title": "About Me",
       "description": "Learn more about **my background**, education, and journey in tech.",
       "image": "/blog/home2.jpg",
@@ -9,6 +10,7 @@
     },
     {
       "id": 4,
+      "mobileId": 3,
       "title": "Professional Experience",
       "description": "Explore my **professional experience** and work history.",
       "image": "/blog/home3.jpg",
@@ -16,6 +18,7 @@
     },
     {
       "id": 8,
+      "mobileId": 6,
       "title": "Featured Projects",
       "description": "See my **latest projects** and innovative solutions.",
       "image": "/blog/home4.jpg",
@@ -23,6 +26,7 @@
     },
     {
       "id": 9,
+      "mobileId": 7,
       "title": "Technical Skills",
       "description": "Check out my **technical skills** and expertise.",
       "image": "/blog/home5.jpg",
@@ -30,6 +34,7 @@
     },
     {
       "id": 15,
+      "mobileId": 10,
       "title": "Blog Insights",
       "description": "Read my **latest articles** and tech insights.",
       "image": "/blog/home6.jpg",
@@ -37,6 +42,7 @@
     },
     {
       "id": 14,
+      "mobileId": 9,
       "title": "Get in Touch",
       "description": "Contact me for **collaborations** and opportunities.",
       "image": "/blog/home7.jpg",
@@ -46,6 +52,7 @@
   "projects": [
     {
       "id": 2,
+      "mobileId": 4,
       "title": "Aether AI",
       "shortDescription": "AI Chat Multiverse - Transform linear conversations into visual trees",
       "description": "**Aether AI—Chat Multiverse** transforms linear AI conversations into visual, explorable trees, enabling:\n\n- **Infinite branching** for unlimited conversation paths\n- **Multi-model comparisons** across different AI systems\n- **Rich media interactions** with images and code\n- **Web-grounded answers** backed by real-time data\n\nRecent releases added *persistent context*, a modern visual UI, and advanced branching logic.",
@@ -58,11 +65,12 @@
     },
     {
       "id": 5,
+      "mobileId": 5,
       "title": "Agentex Resume Editor",
       "shortDescription": "AI-powered Chrome extension for resume tailoring",
       "description": "**AI-powered Chrome extension** that helps instantly tailor LaTeX resumes to match specific job descriptions.\n\n### Key Features:\n\n- Uses advanced AI (**Gemini** & **DeepSeek**) for skill matching\n- Keeps formatting professional and **ATS-friendly**\n- Generates customized PDFs with *side-by-side preview* in under **1 minute**\n\nPerfect for job seekers looking to optimize their applications!",
       "image": "/projects/projects (2).jpg",
-      "iframe": "https://chromewebstore.google.com/detail/agentex-resume-editor/jmgbilodbfopeidngmbaglaomffpldfd",
+      "iframe": "https://agentex.sriujjwalreddy.com/",
       "technologies": ["JavaScript", "Chrome API", "AI/ML", "LaTeX", "PDF"],
       "github": "https://github.com/sbeeredd04/Agentex",
       "href": "https://chromewebstore.google.com/detail/agentex-resume-editor/jmgbilodbfopeidngmbaglaomffpldfd",
@@ -70,11 +78,12 @@
     },
     {
       "id": 6,
+      "mobileId": 8,
       "title": "auto-git",
       "shortDescription": "Automated Git management with AI-powered commits",
       "description": "A **robust CLI tool** and **VS Code extension** for automated Git management.\n\n### Powered by Gemini AI:\n\n- Smart commit message generation\n- Activity tracking and analytics\n- Fully interactive terminal\n- Comprehensive QA/testing\n- Smooth developer workflow integration\n\nLatest versions feature enhanced automation and seamless IDE integration.",
       "image": "/projects/autogit.jpg",
-      "iframe": "https://marketplace.visualstudio.com/items?itemName=sbeeredd04.gitcue",
+      "iframe": "https://gitcue.sriujjwalreddy.com/",
       "technologies": ["TypeScript", "VS Code API", "Node.js", "AI/ML", "Git"],
       "github": "https://github.com/sbeeredd04/auto-git",
       "href": "https://marketplace.visualstudio.com/items?itemName=sbeeredd04.gitcue",
@@ -82,11 +91,12 @@
     },
     {
       "id": 10,
+      "mobileId": 12,
       "title": "sandbox",
       "shortDescription": "Deep learning research playground with GANs and VAEs",
       "description": "Your **research playground**: a Jupyter-based repository for deep learning experiments.\n\n### Focus Areas:\n\n- **GANs** (Generative Adversarial Networks)\n- **VAEs** (Variational Autoencoders)\n- Dataset utility scripts\n- Ongoing model prototyping\n\nFrequent updates with cutting-edge ML experiments and research implementations.",
-      "image": "/projects/sandbox.jpg",
-      "iframe": "https://github.com/sbeeredd04/sandbox",
+      "image": "/featuring/project/sandbox.png",
+      "iframe": "",
       "technologies": ["Python", "Jupyter", "PyTorch", "TensorFlow", "Deep Learning"],
       "github": "https://github.com/sbeeredd04/sandbox",
       "href": "https://github.com/sbeeredd04/sandbox",
@@ -94,32 +104,22 @@
     },
     {
       "id": 13,
+      "mobileId": 13,
       "title": "zsh_plugin",
       "shortDescription": "High-performance Zsh plugin written in C",
       "description": "A **high-performance Zsh plugin** written in C for maximum speed and efficiency.\n\n### Features:\n\n- **Blazing-fast execution** with C implementation\n- **Enhanced autocompletion** for commands and paths\n- **Smart shell utilities** and helpers\n- **CI/CD automation** with GitHub Actions\n- Recent updates include new autocompletion features\n\nOptimized for developers who demand performance from their shell.",
       "image": "/projects/zsh.jpg",
-      "iframe": "https://github.com/sbeeredd04/zsh_plugin",
+      "iframe": "https://zshplugin.sriujjwalreddy.com/",
       "technologies": ["C", "Zsh", "Shell Scripting", "CI/CD", "Performance"],
       "github": "https://github.com/sbeeredd04/zsh_plugin",
       "href": "https://github.com/sbeeredd04/zsh_plugin",
       "detailedContent": "# zsh_plugin - High-Performance Shell Enhancement\n\n**zsh_plugin** is a powerful Zsh enhancement written in C for maximum performance and efficiency.\n\n## Key Features\n\n- **C Performance**: Written in C for blazing-fast execution\n- **Smart Autocompletion**: Enhanced command and path completion\n- **Shell Interactivity**: Improved user experience\n- **CI/CD Integration**: Automated testing and deployment\n- **Customizable**: Easy configuration and extension\n\n## Features\n\n- Intelligent command prediction\n- Context-aware suggestions\n- Fast fuzzy matching\n- Minimal overhead\n- Cross-platform compatibility\n\n## Technical Details\n\n- Core written in C for performance\n- Zsh API integration\n- Automated testing pipeline\n- Continuous integration with GitHub Actions\n- Comprehensive documentation"
-    },
-    {
-      "id": 16,
-      "title": "Sri's Portfolio",
-      "shortDescription": "Modern interactive Next.js portfolio with AI features",
-      "description": "A **modern, interactive Next.js-based portfolio** showcasing projects, achievements, and professional brand.\n\n### Highlights:\n\n- AI chat integration for visitor engagement\n- Timeline visualizations of experience\n- Dynamic content management\n- Responsive design across all devices\n- Fast performance with Next.js\n\nLatest updates enhance **project showcase** and comprehensive documentation.",
-      "image": "/projects/portfolio.jpg",
-      "iframe": "https://sriujjwalreddy.com/",
-      "technologies": ["Next.js", "React", "TypeScript", "Tailwind CSS", "Three.js"],
-      "github": "https://github.com/sbeeredd04/sri-s_portfolio",
-      "href": "https://sriujjwalreddy.com/",
-      "detailedContent": "# Sri's Portfolio - Interactive Web Experience\n\n**Sri's Portfolio** is a cutting-edge, interactive portfolio built with Next.js showcasing professional projects and achievements.\n\n## Key Features\n\n- **Interactive 3D Journey**: Immersive 3D introduction experience\n- **AI Chat Integration**: Intelligent chatbot for visitor engagement\n- **Timeline Visualizations**: Professional experience and achievements\n- **Dynamic Content**: Real-time project and blog management\n- **Responsive Design**: Optimized for all devices\n\n## Sections\n\n- **Home**: Featured projects in Bento Grid layout\n- **About**: Professional profile and education\n- **Experience**: Interactive timeline of work history\n- **Projects**: Showcase of deployed and featured work\n- **Skills**: Game-style visualization and GitHub analytics\n- **Blog**: Technical articles and insights\n- **Contact**: Direct communication form\n\n## Technical Stack\n\n- Next.js 15 with App Router\n- React 18 with TypeScript\n- Tailwind CSS for styling\n- Three.js for 3D graphics\n- Framer Motion for animations\n- Vercel deployment platform"
     }
   ],
   "blogs": [
     {
       "id": 7,
+      "mobileId": 11,
       "title": "Imagine Life as a Website: If Existence Ran on HTTP Requests",
       "category": "Tech",
       "preview": "Ever wondered what life would be like if it were structured like a **modern web application**?",
@@ -129,6 +129,7 @@
     },
     {
       "id": 11,
+      "mobileId": 14,
       "title": "MCP Servers: The Future of AI Integration",
       "category": "Tech",
       "preview": "Discover how **Model Context Protocol (MCP) servers** are revolutionizing AI application architecture.",
@@ -138,11 +139,22 @@
     },
     {
       "id": 12,
+      "mobileId": 15,
       "title": "Future of AI in Software Development",
       "category": "Tech", 
       "preview": "Exploring how **artificial intelligence** is reshaping the way we build software applications.",
       "image": "/blog/2.jpg",
       "content": "As **AI continues to evolve**, its impact on software development becomes more profound.\n\n### Key Transformations:\n\n- **Automated code generation** for faster development\n- **Intelligent debugging** that finds issues before you do\n- **Smart code suggestions** and auto-completion\n- **Predictive analytics** for project planning\n\nThis post explores the *cutting-edge tools* and methodologies that are emerging in the AI-powered development landscape.\n\n> The future of development is collaborative—humans and AI working together to build better software, faster.",
+      "redirect": "blog"
+    },
+    {
+      "id": 16,
+      "mobileId": 16,
+      "title": "How I Power Up My Day: Using Stoic, Endel & Notion for Simple, Awesome Productivity",
+      "category": "Lifestyle / Productivity",
+      "preview": "Discover my favorite way to stay organized and motivated: a simple workflow with Stoic, Endel, Notion and SyncTasks.",
+      "image": "/blog/4.jpg",
+      "content": "**How I Power Up My Day: Using Stoic, Endel & Notion for Simple, Awesome Productivity**\n\nHey friends!\n\nToday, I wanted to share something that’s been genuinely making my days better. If you love tech, wellness, and getting stuff done—this little trio might be what you’ve been looking for: Stoic, Endel, Notion (plus a super simple app called SyncTasks!).\n\n---\n\n### How I Use Stoic\n\nEvery morning, I open up **Stoic**. It’s a beautiful, calming app for journaling, planning your day, and thinking a bit about how to live well and feel good. I use Stoic for:\n\n- **Setting my intentions:** How do I want to feel today?\n- **Reflecting:** What went well yesterday? What should I improve?\n\nIt’s simple. After planning, I copy-paste my thoughts and goals into Notion so I can use those ideas for my task list.\n\n---\n\n### Notion Makes Life Organized (and Fun!)\n\nIf you love digital organization, **Notion** really shines. I use Notion AI to take what I wrote in Stoic and break it down:\n\n- To-do lists\n- Daily routines\n- Project ideas\n- Even tiny reminders (\"drink water!\")\n\nWhat’s cool is Notion keeps everything in one spot. My databases, my calendar, and all my tasks are easy to find. I don’t worry about losing notes anymore!\n\n---\n\n### Endel: The Soundtrack for Focus\n\nWhile I’m working or planning, I hit play on **Endel**. It’s an app that creates personalized background sound—so chill and perfect for focus. The sounds help me feel calm, less stressed, and ready to work. If you haven’t tried Endel yet, give it a go. It’s like a techy hug for your brain.\n\n---\n\n### SyncTasks: The Final Daily Check\n\nTo keep things extra simple, I use **SyncTasks**. When I finish each task from my Notion list, I just check it off in SyncTasks. There’s something so satisfying about seeing things DONE. And it syncs with my other stuff, which is handy.\n\n---\n\n### Why This Combo Works For Me\n\n- **Stoic** helps me start with intention and reflection\n- **Notion AI** organizes my ideas into actual plans, tasks, and calendars\n- **Endel** keeps me in a good headspace with relaxing sound\n- **SyncTasks** gives me quick victories and final checks\n\nI feel more organized, less stressed, and honestly, a little bit proud of how I’m managing life with these cool tools. If you’re looking for simple ways to be productive and happy, definitely try combining these apps. Let me know if you have any other favorites, I love swapping tips!\n\n---\n\nHere’s to happy, tech-powered days! 😊",
       "redirect": "blog"
     }
   ]
