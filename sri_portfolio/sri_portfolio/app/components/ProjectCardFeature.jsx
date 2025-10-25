@@ -45,9 +45,20 @@ export const ProjectCardFeature = ({ project, onClick }) => {
         onClick={handleCardClick}
         className="relative h-full rounded-lg overflow-hidden cursor-pointer group"
       >
-        {/* Video Section - Top 60% */}
+        {/* Preview Section - Top 70% */}
         <div className="relative h-[70%] rounded-t-lg overflow-hidden">
-          {project?.video && (
+          {/* Show iframe if available */}
+          {project?.iframe && (
+            <iframe
+              src={project.iframe}
+              className="w-full h-full object-cover pointer-events-none"
+              title={`${project.title} Preview`}
+              sandbox="allow-scripts allow-same-origin"
+              loading="lazy"
+            />
+          )}
+          {/* Fallback to video if no iframe */}
+          {!project?.iframe && project?.video && (
             <video
               ref={videoRef}
               src={project.video}
@@ -58,9 +69,10 @@ export const ProjectCardFeature = ({ project, onClick }) => {
               autoPlay
             />
           )}
-          {!project?.video && (
+          {/* Fallback to gradient if no iframe or video */}
+          {!project?.iframe && !project?.video && (
             <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-              <span className="text-white/60 text-sm">No Video</span>
+              <span className="text-white/60 text-sm">No Preview</span>
             </div>
           )}
         </div>
@@ -205,9 +217,19 @@ const ProjectModal = ({ project, onClose }) => {
         </button>
 
         <div className="flex flex-col h-full">
-          {/* Video Section - Full width at top */}
+          {/* Preview Section - Full width at top */}
           <div className="w-full h-[45vh] bg-black rounded-t-2xl overflow-hidden flex-shrink-0">
-            {project?.youtube ? (
+            {/* Priority 1: iframe if available */}
+            {project?.iframe ? (
+              <iframe
+                src={project.iframe}
+                className="w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                allowFullScreen
+                title={`${project.title} Live Preview`}
+              />
+            ) : project?.youtube ? (
               <iframe
                 src={`https://www.youtube.com/embed/${project.youtube}?autoplay=1&mute=1&loop=1&playlist=${project.youtube}&controls=1&rel=0&modestbranding=1`}
                 className="w-full h-full border-0"
@@ -233,7 +255,7 @@ const ProjectModal = ({ project, onClose }) => {
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
                     <IconBrandYoutube size={32} className="text-white/60" />
                   </div>
-                  <span className="text-white/60 text-sm">No video available</span>
+                  <span className="text-white/60 text-sm">No preview available</span>
                 </div>
               </div>
             )}
