@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useId, useState, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRef } from "react";
 import { cn } from "../lib/utils";
@@ -15,6 +15,17 @@ export const Cover = ({
 
   const [containerWidth, setContainerWidth] = useState(0);
   const [beamPositions, setBeamPositions] = useState([]);
+
+  // Generate stable random values for beams using index-based pseudo-random
+  const getStableDuration = (index) => {
+    // Use index to generate stable pseudo-random value between 1-3
+    return 1 + ((index * 1.5) % 2);
+  };
+
+  const getStableDelay = (index) => {
+    // Use index to generate stable pseudo-random value between 1-3
+    return 1 + ((index * 2.3) % 2);
+  };
 
   useEffect(() => {
     if (ref.current) {
@@ -87,8 +98,8 @@ export const Cover = ({
         <Beam
           key={index}
           hovered={hovered}
-          duration={Math.random() * 2 + 1}
-          delay={Math.random() * 2 + 1}
+          duration={getStableDuration(index)}
+          delay={getStableDelay(index)}
           width={containerWidth}
           style={{
             top: `${position}px`,
@@ -148,6 +159,19 @@ export const Beam = ({
 }) => {
   const id = useId();
 
+  // Use stable values instead of Math.random() for SSR compatibility
+  const stableRandomDelay = useMemo(() => {
+    // Generate a stable pseudo-random value based on id
+    const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return (hash % 80) / 100 + 0.2; // Value between 0.2 and 1.0
+  }, [id]);
+
+  const stableRandomRepeatDelay = useMemo(() => {
+    // Generate a stable pseudo-random value based on id
+    const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return ((hash * 2) % 100) / 100 + 1; // Value between 1.0 and 2.0
+  }, [id]);
+
   return (
     <motion.svg
       width={width ?? "600"}
@@ -180,8 +204,8 @@ export const Beam = ({
             duration: hovered ? 0.5 : duration ?? 2,
             ease: "linear",
             repeat: Infinity,
-            delay: hovered ? Math.random() * (1 - 0.2) + 0.2 : 0,
-            repeatDelay: hovered ? Math.random() * (2 - 1) + 1 : delay ?? 1,
+            delay: hovered ? stableRandomDelay : 0,
+            repeatDelay: hovered ? stableRandomRepeatDelay : delay ?? 1,
           }}
         >
           <stop stopColor="#2EB9DF" stopOpacity="0" />
