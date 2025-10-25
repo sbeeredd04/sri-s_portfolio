@@ -6,12 +6,7 @@ import { TracingBeam } from "./components/tracing-beam";
 
 export function AchievementTimelineDemo({ theme }) {
   return (
-    <div className="w-full h-auto min-h-full pb-20" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-      <style jsx>{`
-        div::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
+    <div className="w-full h-full pb-20">
       <div className="text-center mb-8 pt-4">
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Key Achievements</h1>
         <p className="text-white/60 text-sm md:text-base">Milestones in my programming and development journey</p>
