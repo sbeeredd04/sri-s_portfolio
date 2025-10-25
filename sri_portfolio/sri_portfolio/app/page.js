@@ -848,7 +848,7 @@ export default function Home() {
                               {/* Logo and Title */}
                               <div className="flex items-center gap-3 md:gap-6 md:col-span-3">
                                 <img 
-                                  src="/asulogo.png" 
+                                  src="/logos/asulogo.png" 
                                   alt="ASU Logo" 
                                   className="w-10 h-10 md:w-16 md:h-16 object-contain"
                                 />
@@ -1199,7 +1199,7 @@ export default function Home() {
                                 title: post.title,
                                 content: post.content,
                                 category: post.category,
-                                src: `/${index + 1}.jpg`, 
+                                src: post.image || `/blog/${index + 1}.jpg`, 
                               }}
                               className="max-w-[90%] mx-auto"
                             />

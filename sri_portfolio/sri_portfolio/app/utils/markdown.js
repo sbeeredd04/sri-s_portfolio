@@ -54,21 +54,29 @@ export const parseMarkdown = (markdown) => {
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 underline decoration-cyan-500/50 hover:decoration-cyan-400 transition-all">$1</a>');
 
   // Task lists / Checkboxes
-  html = html.replace(/^- \[x\] (.+)$/gim, '<li class="text-white/80 mb-2 flex items-start"><span class="mr-2 text-green-400">✓</span><span class="flex-1">$1</span></li>');
+  html = html.replace(/^- \[x\] (.+)$/gim, '<li class="text-white/80 mb-2 flex items-start"><span class="mr-2 text-white/60">✓</span><span class="flex-1">$1</span></li>');
   html = html.replace(/^- \[ \] (.+)$/gim, '<li class="text-white/80 mb-2 flex items-start"><span class="mr-2 text-white/40">☐</span><span class="flex-1">$1</span></li>');
 
-  // Unordered lists (- or * or +)
-  html = html.replace(/^[\-\*\+] (.+)$/gim, '<li class="text-white/80 mb-2 ml-5 relative before:content-[\'\'] before:absolute before:left-[-1.25rem] before:top-[0.6rem] before:w-1.5 before:h-1.5 before:rounded-full before:bg-cyan-400">$1</li>');
+  // Handle nested lists with proper indentation - BEFORE other list processing
+  // Detect indented list items (2+ spaces or tab)
+  html = html.replace(/^([ \t]{2,})[\-\*\+] (.+)$/gim, (match, indent, content) => {
+    const indentLevel = Math.floor(indent.length / 2);
+    const marginLeft = indentLevel * 1.25;
+    return `<li class="text-white/80 mb-2 ml-${marginLeft * 4} relative before:content-[''] before:absolute before:left-[-1.25rem] before:top-[0.6rem] before:w-1.5 before:h-1.5 before:rounded-full before:bg-white/40" style="margin-left: ${marginLeft}rem;">$2</li>`;
+  });
+
+  // Unordered lists (- or * or +) - without colored bullets
+  html = html.replace(/^[\-\*\+] (.+)$/gim, '<li class="text-white/80 mb-2 ml-5 relative before:content-[\'\'] before:absolute before:left-[-1.25rem] before:top-[0.6rem] before:w-1.5 before:h-1.5 before:rounded-full before:bg-white/40">$1</li>');
 
   // Ordered lists (1. 2. 3.)
   html = html.replace(/^(\d+)\. (.+)$/gim, '<li class="text-white/80 mb-2 ml-6 pl-2" value="$1">$2</li>');
 
-  // Wrap consecutive list items
-  html = html.replace(/(<li class="text-white\/80[^>]*>.*<\/li>\s*)+/gs, (match) => {
+  // Wrap consecutive list items with clear boundaries
+  html = html.replace(/(<li class="text-white\/80[^>]*>.*?<\/li>\s*)+/gs, (match) => {
     if (match.includes('value=')) {
-      return `<ol class="my-4 space-y-1 list-decimal list-inside">${match}</ol>`;
+      return `<ol class="my-4 space-y-1 list-decimal list-inside clear-both">${match}</ol>\n\n`;
     }
-    return `<ul class="my-4 space-y-1">${match}</ul>`;
+    return `<ul class="my-4 space-y-1 clear-both">${match}</ul>\n\n`;
   });
 
   // Tables (enhanced support)
@@ -106,13 +114,33 @@ export const parseMarkdown = (markdown) => {
   });
 
   // Paragraphs - Convert double line breaks to paragraph breaks
-  html = html.replace(/\n\n+/g, '</p><p class="text-white/80 mb-4 leading-relaxed text-base">');
+  // First, protect block elements from being wrapped in paragraphs
+  const blockElements = /<(h[1-6]|div|ul|ol|pre|blockquote|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*>|<div[^>]*>[\s\S]*?<\/div>/g;
+  const blocks = [];
+  html = html.replace(blockElements, (match) => {
+    blocks.push(match);
+    return `\n__BLOCK_${blocks.length - 1}__\n`;
+  });
 
-  // Single line breaks
+  // Clean up extra whitespace around block placeholders
+  html = html.replace(/\n+__BLOCK_/g, '\n__BLOCK_');
+  html = html.replace(/__BLOCK_(\d+)__\n+/g, '__BLOCK_$1__\n');
+
+  // Now handle paragraphs and line breaks
+  html = html.replace(/\n\n+/g, '</p>\n<p class="text-white/80 mb-4 leading-relaxed text-base">');
   html = html.replace(/\n/g, '<br />');
 
+  // Restore block elements
+  blocks.forEach((block, index) => {
+    html = html.replace(`__BLOCK_${index}__`, block);
+  });
+
+  // Remove any <br /> tags that are immediately before or after block elements
+  html = html.replace(/<br \/>\s*(<(?:h[1-6]|div|ul|ol|pre|blockquote|table|hr))/g, '$1');
+  html = html.replace(/(<\/(?:h[1-6]|div|ul|ol|pre|blockquote|table)>)\s*<br \/>/g, '$1');
+
   // Wrap in paragraph if needed
-  if (!html.match(/^<(h[1-6]|div|ul|ol|pre|blockquote|table)/)) {
+  if (!html.match(/^<(h[1-6]|div|ul|ol|pre|blockquote|table|hr)/)) {
     html = `<p class="text-white/80 mb-4 leading-relaxed text-base">${html}</p>`;
   }
 

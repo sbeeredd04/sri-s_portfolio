@@ -52,7 +52,7 @@ export const BlogCardFeature = ({ blog, onClick }) => {
       {/* Background Image - Always visible */}
       <div className="absolute inset-0">
         <img 
-          src={blog?.image || '/home1.jpg'} 
+          src={blog?.image || '/blog/home1.jpg'} 
           alt={blog?.title || 'Blog Post'}
           className="w-full h-full object-cover"
         />

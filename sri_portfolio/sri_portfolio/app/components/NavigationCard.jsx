@@ -23,7 +23,7 @@ export const NavigationCard = ({ title, description, icon, onClick, backgroundIm
     >
       <div 
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${backgroundImage || '/home1.jpg'})` }}
+        style={{ backgroundImage: `url(${backgroundImage || '/blog/home1.jpg'})` }}
       />
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm group-hover:bg-black/30 transition-all duration-300" />
       <div className="relative h-full p-4 flex flex-col justify-center items-center text-center bg-black/10 backdrop-blur-sm border border-white/20 rounded-lg">

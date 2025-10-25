@@ -3,43 +3,43 @@
     {
       "id": 3,
       "title": "About Me",
-      "description": "Learn more about **my background**, education, and journey in tech. 👨‍💻",
-      "image": "/home2.jpg",
+      "description": "Learn more about **my background**, education, and journey in tech.",
+      "image": "/blog/home2.jpg",
       "section": "about"
     },
     {
       "id": 4,
       "title": "Professional Experience",
-      "description": "Explore my **professional experience** and work history. 💼",
-      "image": "/home3.jpg",
+      "description": "Explore my **professional experience** and work history.",
+      "image": "/blog/home3.jpg",
       "section": "experience"
     },
     {
       "id": 8,
       "title": "Featured Projects",
-      "description": "See my **latest projects** and innovative solutions. 🚀",
-      "image": "/home4.jpg",
+      "description": "See my **latest projects** and innovative solutions.",
+      "image": "/blog/home4.jpg",
       "section": "projects"
     },
     {
       "id": 9,
       "title": "Technical Skills",
-      "description": "Check out my **technical skills** and expertise. 🛠️",
-      "image": "/home5.jpg",
+      "description": "Check out my **technical skills** and expertise.",
+      "image": "/blog/home5.jpg",
       "section": "skills"
     },
     {
       "id": 15,
       "title": "Blog Insights",
-      "description": "Read my **latest articles** and tech insights. 📝",
-      "image": "/home6.jpg",
+      "description": "Read my **latest articles** and tech insights.",
+      "image": "/blog/home6.jpg",
       "section": "blog"
     },
     {
       "id": 14,
       "title": "Get in Touch",
-      "description": "Contact me for **collaborations** and opportunities. 📧",
-      "image": "/home7.jpg",
+      "description": "Contact me for **collaborations** and opportunities.",
+      "image": "/blog/home7.jpg",
       "section": "contact"
     }
   ],
@@ -50,71 +50,71 @@
       "shortDescription": "AI Chat Multiverse - Transform linear conversations into visual trees",
       "description": "**Aether AI—Chat Multiverse** transforms linear AI conversations into visual, explorable trees, enabling:\n\n- **Infinite branching** for unlimited conversation paths\n- **Multi-model comparisons** across different AI systems\n- **Rich media interactions** with images and code\n- **Web-grounded answers** backed by real-time data\n\nRecent releases added *persistent context*, a modern visual UI, and advanced branching logic.",
       "image": "/projects/aether.jpg",
-      "iframe": "https://aether.sriujjwalreddy.com/",
+      "iframe": "https://aether.sriujjwalreddy.com/workspace",
       "technologies": ["Next.js", "AI/ML", "React", "TypeScript", "Vercel"],
       "github": "https://github.com/sbeeredd04/Aether",
       "href": "https://aether.sriujjwalreddy.com/",
-      "detailedContent": "# Aether AI - Chat Multiverse\n\n**Aether AI** transforms the way you interact with AI by turning linear conversations into visual, explorable tree structures.\n\n## 🚀 Key Features\n\n- **Infinite Branching**: Create unlimited conversation paths and explore different directions\n- **Multi-Model Support**: Compare responses from multiple AI models simultaneously\n- **Rich Media**: Integrate images, code, and formatted content seamlessly\n- **Web-Grounded Answers**: Get responses backed by real-time web data\n- **Persistent Context**: Your conversation trees are saved and accessible anytime\n- **Modern Visual UI**: Intuitive tree visualization for easy navigation\n\n## 💡 Use Cases\n\n- **Research**: Explore multiple research directions simultaneously\n- **Creative Writing**: Branch storylines and compare different narrative paths\n- **Problem Solving**: Test various solution approaches in parallel\n- **Learning**: Compare explanations from different AI perspectives\n\n## 🔧 Technical Stack\n\n- Built with Next.js and React for optimal performance\n- TypeScript for type safety\n- Real-time AI model integration\n- Advanced state management for tree structures\n- Deployed on Vercel for global accessibility"
+      "detailedContent": "# Aether AI - Chat Multiverse\n\n**Aether AI** transforms the way you interact with AI by turning linear conversations into visual, explorable tree structures.\n\n## Key Features\n\n- **Infinite Branching**: Create unlimited conversation paths and explore different directions\n- **Multi-Model Support**: Compare responses from multiple AI models simultaneously\n- **Rich Media**: Integrate images, code, and formatted content seamlessly\n- **Web-Grounded Answers**: Get responses backed by real-time web data\n- **Persistent Context**: Your conversation trees are saved and accessible anytime\n- **Modern Visual UI**: Intuitive tree visualization for easy navigation\n\n## Use Cases\n\n- **Research**: Explore multiple research directions simultaneously\n- **Creative Writing**: Branch storylines and compare different narrative paths\n- **Problem Solving**: Test various solution approaches in parallel\n- **Learning**: Compare explanations from different AI perspectives\n\n## Technical Stack\n\n- Built with Next.js and React for optimal performance\n- TypeScript for type safety\n- Real-time AI model integration\n- Advanced state management for tree structures\n- Deployed on Vercel for global accessibility"
     },
     {
       "id": 5,
       "title": "Agentex Resume Editor",
       "shortDescription": "AI-powered Chrome extension for resume tailoring",
-      "description": "**AI-powered Chrome extension** that helps instantly tailor LaTeX resumes to match specific job descriptions.\n\n### Key Features:\n- Uses advanced AI (**Gemini** & **DeepSeek**) for skill matching\n- Keeps formatting professional and **ATS-friendly**\n- Generates customized PDFs with *side-by-side preview* in under **1 minute**\n\nPerfect for job seekers looking to optimize their applications!",
+      "description": "**AI-powered Chrome extension** that helps instantly tailor LaTeX resumes to match specific job descriptions.\n\n### Key Features:\n\n- Uses advanced AI (**Gemini** & **DeepSeek**) for skill matching\n- Keeps formatting professional and **ATS-friendly**\n- Generates customized PDFs with *side-by-side preview* in under **1 minute**\n\nPerfect for job seekers looking to optimize their applications!",
       "image": "/projects/projects (2).jpg",
       "iframe": "https://chromewebstore.google.com/detail/agentex-resume-editor/jmgbilodbfopeidngmbaglaomffpldfd",
       "technologies": ["JavaScript", "Chrome API", "AI/ML", "LaTeX", "PDF"],
       "github": "https://github.com/sbeeredd04/Agentex",
       "href": "https://chromewebstore.google.com/detail/agentex-resume-editor/jmgbilodbfopeidngmbaglaomffpldfd",
-      "detailedContent": "# Agentex Resume Editor\n\n**Agentex** is an innovative Chrome extension that revolutionizes resume customization by leveraging AI to instantly tailor LaTeX resumes for specific job applications.\n\n![Agentex Interface](agentex-interface.jpg)\n\n## 🚀 Key Features\n\n### AI-Powered Skill Matching\n- **Gemini Integration**: Advanced natural language processing\n- **DeepSeek Analysis**: Deep understanding of job requirements\n- **Smart Recommendations**: Intelligent skill highlighting and optimization\n\n### Real-Time Processing\n```javascript\nconst analyzeJobDescription = async (jobText) => {\n  const response = await fetch('/api/analyze', {\n    method: 'POST',\n    body: JSON.stringify({ jobDescription: jobText })\n  });\n  return response.json();\n};\n```\n\n![Processing Pipeline](agentex-pipeline.jpg)\n\n## 🔧 Technical Implementation\n\n### Chrome Extension Architecture\nThe extension uses Manifest V3 with the following components:\n\n1. **Content Scripts**: Inject AI-powered analysis into job sites\n2. **Background Service**: Handle API communications\n3. **Popup Interface**: User control panel\n4. **LaTeX Engine**: Resume processing and generation\n\n### AI Model Integration\n![AI Architecture](agentex-ai-flow.jpg)\n\n```python\nclass ResumeAnalyzer:\n    def __init__(self):\n        self.gemini_client = GeminiClient()\n        self.deepseek_client = DeepSeekClient()\n    \n    async def analyze_and_optimize(self, resume, job_desc):\n        # AI analysis pipeline\n        skills_match = await self.gemini_client.analyze(job_desc)\n        optimization = await self.deepseek_client.optimize(resume, skills_match)\n        return optimization\n```\n\n## 📊 Performance Metrics\n\n| Metric | Before Agentex | After Agentex | Improvement |\n|--------|----------------|---------------|-------------|\n| Time per Application | 2-3 hours | 15 minutes | **85% reduction** |\n| Interview Callbacks | 15% | 40% | **167% increase** |\n| ATS Score | 65% | 92% | **42% improvement** |\n\n## 🎯 User Experience\n\n### Workflow Optimization\n![User Workflow](agentex-workflow.jpg)\n\n1. **Upload Resume**: LaTeX or PDF format supported\n2. **Paste Job Description**: One-click analysis\n3. **AI Processing**: Intelligent matching and optimization\n4. **Preview & Download**: Side-by-side comparison with instant PDF generation\n\n### Privacy & Security\n- 🔒 **Local Processing**: Sensitive data stays on device\n- 🛡️ **Encrypted Communication**: Secure API calls\n- 🚫 **No Data Storage**: Zero data retention policy\n\n## 🏆 Impact & Recognition\n\n- 📈 **10,000+ Downloads** in first month\n- ⭐ **4.8/5 Stars** on Chrome Web Store\n- 🎉 **Featured Extension** in productivity category\n- 💼 **Professional Adoption** by career counselors\n\n## Future Enhancements\n\n- [ ] **Multi-language Support**: Expand beyond English resumes\n- [ ] **Cover Letter Generation**: AI-powered cover letter creation\n- [ ] **Interview Preparation**: Job-specific question generation\n- [ ] **Salary Insights**: Market rate analysis integration"
+      "detailedContent": "# Agentex Resume Editor\n\n**Agentex** is an innovative Chrome extension that revolutionizes resume customization by leveraging AI to instantly tailor LaTeX resumes for specific job applications.\n\n## Key Features\n\n### AI-Powered Skill Matching\n\n- **Gemini Integration**: Advanced natural language processing\n- **DeepSeek Analysis**: Deep understanding of job requirements\n- **Smart Recommendations**: Intelligent skill highlighting and optimization\n\n### Real-Time Processing\n\n```javascript\nconst analyzeJobDescription = async (jobText) => {\n  const response = await fetch('/api/analyze', {\n    method: 'POST',\n    body: JSON.stringify({ jobDescription: jobText })\n  });\n  return response.json();\n};\n```\n\n## Technical Implementation\n\n### Chrome Extension Architecture\n\nThe extension uses Manifest V3 with the following components:\n\n1. **Content Scripts**: Inject AI-powered analysis into job sites\n2. **Background Service**: Handle API communications\n3. **Popup Interface**: User control panel\n4. **LaTeX Engine**: Resume processing and generation\n\n### AI Model Integration\n\n```python\nclass ResumeAnalyzer:\n    def __init__(self):\n        self.gemini_client = GeminiClient()\n        self.deepseek_client = DeepSeekClient()\n    \n    async def analyze_and_optimize(self, resume, job_desc):\n        # AI analysis pipeline\n        skills_match = await self.gemini_client.analyze(job_desc)\n        optimization = await self.deepseek_client.optimize(resume, skills_match)\n        return optimization\n```\n\n## Performance Metrics\n\n| Metric | Before Agentex | After Agentex | Improvement |\n|--------|----------------|---------------|-------------|\n| Time per Application | 2-3 hours | 15 minutes | **85% reduction** |\n| Interview Callbacks | 15% | 40% | **167% increase** |\n| ATS Score | 65% | 92% | **42% improvement** |\n\n## User Experience\n\n### Workflow Optimization\n\n1. **Upload Resume**: LaTeX or PDF format supported\n2. **Paste Job Description**: One-click analysis\n3. **AI Processing**: Intelligent matching and optimization\n4. **Preview & Download**: Side-by-side comparison with instant PDF generation\n\n### Privacy & Security\n\n- **Local Processing**: Sensitive data stays on device\n- **Encrypted Communication**: Secure API calls\n- **No Data Storage**: Zero data retention policy\n\n## Impact & Recognition\n\n- **10,000+ Downloads** in first month\n- **4.8/5 Stars** on Chrome Web Store\n- **Featured Extension** in productivity category\n- **Professional Adoption** by career counselors\n\n## Future Enhancements\n\n- **Multi-language Support**: Expand beyond English resumes\n- **Cover Letter Generation**: AI-powered cover letter creation\n- **Interview Preparation**: Job-specific question generation\n- **Salary Insights**: Market rate analysis integration"
     },
     {
       "id": 6,
       "title": "auto-git",
       "shortDescription": "Automated Git management with AI-powered commits",
-      "description": "A **robust CLI tool** and **VS Code extension** for automated Git management.\n\n### Powered by Gemini AI:\n- 🤖 Smart commit message generation\n- 📊 Activity tracking and analytics\n- 🖥️ Fully interactive terminal\n- ✅ Comprehensive QA/testing\n- 🔄 Smooth developer workflow integration\n\nLatest versions feature enhanced automation and seamless IDE integration.",
+      "description": "A **robust CLI tool** and **VS Code extension** for automated Git management.\n\n### Powered by Gemini AI:\n\n- Smart commit message generation\n- Activity tracking and analytics\n- Fully interactive terminal\n- Comprehensive QA/testing\n- Smooth developer workflow integration\n\nLatest versions feature enhanced automation and seamless IDE integration.",
       "image": "/projects/autogit.jpg",
       "iframe": "https://marketplace.visualstudio.com/items?itemName=sbeeredd04.gitcue",
       "technologies": ["TypeScript", "VS Code API", "Node.js", "AI/ML", "Git"],
       "github": "https://github.com/sbeeredd04/auto-git",
       "href": "https://marketplace.visualstudio.com/items?itemName=sbeeredd04.gitcue",
-      "detailedContent": "# auto-git - AI-Powered Git Management\n\n**auto-git** is a powerful CLI tool and VS Code extension that revolutionizes Git workflow management with AI-powered commit messages and activity tracking.\n\n## 🚀 Key Features\n\n- **Smart Commits**: AI-generated commit messages using Gemini\n- **Interactive Terminal**: Fully interactive command-line interface\n- **Activity Tracking**: Monitor and analyze your Git activity\n- **VS Code Integration**: Seamless extension for your favorite editor\n- **Workflow Automation**: Streamline repetitive Git operations\n\n## 💡 Use Cases\n\n- Automatically generate meaningful commit messages\n- Track development activity and productivity\n- Streamline team collaboration\n- Maintain consistent commit message standards\n\n## 🔧 Technical Features\n\n- Built with TypeScript for reliability\n- VS Code Extension API integration\n- Gemini AI for natural language processing\n- Comprehensive testing and QA\n- Cross-platform compatibility"
+      "detailedContent": "# auto-git - AI-Powered Git Management\n\n**auto-git** is a powerful CLI tool and VS Code extension that revolutionizes Git workflow management with AI-powered commit messages and activity tracking.\n\n## Key Features\n\n- **Smart Commits**: AI-generated commit messages using Gemini\n- **Interactive Terminal**: Fully interactive command-line interface\n- **Activity Tracking**: Monitor and analyze your Git activity\n- **VS Code Integration**: Seamless extension for your favorite editor\n- **Workflow Automation**: Streamline repetitive Git operations\n\n## Use Cases\n\n- Automatically generate meaningful commit messages\n- Track development activity and productivity\n- Streamline team collaboration\n- Maintain consistent commit message standards\n\n## Technical Features\n\n- Built with TypeScript for reliability\n- VS Code Extension API integration\n- Gemini AI for natural language processing\n- Comprehensive testing and QA\n- Cross-platform compatibility"
     },
     {
       "id": 10,
       "title": "sandbox",
       "shortDescription": "Deep learning research playground with GANs and VAEs",
-      "description": "Your **research playground**: a Jupyter-based repository for deep learning experiments.\n\n### Focus Areas:\n- 🧠 **GANs** (Generative Adversarial Networks)\n- 🎨 **VAEs** (Variational Autoencoders)\n- 📊 Dataset utility scripts\n- 🔬 Ongoing model prototyping\n\nFrequent updates with cutting-edge ML experiments and research implementations.",
+      "description": "Your **research playground**: a Jupyter-based repository for deep learning experiments.\n\n### Focus Areas:\n\n- **GANs** (Generative Adversarial Networks)\n- **VAEs** (Variational Autoencoders)\n- Dataset utility scripts\n- Ongoing model prototyping\n\nFrequent updates with cutting-edge ML experiments and research implementations.",
       "image": "/projects/sandbox.jpg",
       "iframe": "https://github.com/sbeeredd04/sandbox",
       "technologies": ["Python", "Jupyter", "PyTorch", "TensorFlow", "Deep Learning"],
       "github": "https://github.com/sbeeredd04/sandbox",
       "href": "https://github.com/sbeeredd04/sandbox",
-      "detailedContent": "# sandbox - Deep Learning Research Playground\n\n**sandbox** is a comprehensive Jupyter-based repository dedicated to deep learning experimentation and research.\n\n## 🚀 Research Focus\n\n- **GANs (Generative Adversarial Networks)**: Image generation and synthesis\n- **VAEs (Variational Autoencoders)**: Latent space exploration\n- **Dataset Utilities**: Custom scripts for data processing\n- **Model Prototyping**: Rapid experimentation with new architectures\n\n## 💡 Featured Experiments\n\n- Image generation with StyleGAN variants\n- Latent space interpolation with VAEs\n- Custom dataset preprocessing pipelines\n- Model architecture experiments\n\n## 🔧 Technical Stack\n\n- Jupyter Notebooks for interactive development\n- PyTorch and TensorFlow support\n- Custom dataset utilities\n- Visualization and analysis tools\n- Reproducible research workflows"
+      "detailedContent": "# sandbox - Deep Learning Research Playground\n\n**sandbox** is a comprehensive Jupyter-based repository dedicated to deep learning experimentation and research.\n\n## Research Focus\n\n- **GANs (Generative Adversarial Networks)**: Image generation and synthesis\n- **VAEs (Variational Autoencoders)**: Latent space exploration\n- **Dataset Utilities**: Custom scripts for data processing\n- **Model Prototyping**: Rapid experimentation with new architectures\n\n## Featured Experiments\n\n- Image generation with StyleGAN variants\n- Latent space interpolation with VAEs\n- Custom dataset preprocessing pipelines\n- Model architecture experiments\n\n## Technical Stack\n\n- Jupyter Notebooks for interactive development\n- PyTorch and TensorFlow support\n- Custom dataset utilities\n- Visualization and analysis tools\n- Reproducible research workflows"
     },
     {
       "id": 13,
       "title": "zsh_plugin",
       "shortDescription": "High-performance Zsh plugin written in C",
-      "description": "A **high-performance Zsh plugin** written in C for maximum speed and efficiency.\n\n### Features:\n- ⚡ **Blazing-fast execution** with C implementation\n- 🎯 **Enhanced autocompletion** for commands and paths\n- 🚀 **Smart shell utilities** and helpers\n- 🔧 **CI/CD automation** with GitHub Actions\n- 🔄 Recent updates include new autocompletion features\n\nOptimized for developers who demand performance from their shell.",
+      "description": "A **high-performance Zsh plugin** written in C for maximum speed and efficiency.\n\n### Features:\n\n- **Blazing-fast execution** with C implementation\n- **Enhanced autocompletion** for commands and paths\n- **Smart shell utilities** and helpers\n- **CI/CD automation** with GitHub Actions\n- Recent updates include new autocompletion features\n\nOptimized for developers who demand performance from their shell.",
       "image": "/projects/zsh.jpg",
       "iframe": "https://github.com/sbeeredd04/zsh_plugin",
       "technologies": ["C", "Zsh", "Shell Scripting", "CI/CD", "Performance"],
       "github": "https://github.com/sbeeredd04/zsh_plugin",
       "href": "https://github.com/sbeeredd04/zsh_plugin",
-      "detailedContent": "# zsh_plugin - High-Performance Shell Enhancement\n\n**zsh_plugin** is a powerful Zsh enhancement written in C for maximum performance and efficiency.\n\n## 🚀 Key Features\n\n- **C Performance**: Written in C for blazing-fast execution\n- **Smart Autocompletion**: Enhanced command and path completion\n- **Shell Interactivity**: Improved user experience\n- **CI/CD Integration**: Automated testing and deployment\n- **Customizable**: Easy configuration and extension\n\n## 💡 Features\n\n- Intelligent command prediction\n- Context-aware suggestions\n- Fast fuzzy matching\n- Minimal overhead\n- Cross-platform compatibility\n\n## 🔧 Technical Details\n\n- Core written in C for performance\n- Zsh API integration\n- Automated testing pipeline\n- Continuous integration with GitHub Actions\n- Comprehensive documentation"
+      "detailedContent": "# zsh_plugin - High-Performance Shell Enhancement\n\n**zsh_plugin** is a powerful Zsh enhancement written in C for maximum performance and efficiency.\n\n## Key Features\n\n- **C Performance**: Written in C for blazing-fast execution\n- **Smart Autocompletion**: Enhanced command and path completion\n- **Shell Interactivity**: Improved user experience\n- **CI/CD Integration**: Automated testing and deployment\n- **Customizable**: Easy configuration and extension\n\n## Features\n\n- Intelligent command prediction\n- Context-aware suggestions\n- Fast fuzzy matching\n- Minimal overhead\n- Cross-platform compatibility\n\n## Technical Details\n\n- Core written in C for performance\n- Zsh API integration\n- Automated testing pipeline\n- Continuous integration with GitHub Actions\n- Comprehensive documentation"
     },
     {
       "id": 16,
       "title": "Sri's Portfolio",
       "shortDescription": "Modern interactive Next.js portfolio with AI features",
-      "description": "A **modern, interactive Next.js-based portfolio** showcasing projects, achievements, and professional brand.\n\n### Highlights:\n- 🤖 AI chat integration for visitor engagement\n- 📅 Timeline visualizations of experience\n- 🎨 Dynamic content management\n- 🌐 Responsive design across all devices\n- ⚡ Fast performance with Next.js\n\nLatest updates enhance **project showcase** and comprehensive documentation.",
+      "description": "A **modern, interactive Next.js-based portfolio** showcasing projects, achievements, and professional brand.\n\n### Highlights:\n\n- AI chat integration for visitor engagement\n- Timeline visualizations of experience\n- Dynamic content management\n- Responsive design across all devices\n- Fast performance with Next.js\n\nLatest updates enhance **project showcase** and comprehensive documentation.",
       "image": "/projects/portfolio.jpg",
       "iframe": "https://sriujjwalreddy.com/",
       "technologies": ["Next.js", "React", "TypeScript", "Tailwind CSS", "Three.js"],
       "github": "https://github.com/sbeeredd04/sri-s_portfolio",
       "href": "https://sriujjwalreddy.com/",
-      "detailedContent": "# Sri's Portfolio - Interactive Web Experience\n\n**Sri's Portfolio** is a cutting-edge, interactive portfolio built with Next.js showcasing professional projects and achievements.\n\n## 🚀 Key Features\n\n- **Interactive 3D Journey**: Immersive 3D introduction experience\n- **AI Chat Integration**: Intelligent chatbot for visitor engagement\n- **Timeline Visualizations**: Professional experience and achievements\n- **Dynamic Content**: Real-time project and blog management\n- **Responsive Design**: Optimized for all devices\n\n## 💡 Sections\n\n- **Home**: Featured projects in Bento Grid layout\n- **About**: Professional profile and education\n- **Experience**: Interactive timeline of work history\n- **Projects**: Showcase of deployed and featured work\n- **Skills**: Game-style visualization and GitHub analytics\n- **Blog**: Technical articles and insights\n- **Contact**: Direct communication form\n\n## 🔧 Technical Stack\n\n- Next.js 15 with App Router\n- React 18 with TypeScript\n- Tailwind CSS for styling\n- Three.js for 3D graphics\n- Framer Motion for animations\n- Vercel deployment platform"
+      "detailedContent": "# Sri's Portfolio - Interactive Web Experience\n\n**Sri's Portfolio** is a cutting-edge, interactive portfolio built with Next.js showcasing professional projects and achievements.\n\n## Key Features\n\n- **Interactive 3D Journey**: Immersive 3D introduction experience\n- **AI Chat Integration**: Intelligent chatbot for visitor engagement\n- **Timeline Visualizations**: Professional experience and achievements\n- **Dynamic Content**: Real-time project and blog management\n- **Responsive Design**: Optimized for all devices\n\n## Sections\n\n- **Home**: Featured projects in Bento Grid layout\n- **About**: Professional profile and education\n- **Experience**: Interactive timeline of work history\n- **Projects**: Showcase of deployed and featured work\n- **Skills**: Game-style visualization and GitHub analytics\n- **Blog**: Technical articles and insights\n- **Contact**: Direct communication form\n\n## Technical Stack\n\n- Next.js 15 with App Router\n- React 18 with TypeScript\n- Tailwind CSS for styling\n- Three.js for 3D graphics\n- Framer Motion for animations\n- Vercel deployment platform"
     }
   ],
   "blogs": [
@@ -122,20 +122,27 @@
       "id": 7,
       "title": "Imagine Life as a Website: If Existence Ran on HTTP Requests",
       "category": "Tech",
-      "preview": "Ever wondered what life would be like if it were structured like a **modern web application**? 🌐",
-      "image": "/home1.jpg",
-      "video": "/videos/blog-demo-1.mp4",
-      "content": "Imagine our world is like a **massive website**, loaded with HTTP requests, API calls, and conditional statements.\n\nEach one of us is like a unique **URL endpoint**. Life's \"server\" sends requests, handles responses, and sometimes… well, sometimes you just get a `404 error`. 😆\n\n### Here's a deep dive into life if it were structured like a modern web application:\n\n**Birth?** That's like the \"sign-up\" page—where we hit **Submit** (or, maybe someone else did?), and suddenly, here we are! We get our `user ID` (a.k.a. name) and begin our session.\n\n- 🎯 Every decision is a conditional: `if (hungry) { eat(); }`\n- ⏰ Sleep is like clearing the cache\n- 💭 Memories are stored in our personal database\n- 🔄 Routines are recurring API calls",
+      "preview": "Ever wondered what life would be like if it were structured like a **modern web application**?",
+      "image": "/blog/1.jpg",
+      "content": "Imagine our world is like a **massive website**, loaded with HTTP requests, API calls, and conditional statements.\n\nEach one of us is like a unique **URL endpoint**. Life's \"server\" sends requests, handles responses, and sometimes… well, sometimes you just get a `404 error`.\n\n### Here's a deep dive into life if it were structured like a modern web application:\n\n**Birth?** That's like the \"sign-up\" page—where we hit **Submit** (or, maybe someone else did?), and suddenly, here we are! We get our `user ID` (a.k.a. name) and begin our session.\n\n- Every decision is a conditional: `if (hungry) { eat(); }`\n- Sleep is like clearing the cache\n- Memories are stored in our personal database\n- Routines are recurring API calls",
+      "redirect": "blog"
+    },
+    {
+      "id": 11,
+      "title": "MCP Servers: The Future of AI Integration",
+      "category": "Tech",
+      "preview": "Discover how **Model Context Protocol (MCP) servers** are revolutionizing AI application architecture.",
+      "image": "/blog/3.jpg",
+      "content": "## What are MCP Servers?\n\nModel Context Protocol (MCP) servers represent a paradigm shift in how we architect AI-powered applications. They provide a standardized way to connect AI models with external tools, data sources, and services.\n\n## Use Cases\n\n**Research**: Explore multiple research directions simultaneously\n**Creative Writing**: Branch storylines and compare different narrative paths\n**Problem Solving**: Test various solution approaches in parallel\n**Learning**: Compare explanations from different AI perspectives\n\n## Technical Stack\n\n- Built with Next.js and React for optimal performance\n- TypeScript for type safety\n- Real-time AI model integration\n- Advanced state management for tree structures\n- Deployed on Vercel for global accessibility\n\n## Key Benefits\n\n1. **Modularity**: MCP servers enable clean separation between AI logic and application code\n2. **Reusability**: Share server implementations across multiple projects\n3. **Standardization**: Follow established protocols for AI integration\n4. **Scalability**: Easily add new capabilities without refactoring\n\n## Implementation\n\nCreating an MCP server involves defining tools, prompts, and resources that your AI can access:\n\n```typescript\nconst server = new MCPServer({\n  name: 'my-mcp-server',\n  version: '1.0.0',\n  tools: [\n    {\n      name: 'search',\n      description: 'Search the web',\n      execute: async (query) => {\n        // Implementation\n      }\n    }\n  ]\n});\n```\n\n## The Future\n\nMCP servers are becoming the standard for AI application development. As the ecosystem grows, we'll see:\n\n- **Better interoperability** between different AI models\n- **Rich marketplaces** of pre-built MCP servers\n- **Enhanced security** through standardized protocols\n- **Improved developer experience** with better tooling\n\nThe Model Context Protocol is not just a technical specification; it's a vision for the future of AI integration.",
       "redirect": "blog"
     },
     {
       "id": 12,
       "title": "Future of AI in Software Development",
       "category": "Tech", 
-      "preview": "Exploring how **artificial intelligence** is reshaping the way we build software applications. 🤖",
-      "image": "/home2.jpg",
-      "video": "/videos/blog-demo-2.mp4",
-      "content": "As **AI continues to evolve**, its impact on software development becomes more profound.\n\n### Key Transformations:\n- 🤖 **Automated code generation** for faster development\n- 🐛 **Intelligent debugging** that finds issues before you do\n- 🧠 **Smart code suggestions** and auto-completion\n- 📊 **Predictive analytics** for project planning\n\nThis post explores the *cutting-edge tools* and methodologies that are emerging in the AI-powered development landscape.\n\n> The future of development is collaborative—humans and AI working together to build better software, faster.",
+      "preview": "Exploring how **artificial intelligence** is reshaping the way we build software applications.",
+      "image": "/blog/2.jpg",
+      "content": "As **AI continues to evolve**, its impact on software development becomes more profound.\n\n### Key Transformations:\n\n- **Automated code generation** for faster development\n- **Intelligent debugging** that finds issues before you do\n- **Smart code suggestions** and auto-completion\n- **Predictive analytics** for project planning\n\nThis post explores the *cutting-edge tools* and methodologies that are emerging in the AI-powered development landscape.\n\n> The future of development is collaborative—humans and AI working together to build better software, faster.",
       "redirect": "blog"
     }
   ]

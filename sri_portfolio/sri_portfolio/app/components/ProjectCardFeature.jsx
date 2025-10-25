@@ -39,9 +39,7 @@ export const ProjectCardFeature = ({ project, onClick }) => {
 
   return (
     <>
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+      <div
         onClick={handleCardClick}
         className="relative h-full rounded-lg overflow-hidden cursor-pointer group"
       >
@@ -49,15 +47,23 @@ export const ProjectCardFeature = ({ project, onClick }) => {
         <div className="relative h-[70%] rounded-t-lg overflow-hidden">
           {/* Show iframe if available */}
           {project?.iframe && (
-            <iframe
-              src={project.iframe}
-              className="w-full h-full object-cover pointer-events-none"
-              title={`${project.title} Preview`}
-              sandbox="allow-scripts allow-same-origin"
-              loading="lazy"
-              scrolling="no"
-              style={{ overflow: 'hidden' }}
-            />
+            <div className="w-full h-full overflow-hidden">
+              <iframe
+                src={project.iframe}
+                className="pointer-events-none origin-top-left"
+                title={`${project.title} Preview`}
+                sandbox="allow-scripts allow-same-origin"
+                loading="lazy"
+                scrolling="no"
+                style={{ 
+                  overflow: 'hidden',
+                  width: '300%',
+                  height: '300%',
+                  transform: 'scale(0.33)',
+                  transformOrigin: 'top left'
+                }}
+              />
+            </div>
           )}
           {/* Fallback to video if no iframe */}
           {!project?.iframe && project?.video && (
@@ -135,7 +141,7 @@ export const ProjectCardFeature = ({ project, onClick }) => {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Project Modal */}
       <AnimatePresence>
@@ -223,16 +229,24 @@ const ProjectModal = ({ project, onClose }) => {
           <div className="w-full h-[45vh] bg-black rounded-t-2xl overflow-hidden flex-shrink-0">
             {/* Priority 1: iframe if available */}
             {project?.iframe ? (
-              <iframe
-                src={project.iframe}
-                className="w-full h-full border-0"
-                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                sandbox="allow-scripts allow-same-origin allow-popups"
-                allowFullScreen
-                title={`${project.title} Live Preview`}
-                scrolling="no"
-                style={{ overflow: 'hidden' }}
-              />
+              <div className="w-full h-full overflow-hidden">
+                <iframe
+                  src={project.iframe}
+                  className="border-0"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  allowFullScreen
+                  title={`${project.title} Live Preview`}
+                  scrolling="no"
+                  style={{ 
+                    overflow: 'hidden',
+                    width: '200%',
+                    height: '200%',
+                    transform: 'scale(0.5)',
+                    transformOrigin: 'top left'
+                  }}
+                />
+              </div>
             ) : project?.youtube ? (
               <iframe
                 src={`https://www.youtube.com/embed/${project.youtube}?autoplay=1&mute=1&loop=1&playlist=${project.youtube}&controls=1&rel=0&modestbranding=1`}
@@ -332,9 +346,10 @@ const ProjectModal = ({ project, onClose }) => {
                 {project?.detailedContent && (
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-4">Project Details</h3>
-                    <div className="text-sm leading-relaxed max-w-none text-white/80 whitespace-pre-wrap">
-                      {project.detailedContent}
-                    </div>
+                    <div 
+                      className="markdown-content text-sm leading-relaxed max-w-none text-white/80"
+                      dangerouslySetInnerHTML={renderMarkdown(project.detailedContent)}
+                    />
                   </div>
                 )}
 

@@ -42,7 +42,7 @@ export const BentoGridItem = memo(({
     <div
       onClick={onClick}
       className={cn(
-        "group/bento relative row-span-1 flex flex-col justify-between overflow-hidden rounded-xl border border-white/10 transition-colors duration-200 shadow-md shadow-black/20 cursor-pointer p-4 hover:shadow-lg hover:border-white/20",
+        "group/bento relative row-span-1 flex flex-col justify-between overflow-hidden rounded-xl border-2 border-white/10 transition-all duration-200 shadow-md shadow-black/20 cursor-pointer p-4 hover:shadow-lg hover:border-white",
         className
       )}
       style={{

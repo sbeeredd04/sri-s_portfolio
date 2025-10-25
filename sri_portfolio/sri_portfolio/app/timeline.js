@@ -138,7 +138,7 @@ export function TimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/experience-screenshot-1.png"
+                  src="/experiences/experience-screenshot-1.png"
                   alt="Mesa Historical Museum EPICS"
                   width={800}
                   height={600}
@@ -181,7 +181,7 @@ export function TimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/experience-screenshot-2.jpeg"
+                  src="/experiences/experience-screenshot-2.jpeg"
                   alt="ASU Biodesign Institute ML Intern"
                   width={800}
                   height={400}

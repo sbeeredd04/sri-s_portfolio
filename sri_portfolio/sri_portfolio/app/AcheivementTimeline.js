@@ -39,7 +39,7 @@ export function AchievementTimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ac (1).webp"
+                  src="/achievements/ac (1).webp"
                   alt="Learning Java"
                   width={1200}
                   height={800}
@@ -76,7 +76,7 @@ export function AchievementTimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ac (2).webp"
+                  src="/achievements/ac (2).webp"
                   alt="Hackathon Victory"
                   width={1200}
                   height={800}
@@ -114,7 +114,7 @@ export function AchievementTimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ac (3).webp"
+                  src="/achievements/ac (3).webp"
                   alt="Machine Learning Journey"
                   width={1200}
                   height={800}
@@ -152,7 +152,7 @@ export function AchievementTimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ac (4).webp"
+                  src="/achievements/ac (4).webp"
                   alt="Software Engineering Growth"
                   width={1200}
                   height={800}

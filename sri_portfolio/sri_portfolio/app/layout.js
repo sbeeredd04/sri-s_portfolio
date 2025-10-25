@@ -25,7 +25,7 @@ export const metadata = {
     siteName: 'Sri Ujjwal Reddy',
     images: [
       {
-        url: 'https://www.sriujjwalreddy.com/logo.png', // Update this path to your logo
+        url: 'https://www.sriujjwalreddy.com/logos/logo.png',
         width: 1200,
         height: 1200,
         alt: 'Sri Ujjwal Reddy Logo',
@@ -35,19 +35,19 @@ export const metadata = {
     type: 'website',
   },
   icons: {
-    icon: '/logo.png', // Your favicon
-    shortcut: '/logo.png',
-    apple: '/logo.png',
+    icon: '/logos/logo.png',
+    shortcut: '/logos/logo.png',
+    apple: '/logos/logo.png',
     other: {
       rel: 'apple-touch-icon',
-      url: '/logo.png',
+      url: '/logos/logo.png',
     },
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Sri Ujjwal Reddy',
     description: 'Software Engineer | ML Engineer | Full Stack Developer',
-    images: ['https://www.sriujjwalreddy.com/logo.png'], // Update this path
+    images: ['https://www.sriujjwalreddy.com/logos/logo.png'],
   },
 };
 
@@ -62,7 +62,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="icon" type="image/png" href="/logos/logo.png" />
       </head>
       <body>
         <SoundProvider>
