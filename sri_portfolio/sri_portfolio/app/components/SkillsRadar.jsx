@@ -17,13 +17,20 @@ export const SkillsRadar = ({ skills = comprehensiveSkillsData, size = 400, clas
   const canvasRef = useRef(null);
   const [hoveredSkill, setHoveredSkill] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [dpr, setDpr] = useState(1);
   const maxValue = 100;
+  
+  // Get device pixel ratio on client-side only
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setDpr(window.devicePixelRatio || 1);
+    }
+  }, []);
   
   useEffect(() => {
     if (!canvasRef.current || !skills || skills.length === 0) return;
     
     const canvas = canvasRef.current;
-    const dpr = window.devicePixelRatio || 1;
     canvas.width = size * dpr;
     canvas.height = size * dpr;
     canvas.style.width = `${size}px`;
@@ -155,7 +162,7 @@ export const SkillsRadar = ({ skills = comprehensiveSkillsData, size = 400, clas
       }
       ctx.fillText(skills[i].name, x, y);
     }
-  }, [skills, size, hoveredSkill]);
+  }, [skills, size, hoveredSkill, dpr]);
   
   const handleMouseMove = (e) => {
     if (!canvasRef.current) return;

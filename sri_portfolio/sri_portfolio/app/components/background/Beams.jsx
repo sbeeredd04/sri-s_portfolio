@@ -262,8 +262,9 @@ import {
   
     for (let i = 0; i < n; i++) {
       const xOffset = xOffsetBase + i * (width + spacing);
-      const uvXOffset = Math.random() * 300;
-      const uvYOffset = Math.random() * 300;
+      // Use index-based stable pseudo-random values instead of Math.random()
+      const uvXOffset = ((i * 37) % 300);
+      const uvYOffset = ((i * 73) % 300);
   
       for (let j = 0; j <= heightSegments; j++) {
         const y = height * (j / heightSegments - 0.5);
