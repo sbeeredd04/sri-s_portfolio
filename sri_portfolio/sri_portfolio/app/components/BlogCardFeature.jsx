@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { IconPlayerPlay, IconArrowRight } from "@tabler/icons-react";
+import { renderMarkdown } from "../utils/markdown";
 
 export const BlogCardFeature = ({ blog, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -28,14 +29,15 @@ export const BlogCardFeature = ({ blog, onClick }) => {
     }
   }, [isHovered, blog?.video]);
 
-  // Extract first 2 sentences from content
-  const getFirstTwoSentences = (content) => {
-    if (!content) return blog?.preview || 'No preview available';
-    const sentences = content.match(/[^\.!?]+[\.!?]+/g);
+  // Use preview if available, otherwise extract from content
+  const getPreview = () => {
+    if (blog?.preview) return blog.preview;
+    if (!blog?.content) return 'No preview available';
+    const sentences = blog.content.match(/[^\.!?]+[\.!?]+/g);
     if (sentences && sentences.length >= 2) {
       return sentences.slice(0, 2).join(' ');
     }
-    return blog?.preview || 'No preview available';
+    return blog.content.substring(0, 150) + '...';
   };
 
   return (
@@ -96,9 +98,10 @@ export const BlogCardFeature = ({ blog, onClick }) => {
           {/* Content - Center (Flex Grow) */}
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <p className="text-white/90 text-sm leading-relaxed line-clamp-4 max-w-md">
-                {getFirstTwoSentences(blog?.content)}
-              </p>
+              <div 
+                className="text-white/90 text-sm leading-relaxed line-clamp-4 max-w-md"
+                dangerouslySetInnerHTML={renderMarkdown(getPreview())}
+              />
             </div>
           </div>
 

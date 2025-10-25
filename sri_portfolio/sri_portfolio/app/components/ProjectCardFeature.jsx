@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { IconBrandGithub, IconLink, IconBrandYoutube, IconX, IconExternalLink } from "@tabler/icons-react";
+import { renderMarkdown } from "../utils/markdown";
 
 export const ProjectCardFeature = ({ project, onClick }) => {
   const [showModal, setShowModal] = useState(false);
@@ -320,9 +321,10 @@ const ProjectModal = ({ project, onClose }) => {
                 {project?.description && (
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-3">Description</h3>
-                    <p className="text-white/80 text-sm leading-relaxed">
-                      {project.description}
-                    </p>
+                    <div 
+                      className="text-white/80 text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={renderMarkdown(project.description)}
+                    />
                   </div>
                 )}
 
