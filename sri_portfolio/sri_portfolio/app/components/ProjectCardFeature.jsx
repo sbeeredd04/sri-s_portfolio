@@ -223,8 +223,8 @@ const ProjectModal = ({ project, onClose }) => {
               <iframe
                 src={project.iframe}
                 className="w-full h-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                sandbox="allow-scripts allow-same-origin allow-popups"
                 allowFullScreen
                 title={`${project.title} Live Preview`}
               />

@@ -88,11 +88,17 @@ Replaced all placeholder videos with live iframe previews:
 - **Implementation:** Self-referential live demo iframe
 
 ### Security Implementation
-All iframes include proper security attributes:
+Iframes include security attributes tailored to each use case:
 ```javascript
-sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+// For GitHub repos and marketplaces (read-only)
+sandbox="allow-scripts allow-same-origin"
+
+// For live demos requiring interaction
+sandbox="allow-scripts allow-same-origin allow-popups"
 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 ```
+
+**Note:** Permissions are minimized based on functionality requirements. `allow-popups` is only used for live demos that may open external links.
 
 ### Code Changes
 - **Modified:** `app/json/features.json` - Updated all 6 project entries
@@ -353,12 +359,14 @@ Created two comprehensive documents:
 5. Confirm responsive design
 6. Check analytics
 
-### Post-Deployment
-- [ ] Verify all project iframes load
-- [ ] Test navigation flows
-- [ ] Check mobile responsiveness
-- [ ] Verify scroll behavior
-- [ ] Monitor performance metrics
+### Post-Deployment Validation
+
+These items should be verified after deployment to production:
+- Verify all project iframes load correctly
+- Test navigation flows across all sections
+- Check mobile responsiveness on multiple devices
+- Verify scroll behavior in Experience/Achievements
+- Monitor performance metrics and Core Web Vitals
 
 ---
 
@@ -404,5 +412,4 @@ For questions or issues:
 ---
 
 *Report Generated: October 25, 2024*  
-*Agent: GitHub Copilot*  
 *Project Version: 0.1.0*
