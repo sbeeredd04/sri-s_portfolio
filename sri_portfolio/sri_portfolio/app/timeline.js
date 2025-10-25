@@ -4,7 +4,7 @@ import { TracingBeam } from './components/tracing-beam';
 
 export function TimelineDemo({ theme }) {
   return (
-    <div className="w-full h-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+    <div className="w-full h-auto min-h-full pb-20" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
       <style jsx>{`
         div::-webkit-scrollbar {
           display: none;
@@ -16,7 +16,7 @@ export function TimelineDemo({ theme }) {
       </div>
       
       <TracingBeam className="px-2">
-        <div className="w-full mx-auto antialiased pt-4 relative">
+        <div className="w-full mx-auto antialiased pt-4 relative pb-20">{/* Added pb-20 for bottom spacing */}
           {/* Experience 1 - Geometric Media Lab */}
           <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">

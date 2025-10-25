@@ -1021,7 +1021,7 @@ export default function Home() {
                 )}
 
                 {activeSection === "experience" && (
-                  <section className="w-full h-full">
+                  <section className="w-full h-full overflow-y-auto">
                     <div className="w-full h-full overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
@@ -1030,7 +1030,7 @@ export default function Home() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="w-full h-full"
+                          className="w-full min-h-full"
                         >
                           {activeTab === "experience" ? (
                             <TimelineDemo theme="experience" />
