@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -985,6 +987,7 @@ export default function Loader({ onComplete, onResourcesReady }) {
   const [targetProgress, setTargetProgress] = useState(0); // NEW: Target progress for smooth animation
   const [showContent, setShowContent] = useState(false);
   const [showStartButton, setShowStartButton] = useState(false);
+  const [currentTime, setCurrentTime] = useState('--:--:--'); // State for current time to avoid hydration mismatch
   const [textAnimationsComplete, setTextAnimationsComplete] = useState({
     localTime: false,
     portfolio: false,
@@ -1008,6 +1011,12 @@ export default function Loader({ onComplete, onResourcesReady }) {
   const resourceManagerRef = useRef(null);
   const hasInitializedRef = useRef(false); // Prevent duplicate initialization
   const progressAnimationRef = useRef(null); // For smooth progress animation
+
+  // ── Update current time on client-side only to avoid hydration mismatch ──
+  useEffect(() => {
+    // Set initial time on mount
+    setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+  }, []);
 
   // ── Smooth Progress Animation System ──
   const MAX_PROGRESS_SPEED = 1.5; // Smooth constant speed progression
@@ -1237,7 +1246,7 @@ export default function Loader({ onComplete, onResourcesReady }) {
             />
             
             <DecryptedText
-              text={`Local time: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
+              text={`Local time: ${currentTime}`}
               speed={35}
               maxIterations={12}
               sequential={true}
