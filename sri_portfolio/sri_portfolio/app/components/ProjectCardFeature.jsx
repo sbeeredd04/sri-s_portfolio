@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { IconBrandGithub, IconLink, IconBrandYoutube, IconX, IconExternalLink } from "@tabler/icons-react";
-import { MarkdownRenderer, hasMarkdown } from "./MarkdownRenderer";
+import { renderMarkdown } from "../utils/markdown";
 
 export const ProjectCardFeature = ({ project, onClick }) => {
   const [showModal, setShowModal] = useState(false);
@@ -39,15 +39,34 @@ export const ProjectCardFeature = ({ project, onClick }) => {
 
   return (
     <>
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+      <div
         onClick={handleCardClick}
         className="relative h-full rounded-lg overflow-hidden cursor-pointer group"
       >
-        {/* Video Section - Top 60% */}
+        {/* Preview Section - Top 70% */}
         <div className="relative h-[70%] rounded-t-lg overflow-hidden">
-          {project?.video && (
+          {/* Show iframe if available and not empty */}
+          {project?.iframe && project.iframe.trim() !== "" && (
+            <div className="w-full h-full overflow-hidden">
+              <iframe
+                src={project.iframe}
+                className="origin-top-left"
+                title={`${project.title} Preview`}
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                loading="lazy"
+                style={{ 
+                  overflow: 'auto',
+                  width: '300%',
+                  height: '300%',
+                  transform: 'scale(0.33)',
+                  transformOrigin: 'top left',
+                  pointerEvents: 'none'
+                }}
+              />
+            </div>
+          )}
+          {/* Fallback to video if no iframe */}
+          {(!project?.iframe || project.iframe.trim() === "") && project?.video && (
             <video
               ref={videoRef}
               src={project.video}
@@ -58,25 +77,36 @@ export const ProjectCardFeature = ({ project, onClick }) => {
               autoPlay
             />
           )}
-          {!project?.video && (
+          {/* Fallback to image if no iframe or video */}
+          {(!project?.iframe || project.iframe.trim() === "") && !project?.video && project?.image && (
+            <div className="w-full h-full overflow-hidden">
+              <img
+                src={project.image}
+                alt={project.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          {/* Final fallback to gradient if nothing else */}
+          {(!project?.iframe || project.iframe.trim() === "") && !project?.video && !project?.image && (
             <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-              <span className="text-white/60 text-sm">No Video</span>
+              <span className="text-white/60 text-sm">No Preview</span>
             </div>
           )}
         </div>
 
         {/* Content Section - Bottom 40% */}
-        <div className="h-[30%] p-3 bg-black/60 backdrop-blur-sm border-t border-white/10">
+        <div className="h-[30%] p-2 md:p-3 bg-black/60 backdrop-blur-sm border-t border-white/10">
           <div className="h-full flex flex-col justify-between">
             {/* Technologies */}
-            <div className="flex flex-wrap gap-1 mb-1">
+            <div className="flex flex-wrap gap-0.5 md:gap-1 mb-0.5 md:mb-1">
               {project?.technologies?.slice(0, 2).map((tech, i) => (
-                <span key={i} className="text-[10px] px-1.5 py-0.5 bg-white/20 rounded-full text-white">
+                <span key={i} className="text-[8px] md:text-[10px] px-1 md:px-1.5 py-0.5 bg-white/20 rounded-full text-white">
                   {tech}
                 </span>
               ))}
               {project?.technologies?.length > 2 && (
-                <span className="text-[10px] px-1.5 py-0.5 bg-white/20 rounded-full text-white">
+                <span className="text-[8px] md:text-[10px] px-1 md:px-1.5 py-0.5 bg-white/20 rounded-full text-white">
                   +{project.technologies.length - 2}
                 </span>
               )}
@@ -84,44 +114,44 @@ export const ProjectCardFeature = ({ project, onClick }) => {
             
             {/* Title and Description */}
             <div className="flex-1">
-              <h3 className="text-white font-semibold text-sm mb-1 line-clamp-1">
+              <h3 className="text-white font-semibold text-xs md:text-sm mb-0.5 md:mb-1 line-clamp-1">
                 {project?.title || 'Untitled Project'}
               </h3>
-              <p className="text-white/80 text-xs line-clamp-2">
+              <p className="text-white/80 text-[10px] md:text-xs line-clamp-2">
                 {shortDescription}
               </p>
             </div>
             
             {/* Action Buttons */}
-            <div className="flex gap-1 mt-2">
+            <div className="flex gap-0.5 md:gap-1 mt-1 md:mt-2">
               {project?.github && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); window.open(project.github, '_blank'); }}
-                  className="p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
+                  className="p-1 md:p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
                 >
-                  <IconBrandGithub size={12} className="text-white" />
+                  <IconBrandGithub size={10} className="text-white md:w-3 md:h-3" />
                 </button>
               )}
               {project?.href && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); window.open(project.href, '_blank'); }}
-                  className="p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
+                  className="p-1 md:p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
                 >
-                  <IconLink size={12} className="text-white" />
+                  <IconLink size={10} className="text-white md:w-3 md:h-3" />
                 </button>
               )}
               {project?.youtube && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); window.open(`https://www.youtube.com/watch?v=${project.youtube}`, '_blank'); }}
-                  className="p-1.5 bg-red-500/20 backdrop-blur-sm rounded hover:bg-red-500/30 transition-colors"
+                  className="p-1 md:p-1.5 bg-red-500/20 backdrop-blur-sm rounded hover:bg-red-500/30 transition-colors"
                 >
-                  <IconBrandYoutube size={12} className="text-white" />
+                  <IconBrandYoutube size={10} className="text-white md:w-3 md:h-3" />
                 </button>
               )}
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Project Modal */}
       <AnimatePresence>
@@ -205,9 +235,25 @@ const ProjectModal = ({ project, onClose }) => {
         </button>
 
         <div className="flex flex-col h-full">
-          {/* Video Section - Full width at top */}
+          {/* Preview Section - Full width at top */}
           <div className="w-full h-[45vh] bg-black rounded-t-2xl overflow-hidden flex-shrink-0">
-            {project?.youtube ? (
+            {/* Priority 1: iframe if available and not empty */}
+            {project?.iframe && project.iframe.trim() !== "" ? (
+              <div className="w-full h-full overflow-auto">
+                <iframe
+                  src={project.iframe}
+                  className="border-0 w-full h-full"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-modals"
+                  allowFullScreen
+                  title={`${project.title} Live Preview`}
+                  style={{ 
+                    minHeight: '100%',
+                    minWidth: '100%'
+                  }}
+                />
+              </div>
+            ) : project?.youtube ? (
               <iframe
                 src={`https://www.youtube.com/embed/${project.youtube}?autoplay=1&mute=1&loop=1&playlist=${project.youtube}&controls=1&rel=0&modestbranding=1`}
                 className="w-full h-full border-0"
@@ -227,13 +273,21 @@ const ProjectModal = ({ project, onClose }) => {
                 playsInline
                 preload="metadata"
               />
+            ) : project?.image ? (
+              <div className="w-full h-full overflow-hidden">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-white/10">
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
                     <IconBrandYoutube size={32} className="text-white/60" />
                   </div>
-                  <span className="text-white/60 text-sm">No video available</span>
+                  <span className="text-white/60 text-sm">No preview available</span>
                 </div>
               </div>
             )}
@@ -295,19 +349,21 @@ const ProjectModal = ({ project, onClose }) => {
                 {project?.description && (
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-3">Description</h3>
-                    <p className="text-white/80 text-sm leading-relaxed">
-                      {project.description}
-                    </p>
+                    <div 
+                      className="text-white/80 text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={renderMarkdown(project.description)}
+                    />
                   </div>
                 )}
 
-                {/* Detailed Content (Enhanced Markdown Support) */}
+                {/* Detailed Content */}
                 {project?.detailedContent && (
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-4">Project Details</h3>
-                    <div className="text-sm leading-relaxed max-w-none">
-                      <MarkdownRenderer content={project.detailedContent} />
-                    </div>
+                    <div 
+                      className="markdown-content text-sm leading-relaxed max-w-none text-white/80"
+                      dangerouslySetInnerHTML={renderMarkdown(project.detailedContent)}
+                    />
                   </div>
                 )}
 

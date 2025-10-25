@@ -6,19 +6,14 @@ import { TracingBeam } from "./components/tracing-beam";
 
 export function AchievementTimelineDemo({ theme }) {
   return (
-    <div className="w-full h-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-      <style jsx>{`
-        div::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
+    <div className="w-full h-full pb-20">
       <div className="text-center mb-8 pt-4">
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Key Achievements</h1>
         <p className="text-white/60 text-sm md:text-base">Milestones in my programming and development journey</p>
       </div>
       
       <TracingBeam className="px-2">
-        <div className="w-full mx-auto antialiased pt-4 relative">
+        <div className="w-full mx-auto antialiased pt-4 relative pb-20">{/* Added pb-20 for bottom spacing */}
           {/* Achievement 1 - Programming Foundation */}
           <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
@@ -44,7 +39,7 @@ export function AchievementTimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ac (1).webp"
+                  src="/achievements/ac (1).webp"
                   alt="Learning Java"
                   width={1200}
                   height={800}
@@ -81,7 +76,7 @@ export function AchievementTimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ac (2).webp"
+                  src="/achievements/ac (2).webp"
                   alt="Hackathon Victory"
                   width={1200}
                   height={800}
@@ -119,7 +114,7 @@ export function AchievementTimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ac (3).webp"
+                  src="/achievements/ac (3).webp"
                   alt="Machine Learning Journey"
                   width={1200}
                   height={800}
@@ -157,7 +152,7 @@ export function AchievementTimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ac (4).webp"
+                  src="/achievements/ac (4).webp"
                   alt="Software Engineering Growth"
                   width={1200}
                   height={800}

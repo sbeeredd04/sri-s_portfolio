@@ -1320,7 +1320,7 @@ export default function Loader({ onComplete, onResourcesReady }) {
           initial={{ opacity: 0, x: 60, y: -20 }}
           animate={{ opacity: showContent ? 1 : 0, x: showContent ? 0 : 60, y: showContent ? 0 : -20 }}
           transition={{ duration: 1.1, delay: 0.6, ease: "easeOut" }}
-          className="absolute right-8 top-1/2 md:right-12 -translate-y-1/2 text-right flex flex-col gap-3 group cursor-default"
+          className="absolute right-4 top-8 md:right-12 md:top-1/2 md:-translate-y-1/2 text-right flex flex-col gap-3 group cursor-default"
           style={{
             filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
             transform: 'translateZ(0)'

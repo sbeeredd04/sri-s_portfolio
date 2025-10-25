@@ -4,19 +4,14 @@ import { TracingBeam } from './components/tracing-beam';
 
 export function TimelineDemo({ theme }) {
   return (
-    <div className="w-full h-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-      <style jsx>{`
-        div::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
+    <div className="w-full h-full pb-20">
       <div className="text-center mb-8 pt-4">
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Professional Experience</h1>
         <p className="text-white/60 text-sm md:text-base">My journey in software engineering and machine learning</p>
       </div>
       
       <TracingBeam className="px-2">
-        <div className="w-full mx-auto antialiased pt-4 relative">
+        <div className="w-full mx-auto antialiased pt-4 relative pb-20">{/* Added pb-20 for bottom spacing */}
           {/* Experience 1 - Geometric Media Lab */}
           <div className="mb-32">
             <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
@@ -143,7 +138,7 @@ export function TimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ex(1).png"
+                  src="/experiences/experience-screenshot-1.png"
                   alt="Mesa Historical Museum EPICS"
                   width={800}
                   height={600}
@@ -186,7 +181,7 @@ export function TimelineDemo({ theme }) {
               </div>
               <div className="order-1 lg:order-2 w-full">
                 <Image
-                  src="/ex(2).jpeg"
+                  src="/experiences/experience-screenshot-2.jpeg"
                   alt="ASU Biodesign Institute ML Intern"
                   width={800}
                   height={400}

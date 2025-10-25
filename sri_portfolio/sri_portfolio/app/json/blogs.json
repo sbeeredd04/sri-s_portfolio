@@ -4,9 +4,8 @@
     "title": "Imagine Life as a Website: If Existence Ran on HTTP Requests",
     "category": "Tech",
     "preview": "Ever wondered what life would be like if it were structured like a modern web application?",
-    "image": "/home1.jpg",
-    "video": "/videos/blog-demo-1.mp4",
-    "content": "Imagine our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements. Each one of us is like a unique URL endpoint. Life's \"server\" sends requests, handles responses, and sometimes… well, sometimes you just get a 404 error. 😆 Here's a deep dive into life if it were structured like a modern web application: Birth? That's like the \"sign-up\" page—where we hit \"Submit\" (or, maybe someone else did?), and suddenly, here we are! We get our user ID (a.k.a. name) and begin our session.",
+    "image": "/blog/1.jpg",
+    "content": "Imagine our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements. Each one of us is like a unique URL endpoint. Life's \"server\" sends requests, handles responses, and sometimes… well, sometimes you just get a 404 error. Here's a deep dive into life if it were structured like a modern web application: Birth? That's like the \"sign-up\" page—where we hit \"Submit\" (or, maybe someone else did?), and suddenly, here we are! We get our user ID (a.k.a. name) and begin our session.",
     "redirect": "blog"
   },
   {
@@ -14,9 +13,26 @@
     "title": "Future of AI in Software Development",
     "category": "Tech", 
     "preview": "Exploring how artificial intelligence is reshaping the way we build software applications.",
-    "image": "/home2.jpg",
-    "video": "/videos/blog-demo-2.mp4",
+    "image": "/blog/2.jpg",
     "content": "As AI continues to evolve, its impact on software development becomes more profound. From automated code generation to intelligent debugging, AI is transforming how developers work and think about problem-solving. This post explores the cutting-edge tools and methodologies that are emerging in the AI-powered development landscape.",
     "redirect": "blog"
+  },
+  {
+    "id": 3,
+    "title": "MCP Servers: The Future of AI Integration",
+    "category": "Tech",
+    "preview": "Discover how Model Context Protocol servers are revolutionizing AI application architecture.",
+    "image": "/blog/3.jpg",
+    "content": "## What are MCP Servers?\n\nModel Context Protocol (MCP) servers represent a paradigm shift in how we architect AI-powered applications. They provide a standardized way to connect AI models with external tools, data sources, and services.\n\n## Use Cases\n\n**Research**: Explore multiple research directions simultaneously\n**Creative Writing**: Branch storylines and compare different narrative paths\n**Problem Solving**: Test various solution approaches in parallel\n**Learning**: Compare explanations from different AI perspectives\n\n## Technical Stack\n\n- Built with Next.js and React for optimal performance\n- TypeScript for type safety\n- Real-time AI model integration\n- Advanced state management for tree structures\n- Deployed on Vercel for global accessibility\n\n## Key Benefits\n\n1. **Modularity**: MCP servers enable clean separation between AI logic and application code\n2. **Reusability**: Share server implementations across multiple projects\n3. **Standardization**: Follow established protocols for AI integration\n4. **Scalability**: Easily add new capabilities without refactoring\n\n## Implementation\n\nCreating an MCP server involves defining tools, prompts, and resources that your AI can access:\n\n```typescript\nconst server = new MCPServer({\n  name: 'my-mcp-server',\n  version: '1.0.0',\n  tools: [\n    {\n      name: 'search',\n      description: 'Search the web',\n      execute: async (query) => {\n        // Implementation\n      }\n    }\n  ]\n});\n```\n\n## The Future\n\nMCP servers are becoming the standard for AI application development. As the ecosystem grows, we'll see:\n\n- **Better interoperability** between different AI models\n- **Rich marketplaces** of pre-built MCP servers\n- **Enhanced security** through standardized protocols\n- **Improved developer experience** with better tooling\n\nThe Model Context Protocol is not just a technical specification—it's a movement towards making AI more accessible, reliable, and powerful for developers worldwide.",
+    "redirect": "blog"
+  }, 
+  {
+    "id": 4,
+    "title": "How I Power Up My Day: Using Stoic, Endel & Notion for Simple, Awesome Productivity",
+    "category": "Lifestyle / Productivity",
+    "preview": "Discover my favorite way to stay organized and motivated: a simple workflow with Stoic, Endel, Notion and SyncTasks.",
+    "image": "/blog/4.jpg",
+    "content": "**How I Power Up My Day: Using Stoic, Endel & Notion for Simple, Awesome Productivity**\n\nHey friends!\n\nToday, I wanted to share something that’s been genuinely making my days better. If you love tech, wellness, and getting stuff done—this little trio might be what you’ve been looking for: Stoic, Endel, Notion (plus a super simple app called SyncTasks!).\n\n---\n\n### How I Use Stoic\n\nEvery morning, I open up **Stoic**. It’s a beautiful, calming app for journaling, planning your day, and thinking a bit about how to live well and feel good. I use Stoic for:\n\n- **Setting my intentions:** How do I want to feel today?\n- **Reflecting:** What went well yesterday? What should I improve?\n\nIt’s simple. After planning, I copy-paste my thoughts and goals into Notion so I can use those ideas for my task list.\n\n---\n\n### Notion Makes Life Organized (and Fun!)\n\nIf you love digital organization, **Notion** really shines. I use Notion AI to take what I wrote in Stoic and break it down:\n\n- To-do lists\n- Daily routines\n- Project ideas\n- Even tiny reminders (\"drink water!\")\n\nWhat’s cool is Notion keeps everything in one spot. My databases, my calendar, and all my tasks are easy to find. I don’t worry about losing notes anymore!\n\n---\n\n### Endel: The Soundtrack for Focus\n\nWhile I’m working or planning, I hit play on **Endel**. It’s an app that creates personalized background sound—so chill and perfect for focus. The sounds help me feel calm, less stressed, and ready to work. If you haven’t tried Endel yet, give it a go. It’s like a techy hug for your brain.\n\n---\n\n### SyncTasks: The Final Daily Check\n\nTo keep things extra simple, I use **SyncTasks**. When I finish each task from my Notion list, I just check it off in SyncTasks. There’s something so satisfying about seeing things DONE. And it syncs with my other stuff, which is handy.\n\n---\n\n### Why This Combo Works For Me\n\n- **Stoic** helps me start with intention and reflection\n- **Notion AI** organizes my ideas into actual plans, tasks, and calendars\n- **Endel** keeps me in a good headspace with relaxing sound\n- **SyncTasks** gives me quick victories and final checks\n\nI feel more organized, less stressed, and honestly, a little bit proud of how I’m managing life with these cool tools. If you’re looking for simple ways to be productive and happy, definitely try combining these apps. Let me know if you have any other favorites, I love swapping tips!\n\n---\n\nHere’s to happy, tech-powered days! 😊",
+    "redirect": "blog"
   }
-] 
+]

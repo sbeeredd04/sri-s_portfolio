@@ -29,7 +29,6 @@ import {
   IconDownload,
   IconSearch,
   IconLayoutSidebar,
-  IconMessageCircle,
   IconLink,
   IconShare2,
   IconEye, // Added IconEye
@@ -59,7 +58,6 @@ import { SpotifyPlayer } from "./components/SpotifyPlayer";
 import { useMusic } from "./components/MusicProvider";
 import { useSound } from "./components/SoundProvider";
 import { FirstVisitTutorial } from "./components/FirstVisitTutorial";
-import { ChatInterface } from "./components/ChatInterface";
 import { BentoGrid, BentoGridItem } from "./components/bento-grid";
 import { radarSkillsData, detailedSkillsData, gameStatsData, achievementsData } from "./json/skillsData";
 import GameSkillsView from "./components/GameSkillsView";
@@ -188,13 +186,6 @@ export default function Home() {
       onClick: () => navigateToSection("blog"), 
       href: "#",
       isActive: activeSection === "blog"
-    },
-    { 
-      title: "Chat", 
-      icon: <IconMessageCircle />, 
-      onClick: () => navigateToSection("chat"), 
-      href: "#",
-      isActive: activeSection === "chat"
     },
     { 
       title: "Contact", 
@@ -857,7 +848,7 @@ export default function Home() {
                               {/* Logo and Title */}
                               <div className="flex items-center gap-3 md:gap-6 md:col-span-3">
                                 <img 
-                                  src="/asulogo.png" 
+                                  src="/logos/asulogo.png" 
                                   alt="ASU Logo" 
                                   className="w-10 h-10 md:w-16 md:h-16 object-contain"
                                 />
@@ -1031,7 +1022,7 @@ export default function Home() {
 
                 {activeSection === "experience" && (
                   <section className="w-full h-full">
-                    <div className="w-full h-full overflow-hidden">
+                    <div className="w-full h-full overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
                           key={activeTab}
@@ -1039,7 +1030,7 @@ export default function Home() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="w-full h-full"
+                          className="w-full min-h-full"
                         >
                           {activeTab === "experience" ? (
                             <TimelineDemo theme="experience" />
@@ -1208,7 +1199,7 @@ export default function Home() {
                                 title: post.title,
                                 content: post.content,
                                 category: post.category,
-                                src: `/${index + 1}.jpg`, 
+                                src: post.image || `/blog/${index + 1}.jpg`, 
                               }}
                               className="max-w-[90%] mx-auto"
                             />
@@ -1217,12 +1208,6 @@ export default function Home() {
                         />
                       </div>
                     </div>
-                  </section>
-                )}
-
-                {activeSection === "chat" && (
-                  <section className="w-full h-full p-1 md:p-4">
-                    <ChatInterface />
                   </section>
                 )}
 
@@ -1453,17 +1438,6 @@ export default function Home() {
                   </button>
                   <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
                     Tutorials
-                  </button>
-                </>
-              )}
-
-              {activeSection === "chat" && (
-                <>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
-                    Chat
-                  </button>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
-                    Assistant
                   </button>
                 </>
               )}

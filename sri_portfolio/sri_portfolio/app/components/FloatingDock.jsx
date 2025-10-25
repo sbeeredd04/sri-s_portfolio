@@ -68,7 +68,7 @@ const DraggableMenuButton = ({ onClick, x, y, onDragEnd, dragBounds, initialPosi
     >
       {/* Inner circle: more opaque, smaller */}
       <div className="w-9 h-9 rounded-full bg-black/90 flex items-center justify-center shadow-md">
-        <Image src="/logo.png" alt="Menu" width={20} height={20} className="object-contain" /> 
+        <Image src="/logos/logo.png" alt="Menu" width={20} height={20} className="object-contain" /> 
       </div>
     </motion.button>
   );
@@ -338,7 +338,7 @@ const FloatingDockDesktop = ({ items, className, id }) => {
         {/* Logo Section */}
         <div className="w-12 h-12 flex items-center justify-center border-t border-white/10 pt-4 mt-2">
           <Image
-            src="/logo.png"
+            src="/logos/logo.png"
             alt="Logo"
             width={36}
             height={36}
