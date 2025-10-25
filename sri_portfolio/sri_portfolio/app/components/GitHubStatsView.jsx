@@ -3,26 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  IconTrophy, 
-  IconFlame, 
-  IconCode,
-  IconGitBranch,
-  IconStar,
-  IconCalendarStats,
   IconDeviceAnalytics,
-  IconTarget,
-  IconRocket,
-  IconBrain,
-  IconUsers,
-  IconPresentation,
-  IconHeart,
-  IconDatabase,
-  IconDeviceMobile,
-  IconAward,
-  IconChartBar,
-  IconGitCommit,
-  IconEye,
-  IconGitPullRequest
+  IconChartBar
 } from '@tabler/icons-react';
 
 // GitHub Stats Card Component with enhanced glass morphism
@@ -190,120 +172,6 @@ const StatDisplay = ({ icon, label, value, color = "blue", index = 0 }) => {
 export const GitHubStatsView = () => {
   const username = "sbeeredd04";
   const [contributionView, setContributionView] = useState("graph");
-
-  // GitHub achievements with consistent theme colors
-  const achievements = [
-    {
-      icon: <IconStar size={16} />,
-      name: "GitHub Superstar",
-      description: "Maintained active GitHub presence with consistent contributions",
-      unlocked: true,
-      color: "amber"
-    },
-    {
-      icon: <IconTrophy size={16} />,
-      name: "Full-Stack Virtuoso", 
-      description: "Mastered both frontend and backend technologies",
-      unlocked: true,
-      color: "emerald"
-    },
-    {
-      icon: <IconFlame size={16} />,
-      name: "Streak Master",
-      description: "Maintained impressive GitHub contribution streaks",
-      unlocked: true,
-      color: "rose"
-    },
-    {
-      icon: <IconBrain size={16} />,
-      name: "AI/ML Pioneer",
-      description: "Built advanced machine learning and AI projects",
-      unlocked: true,
-      color: "violet"
-    },
-    {
-      icon: <IconRocket size={16} />,
-      name: "Cloud Architect",
-      description: "Deployed applications across multiple cloud platforms",
-      unlocked: true,
-      color: "blue"
-    },
-    {
-      icon: <IconUsers size={16} />,
-      name: "Open Source Contributor",
-      description: "Actively contributed to open-source projects", 
-      unlocked: true,
-      color: "emerald"
-    },
-    {
-      icon: <IconPresentation size={16} />,
-      name: "Tech Communicator",
-      description: "Excellent at presenting technical concepts clearly",
-      unlocked: true,
-      color: "blue"
-    },
-    {
-      icon: <IconGitBranch size={16} />,
-      name: "Version Control Master",
-      description: "Expert in Git workflows and collaboration",
-      unlocked: true,
-      color: "amber"
-    },
-    {
-      icon: <IconCode size={16} />,
-      name: "Multi-Language Expert",
-      description: "Proficient in 8+ programming languages",
-      unlocked: true,
-      color: "violet"
-    },
-    {
-      icon: <IconTarget size={16} />,
-      name: "Problem Solver Elite",
-      description: "Consistently solves complex technical challenges",
-      unlocked: true,
-      color: "rose"
-    },
-    {
-      icon: <IconCalendarStats size={16} />,
-      name: "Productivity Champion",
-      description: "Maintains high development velocity and quality",
-      unlocked: true,
-      color: "emerald"
-    },
-    {
-      icon: <IconDatabase size={16} />,
-      name: "Data Architect",
-      description: "Advanced database design and optimization skills",
-      unlocked: false,
-      color: "blue"
-    },
-    {
-      icon: <IconDeviceMobile size={16} />,
-      name: "Mobile App Publisher",
-      description: "Published applications on mobile app stores",
-      unlocked: false,
-      color: "amber"
-    },
-    {
-      icon: <IconAward size={16} />,
-      name: "Hackathon Victor",
-      description: "Won multiple hackathons and coding competitions",
-      unlocked: false,
-      color: "violet"
-    },
-  ];
-
-  // Developer stats with theme colors
-  const devStats = [
-    { icon: <IconCode size={18} />, label: "Frontend", value: "92%", color: "amber" },
-    { icon: <IconDatabase size={18} />, label: "Backend", value: "88%", color: "emerald" },
-    { icon: <IconBrain size={18} />, label: "Data Science", value: "85%", color: "violet" },
-    { icon: <IconPresentation size={18} />, label: "Communication", value: "90%", color: "blue" },
-    { icon: <IconUsers size={18} />, label: "Leadership", value: "82%", color: "rose" },
-    { icon: <IconRocket size={18} />, label: "DevOps", value: "75%", color: "cyan" },
-    { icon: <IconHeart size={18} />, label: "Design", value: "80%", color: "rose" },
-    { icon: <IconTarget size={18} />, label: "Problem Solving", value: "95%", color: "emerald" },
-  ];
 
   return (
     <div className="w-full h-full p-4 md:p-6 lg:p-8 space-y-8 overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -534,76 +402,6 @@ export const GitHubStatsView = () => {
           </div>
         </div>
       </GitHubStatsCard>
-
-      {/* Quick Analytics - Horizontal Layout */}
-      <GitHubStatsCard title="Quick Analytics" delay={0.3}>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatDisplay 
-            icon={<IconGitCommit size={18} />}
-            label="Total Commits"
-            value="500+"
-            color="emerald"
-            index={0}
-          />
-          <StatDisplay 
-            icon={<IconGitPullRequest size={18} />}
-            label="Pull Requests"
-            value="150+"
-            color="blue"
-            index={1}
-          />
-          <StatDisplay 
-            icon={<IconEye size={18} />}
-            label="Profile Views"
-            value="2.5K+"
-            color="violet"
-            index={2}
-          />
-          <StatDisplay 
-            icon={<IconStar size={18} />}
-            label="Stars Earned"
-            value="50+"
-            color="amber"
-            index={3}
-          />
-        </div>
-      </GitHubStatsCard>
-
-      {/* Developer Skills & Achievements - Side by Side */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        {/* Developer Skills */}
-        <GitHubStatsCard title="Developer Skills & Stats" delay={0.4}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {devStats.map((stat, index) => (
-              <StatDisplay 
-                key={index}
-                icon={stat.icon}
-                label={stat.label}
-                value={stat.value}
-                color={stat.color}
-                index={index}
-              />
-            ))}
-          </div>
-        </GitHubStatsCard>
-
-        {/* Achievements */}
-        <GitHubStatsCard title="Developer Achievements" delay={0.5}>
-          <div className="space-y-3 max-h-[450px] overflow-y-auto pr-2 hide-scrollbar">
-            {achievements.map((achievement, index) => (
-              <AchievementItem 
-                key={index}
-                icon={achievement.icon}
-                name={achievement.name}
-                description={achievement.description}
-                unlocked={achievement.unlocked}
-                color={achievement.color}
-                index={index}
-              />
-            ))}
-          </div>
-        </GitHubStatsCard>
-      </div>
 
       {/* Bottom spacing */}
       <div className="h-8"></div>

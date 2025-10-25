@@ -54,6 +54,8 @@ export const ProjectCardFeature = ({ project, onClick }) => {
               title={`${project.title} Preview`}
               sandbox="allow-scripts allow-same-origin"
               loading="lazy"
+              scrolling="no"
+              style={{ overflow: 'hidden' }}
             />
           )}
           {/* Fallback to video if no iframe */}
@@ -227,6 +229,8 @@ const ProjectModal = ({ project, onClose }) => {
                 sandbox="allow-scripts allow-same-origin allow-popups"
                 allowFullScreen
                 title={`${project.title} Live Preview`}
+                scrolling="no"
+                style={{ overflow: 'hidden' }}
               />
             ) : project?.youtube ? (
               <iframe
