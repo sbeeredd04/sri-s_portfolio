@@ -29,10 +29,10 @@ import {
   IconDownload,
   IconSearch,
   IconLayoutSidebar,
-  IconMessageCircle,
   IconLink,
   IconShare2,
-  IconEye // Added IconEye
+  IconEye, // Added IconEye
+  IconRoute // Added IconRoute for journey
 } from "@tabler/icons-react";
 // Import IconVolumeOff instead of IconVolumeMute (which appears to be unavailable)
 import { IconVolumeOff } from "@tabler/icons-react"; 
@@ -42,13 +42,13 @@ import createGlobe from "cobe";
 import { CardSpotlight } from "./components/card-spotlight";
 import { Card, ExCarousel } from "./components/ExpandableCard";
 import { InfiniteMovingCards } from "./components/infinite-moving-cards";
-import { Timeline} from "./components/timeline";
 import { TimelineDemo } from "./timeline";
 import { AchievementTimelineDemo } from "./AcheivementTimeline";
 import { Cover } from "./components/cover";
 import emailjs from '@emailjs/browser';
 import projects from "./json/projects.json";
 import slides from "./json/slides.json";
+import blogs from "./json/blogs.json";
 import { ProjectCard } from "./components/ProjectCard";
 import deployedProjects from "./json/deployed.json";
 import { StickyScroll } from "./components/sticky-scroll-reveal";
@@ -58,11 +58,13 @@ import { SpotifyPlayer } from "./components/SpotifyPlayer";
 import { useMusic } from "./components/MusicProvider";
 import { useSound } from "./components/SoundProvider";
 import { FirstVisitTutorial } from "./components/FirstVisitTutorial";
-import { ChatInterface } from "./components/ChatInterface";
 import { BentoGrid, BentoGridItem } from "./components/bento-grid";
 import { radarSkillsData, detailedSkillsData, gameStatsData, achievementsData } from "./json/skillsData";
 import GameSkillsView from "./components/GameSkillsView";
 import GitHubStatsView from "./components/GitHubStatsView";
+import { FeaturingSection } from "./components/FeaturingSection";
+import Loader from "./components/animation/Loader";
+import Journey3D from "./components/animation/Journey3D";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -74,9 +76,9 @@ export default function Home() {
   const [showProjectPreview, setShowProjectPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [skillsActiveTab, setSkillsActiveTab] = useState("overview");
-  
+
+  const [skillsActiveTab, setSkillsActiveTab] = useState("github");
+    
   // Important: Make sure these hooks are called at the top level
   const { showPlayer, togglePlayerVisibility } = useMusic();
   const { isSoundEnabled, toggleSound, playClickSound } = useSound();
@@ -186,13 +188,6 @@ export default function Home() {
       isActive: activeSection === "blog"
     },
     { 
-      title: "Chat", 
-      icon: <IconMessageCircle />, 
-      onClick: () => navigateToSection("chat"), 
-      href: "#",
-      isActive: activeSection === "chat"
-    },
-    { 
       title: "Contact", 
       icon: <IconMail />, 
       onClick: () => navigateToSection("contact"), 
@@ -250,56 +245,8 @@ export default function Home() {
   }, []);
   
 
-  // Placeholder data for Blog Posts
-  const blogPosts = [
-    {
-      title: "Imagine Life as a Website: If Existence Ran on HTTP Requests",
-      category: "Tech",
-      content: `
-  <p>Imagine our world is like a massive website, loaded with HTTP requests, API calls, and conditional statements. Each one of us is like a unique URL endpoint. Life's "server" sends requests, handles responses, and sometimes… well, sometimes you just get a <i>404</i> error. 😆</p>
-  
-  <p>Here's a deep dive into life if it were structured like a modern web application:</p>
-  
-  <h2>1. The Signup Page</h2>
-  <p>Birth? That's like the "sign-up" page—where we hit "Submit" (or, maybe someone else did?), and suddenly, here we are! We get our user ID (a.k.a. name) and begin our <i>session</i>.</p>
-  
-  <h2>2. Loading, Loading...</h2>
-  <p>Ever feel like you're waiting for something that never arrives? Life's loading bars are basically our day-to-day anticipation—waiting for dreams to process. Sometimes we get the data we requested, sometimes we get a <i>504 Gateway Timeout</i>. 😬</p>
-  
-  <h2>3. API Calls and Relationships</h2>
-  <p>When you meet someone, it's like calling an API endpoint. You send a GET request, hoping for a JSON response with mutual understanding and maybe a few interesting properties. Or, you might get a <i>403 Forbidden</i>—access denied to someone's personal data!</p>
-  
-  <h2>4. Daily Data Refreshes</h2>
-  <p>Every morning, you refresh your "page" with coffee or exercise. You've got new cookies (or bad ones) stored, new "sessions" ready to go. Life is constantly refreshing and re-rendering.</p>
-  
-  <h2>5. Security Tokens & Trust Issues</h2>
-  <p>Trust? It's like a security token—sometimes it gets validated, other times it expires without notice. And yes, those who betray you? That's basically a CSRF attack on your well-being. 😂</p>
-  
-  <h2>6. The "Terms & Conditions"</h2>
-  <p>Ah, the life agreements! We agree to things we might never have read the fine print on, but, hey, we're all "logged in" now, right? Just click "Accept All" and hope for the best.</p>
-  
-  <h2>7. The Debugging Process</h2>
-  <p>Every time you make a mistake, it's like throwing an error in the console. Except, there's no debugger in life. We just try to interpret the cryptic message ("SyntaxError: Can't find happiness") and go on anyway.</p>
-  
-  <h2>8. 404: Purpose Not Found</h2>
-  <p>Sometimes we hit a <i>404 Page Not Found</i> in our journey, wondering if we're on the right URL. Maybe it's a career that's just not loading or relationships stuck in a loop. Good thing we've got "refresh" and plenty of re-routing options!</p>
-  
-  <h2>9. Scheduled Maintenance (Sleep)</h2>
-  <p>Every night, we log off for maintenance. If only there were patch notes every morning, letting us know what life's server team fixed overnight. Maybe a few bugs squashed or minor "optimizations" applied?</p>
-  
-  <h2>10. Redirects and Major Life Changes</h2>
-  <p>A new job, a relationship, a move—these are like 301 Redirects. You're still "you," but now you're located somewhere new on the server, with a fresh HTML and CSS setup.</p>
-  
-  <h2>11. User Engagement and Feedback Loops</h2>
-  <p>What's life without a bit of engagement? Whether it's friends, followers, or family, our "backend" runs on constant feedback loops. And yes, sometimes we go viral for all the wrong reasons. But in the end, it's about how you respond to the response.</p>
-  
-  <p><strong>In closing</strong>, life as a website might have its quirks and errors, but with every refresh, new opportunities load. Just remember: when life throws you a <i>403 Forbidden</i>, there's always a way to reroute. And if you're ever feeling lost? Sometimes all you need is a hard refresh and a little faith that your server is still up and running.</p>
-      `
-    },
-    { title: "Blog Post 2", category: "Tech", content: "This is the content for blog post 2" },
-    { title: "Blog Post 3", category: "Tech", content: "This is the content for blog post 3" },
-    { title: "Blog Post 4", category: "Tech", content: "This is the content for blog post 4" }
-  ];  
+  // Use imported blog posts
+  const blogPosts = blogs;  
   
   const skillsSections = [
     {
@@ -501,158 +448,136 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const getIconForSection = (sectionTitle) => {
-    switch (sectionTitle?.toLowerCase()) {
-      case 'welcome to my portfolio': return <IconHome className="h-5 w-5 text-yellow-400" />;
-      case 'about me': return <IconUser className="h-5 w-5 text-blue-400" />;
-      case 'professional experience': return <IconBriefcase className="h-5 w-5 text-green-400" />;
-      case 'featured projects': return <IconBulb className="h-5 w-5 text-orange-400" />;
-      case 'technical skills': return <IconTools className="h-5 w-5 text-purple-400" />;
-      case 'blog insights': return <IconBook className="h-5 w-5 text-indigo-400" />;
-      case 'get in touch': return <IconMail className="h-5 w-5 text-red-400" />;
-      default: return <IconBulb className="h-5 w-5 text-gray-400" />;
+  const [showLoader, setShowLoader] = useState(true);
+  const [showJourney, setShowJourney] = useState(false);
+  const [showMainPortfolio, setShowMainPortfolio] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [preloadedResources, setPreloadedResources] = useState(null);
+  const [isFirstTimeVisitor, setIsFirstTimeVisitor] = useState(false);
+
+  useEffect(() => {
+    // Initialize navigation history when main portfolio loads
+    if (showMainPortfolio && navigationHistory.length === 0) {
+      setNavigationHistory(["home"]);
+      setCurrentHistoryIndex(0);
     }
+  }, [showMainPortfolio, navigationHistory.length]);
+
+  // Check if this is a first-time visitor
+  useEffect(() => {
+    const checkFirstTimeVisitor = () => {
+      try {
+        const hasSeenTutorial = localStorage.getItem('portfolio_tutorial_shown') === 'true';
+        setIsFirstTimeVisitor(!hasSeenTutorial);
+      } catch (error) {
+        console.error('Error checking first-time visitor status:', error);
+        setIsFirstTimeVisitor(true); // Default to showing journey if error
+      }
+    };
+    
+    checkFirstTimeVisitor();
+  }, []);
+
+  // Manual journey invocation
+  const handleManualJourney = () => {
+    setShowMainPortfolio(false);
+    setShowJourney(true);
+    setIsTransitioning(false);
   };
 
-  // Define GridItem component for the new Home section
-  const GridItem = ({
-    gridArea,
-    icon,
-    title,
-    description,
-    imageUrl,
-    onClick,
-    isImageCard = false, 
-  }) => {
-    const isClickable = !isImageCard && onClick;
-
-    return (
-      <li className={`list-none ${gridArea}`}>
-        <div className="relative h-full w-full rounded-2xl border border-white/10 p-2 md:rounded-3xl md:p-3">
-          {!isImageCard && ( 
-            <GlowingEffect
-              spread={30}
-              glow={true}
-              disabled={false}
-              proximity={64}
-              inactiveZone={0.01}
-              variant="default"
-              className="opacity-70"
-            />
-          )}
-          {isImageCard ? (
-            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-neutral-800/60 backdrop-blur-sm">
-              <img 
-                src={imageUrl} 
-                alt={title || "Sri Ujjwal Reddy B"} 
-                className="h-full w-full object-contain" 
-              />
-            </div>
-          ) : (
-            <div
-              onClick={isClickable ? onClick : undefined}
-              role={isClickable ? "button" : undefined}
-              tabIndex={isClickable ? 0 : undefined}
-              onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
-              className={`relative flex h-full flex-col justify-start overflow-hidden rounded-xl p-2 xs:p-3 md:p-4 lg:p-6 shadow-xl 
-                         ${isClickable ? 'cursor-pointer hover:ring-1 hover:ring-cyan-400/50 transition-all duration-300' : ''}`}
-              style={{ 
-                backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${imageUrl})`, 
-                backgroundSize: 'cover', 
-                backgroundPosition: 'center' 
-              }}
-            >
-              {/* Outer container with full flex column layout */}
-              <div className="relative flex flex-col gap-1 xs:gap-2 md:gap-3 h-full">
-                {/* Top row container for icon and title side by side */}
-                <div className="flex flex-row items-center gap-2 md:gap-3">
-                  {icon && (
-                    <div className="w-fit rounded-lg border border-neutral-600/50 bg-neutral-700/30 p-1.5 xs:p-2 shadow-md shrink-0">
-                      {icon}
-                    </div>
-                  )}
-                  
-                  {/* Title - always beside the icon */}
-                  <h3 className="font-sans text-sm xs:text-base md:text-xl font-semibold text-balance text-white line-clamp-2">
-                    {title}
-                  </h3>
-                </div>
-                
-                {/* Description - always below the icon/title row */}
-                {description && (
-                  <p className="font-sans text-xs xs:text-xs md:text-sm text-neutral-300 leading-relaxed line-clamp-2 md:line-clamp-3">
-                    {description}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </li>
-    );
+  const handleResourcesReady = (resources) => {
+    setPreloadedResources(resources);
   };
-  
-  // Data for the home grid items
-  const homeGridItems = [];
 
-  // Define the 8 grid areas for the bento layout: 3 left, 1 central image, 4 right
-  const ALL_GRID_AREAS = [
-    // Left Column (3 items)
-    "md:col-start-1 md:col-span-4 md:row-start-1 md:row-span-2", // Slot 0: slides[0] (Welcome)
-    "md:col-start-1 md:col-span-4 md:row-start-3 md:row-span-1", // Slot 1: slides[1] (About Me)
-    "md:col-start-1 md:col-span-4 md:row-start-4 md:row-span-1", // Slot 2: slides[2] (Experience)
-    // Central Column (1 item - Image)
-    "md:col-start-5 md:col-span-4 md:row-start-1 md:row-span-4", // Slot 3: me.png Image Card (Full Height)
-    // Right Column (4 items)
-    "md:col-start-9 md:col-span-4 md:row-start-1 md:row-span-1", // Slot 4: slides[3] (Projects)
-    "md:col-start-9 md:col-span-4 md:row-start-2 md:row-span-1", // Slot 5: slides[4] (Skills)
-    "md:col-start-9 md:col-span-4 md:row-start-3 md:row-span-1", // Slot 6: slides[5] (Blog)
-    "md:col-start-9 md:col-span-4 md:row-start-4 md:row-span-1", // Slot 7: slides[6] (Contact)
-  ];
-
-  // Map slides and the image to the slots in a fixed order for the desired layout
-  const itemsDataMap = [
-    slides.length > 0 ? slides[0] : null, // Slot 0: Welcome
-    slides.length > 1 ? slides[1] : null, // Slot 1: About Me
-    slides.length > 2 ? slides[2] : null, // Slot 2: Experience
-    { isImage: true, imageUrl: "/me.png", title: "Sri Ujjwal Reddy B" }, // Slot 3: me.png
-    slides.length > 3 ? slides[3] : null, // Slot 4: Projects
-    slides.length > 4 ? slides[4] : null, // Slot 5: Skills
-    slides.length > 5 ? slides[5] : null, // Slot 6: Blog
-    slides.length > 6 ? slides[6] : null, // Slot 7: Contact
-  ];
-
-  itemsDataMap.forEach((itemData, index) => {
-    if (itemData && index < ALL_GRID_AREAS.length) {
-      if (itemData.isImage) {
-        homeGridItems.push({
-          isImageCard: true,
-          imageUrl: itemData.imageUrl,
-          title: itemData.title,
-          gridArea: ALL_GRID_AREAS[index],
-        });
+  const handleLoaderComplete = () => {
+    setIsTransitioning(true);
+    setShowLoader(false);
+    
+    // Small delay to ensure smooth transition
+    setTimeout(() => {
+      if (isFirstTimeVisitor) {
+        setShowJourney(true);
+        setIsTransitioning(false);
       } else {
-        const targetSection = itemData.title === "Welcome to My Portfolio" 
-                              ? "about" 
-                              : itemData.section;
-        homeGridItems.push({
-          title: itemData.title,
-          description: itemData.description,
-          imageUrl: itemData.image,
-          onClick: () => navigateToSection(targetSection),
-          icon: getIconForSection(itemData.title),
-          gridArea: ALL_GRID_AREAS[index],
-          isImageCard: false,
-        });
+        // Skip journey for returning visitors
+        setShowMainPortfolio(true);
+        setIsTransitioning(false);
+      }
+    }, 100);
+  };
+
+  const handleJourneyComplete = () => {
+    setIsTransitioning(true);
+    setShowJourney(false);
+    
+    // Mark as no longer first-time visitor when journey completes
+    if (isFirstTimeVisitor) {
+      try {
+        localStorage.setItem('portfolio_tutorial_shown', 'true');
+        setIsFirstTimeVisitor(false);
+      } catch (error) {
+        console.error('Error saving tutorial status:', error);
       }
     }
-  });
+    
+    // Longer delay to match the Journey3D fade out
+    setTimeout(() => {
+      setShowMainPortfolio(true);
+      setIsTransitioning(false);
+    }, 1000);
+  };
 
+  // Show loader phase - all resources are built here
+  if (showLoader) {
+    return (
+      <Loader 
+        onComplete={handleLoaderComplete} 
+        onResourcesReady={handleResourcesReady}
+      />
+    );
+  }
 
- return (
-    <div 
+  // Show journey phase with pre-loaded resources
+  if (showJourney) {
+    return <Journey3D onComplete={handleJourneyComplete} preloadedResources={preloadedResources} />;
+  }
+
+  // Show transition or main portfolio
+  if (!showMainPortfolio) {
+    return (
+      <motion.div 
+        className="fixed inset-0 bg-black flex items-center justify-center"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: isTransitioning ? 1 : 0 }}
+        transition={{ duration: 1.5, ease: "easeInOut" }}
+      >
+        <motion.div 
+          className="text-white text-xl major-mono-display-regular"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          Entering Portfolio...
+        </motion.div>
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+          .major-mono-display-regular {
+            font-family: 'Major Mono Display', monospace;
+            font-weight: 400;
+            font-style: normal;
+          }
+        `}</style>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div 
       className="grid grid-cols-1 md:grid-cols-[100px_1fr] h-screen overflow-hidden relative bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:inset-0 before:bg-black/50" 
       style={{ backgroundImage: `url(${currentBackground})` }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
     >
       {/* Floating Dock */}
      <div className={`relative z-50 opacity-90 ${isMobile ? 'fixed bottom-0 w-full z[9999]' : 'left-0 z-[9999]'} opacity-100`}>
@@ -660,7 +585,7 @@ export default function Home() {
      </div>
 
       {/* Main Content */}
-      <div className="relative h-screen w-full overflow-x-auto scrollbar-none">
+      <div className="relative h-screen w-full flex flex-col overflow-hidden">
 
         {/* Custom Top-Right Navbar - Only visible on mobile */}
         {isMobile && (
@@ -683,7 +608,7 @@ export default function Home() {
         <Link href="https://open.spotify.com/user/31qr3j45nvoqp4lfh6vuabmlwguq?si=2c62fb75bef644f6" target="_blank">
               <IconBrandSpotify className="text-green-500 hover:text-green-400 mx-1" size={20} />
         </Link>
-        <Link href="/my_resume.pdf" download>
+        <Link href="/sri_resume.pdf" download>
               <button className="px-3 py-1.5 text-xs border border-white/40 text-white font-semibold rounded-md shadow-md hover:border-emerald-500 hover:text-emerald-500 transition-all mx-1 bg-transparent">
             Resume
           </button>
@@ -691,12 +616,11 @@ export default function Home() {
       </div>
         )}
 
-
-        {/* Top Margin */}
-        <div className="h-[10vh] md:h-[7.5vh]" />
+        {/* Top Spacing - Flexible */}
+        <div className={`flex-shrink-0 ${isMobile ? 'h-16' : 'h-6'}`} />
 
         {/* Browser Toolbar */}
-        <div className="h-[6vh] mx-6">
+        <div className="flex-shrink-0 h-12 md:h-16 mx-6">
           <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center px-4 py-2 md:px-6">
             {/* Navigation Controls */}
             <div className="flex items-center gap-2 md:gap-4">
@@ -797,6 +721,16 @@ export default function Home() {
                   <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
                 </button>
               </div>
+              <div className="relative">
+                <button
+                  onClick={handleManualJourney}
+                  className="flex items-center justify-center w-8 h-8 text-neutral-400 hover:text-white transition-colors"
+                  title="Experience Journey"
+                >
+                  <IconRoute size={20} stroke={1.5} className="md:hidden" />
+                  <IconRoute size={24} stroke={1.5} className="hidden md:block" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -820,11 +754,13 @@ export default function Home() {
         )}
 
         {/* Spacing */}
-        <div className="h-[1vh] md:h-[2.5vh]" />
+        <div className="flex-shrink-0 h-2 md:h-4" />
 
-        {/* Main Content Area */}
-        <div className="h-[70vh] mx-6">
-          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg overflow-hidden">
+        {/* Main Content Area - Takes up remaining space */}
+        <div className="flex-1 min-h-0 mx-6">
+          <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg overflow-hidden relative">
+            {/* Vignette overlay */}
+            <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,_rgba(0,0,0,1.0)_0%,_rgba(0,0,0,0)5%,_rgba(0,0,0,0)_95%,_rgba(0,0,0,1.0)_100%)] z-10 rounded-2xl"></div>
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeSection}
@@ -832,32 +768,32 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="h-full overflow-y-auto overflow-x-hidden px-2 py-2 md:px-4 md:py-4 scrollbar-none"
+                id="main-scroll-container"
+                className="h-full overflow-y-auto overflow-x-hidden px-2 py-2 md:px-4 md:py-4"
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none'
+                }}
               >
-        {/* Home Section */}
+                <style jsx global>{`
+                  #main-scroll-container::-webkit-scrollbar {
+                    display: none;
+                  }
+                  #main-scroll-container {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                  }
+                  * {
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+                  }
+                  *::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                {/* Home Section */}
                 {activeSection === "home" && (
-                  <section className="w-full h-full">
-                    {homeGridItems.length > 0 ? (
-                      <ul className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-4 gap-3 md:gap-4 h-full p-1 md:p-2">
-                        {homeGridItems.map((item, idx) => (
-                          <GridItem
-                            key={item.title || `grid-item-${idx}`} 
-                            gridArea={item.gridArea}
-                            icon={item.icon}
-                            title={item.title}
-                            description={item.description}
-                            imageUrl={item.imageUrl}
-                            onClick={item.onClick}
-                            isImageCard={item.isImageCard}
-                          />
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-white/70">
-                        Loading home content...
-                      </div>
-                    )}
-                  </section>
+                  <FeaturingSection navigateToSection={navigateToSection} />
                 )}
 
                 {activeSection === "about" && (
@@ -880,7 +816,7 @@ export default function Home() {
                           
                           {/* Resume Buttons */}
                           <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 md:gap-4 px-4 z-50 pb-2">
-                            <Link href="/my_resume.pdf" download>
+                            <Link href="/sri_resume.pdf" download>
                               <button className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-500 text-black hover:from-cyan-500 hover:to-emerald-600 transition-all md:px-6 md:py-3 md:text-base shadow-lg hover:shadow-cyan-500/40 active:scale-95">
                                 <IconDownload size="1.1em" strokeWidth={2} className="mr-1.5 md:mr-2 flex-shrink-0" />
                                 Download Resume
@@ -912,7 +848,7 @@ export default function Home() {
                               {/* Logo and Title */}
                               <div className="flex items-center gap-3 md:gap-6 md:col-span-3">
                                 <img 
-                                  src="/asulogo.png" 
+                                  src="/logos/asulogo.png" 
                                   alt="ASU Logo" 
                                   className="w-10 h-10 md:w-16 md:h-16 object-contain"
                                 />
@@ -1049,7 +985,7 @@ export default function Home() {
                     {/* Resume Preview Modal */}
                     {showResumePreview && (
                       <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
                         onClick={(e) => {
                           if (e.target === e.currentTarget) {
                             setShowResumePreview(false);
@@ -1059,7 +995,7 @@ export default function Home() {
                         <div className="w-[90%] h-[90%] bg-white rounded-xl shadow-2xl overflow-hidden">
                           <div className="absolute top-4 right-4 flex items-center gap-2">
                             <Link 
-                              href="/my_resume.pdf" 
+                              href="/sri_resume.pdf" 
                               download
                               className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
                               onClick={(e) => e.stopPropagation()}
@@ -1074,7 +1010,7 @@ export default function Home() {
               </button>
             </div>
                           <iframe
-                            src="/my_resume.pdf#view=FitH"
+                            src="/sri_resume.pdf#view=FitH"
                             className="w-full h-full"
                             style={{ background: 'white' }}
                           />
@@ -1086,7 +1022,7 @@ export default function Home() {
 
                 {activeSection === "experience" && (
                   <section className="w-full h-full">
-                    <div className="w-full h-full">
+                    <div className="w-full h-full overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
                           key={activeTab}
@@ -1094,7 +1030,7 @@ export default function Home() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -20 }}
                           transition={{ duration: 0.3 }}
-                          className="w-full h-full"
+                          className="w-full min-h-full"
                         >
                           {activeTab === "experience" ? (
                             <TimelineDemo theme="experience" />
@@ -1143,7 +1079,6 @@ export default function Home() {
                                     title={project.title}
                                     description={project.description}
                                     backgroundImage={project.image}
-                                    onClick={() => setSelectedProject(project)}
                                     githubUrl={project.github}
                                     projectUrl={project.href}
                                     icon={
@@ -1183,7 +1118,6 @@ export default function Home() {
                                     title={project.title}
                                     description={project.description}
                                     backgroundImage={project.image}
-                                    onClick={() => setSelectedProject(project)}
                                     githubUrl={project.github}
                                     projectUrl={project.href}
                                     icon={
@@ -1215,15 +1149,7 @@ export default function Home() {
                       </AnimatePresence>
                     </div>
                     
-                    {/* Project Modal */}
-                    <AnimatePresence>
-                      {selectedProject && (
-                        <ProjectModal 
-                          project={selectedProject} 
-                          onClose={() => setSelectedProject(null)}
-                        />
-                      )}
-                    </AnimatePresence>
+
                   </section>
                 )}
 
@@ -1273,7 +1199,7 @@ export default function Home() {
                                 title: post.title,
                                 content: post.content,
                                 category: post.category,
-                                src: `/${index + 1}.jpg`, 
+                                src: post.image || `/blog/${index + 1}.jpg`, 
                               }}
                               className="max-w-[90%] mx-auto"
                             />
@@ -1282,12 +1208,6 @@ export default function Home() {
                         />
                       </div>
                     </div>
-                  </section>
-                )}
-
-                {activeSection === "chat" && (
-                  <section className="w-full h-full p-1 md:p-4">
-                    <ChatInterface />
                   </section>
                 )}
 
@@ -1370,11 +1290,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 5% Margin */}
-        <div className="h-[1vh] md:h-[5vh]" />
+        {/* Spacing */}
+        <div className="flex-shrink-0 h-2 md:h-4" />
 
         {/* Bottom Tabs Container - Floating */}
-        <div className="h-[5vh] mx-6 md:h-[7.5vh]" id="tab-switcher-tutorial-target">
+        <div className="flex-shrink-0 h-12 md:h-16 mx-6" id="tab-switcher-tutorial-target">
           <div className="w-full h-full rounded-2xl bg-neutral-800/20 backdrop-blur-xl border border-white/10 shadow-lg flex items-center justify-between px-2 md:px-6">
             {/* Dynamic Tabs based on active section */}
             <div className="flex items-center gap-1 md:gap-4 overflow-x-auto scrollbar-none">
@@ -1522,17 +1442,6 @@ export default function Home() {
                 </>
               )}
 
-              {activeSection === "chat" && (
-                <>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
-                    Chat
-                  </button>
-                  <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5 md:px-6 md:py-1.5 md:text-lg">
-                    Assistant
-                  </button>
-                </>
-              )}
-
               {activeSection === "contact" && (
                 <>
                   <button className="px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap bg-blue-500/20 text-blue-400 border border-blue-500/30 md:px-6 md:py-1.5 md:text-lg">
@@ -1578,7 +1487,7 @@ export default function Home() {
                   <span className="text-sm font-medium">Spotify</span>
                 </Link>
                 <Link 
-                  href="/my_resume.pdf" 
+                  href="/sri_resume.pdf" 
                   download
                   className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300 transition-all border border-emerald-500/30"
                 >
@@ -1590,8 +1499,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Bottom 10% Margin */}
-        <div className="h-[10vh] md:h-[5vh]" />
+        {/* Bottom Spacing */}
+        <div className={`flex-shrink-0 ${isMobile ? 'h-16' : 'h-6'}`} />
       </div>
 
       {/* Spotify Player - Now rendered as a fixed popup outside the main content flow */}
@@ -1599,119 +1508,8 @@ export default function Home() {
       
       {/* Tutorial for first-time visitors */}
       <FirstVisitTutorial />
-    </div>
+    </motion.div>
   );
 }
 
-// Create a ProjectModal component right before the main return statement
-// Add this before the return statement in the Home component
-const ProjectModal = ({ project, onClose }) => {
-  if (!project) return null;
-  
-  // Handle click on the modal background (outside the content) to close
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-  
-  // Handle escape key to close the modal
-  useEffect(() => {
-    const handleEscKey = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleEscKey);
-    return () => window.removeEventListener('keydown', handleEscKey);
-  }, [onClose]);
-  
-  // Make sure image path is correct
-  const imageUrl = project.image || '/projects/default-project.jpg';
-  const safeImageUrl = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
-  
-  return (
-    <div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6 bg-black/80 backdrop-blur-md"
-      onClick={handleBackdropClick}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ type: "spring", damping: 20, stiffness: 300 }}
-        className="relative w-full max-w-2xl rounded-xl bg-neutral-900/90 border border-white/20 shadow-xl overflow-hidden max-h-[90vh]"
-      >
-        {/* Close button */}
-        <button 
-          onClick={onClose}
-          className="absolute top-3 right-3 z-50 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
-        >
-          <IconPlus className="h-5 w-5 rotate-45" />
-        </button>
-        
-        {/* Project Image */}
-        <div className="relative w-full h-56 md:h-72">
-          <img 
-            src={safeImageUrl} 
-            alt={project.title}
-            className="w-full h-full object-cover"
-            loading="eager"
-            onError={(e) => {
-              e.target.src = '/projects/default-project.jpg';
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
-          <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-3">
-              {project.title}
-            </h2>
-            <div className="flex flex-wrap gap-2 mt-3">
-              {project.technologies?.map((tech, i) => (
-                <span 
-                  key={i} 
-                  className="text-[9px] md:text-[10px] py-1 px-2.5 bg-black/80 backdrop-blur-sm rounded-full text-white/95 border border-white/20"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        {/* Project Details */}
-        <div className="p-5 md:p-6 overflow-y-auto max-h-[40vh] scroll-smooth" style={{ overscrollBehavior: 'contain' }}>
-          <p className="text-white/80 mb-5 md:mb-6 text-xs md:text-sm leading-relaxed">
-            {project.description}
-          </p>
-          
-          {/* Links */}
-          <div className="flex gap-3 flex-wrap">
-            {project.github && (
-              <a 
-                href={project.github} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-xs text-white transition-colors"
-              >
-                <IconBrandGithub size={16} />
-                <span>GitHub</span>
-              </a>
-            )}
-            {project.href && (
-              <a 
-                href={project.href} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-800/80 hover:bg-emerald-700/90 rounded-lg text-xs text-white transition-colors"
-              >
-                <IconShare2 size={16} />
-                <span>View Project</span>
-              </a>
-            )}
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-};
-  
-  // Now update the main return statement
+

@@ -15,6 +15,7 @@ import { cn } from "../lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useOutsideClick } from "../hooks/use-outside-click";
+import { renderMarkdown } from "../utils/markdown";
 
 export const CarouselContext = createContext({
   onCardClose: () => {},
@@ -189,10 +190,10 @@ export const Card = ({ card, index, layout = false }) => {
               <motion.p className="text-md md:text-lg font-medium text-gray-500 dark:text-gray-300 mt-2 mb-6">
                 {card.category}
               </motion.p>
-              {/* Render HTML content */}
+              {/* Render markdown content */}
               <div
-                className="text-gray-800 dark:text-gray-200 py-4 blog-content"
-                dangerouslySetInnerHTML={{ __html: card.content }}
+                className="markdown-content text-gray-800 dark:text-gray-200 py-4 blog-content prose prose-invert max-w-none"
+                dangerouslySetInnerHTML={renderMarkdown(card.content)}
               />
             </motion.div>
           </motion.div>

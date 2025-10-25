@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScroll, useMotionValueEvent } from 'motion/react';
-import { SkillsRadarCard } from './SkillsRadar';
 import { 
   IconCode, 
   IconServer, 
@@ -563,12 +562,7 @@ export const GameSkillsView = ({ activeView = 'overview' }) => {
         ) : (
           /* Desktop/Tablet Layout */
           <div className="h-full flex flex-1 gap-4 p-3 sm:p-4 lg:gap-6 lg:p-6">
-            <div className="w-[38%] 2xl:w-[35%] flex-shrink-0 flex flex-col">
-              <div className="flex-1 min-h-0">
-                 <SkillsRadarCard className="h-full sticky top-4" />
-              </div>
-            </div>
-            <div ref={sectionCardRef} className="w-[62%] 2xl:w-[65%] flex-1 overflow-y-auto hide-scrollbar pr-1">
+            <div className="w-full flex-1 overflow-y-auto hide-scrollbar pr-1">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeSection} // Key change triggers animation
