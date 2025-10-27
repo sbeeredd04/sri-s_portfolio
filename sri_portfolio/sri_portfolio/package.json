@@ -45,5 +45,8 @@
   },
   "resolutions": {
     "three": "0.177.0"
+  },
+  "optionalDependencies": {
+    "@next/swc-darwin-arm64": "^16.0.0"
   }
 }

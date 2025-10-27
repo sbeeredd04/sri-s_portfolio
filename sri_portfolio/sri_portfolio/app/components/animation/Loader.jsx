@@ -493,7 +493,9 @@ class ThreeJSResourceManager {
         this.renderer = new THREE.WebGLRenderer({ 
           antialias: true, 
           alpha: false,
-          powerPreference: "high-performance"
+          powerPreference: "high-performance",
+          preserveDrawingBuffer: false, // Better memory management
+          failIfMajorPerformanceCaveat: false // Don't fail on slower devices
         });
         
         // Cap pixel ratio to prevent GPU overload on high-DPI displays
@@ -504,6 +506,18 @@ class ThreeJSResourceManager {
         // Performance optimizations
         this.renderer.shadowMap.enabled = false;
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        
+        // Add context lost/restore handlers
+        const canvas = this.renderer.domElement;
+        canvas.addEventListener('webglcontextlost', (event) => {
+          event.preventDefault();
+          console.warn('WebGL context lost. Attempting to restore...');
+        }, false);
+        
+        canvas.addEventListener('webglcontextrestored', () => {
+          console.log('WebGL context restored successfully');
+          // Optionally reload resources here
+        }, false);
 
         // CSS3D renderer for checkpoint cards and headers
         this.cssRenderer = new CSS3DRenderer();
@@ -1219,6 +1233,7 @@ export default function Loader({ onComplete, onResourcesReady }) {
             filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
             transform: 'translateZ(0)'
           }}
+          suppressHydrationWarning
         >
           <motion.div
             className="relative"
@@ -1237,7 +1252,7 @@ export default function Loader({ onComplete, onResourcesReady }) {
             />
             
             <DecryptedText
-              text={`Local time: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
+              text={typeof window !== 'undefined' ? `Local time: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}` : 'Local time: --:--:--'}
               speed={35}
               maxIterations={12}
               sequential={true}
