@@ -64,7 +64,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" type="image/png" href="/logos/logo.png" />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <SoundProvider>
           <MusicProvider>
             {children}

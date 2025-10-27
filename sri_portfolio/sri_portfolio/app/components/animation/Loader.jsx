@@ -10,6 +10,74 @@ import journeyData from '../../json/journey.json';
 
 const Beams = dynamic(() => import('../background/Beams'), { ssr: false });
 
+// Client-only time component to prevent hydration mismatch
+function ClientTime({ onAnimationComplete, showContent }) {
+  const [currentTime, setCurrentTime] = useState('--:--:--');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Mark as mounted and set initial time
+    setMounted(true);
+    setCurrentTime(new Date().toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit' 
+    }));
+
+    // Update time every second
+    const interval = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      }));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, x: -50, y: -20 }}
+      animate={{ opacity: showContent ? 1 : 0, x: showContent ? 0 : -50, y: showContent ? 0 : -20 }}
+      transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+      className="absolute top-8 left-8 md:top-12 md:left-12 group cursor-default"
+      style={{
+        filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
+        transform: 'translateZ(0)'
+      }}
+    >
+      <motion.div
+        className="relative"
+        whileHover={{ scale: 1.02, y: -2 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div
+          className="absolute -inset-2 rounded-lg opacity-60"
+          style={{
+            background: 'linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+            transform: 'translateY(3px) translateX(2px)',
+            filter: 'blur(4px)',
+            zIndex: -1
+          }}
+        />
+        
+        <DecryptedText
+          text={`Local time: ${currentTime}`}
+          speed={35}
+          maxIterations={12}
+          sequential={true}
+          revealDirection="start"
+          className="major-mono-display-regular text-sm md:text-base text-white/70 font-medium tracking-wider relative z-10 px-2 py-1"
+          encryptedClassName="text-white/20"
+          animateOn="view"
+          onAnimationComplete={mounted ? onAnimationComplete : undefined}
+        />
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // SCENE CONSTANTS - Must match Journey3D constants exactly
 // ──────────────────────────────────────────────────────────────────────────────
@@ -1223,47 +1291,11 @@ export default function Loader({ onComplete, onResourcesReady }) {
 
       {/* Main container with enhanced spacing */}
       <div className="relative w-full h-screen flex flex-col z-10 p-6 md:p-12">
-        {/* Current time display with slide-in animation */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50, y: -20 }}
-          animate={{ opacity: showContent ? 1 : 0, x: showContent ? 0 : -50, y: showContent ? 0 : -20 }}
-          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-          className="absolute top-8 left-8 md:top-12 md:left-12 group cursor-default"
-          style={{
-            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
-            transform: 'translateZ(0)'
-          }}
-          suppressHydrationWarning
-        >
-          <motion.div
-            className="relative"
-            whileHover={{ scale: 1.02, y: -2 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Three.js style shadow */}
-            <div
-              className="absolute -inset-2 rounded-lg opacity-60"
-              style={{
-                background: 'linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
-                transform: 'translateY(3px) translateX(2px)',
-                filter: 'blur(4px)',
-                zIndex: -1
-              }}
-            />
-            
-            <DecryptedText
-              text={typeof window !== 'undefined' ? `Local time: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}` : 'Local time: --:--:--'}
-              speed={35}
-              maxIterations={12}
-              sequential={true}
-              revealDirection="start"
-              className="major-mono-display-regular text-sm md:text-base text-white/70 font-medium tracking-wider relative z-10 px-2 py-1"
-              encryptedClassName="text-white/20"
-              animateOn="view"
-              onAnimationComplete={() => handleTextAnimationComplete('localTime')}
-            />
-          </motion.div>
-        </motion.div>
+        {/* Current time display - client-only to prevent hydration mismatch */}
+        <ClientTime 
+          onAnimationComplete={() => handleTextAnimationComplete('localTime')}
+          showContent={showContent}
+        />
 
         {/* Portfolio branding with slide-in animation */}
         <motion.div 
