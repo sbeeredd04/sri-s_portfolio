@@ -1,10 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Import KaTeX CSS for math rendering */
 @import 'katex/dist/katex.min.css';
 @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+/* Space Grotesk as default font */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -229,9 +231,6 @@ body {
   font-size: 0.875rem;
   font-family: 'Fira Code', 'Courier New', monospace;
 }
-
-/* Space Grotesk as default font */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   html {

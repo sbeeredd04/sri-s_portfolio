@@ -7,6 +7,13 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Configure Turbopack for Next.js 16
+  turbopack: {
+    resolveAlias: {
+      'three': './node_modules/three',
+      'three/examples': './node_modules/three/examples'
+    }
+  },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Fix multiple Three.js instances by aliasing all imports to single copy
     config.resolve.alias = {
