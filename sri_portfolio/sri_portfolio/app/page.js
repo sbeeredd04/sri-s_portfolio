@@ -65,6 +65,7 @@ import GitHubStatsView from "./components/GitHubStatsView";
 import { FeaturingSection } from "./components/FeaturingSection";
 import Loader from "./components/animation/Loader";
 import Journey3D from "./components/animation/Journey3D";
+import { isMobileDevice } from "./utils/deviceDetection";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -76,6 +77,7 @@ export default function Home() {
   const [showProjectPreview, setShowProjectPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [isActuallyMobile, setIsActuallyMobile] = useState(false); // True mobile device detection
 
   const [skillsActiveTab, setSkillsActiveTab] = useState("github");
     
@@ -83,7 +85,7 @@ export default function Home() {
   const { showPlayer, togglePlayerVisibility } = useMusic();
   const { isSoundEnabled, toggleSound, playClickSound } = useSound();
   
-  // Check for mobile devices
+  // Check for mobile devices - simple responsive check
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -91,6 +93,11 @@ export default function Home() {
     handleResize(); // Set initial value
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
+  // Detect actual mobile device for journey skipping
+  useEffect(() => {
+    setIsActuallyMobile(isMobileDevice());
   }, []);
   
   // Preload project images when visiting projects section
@@ -467,19 +474,32 @@ export default function Home() {
   useEffect(() => {
     const checkFirstTimeVisitor = () => {
       try {
+        // On mobile, always skip journey
+        if (isActuallyMobile) {
+          setIsFirstTimeVisitor(false);
+          return;
+        }
+        
         const hasSeenTutorial = localStorage.getItem('portfolio_tutorial_shown') === 'true';
         setIsFirstTimeVisitor(!hasSeenTutorial);
       } catch (error) {
         console.error('Error checking first-time visitor status:', error);
-        setIsFirstTimeVisitor(true); // Default to showing journey if error
+        // On mobile or error, skip journey
+        setIsFirstTimeVisitor(isActuallyMobile ? false : true);
       }
     };
     
     checkFirstTimeVisitor();
-  }, []);
+  }, [isActuallyMobile]);
 
-  // Manual journey invocation
+  // Manual journey invocation - only allow on desktop
   const handleManualJourney = () => {
+    // Prevent journey on mobile devices
+    if (isActuallyMobile) {
+      console.log('Journey is not available on mobile devices');
+      return;
+    }
+    
     setShowMainPortfolio(false);
     setShowJourney(true);
     setIsTransitioning(false);
@@ -495,12 +515,13 @@ export default function Home() {
     
     // Small delay to ensure smooth transition
     setTimeout(() => {
-      if (isFirstTimeVisitor) {
-        setShowJourney(true);
+      // Skip journey on mobile OR for returning visitors
+      if (isActuallyMobile || !isFirstTimeVisitor) {
+        setShowMainPortfolio(true);
         setIsTransitioning(false);
       } else {
-        // Skip journey for returning visitors
-        setShowMainPortfolio(true);
+        // Show journey only on desktop for first-time visitors
+        setShowJourney(true);
         setIsTransitioning(false);
       }
     }, 100);
@@ -528,7 +549,28 @@ export default function Home() {
   };
 
   // Show loader phase - all resources are built here
+  // Skip loader entirely on mobile, go straight to portfolio
+  useEffect(() => {
+    if (showLoader && isActuallyMobile) {
+      // On mobile, skip loader and journey entirely
+      const timer = setTimeout(() => {
+        setShowLoader(false);
+        setShowMainPortfolio(true);
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showLoader, isActuallyMobile]);
+  
   if (showLoader) {
+    if (isActuallyMobile) {
+      return (
+        <div className="fixed inset-0 bg-black flex items-center justify-center">
+          <div className="text-white text-xl">Loading...</div>
+        </div>
+      );
+    }
+    
     return (
       <Loader 
         onComplete={handleLoaderComplete} 
@@ -537,8 +579,8 @@ export default function Home() {
     );
   }
 
-  // Show journey phase with pre-loaded resources
-  if (showJourney) {
+  // Show journey phase with pre-loaded resources (desktop only)
+  if (showJourney && !isActuallyMobile) {
     return <Journey3D onComplete={handleJourneyComplete} preloadedResources={preloadedResources} />;
   }
 
@@ -721,16 +763,19 @@ export default function Home() {
                   <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
                 </button>
               </div>
-              <div className="relative">
-                <button
-                  onClick={handleManualJourney}
-                  className="flex items-center justify-center w-8 h-8 text-neutral-400 hover:text-white transition-colors"
-                  title="Experience Journey"
-                >
-                  <IconRoute size={20} stroke={1.5} className="md:hidden" />
-                  <IconRoute size={24} stroke={1.5} className="hidden md:block" />
-                </button>
-              </div>
+              {/* Journey button - hide on mobile devices */}
+              {!isActuallyMobile && (
+                <div className="relative">
+                  <button
+                    onClick={handleManualJourney}
+                    className="flex items-center justify-center w-8 h-8 text-neutral-400 hover:text-white transition-colors"
+                    title="Experience Journey"
+                  >
+                    <IconRoute size={20} stroke={1.5} className="md:hidden" />
+                    <IconRoute size={24} stroke={1.5} className="hidden md:block" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

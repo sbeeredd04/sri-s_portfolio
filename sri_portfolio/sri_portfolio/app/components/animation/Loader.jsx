@@ -575,16 +575,57 @@ class ThreeJSResourceManager {
         this.renderer.shadowMap.enabled = false;
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         
-        // Add context lost/restore handlers
+        // Initialize PMREMGenerator for environment mapping (safe initialization)
+        try {
+          this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+          this.pmremGenerator.compileEquirectangularShader();
+        } catch (error) {
+          console.warn('PMREMGenerator initialization failed:', error);
+          this.pmremGenerator = null; // Set to null on failure
+        }
+        
+        // Add context lost/restore handlers with fallback UI
         const canvas = this.renderer.domElement;
         canvas.addEventListener('webglcontextlost', (event) => {
           event.preventDefault();
           console.warn('WebGL context lost. Attempting to restore...');
+          
+          // Show fallback UI with a new canvas overlay
+          if (this.onError) {
+            this.onError('WebGL context lost. Please refresh the page.');
+          }
+          
+          // Create a new 2D canvas overlay for fallback message (don't reuse WebGL canvas)
+          const fallbackCanvas = document.createElement('canvas');
+          fallbackCanvas.width = window.innerWidth;
+          fallbackCanvas.height = window.innerHeight;
+          fallbackCanvas.style.position = 'absolute';
+          fallbackCanvas.style.top = '0';
+          fallbackCanvas.style.left = '0';
+          fallbackCanvas.style.zIndex = '9999';
+          
+          const ctx = fallbackCanvas.getContext('2d', { willReadFrequently: false });
+          if (ctx) {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, fallbackCanvas.width, fallbackCanvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('WebGL context lost. Please refresh the page.', fallbackCanvas.width / 2, fallbackCanvas.height / 2);
+          }
+          
+          // Add to document body
+          if (canvas.parentElement) {
+            canvas.parentElement.appendChild(fallbackCanvas);
+          }
         }, false);
         
         canvas.addEventListener('webglcontextrestored', () => {
           console.log('WebGL context restored successfully');
           // Optionally reload resources here
+          if (this.onError) {
+            this.onError(null); // Clear error state
+          }
         }, false);
 
         // CSS3D renderer for checkpoint cards and headers
@@ -676,12 +717,19 @@ class ThreeJSResourceManager {
       const rgbeLoader = new RGBELoader();
       rgbeLoader.setPath('/hdr/');
       
+      // Configure texture loader for optimal mobile performance
+      // RGBELoader automatically handles:
+      // - RGBA format conversion (FloatType → UnsignedByteType on mobile)
+      // - sRGB color space management
+      // - HDR tone mapping for standard displays
+      
       rgbeLoader.load(
         'space_environment.hdr',
         (hdrTexture) => {
           this.updateProgress(0.5);
           
-          // Let RGBELoader handle texture format automatically
+          // RGBELoader handles texture format automatically
+          // Texture is already in correct format (RGBA, UnsignedByteType for mobile)
           hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
           hdrTexture.colorSpace = THREE.SRGBColorSpace;
           
@@ -690,11 +738,17 @@ class ThreeJSResourceManager {
           
           this.updateProgress(0.8);
           
-          // Generate PMREM cubemap for lighting
+          // Generate PMREM cubemap for lighting (check if pmremGenerator is defined)
           try {
-            const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
-            this.scene.environment = envMap;
-            this.environmentMap = envMap;
+            if (this.pmremGenerator) {
+              const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
+              this.scene.environment = envMap;
+              this.environmentMap = envMap;
+            } else {
+              console.warn('PMREMGenerator not available, using texture directly');
+              this.scene.environment = hdrTexture;
+              this.environmentMap = hdrTexture;
+            }
             
             this.updateProgress(1.0);
             resolve();
