@@ -9,7 +9,7 @@ export const BentoGrid = ({
   return (
     <div
       className={cn(
-        "mx-auto grid max-w-7xl grid-cols-1 gap-5 sm:gap-4 md:gap-4 md:auto-rows-[16rem] lg:auto-rows-[18rem] md:grid-cols-3 content-start px-2 sm:px-0",
+        "mx-auto grid max-w-7xl grid-cols-1 gap-5 sm:gap-4 md:gap-4 md:auto-rows-[16rem] lg:auto-rows-[18rem] md:grid-cols-3 content-start px-2 sm:px-0 auto-rows-[20rem]",
         className
       )}>
       {children}
@@ -42,7 +42,7 @@ export const BentoGridItem = memo(({
     <div
       onClick={onClick}
       className={cn(
-        "group/bento relative row-span-1 flex flex-col justify-between overflow-hidden rounded-xl border-2 border-white/10 transition-all duration-200 shadow-md shadow-black/20 cursor-pointer p-4 hover:shadow-lg hover:border-white",
+        "group/bento relative row-span-1 flex flex-col justify-between overflow-hidden rounded-xl border-2 border-white/10 transition-all duration-200 shadow-md shadow-black/20 cursor-pointer p-3 sm:p-4 hover:shadow-lg hover:border-white min-h-[18rem] sm:min-h-[16rem]",
         className
       )}
       style={{
@@ -54,17 +54,17 @@ export const BentoGridItem = memo(({
       }}
     >
       {/* Top section with tech stack tags */}
-      <div className="z-10 mb-6">
+      <div className="z-10 mb-4 sm:mb-6">
         {icon}
       </div>
       
       {/* Middle section with title and description */}
-      <div className="z-10 text-center px-3 sm:px-4 md:px-5 max-w-[95%] sm:max-w-[90%] mx-auto mb-8">
-        <div className="font-mono font-bold text-white/90 text-sm md:text-base mb-3">
+      <div className="z-10 text-center px-2 sm:px-3 md:px-4 max-w-[95%] sm:max-w-[90%] mx-auto mb-6 sm:mb-8">
+        <div className="font-mono font-bold text-white/90 text-xs sm:text-sm md:text-base mb-2 sm:mb-3">
           {title}
         </div>
         
-        <div className="font-mono text-[10px] md:text-[11px] font-normal text-white/70 line-clamp-3 sm:line-clamp-2">
+        <div className="font-mono text-[9px] sm:text-[10px] md:text-[11px] font-normal text-white/70 line-clamp-4 sm:line-clamp-3 md:line-clamp-2">
           {description}
         </div>
       </div>

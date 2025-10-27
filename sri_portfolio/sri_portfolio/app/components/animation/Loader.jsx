@@ -575,16 +575,44 @@ class ThreeJSResourceManager {
         this.renderer.shadowMap.enabled = false;
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         
-        // Add context lost/restore handlers
+        // Initialize PMREMGenerator for environment mapping (safe initialization)
+        try {
+          this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+          this.pmremGenerator.compileEquirectangularShader();
+        } catch (error) {
+          console.warn('PMREMGenerator initialization failed:', error);
+          this.pmremGenerator = null; // Set to null on failure
+        }
+        
+        // Add context lost/restore handlers with fallback UI
         const canvas = this.renderer.domElement;
         canvas.addEventListener('webglcontextlost', (event) => {
           event.preventDefault();
           console.warn('WebGL context lost. Attempting to restore...');
+          
+          // Show fallback UI
+          if (this.onError) {
+            this.onError('WebGL context lost. Please refresh the page.');
+          }
+          
+          // Display fallback message on canvas
+          const ctx = canvas.getContext('2d', { willReadFrequently: false });
+          if (ctx) {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('WebGL context lost. Please refresh the page.', canvas.width / 2, canvas.height / 2);
+          }
         }, false);
         
         canvas.addEventListener('webglcontextrestored', () => {
           console.log('WebGL context restored successfully');
           // Optionally reload resources here
+          if (this.onError) {
+            this.onError(null); // Clear error state
+          }
         }, false);
 
         // CSS3D renderer for checkpoint cards and headers
@@ -690,11 +718,17 @@ class ThreeJSResourceManager {
           
           this.updateProgress(0.8);
           
-          // Generate PMREM cubemap for lighting
+          // Generate PMREM cubemap for lighting (check if pmremGenerator is defined)
           try {
-            const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
-            this.scene.environment = envMap;
-            this.environmentMap = envMap;
+            if (this.pmremGenerator) {
+              const envMap = this.pmremGenerator.fromEquirectangular(hdrTexture).texture;
+              this.scene.environment = envMap;
+              this.environmentMap = envMap;
+            } else {
+              console.warn('PMREMGenerator not available, using texture directly');
+              this.scene.environment = hdrTexture;
+              this.environmentMap = hdrTexture;
+            }
             
             this.updateProgress(1.0);
             resolve();
