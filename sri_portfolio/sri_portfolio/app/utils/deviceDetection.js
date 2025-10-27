@@ -16,9 +16,9 @@ export function isMobileDevice() {
     return false; // Server-side rendering default
   }
 
-  // Check user agent for mobile devices
+  // Check user agent for mobile devices (excluding tablets)
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i;
+  const mobileRegex = /android.*mobile|webos|iphone|ipod|blackberry|iemobile|opera mini/i;
   const isMobileUA = mobileRegex.test(userAgent.toLowerCase());
 
   // Check for touch support
@@ -44,8 +44,9 @@ export function isTabletDevice() {
   const isIPad = /ipad/i.test(userAgent.toLowerCase()) || 
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const isAndroidTablet = /android/i.test(userAgent.toLowerCase()) && !/mobile/i.test(userAgent.toLowerCase());
+  const isGenericTablet = /tablet/i.test(userAgent.toLowerCase());
   
-  return isIPad || isAndroidTablet;
+  return isIPad || isAndroidTablet || isGenericTablet;
 }
 
 /**

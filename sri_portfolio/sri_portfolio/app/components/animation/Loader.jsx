@@ -590,20 +590,33 @@ class ThreeJSResourceManager {
           event.preventDefault();
           console.warn('WebGL context lost. Attempting to restore...');
           
-          // Show fallback UI
+          // Show fallback UI with a new canvas overlay
           if (this.onError) {
             this.onError('WebGL context lost. Please refresh the page.');
           }
           
-          // Display fallback message on canvas
-          const ctx = canvas.getContext('2d', { willReadFrequently: false });
+          // Create a new 2D canvas overlay for fallback message (don't reuse WebGL canvas)
+          const fallbackCanvas = document.createElement('canvas');
+          fallbackCanvas.width = window.innerWidth;
+          fallbackCanvas.height = window.innerHeight;
+          fallbackCanvas.style.position = 'absolute';
+          fallbackCanvas.style.top = '0';
+          fallbackCanvas.style.left = '0';
+          fallbackCanvas.style.zIndex = '9999';
+          
+          const ctx = fallbackCanvas.getContext('2d', { willReadFrequently: false });
           if (ctx) {
             ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(0, 0, fallbackCanvas.width, fallbackCanvas.height);
             ctx.fillStyle = '#ffffff';
             ctx.font = '20px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('WebGL context lost. Please refresh the page.', canvas.width / 2, canvas.height / 2);
+            ctx.fillText('WebGL context lost. Please refresh the page.', fallbackCanvas.width / 2, fallbackCanvas.height / 2);
+          }
+          
+          // Add to document body
+          if (canvas.parentElement) {
+            canvas.parentElement.appendChild(fallbackCanvas);
           }
         }, false);
         
@@ -704,12 +717,19 @@ class ThreeJSResourceManager {
       const rgbeLoader = new RGBELoader();
       rgbeLoader.setPath('/hdr/');
       
+      // Configure texture loader for optimal mobile performance
+      // RGBELoader automatically handles:
+      // - RGBA format conversion (FloatType → UnsignedByteType on mobile)
+      // - sRGB color space management
+      // - HDR tone mapping for standard displays
+      
       rgbeLoader.load(
         'space_environment.hdr',
         (hdrTexture) => {
           this.updateProgress(0.5);
           
-          // Let RGBELoader handle texture format automatically
+          // RGBELoader handles texture format automatically
+          // Texture is already in correct format (RGBA, UnsignedByteType for mobile)
           hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
           hdrTexture.colorSpace = THREE.SRGBColorSpace;
           

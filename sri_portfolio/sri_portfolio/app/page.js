@@ -550,14 +550,20 @@ export default function Home() {
 
   // Show loader phase - all resources are built here
   // Skip loader entirely on mobile, go straight to portfolio
-  if (showLoader) {
-    if (isActuallyMobile) {
+  useEffect(() => {
+    if (showLoader && isActuallyMobile) {
       // On mobile, skip loader and journey entirely
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setShowLoader(false);
         setShowMainPortfolio(true);
       }, 100);
       
+      return () => clearTimeout(timer);
+    }
+  }, [showLoader, isActuallyMobile]);
+  
+  if (showLoader) {
+    if (isActuallyMobile) {
       return (
         <div className="fixed inset-0 bg-black flex items-center justify-center">
           <div className="text-white text-xl">Loading...</div>
@@ -757,8 +763,8 @@ export default function Home() {
                   <span className="text-xs font-medium hidden md:inline md:text-sm">Theme</span>
                 </button>
               </div>
-              {/* Journey button - hide on mobile */}
-              {!isMobile && (
+              {/* Journey button - hide on mobile devices */}
+              {!isActuallyMobile && (
                 <div className="relative">
                   <button
                     onClick={handleManualJourney}
