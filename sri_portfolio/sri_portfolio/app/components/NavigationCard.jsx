@@ -28,12 +28,12 @@ export const NavigationCard = ({ title, description, icon, onClick, backgroundIm
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm group-hover:bg-black/30 transition-all duration-300" />
       <div className="relative h-full p-2 md:p-4 flex flex-col justify-center items-center text-center bg-black/10 backdrop-blur-sm border border-white/20 rounded-lg">
         <div className="text-white/90 mb-2 md:mb-3">{icon}</div>
-        <h3 className="text-white font-semibold text-sm md:text-lg mb-1 md:mb-2">{title}</h3>
+        <h3 className="text-white font-semibold text-xs md:text-lg mb-1 md:mb-2">{title}</h3>
         <div 
-          className="text-white/80 text-xs md:text-sm mb-2 md:mb-3 line-clamp-2"
+          className="text-white/80 text-[10px] md:text-sm mb-2 md:mb-3 line-clamp-2"
           dangerouslySetInnerHTML={renderMarkdown(description || 'No description available')}
         />
-        <IconArrowRight className="text-white/60 group-hover:translate-x-1 transition-transform" size={16} />
+        <IconArrowRight className="text-white/60 group-hover:translate-x-1 transition-transform" size={14} />
       </div>
     </motion.div>
   );

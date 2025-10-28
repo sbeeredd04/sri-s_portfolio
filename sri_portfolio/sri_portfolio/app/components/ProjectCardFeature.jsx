@@ -56,9 +56,9 @@ export const ProjectCardFeature = ({ project, onClick }) => {
                 loading="lazy"
                 style={{ 
                   overflow: 'auto',
-                  width: '300%',
-                  height: '300%',
-                  transform: 'scale(0.33)',
+                  width: '200%',
+                  height: '200%',
+                  transform: 'scale(0.5)',
                   transformOrigin: 'top left',
                   pointerEvents: 'none'
                 }}
@@ -95,11 +95,38 @@ export const ProjectCardFeature = ({ project, onClick }) => {
           )}
         </div>
 
-        {/* Content Section - Bottom 40% */}
+        {/* Content Section - Bottom 30% */}
         <div className="h-[30%] p-2 md:p-3 bg-black/60 backdrop-blur-sm border-t border-white/10">
           <div className="h-full flex flex-col justify-between">
+            {/* Title and Action Buttons */}
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <h3 className="text-white font-semibold text-xs md:text-sm line-clamp-1 flex-1">
+                {project?.title || 'Untitled Project'}
+              </h3>
+              <div className="flex gap-1 flex-shrink-0">
+                {project?.github && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); window.open(project.github, '_blank'); }}
+                    className="p-1 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
+                    title="GitHub Repository"
+                  >
+                    <IconBrandGithub size={12} className="text-white md:w-3.5 md:h-3.5" />
+                  </button>
+                )}
+                {project?.href && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); window.open(project.href, '_blank'); }}
+                    className="p-1 bg-emerald-500/20 backdrop-blur-sm rounded hover:bg-emerald-500/30 transition-colors"
+                    title="Live Demo"
+                  >
+                    <IconLink size={12} className="text-emerald-400 md:w-3.5 md:h-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+
             {/* Technologies */}
-            <div className="flex flex-wrap gap-0.5 md:gap-1 mb-0.5 md:mb-1">
+            <div className="flex flex-wrap gap-0.5 md:gap-1 mb-1">
               {project?.technologies?.slice(0, 2).map((tech, i) => (
                 <span key={i} className="text-[8px] md:text-[10px] px-1 md:px-1.5 py-0.5 bg-white/20 rounded-full text-white">
                   {tech}
@@ -112,43 +139,25 @@ export const ProjectCardFeature = ({ project, onClick }) => {
               )}
             </div>
             
-            {/* Title and Description */}
-            <div className="flex-1">
-              <h3 className="text-white font-semibold text-xs md:text-sm mb-0.5 md:mb-1 line-clamp-1">
-                {project?.title || 'Untitled Project'}
-              </h3>
-              <p className="text-white/80 text-[10px] md:text-xs line-clamp-2">
+            {/* Description */}
+            <div className="flex-1 min-h-0">
+              <p className="text-white/80 text-[9px] md:text-[10px] line-clamp-2">
                 {shortDescription}
               </p>
             </div>
             
-            {/* Action Buttons */}
-            <div className="flex gap-0.5 md:gap-1 mt-1 md:mt-2">
-              {project?.github && (
-                <button 
-                  onClick={(e) => { e.stopPropagation(); window.open(project.github, '_blank'); }}
-                  className="p-1 md:p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
-                >
-                  <IconBrandGithub size={10} className="text-white md:w-3 md:h-3" />
-                </button>
-              )}
-              {project?.href && (
-                <button 
-                  onClick={(e) => { e.stopPropagation(); window.open(project.href, '_blank'); }}
-                  className="p-1 md:p-1.5 bg-white/10 backdrop-blur-sm rounded hover:bg-white/20 transition-colors"
-                >
-                  <IconLink size={10} className="text-white md:w-3 md:h-3" />
-                </button>
-              )}
-              {project?.youtube && (
+            {/* YouTube Button if available */}
+            {project?.youtube && (
+              <div className="mt-1">
                 <button 
                   onClick={(e) => { e.stopPropagation(); window.open(`https://www.youtube.com/watch?v=${project.youtube}`, '_blank'); }}
-                  className="p-1 md:p-1.5 bg-red-500/20 backdrop-blur-sm rounded hover:bg-red-500/30 transition-colors"
+                  className="w-full p-1 bg-red-500/20 backdrop-blur-sm rounded hover:bg-red-500/30 transition-colors flex items-center justify-center gap-1"
                 >
-                  <IconBrandYoutube size={10} className="text-white md:w-3 md:h-3" />
+                  <IconBrandYoutube size={10} className="text-white" />
+                  <span className="text-[8px] md:text-[9px] text-white">Watch Demo</span>
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -236,7 +245,7 @@ const ProjectModal = ({ project, onClose }) => {
 
         <div className="flex flex-col h-full">
           {/* Preview Section - Full width at top */}
-          <div className="w-full h-[45vh] bg-black rounded-t-2xl overflow-hidden flex-shrink-0">
+          <div className="w-full h-[50vh] bg-black rounded-t-2xl overflow-hidden flex-shrink-0">
             {/* Priority 1: iframe if available and not empty */}
             {project?.iframe && project.iframe.trim() !== "" ? (
               <div className="w-full h-full overflow-auto">
@@ -265,7 +274,7 @@ const ProjectModal = ({ project, onClose }) => {
               <video
                 ref={videoRef}
                 src={project.video}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain bg-black"
                 controls
                 loop
                 muted
@@ -278,7 +287,7 @@ const ProjectModal = ({ project, onClose }) => {
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain bg-black"
                 />
               </div>
             ) : (
@@ -300,7 +309,7 @@ const ProjectModal = ({ project, onClose }) => {
               style={{
                 scrollbarWidth: 'thin',
                 scrollbarColor: 'rgba(255,255,255,0.3) transparent',
-                maxHeight: 'calc(90vh - 45vh - 2rem)'
+                maxHeight: 'calc(90vh - 50vh - 2rem)'
               }}
             >
               <style jsx>{`
@@ -333,9 +342,46 @@ const ProjectModal = ({ project, onClose }) => {
               `}</style>
               
               <div className="space-y-6">
-                {/* Header */}
+                {/* Header with Title and Links */}
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-2">{project?.title}</h2>
+                  <div className="flex items-start justify-between gap-4 mb-3">
+                    <h2 className="text-2xl font-bold text-white flex-1">{project?.title}</h2>
+                    <div className="flex flex-wrap gap-2 flex-shrink-0">
+                      {project?.github && (
+                        <a 
+                          href={project.github} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white transition-colors text-sm"
+                        >
+                          <IconBrandGithub size={16} />
+                          <span>GitHub</span>
+                        </a>
+                      )}
+                      {project?.href && (
+                        <a 
+                          href={project.href} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-white transition-colors text-sm"
+                        >
+                          <IconExternalLink size={16} />
+                          <span>Live Demo</span>
+                        </a>
+                      )}
+                      {project?.youtube && (
+                        <a 
+                          href={`https://www.youtube.com/watch?v=${project.youtube}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition-colors text-sm"
+                        >
+                          <IconBrandYoutube size={16} />
+                          <span>YouTube</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {project?.technologies?.map((tech, i) => (
                       <span key={i} className="text-xs px-2 py-1 bg-white/20 rounded-full text-white">
@@ -366,46 +412,6 @@ const ProjectModal = ({ project, onClose }) => {
                     />
                   </div>
                 )}
-
-                {/* Links */}
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Links</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {project?.github && (
-                      <a 
-                        href={project.github} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white transition-colors"
-                      >
-                        <IconBrandGithub size={16} />
-                        <span>GitHub</span>
-                      </a>
-                    )}
-                    {project?.href && (
-                      <a 
-                        href={project.href} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-white transition-colors"
-                      >
-                        <IconExternalLink size={16} />
-                        <span>Live Demo</span>
-                      </a>
-                    )}
-                    {project?.youtube && (
-                      <a 
-                        href={`https://www.youtube.com/watch?v=${project.youtube}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition-colors"
-                      >
-                        <IconBrandYoutube size={16} />
-                        <span>YouTube</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
           </div>

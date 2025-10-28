@@ -142,22 +142,22 @@ export const FeaturingSection = ({ navigateToSection }) => {
 
   // Mobile grid configuration (2 columns)
   const mobileGridConfig = {
-    1: "col-span-2 row-span-2", // ProfileCard - full width
-    2: "col-span-1 row-span-2", // Navigation items
-    3: "col-span-1 row-span-2",
-    4: "col-span-2 row-span-2", // Projects - full width, 2 rows
-    5: "col-span-2 row-span-2",
-    6: "col-span-1 row-span-2", // Navigation items
-    7: "col-span-1 row-span-2",
-    8: "col-span-2 row-span-2", // Projects
-    9: "col-span-1 row-span-2", // Navigation items
-    10: "col-span-1 row-span-2",
-    11: "col-span-1 row-span-3", // Blog posts - 1 column, 3 rows
-    12: "col-span-2 row-span-2", // Projects
-    13: "col-span-2 row-span-2", // Projects
-    14: "col-span-1 row-span-3", // Blog posts
-    15: "col-span-1 row-span-3", // Blog posts
-    16: "col-span-1 row-span-3", // Blog posts
+    1: "col-span-2 row-span-8", // ProfileCard - full width, taller
+    2: "col-span-1 row-span-3", // Navigation items - taller
+    3: "col-span-1 row-span-3",
+    4: "col-span-2 row-span-3", // Projects - full width, taller
+    5: "col-span-2 row-span-3",
+    6: "col-span-1 row-span-3", // Navigation items - taller
+    7: "col-span-1 row-span-3",
+    8: "col-span-2 row-span-3", // Projects - taller
+    9: "col-span-1 row-span-3", // Navigation items - taller
+    10: "col-span-1 row-span-3",
+    11: "col-span-1 row-span-12", // Blog posts - 1 column, 4 rows
+    12: "col-span-2 row-span-3", // Projects - taller
+    13: "col-span-2 row-span-3", // Projects - taller
+    14: "col-span-1 row-span-12", // Blog posts - 12 rows
+    15: "col-span-1 row-span-12", // Blog posts - 12 rows
+    16: "col-span-1 row-span-12", // Blog posts - 12 rows
   };
 
   const activeGridConfig = isMobile ? mobileGridConfig : gridConfig;
@@ -168,7 +168,7 @@ export const FeaturingSection = ({ navigateToSection }) => {
         <GlowingEffect />
         
         {/* Grid Layout - 2 columns on mobile, 8 columns on desktop */}
-        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-8 grid-rows-16'} gap-4 md:gap-6 ${isMobile ? 'min-h-[300vh]' : 'min-h-[250vh]'}`}>
+        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-8 grid-rows-16'} gap-4 md:gap-6 ${isMobile ? 'min-h-[400vh]' : 'min-h-[250vh]'}`}>
           {/* Dynamically render all 16 boxes */}
           {Array.from({ length: 16 }, (_, i) => {
             const boxId = i + 1;

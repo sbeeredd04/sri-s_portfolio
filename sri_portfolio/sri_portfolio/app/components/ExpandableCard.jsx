@@ -204,7 +204,7 @@ export const Card = ({ card, index, layout = false }) => {
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        className="cursor-pointer rounded-3xl bg-gray-100 dark:bg-neutral-900 shadow-lg h-80 w-56 md:h-[40rem] md:w-96 overflow-hidden flex flex-col items-center justify-center relative"
+        className="cursor-pointer rounded-3xl bg-gray-100 dark:bg-neutral-900 shadow-lg h-96 w-56 md:h-[45rem] md:w-96 overflow-hidden flex flex-col items-center justify-center relative"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent z-10" />
         <Image

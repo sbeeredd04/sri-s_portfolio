@@ -15,17 +15,17 @@ export const ProfileCard = () => {
         <div className="relative h-full bg-black/10 rounded-lg flex flex-col">
           {/* CS at top left */}
           <div className="absolute top-2 md:top-3 left-2 md:left-3">
-            <span className="text-white font-bold text-base md:text-xl">CS</span>
+            <span className="text-white font-bold text-sm md:text-xl">CS</span>
           </div>
           
           {/* Sri Ujjwal Reddy in center */}
           <div className="flex-1 flex items-center justify-center px-2">
-            <h1 className="text-white font-bold text-lg md:text-2xl text-center leading-tight">Sri Ujjwal Reddy</h1>
+            <h1 className="text-white font-bold text-base md:text-2xl text-center leading-tight">Sri Ujjwal Reddy</h1>
           </div>
           
           {/* Software Engineer at bottom right */}
           <div className="absolute bottom-2 md:bottom-3 right-2 md:right-3">
-            <p className="text-white/80 font-bold text-sm md:text-xl">Software Engineer</p>
+            <p className="text-white/80 font-bold text-xs md:text-xl">Software Engineer</p>
           </div>
         </div>
       </div>
