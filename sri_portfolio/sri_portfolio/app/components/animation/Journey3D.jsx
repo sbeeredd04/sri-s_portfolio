@@ -629,6 +629,13 @@ export default function Journey3D({ onComplete, preloadedResources }) {
     let targetLookDirection = new THREE.Vector3(0, 0, -1);
     let currentLookDirection = new THREE.Vector3(0, 0, -1);
     let isLookingAround = false;
+    
+    // ── Touch drag controls ──
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchCurrentX = 0;
+    let touchCurrentY = 0;
+    let isTouchDragging = false;
 
     let rafId = null;
     let isAlive = true;
@@ -670,11 +677,12 @@ export default function Journey3D({ onComplete, preloadedResources }) {
       animate();
     }
 
-    // ── MOUSE LOOK CONTROLS: Camera look-around ──
+    // ── MOUSE & TOUCH LOOK CONTROLS: Camera look-around ──
     function setupLookAroundControls() {
       const container = containerRef.current;
       if (!container) return;
 
+      // ── MOUSE LOOK CONTROL ──
       const onMouseMove = (event) => {
         if (!camera || !targetLookDirection) return;
         
@@ -716,8 +724,75 @@ export default function Journey3D({ onComplete, preloadedResources }) {
         isLookingAround = false;
       };
 
+      // ── TOUCH DRAG CONTROL FOR IPADS/TOUCHSCREENS ──
+      const onTouchStart = (event) => {
+        // Only handle single touch for look-around (ignore multi-touch gestures)
+        if (event.touches.length === 1) {
+          const touch = event.touches[0];
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
+          touchCurrentX = touch.clientX;
+          touchCurrentY = touch.clientY;
+          isTouchDragging = true;
+          isLookingAround = true;
+        }
+      };
+
+      const onTouchMove = (event) => {
+        if (!isTouchDragging || event.touches.length !== 1) return;
+        if (!camera || !targetLookDirection) return;
+        
+        const touch = event.touches[0];
+        touchCurrentX = touch.clientX;
+        touchCurrentY = touch.clientY;
+        
+        const rect = container.getBoundingClientRect();
+        
+        // Calculate drag delta from start position
+        const dragDeltaX = (touchCurrentX - touchStartX) / (rect.width / 2);
+        const dragDeltaY = (touchCurrentY - touchStartY) / (rect.height / 2);
+        
+        // Calculate look angles based on drag distance
+        const yawAngle = THREE.MathUtils.clamp(
+          -dragDeltaX * THREE.MathUtils.degToRad(LOOK_AROUND_MAX_YAW_DEG),
+          THREE.MathUtils.degToRad(-LOOK_AROUND_MAX_YAW_DEG),
+          THREE.MathUtils.degToRad(LOOK_AROUND_MAX_YAW_DEG)
+        );
+        
+        const pitchAngle = THREE.MathUtils.clamp(
+          -dragDeltaY * THREE.MathUtils.degToRad(LOOK_AROUND_MAX_YAW_DEG * 0.5),
+          THREE.MathUtils.degToRad(-LOOK_AROUND_MAX_YAW_DEG * 0.5),
+          THREE.MathUtils.degToRad(LOOK_AROUND_MAX_YAW_DEG * 0.5)
+        );
+        
+        // Apply rotations to look direction
+        const forward = new THREE.Vector3(0, 0, -1);
+        const right = new THREE.Vector3(1, 0, 0);
+        const up = new THREE.Vector3(0, 1, 0);
+        
+        targetLookDirection.copy(forward);
+        targetLookDirection.applyAxisAngle(up, yawAngle);
+        targetLookDirection.applyAxisAngle(right, pitchAngle);
+        targetLookDirection.normalize();
+      };
+
+      const onTouchEnd = () => {
+        isTouchDragging = false;
+        isLookingAround = false;
+        
+        // Reset look direction to center when touch ends
+        targetLookDirection.copy(new THREE.Vector3(0, 0, -1));
+      };
+
+      // Attach mouse event listeners
       container.addEventListener('mousemove', onMouseMove);
       container.addEventListener('mouseleave', onMouseLeave);
+      
+      // Attach touch event listeners
+      container.addEventListener('touchstart', onTouchStart, { passive: true });
+      container.addEventListener('touchmove', onTouchMove, { passive: true });
+      container.addEventListener('touchend', onTouchEnd, { passive: true });
+      container.addEventListener('touchcancel', onTouchEnd, { passive: true });
     }
 
     // ──────────────────────────────────────────────────────────────────────────────
