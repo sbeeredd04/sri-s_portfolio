@@ -14,6 +14,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { MusicProvider } from './components/MusicProvider';
 import { SoundProvider } from './components/SoundProvider';
+import { RootProviders } from './contexts/providers';
 
 export const metadata = {
   title: "Sri Ujjwal Reddy",
@@ -67,7 +68,9 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning>
         <SoundProvider>
           <MusicProvider>
-            {children}
+            <RootProviders>
+              {children}
+            </RootProviders>
           </MusicProvider>
         </SoundProvider>
         <Analytics />
