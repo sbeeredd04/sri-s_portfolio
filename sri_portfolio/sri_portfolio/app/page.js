@@ -804,232 +804,27 @@ export default function Home() {
                 )}
 
                 {activeSection === "about" && (
-                  <section className="w-full h-full flex flex-col">
-                    <AnimatePresence mode="wait">
-                      {activeTab === "profile" && (
-                        <motion.div
-                          key="profile"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ duration: 0.3 }}
-                          className="h-full relative"
-                        >
-                          <div className="absolute inset-0 w-full h-full flex items-center justify-center">
-                            <div className="w-full h-full">
-                              <StickyScroll content={aboutMeContent} />
-                            </div>
-                          </div>
-                          
-                          {/* Resume Buttons */}
-                          <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 md:gap-4 px-4 z-50 pb-2">
-                            <Link href="/sri_resume.pdf" download>
-                              <button className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-500 text-black hover:from-cyan-500 hover:to-emerald-600 transition-all md:px-6 md:py-3 md:text-base shadow-lg hover:shadow-cyan-500/40 active:scale-95">
-                                <IconDownload size="1.1em" strokeWidth={2} className="mr-1.5 md:mr-2 flex-shrink-0" />
-                                Download Resume
-                              </button>
-                            </Link>
-                            <button
-                              className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-black/20 backdrop-blur-md border border-cyan-400/60 text-cyan-300 hover:bg-black/30 hover:border-cyan-300 hover:text-cyan-200 transition-all md:px-6 md:py-3 md:text-base active:scale-95"
-                              onClick={() => setShowResumePreview(true)}
-                            >
-                              <IconEye size="1.1em" strokeWidth={2} className="mr-1.5 md:mr-2 flex-shrink-0" />
-                              View Resume
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-
-                      {activeTab === "education" && (
-                        <motion.div
-                          key="education"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ duration: 0.3 }}
-                          className="flex flex-col gap-4 md:gap-8 p-3 md:p-8 h-full w-full"
-                        >
-                          {/* Education content... (abbreviated for space) */}
-                          <div className="text-white">Education section</div>
-                        </motion.div>
-                      )}
-
-                      {activeTab === "hobbies" && (
-                        <motion.div
-                          key="hobbies"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ duration: 0.3 }}
-                          className="flex items-center justify-center p-4 md:p-8 h-full"
-                        >
-                          <div className="text-lg text-white/60 md:text-2xl">Hobbies content coming soon...</div>
-                        </motion.div>
-                      )}
-
-                      {activeTab === "side-quests" && (
-                        <motion.div
-                          key="side-quests"
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ duration: 0.3 }}
-                          className="flex items-center justify-center p-4 md:p-8 h-full"
-                        >
-                          <div className="text-lg text-white/60 md:text-2xl">Side Quests content coming soon...</div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {/* Resume Preview Modal */}
-                    <ResponsiveModal
-                      isOpen={showResumePreview}
-                      onClose={() => setShowResumePreview(false)}
-                      title="Resume Preview"
-                      showDownloadButton={true}
-                      downloadHref="/sri_resume.pdf"
-                      content={
-                        <iframe
-                          src="/sri_resume.pdf#view=FitH"
-                          className="w-full h-full"
-                          style={{ background: 'white' }}
-                        />
-                      }
-                    />
-                  </section>
+                  <AboutSection activeTab={activeTab} setActiveTab={setActiveTab} />
                 )}
 
                 {activeSection === "experience" && (
-                  <section className="w-full h-full">
-                    <div className="w-full h-full overflow-y-auto">
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={activeTab}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          transition={{ duration: 0.3 }}
-                          className="w-full min-h-full"
-                        >
-                          {activeTab === "experience" ? (
-                            <TimelineDemo theme="experience" />
-                          ) : (
-                            <AchievementTimelineDemo theme="achievements" />
-                          )}
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-                  </section>
+                  <ExperienceSection activeTab={activeTab} setActiveTab={setActiveTab} />
                 )}
 
                 {activeSection === "projects" && (
-                  <section className="w-full h-full p-4 md:p-8 flex flex-col">
-                    <h2 className="text-xl font-bold text-white/90 mb-4 md:text-4xl md:mb-6 flex-shrink-0">
-                      {activeTab === "all" ? "Featured Projects" : "Deployed Projects"}
-                    </h2>
-                    
-                    <div 
-                      className="flex-1 overflow-y-auto scrollbar-none scroll-smooth"
-                      style={{ 
-                        overscrollBehavior: 'contain',
-                        WebkitOverflowScrolling: 'touch',
-                        paddingBottom: '120px'
-                      }}
-                    >
-                      <AnimatePresence mode="wait">
-                        <motion.div 
-                          key={activeTab}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
-                        >
-                          {activeTab === "all" ? (
-                            projects.map((project, index) => (
-                              <ProjectCard 
-                                key={`project-${index}`} 
-                                project={project}
-                                onPreview={(url) => {
-                                  setPreviewUrl(url);
-                                  setShowProjectPreview(true);
-                                }}
-                              />
-                            ))
-                          ) : (
-                            deployedProjects.map((project, index) => (
-                              <ProjectCard 
-                                key={`deployed-${index}`} 
-                                project={project}
-                                onPreview={(url) => {
-                                  setPreviewUrl(url);
-                                  setShowProjectPreview(true);
-                                }}
-                              />
-                            ))
-                          )}
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-                  </section>
+                  <ProjectsSection activeTab={activeTab} setActiveTab={setActiveTab} isMobile={isMobile} />
                 )}
 
                 {activeSection === "skills" && (
-                  <section className="w-full h-full p-4 md:p-8 overflow-y-auto">
-                    <h2 className="text-xl font-bold text-white/90 mb-4 md:text-4xl md:mb-6">Skills & Technologies</h2>
-                    
-                    {skillsActiveTab === "overview" && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                        {skillsSections.map((section, idx) => (
-                          <div key={idx} className="bg-neutral-800/30 rounded-xl p-4 md:p-6 border border-white/10">
-                            <h3 className="text-base font-semibold text-cyan-400 mb-3 md:text-xl md:mb-4">{section.category}</h3>
-                            <div className="flex flex-wrap gap-2">
-                              {section.skills.map((skill, skillIdx) => (
-                                <img key={skillIdx} src={skill.icon} alt="skill" className="h-8 md:h-10" />
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {skillsActiveTab === "github" && (
-                      <GitHubStatsView />
-                    )}
-                  </section>
+                  <SkillsSection skillsActiveTab={skillsActiveTab} setSkillsActiveTab={setSkillsActiveTab} />
                 )}
 
                 {activeSection === "blog" && (
-                  <section className="w-full h-full p-4 md:p-8 flex flex-col">
-                    <h2 className="text-xl font-bold text-white/90 mb-4 md:text-4xl md:mb-6">Blog Posts</h2>
-                    <div className="flex-1 overflow-y-auto">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        {blogPosts.map((post, index) => (
-                          <div key={index} className="bg-neutral-800/30 rounded-xl p-4 md:p-6 border border-white/10 hover:border-cyan-400/30 transition-all">
-                            <h3 className="text-base font-semibold text-cyan-400 md:text-lg">{post.title}</h3>
-                            <p className="text-sm text-white/60 mt-2 md:text-base">{post.excerpt}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
+                  <BlogSection />
                 )}
 
                 {activeSection === "contact" && (
-                  <section className="w-full h-full p-4 md:p-8 flex flex-col">
-                    <h2 className="text-xl font-bold text-white/90 mb-4 md:text-4xl md:mb-6">Get In Touch</h2>
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4 md:gap-6 flex-1">
-                      <FormInput type="text" name="name" placeholder="Your Name" required />
-                      <FormInput type="email" name="email" placeholder="Your Email" required />
-                      <FormTextarea name="message" placeholder="Your Message" required />
-                      <button 
-                        type="submit"
-                        className="px-6 py-2 bg-gradient-to-r from-cyan-400 to-emerald-500 text-black font-semibold rounded-lg hover:from-cyan-500 hover:to-emerald-600 transition-all"
-                      >
-                        Send Message
-                      </button>
-                    </form>
-                  </section>
+                  <ContactSection handleSubmit={handleSubmit} />
                 )}
               </motion.div>
             </AnimatePresence>
