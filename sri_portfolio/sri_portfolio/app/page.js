@@ -66,6 +66,13 @@ import { FeaturingSection } from "./components/FeaturingSection";
 import Loader from "./components/animation/Loader";
 import Journey3D from "./components/animation/Journey3D";
 import { isMobileDevice } from "./utils/deviceDetection";
+import AboutSection from "./sections/AboutSection";
+import ExperienceSection from "./sections/ExperienceSection";
+import ProjectsSection from "./sections/ProjectsSection";
+import SkillsSection from "./sections/SkillsSection";
+import BlogSection from "./sections/BlogSection";
+import ContactSection from "./sections/ContactSection";
+import { TabButton, ResponsiveModal, FormInput, FormTextarea } from "./components/ui";
 
 export default function Home() {
   // Add these state variables at the top of the component
@@ -1028,40 +1035,20 @@ export default function Home() {
                     </AnimatePresence>
 
                     {/* Resume Preview Modal */}
-                    {showResumePreview && (
-                      <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
-                        onClick={(e) => {
-                          if (e.target === e.currentTarget) {
-                            setShowResumePreview(false);
-                          }
-                        }}
-                      >
-                        <div className="w-[90%] h-[90%] bg-white rounded-xl shadow-2xl overflow-hidden">
-                          <div className="absolute top-4 right-4 flex items-center gap-2">
-                            <Link 
-                              href="/sri_resume.pdf" 
-                              download
-                              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              Download
-                            </Link>
-              <button
-                              className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                              onClick={() => setShowResumePreview(false)}
-                            >
-                              <IconPlus className="rotate-45" size={24} />
-              </button>
-            </div>
-                          <iframe
-                            src="/sri_resume.pdf#view=FitH"
-                            className="w-full h-full"
-                            style={{ background: 'white' }}
-                          />
-                        </div>
-                      </div>
-                    )}
+                    <ResponsiveModal
+                      isOpen={showResumePreview}
+                      onClose={() => setShowResumePreview(false)}
+                      title="Resume Preview"
+                      showDownloadButton={true}
+                      downloadHref="/sri_resume.pdf"
+                      content={
+                        <iframe
+                          src="/sri_resume.pdf#view=FitH"
+                          className="w-full h-full"
+                          style={{ background: 'white' }}
+                        />
+                      }
+                    />
                   </section>
                 )}
 
@@ -1263,31 +1250,29 @@ export default function Home() {
             <div className="mt-4 md:mt-8 text-center">
               <p className="text-sm mb-4 md:text-lg md:mb-6">Feel free to reach out for collaborations or inquiries.</p>
               <form onSubmit={handleSubmit} className="mt-4 space-y-3 max-w-2xl mx-auto md:mt-6 md:space-y-4">
-                <input 
-                  type="text" 
+                <FormInput 
                   name="from_name"
+                  type="text"
                   placeholder="Your Name" 
                   required
-                  className="w-full p-2.5 text-sm bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all md:p-4" 
                 />
-                <input 
-                  type="email" 
+                <FormInput 
                   name="from_email"
+                  type="email"
                   placeholder="Your Email" 
                   required
-                  className="w-full p-2.5 text-sm bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all md:p-4" 
                 />
                 <input 
                   type="hidden" 
                   name="subject"
                   value="WEBSITE CONTACT"
                 />
-                <textarea 
+                <FormTextarea 
                   name="message"
                   placeholder="Your Message" 
                   required
-                  className="w-full p-2.5 text-sm bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition-all h-28 md:h-40 md:p-4"
-                ></textarea>
+                  className="h-28 md:h-40"
+                />
                 <button 
                   type="submit" 
                   className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:from-blue-500 hover:to-green-500 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 md:px-6 md:py-3"
@@ -1355,121 +1340,71 @@ export default function Home() {
               
               {activeSection === "about" && (
                 <>
-                  <button
+                  <TabButton
+                    label="Profile"
+                    isActive={activeTab === "profile"}
                     onClick={() => setActiveTab("profile")}
-                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
-                      activeTab === "profile"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
-                  >
-                    Profile
-                  </button>
-                  <button
+                  />
+                  <TabButton
+                    label="Education"
+                    isActive={activeTab === "education"}
                     onClick={() => setActiveTab("education")}
-                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
-                      activeTab === "education"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
-                  >
-                    Education
-                  </button>
-                  <button
+                  />
+                  <TabButton
+                    label="Hobbies"
+                    isActive={activeTab === "hobbies"}
                     onClick={() => setActiveTab("hobbies")}
-                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
-                      activeTab === "hobbies"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
-                  >
-                    Hobbies
-                  </button>
-                  <button
+                  />
+                  <TabButton
+                    label="Side Quests"
+                    isActive={activeTab === "side-quests"}
                     onClick={() => setActiveTab("side-quests")}
-                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
-                      activeTab === "side-quests"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
-                  >
-                    Side Quests
-                  </button>
+                  />
                 </>
               )}
 
               {activeSection === "experience" && (
                 <>
-                  <button
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all md:px-6 md:py-1.5 md:text-lg ${
-                      activeTab === "experience"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
+                  <TabButton
+                    label="Experience"
+                    isActive={activeTab === "experience"}
                     onClick={() => setActiveTab("experience")}
-                  >
-                    Experience
-                  </button>
-                  <button
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all md:px-6 md:py-1.5 md:text-lg ${
-                      activeTab === "achievements"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
+                  />
+                  <TabButton
+                    label="Achievements"
+                    isActive={activeTab === "achievements"}
                     onClick={() => setActiveTab("achievements")}
-                  >
-                    Achievements
-                  </button>
+                  />
                 </>
               )}
 
               {activeSection === "projects" && (
                 <>
-                  <button 
-                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
-                      activeTab === "all"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
+                  <TabButton
+                    label="All Projects"
+                    isActive={activeTab === "all"}
                     onClick={() => setActiveTab("all")}
-                  >
-                    All Projects
-                  </button>
-                  <button 
-                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
-                      activeTab === "deployed"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
+                  />
+                  <TabButton
+                    label="Deployed Projects"
+                    isActive={activeTab === "deployed"}
                     onClick={() => setActiveTab("deployed")}
-                  >
-                    Deployed Projects
-                  </button>
+                  />
                 </>
               )}
 
               {activeSection === "skills" && (
                 <>
-                  <button 
-                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
-                      skillsActiveTab === "overview"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
+                  <TabButton
+                    label="Skill Overview"
+                    isActive={skillsActiveTab === "overview"}
                     onClick={() => setSkillsActiveTab("overview")}
-                  >
-                    Skill Overview
-                  </button>
-                  <button 
-                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap md:px-6 md:py-1.5 md:text-lg ${
-                      skillsActiveTab === "github"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-neutral-700/20 text-neutral-400 hover:bg-neutral-600/20 hover:text-white border border-white/5"
-                    }`}
+                  />
+                  <TabButton
+                    label="GitHub Analytics"
+                    isActive={skillsActiveTab === "github"}
                     onClick={() => setSkillsActiveTab("github")}
-                  >
-                    GitHub Analytics
-                  </button>
+                  />
                 </>
               )}
 
