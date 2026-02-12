@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useBreakpoint Hook
  * Provides reactive breakpoint detection for responsive components
@@ -25,7 +27,6 @@
  * }
  * ```
  */
-'use client';
 
 import { useState, useEffect } from 'react';
 

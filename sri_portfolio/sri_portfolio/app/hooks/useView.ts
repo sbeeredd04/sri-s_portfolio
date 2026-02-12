@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useView Hook
  * Provides easy access to view state and actions
@@ -36,7 +38,6 @@
  * }
  * ```
  */
-'use client';
 
 import { useViewContext } from '@/app/contexts/ViewContext';
 

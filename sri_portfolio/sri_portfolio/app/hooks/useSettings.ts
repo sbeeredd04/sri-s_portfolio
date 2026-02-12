@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useSettings Hook
  * Provides easy access to global settings state and actions
@@ -34,7 +36,6 @@
  * }
  * ```
  */
-'use client';
 
 import { useSettingsContext } from '@/app/contexts/SettingsContext';
 

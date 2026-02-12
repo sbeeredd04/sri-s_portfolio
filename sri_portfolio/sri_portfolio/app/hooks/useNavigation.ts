@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useNavigation Hook
  * Provides easy access to navigation state and actions
@@ -32,7 +34,6 @@
  * }
  * ```
  */
-'use client';
 
 import { useNavigationContext } from '@/app/contexts/NavigationContext';
 
