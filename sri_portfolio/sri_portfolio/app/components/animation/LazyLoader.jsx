@@ -2,7 +2,7 @@
 
 import { Suspense, lazy } from 'react';
 
-const LoaderComponent = lazy(() => import('./Loader'));
+const LoaderComponent = lazy(() => import('./LoaderContainer'));
 
 /**
  * LazyLoader Component
