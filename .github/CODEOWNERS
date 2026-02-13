@@ -1,0 +1,22 @@
+# CODEOWNERS - Automatic reviewer assignment
+
+# Default owner for all files
+* @sbeeredd04
+
+# Component files
+/projects/portfolio/sri_portfolio/sri_portfolio/app/components/ @sbeeredd04
+/projects/portfolio/sri_portfolio/sri_portfolio/app/sections/ @sbeeredd04
+
+# Animation components - critical review
+/projects/portfolio/sri_portfolio/sri_portfolio/app/components/animation/ @sbeeredd04
+
+# Styling and configuration
+/projects/portfolio/sri_portfolio/sri_portfolio/tailwind.config.js @sbeeredd04
+/projects/portfolio/sri_portfolio/sri_portfolio/next.config.js @sbeeredd04
+
+# GitHub configuration
+/.github/ @sbeeredd04
+
+# Documentation
+/docs/ @sbeeredd04
+/*.md @sbeeredd04
