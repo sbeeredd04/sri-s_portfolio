@@ -62,7 +62,7 @@ import { radarSkillsData, detailedSkillsData, gameStatsData, achievementsData } 
 import GameSkillsView from "./components/GameSkillsView";
 import GitHubStatsView from "./components/GitHubStatsView";
 import { FeaturingSection } from "./components/FeaturingSection";
-import Loader from "./components/animation/Loader";
+import { LazyLoader as Loader } from "./components/animation/LazyLoader";
 import Journey3D from "./components/animation/Journey3D";
 import { isMobileDevice } from "./utils/deviceDetection";
 import AboutSection from "./sections/AboutSection";
