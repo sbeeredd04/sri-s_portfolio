@@ -2,7 +2,7 @@
 
 import { Suspense, lazy } from 'react';
 
-const Journey3DComponent = lazy(() => import('./Journey3D'));
+const Journey3DComponent = lazy(() => import('./Journey3DContainer'));
 
 /**
  * LazyJourney3D Component
