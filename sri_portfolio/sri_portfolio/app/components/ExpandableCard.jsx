@@ -48,14 +48,12 @@ export const ExCarousel = ({
   
 
   const scrollLeft = () => {
-    console.log("Left button clicked");
     if (carouselRef.current) {
       carouselRef.current.scrollBy({ left: -300, behavior: "smooth" });
     }
   };
   
   const scrollRight = () => {
-    console.log("Right button clicked");
     if (carouselRef.current) {
       carouselRef.current.scrollBy({ left: 300, behavior: "smooth" });
     }
@@ -76,7 +74,7 @@ export const ExCarousel = ({
   };
 
   const isMobile = () => {
-    return window && window.innerWidth < 768;
+    return typeof window !== 'undefined' && window.innerWidth < 768;
   };
 
   return (
@@ -122,16 +120,16 @@ export const ExCarousel = ({
         </div>
         <div className="flex justify-end gap-2 mr-20">
           <button
-            className="relative z-40 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center disabled:opacity-50"
+            className="relative z-40 h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition-all"
             onClick={scrollLeft}
             disabled={!canScrollLeft}>
-            <IconArrowNarrowLeft className="h-6 w-6 text-gray-500" />
+            <IconArrowNarrowLeft className="h-6 w-6 text-white/70" />
           </button>
           <button
-            className="relative z-40 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center disabled:opacity-50"
+            className="relative z-40 h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition-all"
             onClick={scrollRight}
             disabled={!canScrollRight}>
-            <IconArrowNarrowRight className="h-6 w-6 text-gray-500" />
+            <IconArrowNarrowRight className="h-6 w-6 text-white/70" />
           </button>
         </div>
       </div>
@@ -176,23 +174,23 @@ export const Card = ({ card, index, layout = false }) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               layoutId={layout ? `card-${card.title}` : undefined}
-              className="relative w-full max-w-5xl h-full max-h-[90vh] overflow-y-auto bg-white dark:bg-neutral-900 p-6 md:p-10 rounded-3xl shadow-lg"
+              className="relative w-full max-w-5xl h-full max-h-[90vh] overflow-y-auto glass-dark p-6 md:p-10 shadow-lg"
             >
               <button
-                className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200"
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 transition-colors"
                 onClick={handleClose}
               >
-                <IconX className="text-gray-500 w-6 h-6" />
+                <IconX className="text-white/60 w-5 h-5" />
               </button>
-              <motion.h2 className="text-2xl md:text-4xl font-semibold text-neutral-700 dark:text-white mt-6">
+              <motion.h2 className="text-2xl md:text-4xl font-semibold text-white mt-6">
                 {card.title}
               </motion.h2>
-              <motion.p className="text-md md:text-lg font-medium text-gray-500 dark:text-gray-300 mt-2 mb-6">
+              <motion.p className="text-md md:text-lg font-medium text-white/50 mt-2 mb-6">
                 {card.category}
               </motion.p>
               {/* Render markdown content */}
               <div
-                className="markdown-content text-gray-800 dark:text-gray-200 py-4 blog-content prose prose-invert max-w-none"
+                className="markdown-content text-white/80 py-4 blog-content prose prose-invert max-w-none"
                 dangerouslySetInnerHTML={renderMarkdown(card.content)}
               />
             </motion.div>
@@ -204,7 +202,7 @@ export const Card = ({ card, index, layout = false }) => {
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        className="cursor-pointer rounded-3xl bg-gray-100 dark:bg-neutral-900 shadow-lg h-96 w-56 md:h-[45rem] md:w-96 overflow-hidden flex flex-col items-center justify-center relative"
+        className="cursor-pointer rounded-3xl glass-light h-96 w-56 md:h-[45rem] md:w-96 overflow-hidden flex flex-col items-center justify-center relative"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent z-10" />
         <Image

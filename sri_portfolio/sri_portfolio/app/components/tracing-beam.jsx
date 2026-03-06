@@ -13,10 +13,11 @@ export const TracingBeam = ({
   const [scrollContainer, setScrollContainer] = useState(null);
 
   // Get scroll progress from the main container
-  const { scrollYProgress } = useScroll({
-    container: scrollContainer,
-    offset: ["start start", "end start"],
-  });
+  // Only pass container ref when it's been hydrated to avoid motion/react error
+  const scrollOptions = scrollContainer
+    ? { container: { current: scrollContainer }, offset: ["start start", "end start"] }
+    : { offset: ["start start", "end start"] };
+  const { scrollYProgress } = useScroll(scrollOptions);
 
   useEffect(() => {
     // Find the main scrolling container by ID first, then fallback to searching
@@ -26,7 +27,7 @@ export const TracingBeam = ({
       if (container) {
         return container;
       }
-      
+
       // Fallback: search parent elements
       let element = ref.current;
       while (element && element !== document.body) {
@@ -57,15 +58,15 @@ export const TracingBeam = ({
   }, []);
 
   const y1 = useSpring(
-    useTransform(scrollYProgress, [0, 0.8], [50, svgHeight]), 
+    useTransform(scrollYProgress, [0, 0.8], [50, svgHeight]),
     {
       stiffness: 500,
       damping: 90,
     }
   );
-  
+
   const y2 = useSpring(
-    useTransform(scrollYProgress, [0, 1], [50, svgHeight - 200]), 
+    useTransform(scrollYProgress, [0, 1], [50, svgHeight - 200]),
     {
       stiffness: 500,
       damping: 90,

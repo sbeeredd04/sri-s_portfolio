@@ -18,14 +18,14 @@
         "description": "AI-powered CLI tool and VS Code extension for automated Git management. Features smart commit message generation using Gemini AI, activity tracking and analytics, fully interactive terminal, and seamless IDE integration for smooth developer workflows.",
         "href": "https://gitcue.sriujjwalreddy.com/",
         "github": "https://github.com/sbeeredd04/auto-git",
-        "image": "/projects/autogit.jpg"
+        "image": "/projects/projects (5).jpg"
     },
     {
         "title": "zsh_plugin",
         "description": "High-performance Zsh plugin written in C for maximum speed and efficiency. Features blazing-fast execution, enhanced autocompletion for commands and paths, smart shell utilities, and CI/CD automation with GitHub Actions for optimal shell productivity.",
         "href": "https://zshplugin.sriujjwalreddy.com/",
         "github": "https://github.com/sbeeredd04/zsh_plugin",
-        "image": "/projects/zsh.jpg"
+        "image": "/projects/projects (6).jpg"
     },
     {
         "title": "OctoDoc",

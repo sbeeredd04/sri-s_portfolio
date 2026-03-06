@@ -115,34 +115,40 @@ export const parseMarkdown = (markdown) => {
 
   // Paragraphs - Convert double line breaks to paragraph breaks
   // First, protect block elements from being wrapped in paragraphs
-  const blockElements = /<(h[1-6]|div|ul|ol|pre|blockquote|table|hr)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*>|<div[^>]*>[\s\S]*?<\/div>/g;
+  const blockElements = /<(h[1-6]|div|ul|ol|pre|blockquote|table)[^>]*>[\s\S]*?<\/\1>|<hr[^>]*\/?>/g;
   const blocks = [];
   html = html.replace(blockElements, (match) => {
     blocks.push(match);
-    return `\n__BLOCK_${blocks.length - 1}__\n`;
+    return `\n\n__BLOCK_${blocks.length - 1}__\n\n`;
   });
 
-  // Clean up extra whitespace around block placeholders
-  html = html.replace(/\n+__BLOCK_/g, '\n__BLOCK_');
-  html = html.replace(/__BLOCK_(\d+)__\n+/g, '__BLOCK_$1__\n');
-
-  // Now handle paragraphs and line breaks
-  html = html.replace(/\n\n+/g, '</p>\n<p class="text-white/80 mb-4 leading-relaxed text-base">');
-  html = html.replace(/\n/g, '<br />');
+  // Split on double newlines for paragraphs
+  const paragraphs = html.split(/\n{2,}/);
+  html = paragraphs
+    .map(p => p.trim())
+    .filter(p => p.length > 0)
+    .map(p => {
+      // Don't wrap block placeholders in <p>
+      if (p.match(/^__BLOCK_\d+__$/)) return p;
+      // Don't wrap if it already starts with a block element
+      if (p.match(/^<(h[1-6]|div|ul|ol|pre|blockquote|table|hr)/)) return p;
+      // Convert single newlines to <br /> inside paragraphs
+      const content = p.replace(/\n/g, '<br />');
+      return `<p class="text-white/80 mb-4 leading-relaxed text-base">${content}</p>`;
+    })
+    .join('\n');
 
   // Restore block elements
   blocks.forEach((block, index) => {
     html = html.replace(`__BLOCK_${index}__`, block);
   });
 
-  // Remove any <br /> tags that are immediately before or after block elements
-  html = html.replace(/<br \/>\s*(<(?:h[1-6]|div|ul|ol|pre|blockquote|table|hr))/g, '$1');
+  // Clean stray <br /> around block elements
+  html = html.replace(/<br \/>\s*(<(?:h[1-6]|div|ul|ol|pre|blockquote|table|hr)[^>]*>)/g, '$1');
   html = html.replace(/(<\/(?:h[1-6]|div|ul|ol|pre|blockquote|table)>)\s*<br \/>/g, '$1');
-
-  // Wrap in paragraph if needed
-  if (!html.match(/^<(h[1-6]|div|ul|ol|pre|blockquote|table|hr)/)) {
-    html = `<p class="text-white/80 mb-4 leading-relaxed text-base">${html}</p>`;
-  }
+  
+  // Remove empty paragraphs
+  html = html.replace(/<p[^>]*>\s*<\/p>/g, '');
 
   return html;
 };

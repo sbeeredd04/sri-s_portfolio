@@ -62,12 +62,12 @@ const DraggableMenuButton = ({ onClick, x, y, onDragEnd, dragBounds, initialPosi
       }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       // Outer circle: slightly larger padding, translucent background
-      className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/20 shadow-xl z-[1000] cursor-grab active:cursor-grabbing"
+      className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/15 shadow-xl z-[1000] cursor-grab active:cursor-grabbing"
       aria-label="Open navigation menu"
       whileTap={{ scale: 0.95 }} // Adjusted whileTap for outer button
     >
       {/* Inner circle: more opaque, smaller */}
-      <div className="w-9 h-9 rounded-full bg-black/90 flex items-center justify-center shadow-md">
+      <div className="w-9 h-9 rounded-full bg-black/70 backdrop-blur-xl flex items-center justify-center shadow-md">
         <Image src="/logos/logo.png" alt="Menu" width={20} height={20} className="object-contain" /> 
       </div>
     </motion.button>
@@ -171,7 +171,7 @@ const ExpandedMenuPanel = ({ items, onClose, anchorRect }) => {
         width: MENU_WIDTH,
         height: MENU_HEIGHT,
       }}
-      className="grid grid-cols-3 grid-rows-3 gap-2 p-3 rounded-3xl bg-black/100 border border-white/10 shadow-2xl z-[999]"
+      className="grid grid-cols-3 grid-rows-3 gap-2 p-3 rounded-3xl glass-dark shadow-2xl z-[999]"
     >
       {displayItems}
     </motion.div>
@@ -305,7 +305,7 @@ const IconContainerMobile = ({ title, icon, onClick, isActive }) => {
       aria-label={title}
     >
       <div
-        className={`flex items-center justify-center transition-colors rounded-full p-1 ${isActive ? 'text-blue-400' : 'text-neutral-300 hover:text-white'}`} // Removed active bg
+        className={`flex items-center justify-center transition-colors rounded-full p-1 ${isActive ? 'text-[#2fb8ff]' : 'text-neutral-300 hover:text-white'}`} // Removed active bg
       >
         {React.cloneElement(icon, { 
           className: `transition-all ${isActive ? 'h-5 w-5 stroke-[2]' : 'h-5 w-5 stroke-[1.8]'}` 
@@ -326,7 +326,7 @@ const FloatingDockDesktop = ({ items, className, id }) => {
       onMouseMove={(e) => mouseX.set(e.pageY)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "fixed left-4 top-1/2 transform -translate-y-1/2 h-auto w-16 gap-6 items-center rounded-3xl bg-neutral-800/60 backdrop-blur-xl border border-white/10 shadow-lg px-2 py-4",
+        "fixed left-4 top-1/2 transform -translate-y-1/2 h-auto w-16 gap-6 items-center rounded-3xl glass shadow-lg px-2 py-4",
         className
       )}
     >
@@ -411,7 +411,7 @@ function IconContainer({
             initial={{ opacity: 0, x: -10, y: "-50%" }}
             animate={{ opacity: 1, x: 0, y: "-50%" }}
             exit={{ opacity: 0, x: -10, y: "-50%" }}
-            className="px-3 py-1.5 whitespace-pre rounded-lg bg-neutral-800/60 backdrop-blur-3xl border border-white/10 shadow-lg absolute left-full ml-2 w-fit text-xs text-white"
+            className="px-3 py-1.5 whitespace-pre rounded-lg glass-dark shadow-lg absolute left-full ml-2 w-fit text-xs text-white"
           >
             {title}
           </motion.div>
@@ -419,7 +419,7 @@ function IconContainer({
       </AnimatePresence>
       <motion.div
         style={{ width: widthIcon, height: heightIcon }}
-        className={`flex items-center justify-center ${isActive ? 'text-blue-500' : 'text-white'}`}
+        className={`flex items-center justify-center ${isActive ? 'text-[#2fb8ff]' : 'text-white'}`}
       >
         {React.cloneElement(icon, { 
           className: `${isActive ? 'h-7 w-7' : 'h-5 w-5'} ${isActive ? 'stroke-[3]' : 'stroke-[1.5]'}`

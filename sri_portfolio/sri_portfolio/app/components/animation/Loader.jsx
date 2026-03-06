@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import dynamic from 'next/dynamic';
+
 import DecryptedText from './DecryptedText';
 import * as THREE from 'three';
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
@@ -8,7 +8,6 @@ import { RGBELoader } from 'three-stdlib';
 import { createRoot } from 'react-dom/client';
 import journeyData from '../../json/journey.json';
 
-const Beams = dynamic(() => import('../background/Beams'), { ssr: false });
 
 // Client-only time component to prevent hydration mismatch
 function ClientTime({ onAnimationComplete, showContent }) {
@@ -1338,9 +1337,12 @@ export default function Loader({ onComplete, onResourcesReady }) {
       ref={containerRef}
       className="fixed inset-0 z-[100] min-h-screen min-w-full bg-black overflow-hidden major-mono-display-regular"
     >
-      {/* Clean background animation */}
+      {/* Subtle visionOS gradient background */}
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-        <Beams beamWidth={0.8} beamHeight={14} beamNumber={4} lightColor="#fff" speed={2} noiseIntensity={1.75} scale={0.18} rotation={200} />
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950 to-black" />
+        <div className="absolute inset-0 opacity-30" style={{
+          background: 'radial-gradient(ellipse at 30% 50%, rgba(47, 184, 255, 0.08) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(94, 23, 255, 0.06) 0%, transparent 60%)'
+        }} />
       </div>
 
       {/* Main container with enhanced spacing */}
