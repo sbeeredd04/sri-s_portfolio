@@ -28,6 +28,7 @@ import SectionWindow from "../components/SectionWindow";
 import BottomTabBar from "../components/BottomTabBar";
 import StageManager from "../components/StageManager";
 import { isMobileDevice } from "../utils/deviceDetection";
+import { preloadWallpapers } from "../config/wallpapers";
 
 // Section components
 import HomeSection from "../sections/HomeSection";
@@ -93,6 +94,9 @@ export default function PortfolioShell({ initialSection = "home" }) {
 
     // ── Initialize: detect mobile & skip loader for returning visitors ──
     useEffect(() => {
+        // Start preloading wallpapers immediately
+        preloadWallpapers();
+        
         const mobile = isMobileDevice();
         setIsActuallyMobile(mobile);
 
@@ -144,6 +148,13 @@ export default function PortfolioShell({ initialSection = "home" }) {
         };
         preload();
     }, [activeSection]);
+
+    // ── Preload wallpaper images when portfolio shows ──
+    useEffect(() => {
+        if (showMainPortfolio) {
+            preloadWallpapers();
+        }
+    }, [showMainPortfolio]);
 
     // ── Navigation Functions ──
     // ── Navigation: general section switch (dock, home grid, etc.) ──

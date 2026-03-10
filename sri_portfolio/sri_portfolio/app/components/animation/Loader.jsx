@@ -7,6 +7,7 @@ import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRe
 import { RGBELoader } from 'three-stdlib';
 import { createRoot } from 'react-dom/client';
 import journeyData from '../../json/journey.json';
+import { preloadWallpapers } from '../../config/wallpapers';
 
 
 // Client-only time component to prevent hydration mismatch
@@ -1299,6 +1300,9 @@ export default function Loader({ onComplete, onResourcesReady }) {
       );
       
       try {
+        // Preload wallpaper images in parallel with 3D asset loading
+        preloadWallpapers();
+        
         // Asset loading phase - everything built here
         await resourceManager.initializeResources(containerRef.current);
         

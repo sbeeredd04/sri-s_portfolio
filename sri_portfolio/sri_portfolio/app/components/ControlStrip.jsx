@@ -9,32 +9,7 @@ import {
   IconPalette,
   IconRoute,
 } from "@tabler/icons-react";
-
-const backgrounds = [
-  { name: "Default", path: "/background/homeEnv.jpg" },
-  { name: "Tahoe", path: "/background/tahoe-dark.jpg" },
-  { name: "Sequoia", path: "/background/sequoia-dark.jpg" },
-  { name: "Sunrise", path: "/background/sequoia-sunrise.jpg" },
-  { name: "Sonoma", path: "/background/sonoma-light.jpg" },
-  { name: "Sonoma Dark", path: "/background/sonoma-dark.jpg" },
-  { name: "Ventura", path: "/background/ventura-dark.jpg" },
-  { name: "Monterey", path: "/background/monterey-dark.jpg" },
-  { name: "Big Sur", path: "/background/big-sur-night.jpg" },
-  { name: "Big Sur Day", path: "/background/big-sur-color-day.jpg" },
-  { name: "Catalina", path: "/background/catalina-night.jpg" },
-  { name: "Mojave", path: "/background/mojave-night.jpg" },
-  { name: "Island", path: "/background/island.jpg" },
-  { name: "Aurora", path: "/background/aurora.jpg" },
-  { name: "Dunes", path: "/background/desert-dunes.jpg" },
-  { name: "Ocean", path: "/background/ocean-cliffs.jpg" },
-  { name: "Alpine", path: "/background/mountain-lake.jpg" },
-  { name: "Peaks", path: "/background/twilight-peaks.jpg" },
-  { name: "Moon", path: "/background/moon.jpg" },
-  { name: "Canyon", path: "/background/antelope.jpg" },
-  { name: "Stars", path: "/background/purpleStars.jpg" },
-  { name: "Forest", path: "/background/bg2.jpg" },
-  { name: "Bridge", path: "/background/bridge.jpg" },
-];
+import { WALLPAPERS } from "../config/wallpapers";
 
 export default function ControlStrip({
   isSoundEnabled,
@@ -144,7 +119,7 @@ export default function ControlStrip({
               Wallpaper
             </p>
             <div className="grid grid-cols-2 gap-1.5 p-1">
-              {backgrounds.map((bg, index) => (
+              {WALLPAPERS.map((bg, index) => (
                 <button
                   key={index}
                   onClick={() => {
