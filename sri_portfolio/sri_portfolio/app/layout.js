@@ -1,75 +1,48 @@
-// Try to load environment variables in development mode
-if (process.env.NODE_ENV !== 'production') {
-  try {
-    require('dotenv').config();
-    console.log('Loaded environment variables from .env file');
-  } catch (error) {
-    console.warn('Failed to load dotenv:', error.message);
-  }
-}
-
-// Import the global CSS
+import localFont from "next/font/local";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { MusicProvider } from './components/MusicProvider';
-import { SoundProvider } from './components/SoundProvider';
-
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+const manrope = localFont({
+  src: "./fonts/Manrope.woff2",
+  variable: "--font-manrope",
+  weight: "200 800",
+  display: "swap",
+});
+const bricolage = localFont({
+  src: "./fonts/BricolageGrotesque.woff2",
+  variable: "--font-bricolage",
+  weight: "200 800",
+  display: "swap",
+});
 export const metadata = {
-  title: "Sri Ujjwal Reddy",
-  description: "Software Engineer | ML Engineer | Full Stack Developer",
+  metadataBase: new URL("https://www.sriujjwalreddy.com"),
+  title: "Sri Ujjwal Reddy — A little world of my own.",
+  description:
+    "Founding Engineer at Offseason in San Francisco. A curious builder who cares about how things work, how they feel, and life beyond the screen.",
+  alternates: { canonical: "/" },
   openGraph: {
-    title: 'Sri Ujjwal Reddy',
-    description: 'Software Engineer | ML Engineer | Full Stack Developer',
-    url: 'https://www.sriujjwalreddy.com',
-    siteName: 'Sri Ujjwal Reddy',
-    images: [
-      {
-        url: 'https://www.sriujjwalreddy.com/logos/logo.png',
-        width: 1200,
-        height: 1200,
-        alt: 'Sri Ujjwal Reddy Logo',
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  icons: {
-    icon: '/logos/logo.png',
-    shortcut: '/logos/logo.png',
-    apple: '/logos/logo.png',
-    other: {
-      rel: 'apple-touch-icon',
-      url: '/logos/logo.png',
-    },
+    title: "Sri Ujjwal Reddy — A little world of my own.",
+    description: "Building, exploring, and finding joy in the little things.",
+    url: "/",
+    siteName: "Sri Ujjwal Reddy",
+    locale: "en_US",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Sri Ujjwal Reddy',
-    description: 'Software Engineer | ML Engineer | Full Stack Developer',
-    images: ['https://www.sriujjwalreddy.com/logos/logo.png'],
+    card: "summary_large_image",
+    title: "Sri Ujjwal Reddy — A little world of my own.",
   },
 };
-
-// Fix: Move viewport settings to a separate export
 export const viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  themeColor: "#0d1422",
 };
-
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="icon" type="image/png" href="/logos/logo.png" />
-      </head>
-      <body suppressHydrationWarning>
-        <SoundProvider>
-          <MusicProvider>
-            {children}
-          </MusicProvider>
-        </SoundProvider>
+    <html lang="en" className={`${manrope.variable} ${bricolage.variable}`}>
+      <body>
+        {children}
         <Analytics />
         <SpeedInsights />
       </body>

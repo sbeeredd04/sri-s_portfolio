@@ -1,0 +1,142 @@
+:root {
+  --ink: #edf3ff;
+  --muted: #b1bfd2;
+  --accent: #c6ddff;
+  --line: rgba(194, 212, 244, 0.16);
+  --surface: #1b2539;
+  --glass: rgba(31, 43, 65, 0.66);
+  --font-sans:
+    var(--font-manrope), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color-scheme: dark;
+}
+* {
+  box-sizing: border-box;
+}
+[hidden] {
+  display: none !important;
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 30px;
+}
+body {
+  margin: 0;
+  background: #0d1422;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+button,
+a,
+input,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent);
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+}
+button,
+a,
+summary {
+  touch-action: manipulation;
+}
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+input:focus-visible {
+  outline: 3px solid #b0d4ff;
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+::selection {
+  background: #7f83b470;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+h1,
+h2 {
+  font-family: var(--font-bricolage), var(--font-sans);
+  font-optical-sizing: auto;
+}
+.skip-link {
+  position: fixed;
+  left: 20px;
+  top: -100px;
+  z-index: 100;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 15px;
+}
+.skip-link:focus {
+  top: 15px;
+}
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  line-height: 1;
+}
+.personal-monogram {
+  width: 42px;
+  height: 42px;
+  fill: none;
+  stroke: #e3edff;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.monogram-name {
+  font-size: 15px;
+}
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

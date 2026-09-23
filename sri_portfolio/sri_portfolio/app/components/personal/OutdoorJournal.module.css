@@ -1,0 +1,529 @@
+/* Doubled classes outrank the notes-sheet and story rules for the same elements. */
+
+.journal.journal {
+  --oj-ink: #1b291f;
+  --oj-muted: #3a4b3e;
+  --oj-rust: #8f3e1c;
+  --oj-sun: #c56a32;
+  --oj-paper: #f3eee4;
+  --oj-frame: #e9e1d2;
+  --oj-line: rgba(27, 41, 31, 0.16);
+  container: outdoor / inline-size;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: clamp(1.25rem, 4vw, 2.75rem) clamp(1.05rem, 3vw, 2.4rem)
+    clamp(1.75rem, 5vw, 3.25rem);
+  color: var(--oj-ink);
+  color-scheme: light;
+  background:
+    radial-gradient(90% 55% at 0% 0%, #f8f4ec 0%, transparent 58%),
+    linear-gradient(180deg, #f7f2e8 0%, #f1e9db 100%);
+  border: 1px solid var(--oj-line);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+.journal.journal :is(h2, h3, p, figcaption) {
+  margin: 0;
+  color: var(--oj-ink);
+}
+
+.kicker,
+.sectionLabel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  min-width: 0;
+  margin: 0;
+  color: var(--oj-muted);
+  font-family: var(--font-bricolage), var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.rule {
+  width: min(70%, 22rem);
+  height: 1px;
+  margin: 0.15rem 0 0.35rem;
+  background: var(--oj-line);
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  min-width: 0;
+  max-width: 38rem;
+}
+
+.journal.journal h2.masthead {
+  max-width: 100%;
+  margin: 0.15rem 0 0.2rem;
+  color: var(--oj-ink);
+  font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
+  font-size: 3.25rem;
+  font-size: clamp(2rem, 11cqi, 6.35rem);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 0.86;
+}
+
+.line,
+.lineAlt {
+  display: block;
+}
+
+.lineAlt {
+  padding-left: 0.42em;
+}
+
+.journal.journal .masthead em {
+  color: var(--oj-rust);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.journal.journal p.lead {
+  max-width: min(22ch, 100%);
+  color: var(--oj-ink);
+  font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
+  font-size: 1.45rem;
+  font-size: clamp(1.28rem, 3.2cqi, 1.8rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.32;
+}
+
+.journal.journal p.prose {
+  max-width: min(38rem, 100%);
+  color: var(--oj-ink);
+  font-size: 1.02rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.65;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.instrument {
+  min-width: 0;
+}
+
+.instrumentBody {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  width: min(100%, 16.5rem);
+  max-width: 100%;
+  margin-left: auto;
+}
+
+.figure {
+  width: 100%;
+  margin: 0;
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  background: var(--oj-frame);
+  border: 1px solid var(--oj-line);
+}
+
+.frame[data-frame="landscape"] {
+  aspect-ratio: 3 / 2;
+}
+
+.frame[data-frame="detail"] {
+  width: min(100%, 13rem);
+  margin-left: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.frame[data-frame="portrait"] {
+  width: min(100%, 11rem);
+  margin-left: auto;
+  aspect-ratio: 3 / 5;
+}
+
+.scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ink,
+.faint,
+.sun,
+.lightEdge {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ink {
+  stroke: var(--oj-ink);
+  stroke-width: 1.55;
+}
+
+.faint {
+  stroke: var(--oj-ink);
+  stroke-width: 1.1;
+  opacity: 0.42;
+}
+
+.sun {
+  stroke: var(--oj-sun);
+  stroke-width: 1.7;
+}
+
+.lightEdge {
+  stroke: var(--oj-sun);
+  stroke-width: 2.4;
+}
+
+.brackets {
+  position: absolute;
+  inset: 0.5rem;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--oj-ink), var(--oj-ink)) left top / 0.7rem 1px
+      no-repeat,
+    linear-gradient(var(--oj-ink), var(--oj-ink)) left top / 1px 0.7rem
+      no-repeat,
+    linear-gradient(var(--oj-ink), var(--oj-ink)) right top / 0.7rem 1px
+      no-repeat,
+    linear-gradient(var(--oj-ink), var(--oj-ink)) right top / 1px 0.7rem
+      no-repeat,
+    linear-gradient(var(--oj-ink), var(--oj-ink)) left bottom / 0.7rem 1px
+      no-repeat,
+    linear-gradient(var(--oj-ink), var(--oj-ink)) left bottom / 1px 0.7rem
+      no-repeat,
+    linear-gradient(var(--oj-ink), var(--oj-ink)) right bottom / 0.7rem 1px
+      no-repeat,
+    linear-gradient(var(--oj-ink), var(--oj-ink)) right bottom / 1px 0.7rem
+      no-repeat;
+}
+
+.caption,
+.plateCaption {
+  color: var(--oj-muted);
+  font-family: var(--font-bricolage), var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.controlLabel {
+  color: var(--oj-muted);
+  font-family: var(--font-bricolage), var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.8rem;
+  max-width: 100%;
+}
+
+.journal.journal button.frameButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.35rem 0.05rem 0.3rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--oj-muted);
+  font-family: var(--font-bricolage), var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.journal.journal button.frameButton::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-right: 0.4rem;
+  border: 1px solid var(--oj-rust);
+  background: transparent;
+}
+
+.journal.journal button.frameButton[aria-pressed="true"] {
+  border-bottom-color: var(--oj-rust);
+  color: var(--oj-ink);
+  font-weight: 700;
+}
+
+.journal.journal button.frameButton[aria-pressed="true"]::before {
+  background: var(--oj-rust);
+}
+
+.journal.journal button.frameButton:focus-visible {
+  outline: 2px solid var(--oj-ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.journal.journal p.note {
+  max-width: 100%;
+  color: var(--oj-ink);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.section {
+  margin-top: 2.75rem;
+  margin-top: clamp(2.5rem, 6cqi, 4.75rem);
+  padding-top: 1.35rem;
+  padding-top: clamp(1.2rem, 3cqi, 1.8rem);
+  border-top: 1px solid var(--oj-line);
+}
+
+.journal.journal h3.heading {
+  max-width: min(16ch, 100%);
+  margin: 0.35rem 0 0.7rem;
+  color: var(--oj-ink);
+  font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
+  font-size: 2rem;
+  font-size: clamp(1.8rem, 4.4cqi, 2.7rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.interests {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.75rem;
+  margin-top: 1.1rem;
+}
+
+.places {
+  margin: 1.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.place {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.8rem;
+  row-gap: 0.25rem;
+  align-items: baseline;
+  padding: 0.95rem 0;
+  border-top: 1px solid var(--oj-line);
+}
+
+.place:last-child {
+  border-bottom: 1px solid var(--oj-line);
+}
+
+.index {
+  color: var(--oj-rust);
+  font-family: Georgia, "Iowan Old Style", Palatino, serif;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.placeName {
+  min-width: 0;
+  font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
+  font-size: 1.9rem;
+  font-size: clamp(1.7rem, 4cqi, 2.55rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.placeMeta {
+  grid-column: 2;
+  max-width: 16rem;
+  color: var(--oj-muted);
+  font-family: var(--font-bricolage), var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.journal.journal p.yosemite {
+  max-width: min(36rem, 100%);
+  margin-top: 1.6rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--oj-rust);
+  color: var(--oj-ink);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.plate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: end;
+}
+
+.plateCopy {
+  min-width: 0;
+}
+
+.plateFigure {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem 0.75rem 0.85rem;
+  background: var(--oj-frame);
+  border: 1px solid var(--oj-line);
+}
+
+.contour {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.plateCaption {
+  display: block;
+  margin-top: 0.75rem;
+}
+
+@container outdoor (min-width: 38rem) {
+  .top {
+    grid-template-columns: minmax(0, 1.2fr) minmax(11rem, 0.72fr);
+    column-gap: clamp(1.5rem, 4cqi, 4rem);
+    align-items: start;
+  }
+
+  .instrument {
+    padding-top: 4.25rem;
+  }
+
+  .interests {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    column-gap: clamp(1.5rem, 4cqi, 3.5rem);
+  }
+
+  .city {
+    margin-top: 3.25rem;
+  }
+
+  .place {
+    grid-template-columns: 2.8rem minmax(0, 1fr) minmax(0, 12.5rem);
+  }
+
+  .placeMeta {
+    grid-column: auto;
+    text-align: right;
+  }
+
+  .plate {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.78fr);
+    column-gap: clamp(1.5rem, 4cqi, 3.5rem);
+  }
+
+  .plateFigure {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .plateCopy {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 400px) {
+  .journal.journal {
+    padding: 1rem 0.85rem 1.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journal.journal,
+  .journal.journal * {
+    animation: none;
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .journal.journal {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+
+  .journal.journal :is(h2, h3, p, figcaption, button, span, em) {
+    color: CanvasText;
+  }
+
+  .brackets {
+    background: none;
+    border: 1px solid CanvasText;
+  }
+
+  .journal.journal button.frameButton[aria-pressed="true"] {
+    border-bottom-color: CanvasText;
+  }
+
+  .journal.journal button.frameButton::before {
+    border-color: CanvasText;
+    background: transparent;
+  }
+
+  .journal.journal button.frameButton[aria-pressed="true"]::before {
+    background: CanvasText;
+  }
+
+  .journal.journal button.frameButton:focus-visible {
+    outline-color: CanvasText;
+  }
+
+  .ink,
+  .faint,
+  .sun,
+  .lightEdge,
+  .brackets {
+    stroke: CanvasText;
+    opacity: 1;
+  }
+}

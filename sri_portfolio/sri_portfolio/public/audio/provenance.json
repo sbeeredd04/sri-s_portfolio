@@ -1,0 +1,48 @@
+{
+  "created": "2026-09-15",
+  "source": "Original procedural composition and synthesized environmental textures, rendered by scripts/render-ambience.py. No third-party samples. Separate from Sri\u2019s v4 recording.",
+  "metrics": {
+    "somewhere-soft": {
+      "seconds": 48.0,
+      "peak_dbfs": -7.33,
+      "rms_dbfs": -18.66,
+      "loop_boundary_delta": 0.0074544471968056025,
+      "bytes": 217037
+    },
+    "rain-window": {
+      "seconds": 18,
+      "peak_dbfs": -8.4,
+      "rms_dbfs": -23.52,
+      "loop_boundary_delta": 0.008700541840964082,
+      "bytes": 299060
+    },
+    "open-air": {
+      "seconds": 12.0,
+      "peak_dbfs": -9.9,
+      "rms_dbfs": -24.65,
+      "loop_boundary_delta": 0.006720088989359358,
+      "bytes": 128435
+    },
+    "lakeside": {
+      "seconds": 12.0,
+      "peak_dbfs": -9.37,
+      "rms_dbfs": -24.66,
+      "loop_boundary_delta": 0.01798191521398656,
+      "bytes": 165947
+    },
+    "quiet-room": {
+      "seconds": 8.0,
+      "peak_dbfs": -11.06,
+      "rms_dbfs": -23.56,
+      "loop_boundary_delta": 0.003439937167635434,
+      "bytes": 60901
+    }
+  },
+  "drizzle_revision": {
+    "date": "2026-09-21",
+    "source": "Original synthesized broadband drizzle and filtered air, scripts/render-drizzle.py",
+    "seconds": 18,
+    "peak_dbfs": -8.4,
+    "score_sha256": "366da2bbf475c49f6445a20687a1e6253ec1cf116082e8b4c9e1a2ad5981b225"
+  }
+}

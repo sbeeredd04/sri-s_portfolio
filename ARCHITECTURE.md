@@ -1,463 +1,75 @@
-# Sri's Portfolio - Architecture Documentation
-
-## 📋 Overview
-This is a modern, interactive Next.js-based portfolio website featuring AI chat, timeline visualizations, dynamic content management, and project showcases.
-
-**Live Site:** https://sriujjwalreddy.com/  
-**Repository:** https://github.com/sbeeredd04/sri-s_portfolio
-
----
-
-## 🏗️ Technology Stack
-
-### Core Technologies
-- **Framework:** Next.js 15.0.2 (React 18.0.0)
-- **Styling:** Tailwind CSS 3.4.1
-- **Animations:** Framer Motion 6.5.1, Motion 12.6.3
-- **3D Graphics:** Three.js 0.177.0
-- **State Management:** React Hooks
-
-### Key Dependencies
-- **AI/ML:** @google/genai (Gemini AI)
-- **Database:** @pinecone-database/pinecone
-- **UI Components:** @tabler/icons-react, @tsparticles
-- **Email:** @emailjs/browser
-- **Analytics:** @vercel/analytics, @vercel/speed-insights
-- **Rendering:** react-markdown, katex, remark-gfm
-
----
-
-## 📁 Project Structure
-
-```
-sri_portfolio/sri_portfolio/
-├── app/                          # Next.js app directory
-│   ├── components/               # React components
-│   │   ├── animation/           # Animation components
-│   │   │   ├── Journey3D.jsx    # 3D journey intro
-│   │   │   ├── Loader.jsx       # Loading screen
-│   │   │   └── DecryptedText.jsx # Text animations
-│   │   ├── background/          # Background effects
-│   │   │   └── Beams.jsx        # Background beam effects
-│   │   ├── 3d-pin.jsx           # 3D pin effect
-│   │   ├── apple-cards-carousel.jsx # Carousel component
-│   │   ├── bento-grid.jsx       # Bento grid layout
-│   │   ├── BlogCardFeature.jsx  # Blog card display
-│   │   ├── canvas-reveal-effect.jsx # Canvas effects
-│   │   ├── card-spotlight.jsx   # Spotlight card effect
-│   │   ├── ChatInterface.jsx    # Chat functionality (TO BE REMOVED)
-│   │   ├── cover.jsx            # Cover component
-│   │   ├── ExpandableCard.jsx   # Expandable card
-│   │   ├── FeaturingSection.js  # Home page featuring section
-│   │   ├── FirstVisitTutorial.jsx # Tutorial overlay
-│   │   ├── FloatingDock.jsx     # Navigation dock
-│   │   ├── GameSkillsView.jsx   # Skills visualization
-│   │   ├── GitHubStatsView.jsx  # GitHub statistics
-│   │   ├── glowing-effect.jsx   # Glowing effects
-│   │   ├── infinite-moving-cards.jsx # Infinite scroll
-│   │   ├── MarkdownRenderer.jsx # Markdown renderer (chat-related)
-│   │   ├── MusicProvider.jsx    # Music context provider
-│   │   ├── NavigationCard.jsx   # Navigation cards
-│   │   ├── ProfileCard.jsx      # Profile display
-│   │   ├── ProjectCard.jsx      # Project cards
-│   │   ├── ProjectCardFeature.jsx # Featured projects
-│   │   ├── SkillGameStats.jsx   # Skill statistics
-│   │   ├── SkillsDetail.jsx     # Detailed skills view
-│   │   ├── SkillsRadar.jsx      # Skills radar chart
-│   │   ├── SoundProvider.jsx    # Sound effects provider
-│   │   ├── SpotifyPlayer.jsx    # Spotify integration
-│   │   ├── sparkles.jsx         # Sparkle effects
-│   │   ├── sticky-scroll-reveal.jsx # Sticky scroll
-│   │   ├── tracing-beam.jsx     # Timeline beam effect
-│   │   └── TutorialOverlay.jsx  # Tutorial component
-│   ├── hooks/                   # Custom React hooks
-│   │   └── use-outside-click.jsx # Outside click detection
-│   ├── api/                     # API routes
-│   │   ├── chat/                # Chat API (TO BE REMOVED)
-│   │   │   └── route.js
-│   │   └── pinecone/            # Pinecone API (TO BE REMOVED)
-│   │       └── route.js
-│   ├── json/                    # Static data files
-│   │   ├── aboutme.json         # About me content
-│   │   ├── blogs.json           # Blog posts
-│   │   ├── deployed.json        # Deployed projects
-│   │   ├── features.json        # Featured content
-│   │   ├── projects.json        # All projects
-│   │   ├── skillsData.js        # Skills data
-│   │   └── slides.json          # Slide content
-│   ├── lib/                     # Utility libraries
-│   │   └── utils.js             # Utility functions
-│   ├── utils/                   # Utility functions (chat-related, TO BE REMOVED)
-│   │   ├── embeddings.js        # Embeddings (chat)
-│   │   ├── gemini.js            # Gemini AI (chat)
-│   │   ├── markdown.js          # Markdown utils (chat)
-│   │   ├── markdownHelper.js    # Markdown helper (chat)
-│   │   ├── pinecone.js          # Pinecone DB (chat)
-│   │   └── sampleMarkdown.js    # Sample markdown (chat)
-│   ├── AcheivementTimeline.js   # Achievements timeline
-│   ├── globals.css              # Global styles
-│   ├── initialize-embeddings.js # Initialize embeddings (chat)
-│   ├── layout.js                # Root layout
-│   ├── page.js                  # Main page component
-│   ├── test-sound.js            # Sound testing
-│   └── timeline.js              # Experience timeline
-├── data/                        # Data directory
-├── public/                      # Static assets
-│   ├── background/              # Background images
-│   ├── music/                   # Music files
-│   ├── projects/                # Project images
-│   └── ...                      # Other assets
-├── jsconfig.json                # JavaScript config
-├── next.config.js               # Next.js configuration
-├── next.config.mjs              # Next.js ES module config
-├── package.json                 # Dependencies
-├── postcss.config.mjs           # PostCSS config
-├── tailwind.config.js           # Tailwind configuration
-├── tsconfig.json                # TypeScript config
-└── vercel.json                  # Vercel deployment config
-```
-
----
-
-## 🔄 Data Flow
-
-### 1. Application Initialization
-```
-User visits site
-    ↓
-Loader.jsx (preload resources)
-    ↓
-Journey3D.jsx (first-time visitors only)
-    ↓
-Main Portfolio (page.js)
-```
-
-### 2. Navigation Flow
-```
-FloatingDock (navigation)
-    ↓
-navigateToSection(section)
-    ↓
-Update activeSection state
-    ↓
-AnimatePresence renders section content
-```
-
-### 3. Content Sections
-- **Home:** FeaturingSection with Bento Grid
-- **About:** Profile, Education, Hobbies, Side Quests
-- **Experience:** Timeline with work history
-- **Projects:** Bento Grid of all/deployed projects
-- **Skills:** Game view or GitHub analytics
-- **Blog:** Expandable cards carousel
-- **Chat:** ChatInterface (TO BE REMOVED)
-- **Contact:** Contact form with EmailJS
-
-### 4. State Management
-```javascript
-// Main page.js state
-- activeSection: current navigation section
-- activeTab: tab within section
-- showResumePreview: resume modal visibility
-- showPlayer: Spotify player visibility
-- isSoundEnabled: sound effects toggle
-- navigationHistory: browser-like history
-- currentBackground: background theme
-```
-
----
-
-## 🎨 Component Relationships
-
-### Core Layout Hierarchy
-```
-page.js (Main Component)
-├── Loader (initial)
-├── Journey3D (first visit)
-├── Main Portfolio Layout
-│   ├── FloatingDock (navigation)
-│   ├── Browser Toolbar
-│   │   ├── Navigation controls (back/forward)
-│   │   ├── Search/URL bar
-│   │   └── Controls (sound, Spotify, theme)
-│   ├── Main Content Area
-│   │   ├── Home → FeaturingSection
-│   │   ├── About → StickyScroll / Education
-│   │   ├── Experience → TimelineDemo / AchievementTimelineDemo
-│   │   ├── Projects → BentoGrid
-│   │   ├── Skills → GameSkillsView / GitHubStatsView
-│   │   ├── Blog → ExCarousel
-│   │   ├── Chat → ChatInterface (TO BE REMOVED)
-│   │   └── Contact → Contact Form
-│   └── Bottom Tabs (section-specific tabs)
-├── SpotifyPlayer (floating)
-└── FirstVisitTutorial (overlay)
-```
-
-### Reusable Components
-- **BentoGrid:** Used in Projects section
-- **NavigationCard:** Used in FeaturingSection
-- **ProjectCardFeature:** Featured project displays
-- **Timeline Components:** TracingBeam for experiences
-- **Animation Components:** Journey3D, Loader, DecryptedText
-
----
-
-## 🔌 API Routes (TO BE REMOVED)
-
-### /api/chat/route.js
-- Handles chat messages
-- Integrates with Gemini AI
-- Manages conversation history
-- **Status:** TO BE DEPRECATED
-
-### /api/pinecone/route.js
-- Vector database operations
-- Embedding storage/retrieval
-- **Status:** TO BE DEPRECATED
-
----
-
-## 📊 Data Files
-
-### features.json
-Maps content to Bento Grid boxes on home page:
-- Navigation items (id: 3, 4, 8, 9, 11, 14, 15)
-- Project showcases (id: 2, 5, 6, 10, 13, 16)
-- Blog posts (id: 7, 12)
-
-### projects.json
-All projects with:
-- Title, description, technologies
-- Images, videos, YouTube links
-- GitHub and live URLs
-- Detailed markdown content
-
-### deployed.json
-Subset of projects that are deployed/live
-
-### skillsData.js
-- Radar chart skills
-- Detailed skill categories
-- Game-style statistics
-- Achievements
-
----
-
-## 🎯 Key Features
-
-### 1. Browser-Like Interface
-- Back/forward navigation history
-- URL bar showing current section
-- Theme switcher
-- Sound effects toggle
-- Spotify player integration
-
-### 2. Interactive Elements
-- 3D journey introduction
-- Glowing effects and animations
-- Responsive Bento Grid layout
-- Expandable cards
-- Smooth section transitions
-
-### 3. Content Sections
-- **Profile:** Sticky scroll with about me
-- **Experience:** Interactive timeline with company info
-- **Projects:** Grid layout with hover effects
-- **Skills:** Game-style visualization + GitHub stats
-- **Blog:** Carousel with markdown rendering
-- **Contact:** EmailJS integration
-
-### 4. First Visit Experience
-- Tutorial overlay
-- 3D journey animation
-- localStorage tracking
-
----
-
-## 🔐 Security & Performance
-
-### Security Best Practices
-- Environment variables for sensitive data
-- Sandboxed iframes for external content
-- CORS and CSP headers
-- Input validation and sanitization
-
-### Performance Optimizations
-- Next.js image optimization
-- Lazy loading components
-- Preloading critical resources
-- Code splitting
-- Analytics and speed insights
-
----
-
-## 📱 Responsive Design
-
-### Breakpoints
-- Mobile: < 768px
-- Desktop: ≥ 768px
-
-### Mobile-Specific Features
-- Floating dock at bottom
-- Condensed navigation
-- Mobile connections toolbar
-- Responsive grid layouts
-- Touch-optimized interactions
-
----
-
-## 🚀 Deployment
-
-### Platform
-Vercel (Next.js native deployment)
-
-### Build Process
-```bash
-npm run build    # Production build
-npm run dev      # Development server
-npm run start    # Production server
-```
-
-### Environment Variables
-- NEXT_PUBLIC_VERCEL_URL
-- NEXT_PUBLIC_NETWORK_URL
-- API keys for Gemini, Pinecone, EmailJS
-
----
-
-## 🔧 Configuration Files
-
-### next.config.js
-- Custom webpack config
-- Image optimization
-- API routes configuration
-
-### tailwind.config.js
-- Custom colors and themes
-- Animation configurations
-- Responsive breakpoints
-
-### vercel.json
-- Deployment settings
-- Environment variables
-- Build configuration
-
----
-
-## 📝 Major Workflows
-
-### 1. User Navigation
-```
-User clicks FloatingDock item
-    ↓
-navigateToSection() called
-    ↓
-Update activeSection state
-    ↓
-Add to navigation history
-    ↓
-AnimatePresence transitions
-    ↓
-New section rendered
-```
-
-### 2. Project Display (Bento Grid)
-```
-Load features.json
-    ↓
-Map projects to grid boxes
-    ↓
-Render ProjectCardFeature
-    ↓
-Display with hover effects
-    ↓
-Click → navigate to project page
-```
-
-### 3. Chat Interaction (TO BE REMOVED)
-```
-User sends message
-    ↓
-API call to /api/chat
-    ↓
-Gemini AI processes
-    ↓
-Pinecone retrieves context
-    ↓
-Stream response back
-    ↓
-Display in ChatInterface
-```
-
----
-
-## 🐛 Known Issues
-
-### To Be Fixed
-1. Scrolling issue in Experience/Achievements sections
-2. Chat functionality to be fully removed
-3. Placeholder videos to be replaced with live iframes
-
-### Planned Enhancements
-1. Add live project previews via iframes
-2. Remove all chat-related code
-3. Improve scrolling in timeline sections
-4. Clean up unused dependencies
-5. Enhanced documentation
-
----
-
-## 📚 Dependencies to Review
-
-### Chat-Related (TO BE REMOVED)
-- @google/genai
-- @pinecone-database/pinecone
-- react-markdown
-- react-syntax-highlighter
-- rehype-katex
-- rehype-raw
-- remark-gfm
-- remark-math
-
-### Essential
-- next
-- react
-- react-dom
-- framer-motion
-- @tabler/icons-react
-- @emailjs/browser
-- three
-- tailwind-merge
-
----
-
-## 🎓 Learning Resources
-
-### Key Concepts
-- Next.js App Router
-- React Server Components
-- Framer Motion animations
-- Three.js 3D graphics
-- Tailwind CSS utilities
-
-### Documentation Links
-- [Next.js Docs](https://nextjs.org/docs)
-- [React Docs](https://react.dev)
-- [Framer Motion](https://www.framer.com/motion/)
-- [Three.js](https://threejs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-
----
-
-## 📞 Contact & Support
-
-For questions or contributions:
-- **Email:** srisubspace@gmail.com
-- **GitHub:** https://github.com/sbeeredd04
-- **LinkedIn:** https://www.linkedin.com/in/sriujjwal/
-
----
-
-*Last Updated: October 2024*
-*Version: 0.1.0*
+# Architecture
+
+The Next.js App Router serves Sri’s connected world at `/` and the independent reading view at `/story`. A printable professional overview is served at `/resume`, with the previous PDF clearly archived separately. The application lives in `sri_portfolio/sri_portfolio` to preserve the Vercel root. Repository-root npm scripts forward there.
+
+## Narrative and content
+
+`ExperienceShell` owns the selected biome and local camera stop, motion, lighting, graphics fallback, and one reading sheet. There are no desktop or spatial modes, app launcher, or draggable-window stack. `world-story.mjs` defines the guided chapters and the index. `place-stops.mjs` connects local camera positions to contextual content.
+
+`ReadingSheet` uses a native modal dialog with Escape dismissal, focus containment, and restoration. Its content remains within an independently scrolling pane. Opening it pauses world animation and restores the native cursor. `AppContent` supplies the same text to the sheet and `/story`; work and education are expanded fully in the reading route.
+
+`ProjectLibrary` reads `projectCollections` from `personal.js`, `more-work.js`, `workbench.js`, and `repository-shelf.js`. Its 61 entries cover selected work, mobile apps, hackathons, work in progress, prototypes, experiments, earlier builds, early drafts, and a separately labeled fork/reference shelf. Search combines terms across titles, descriptions, tools, and stories. `ProjectVisual` provides authored explanatory illustrations, not claimed screenshots. A `#project-<id>` URL opens the collection, clears conflicting filters, expands and focuses the matching story. These links also work on `/story`. Changing search/filter, leaving the collection, or traveling clears a stale project hash.
+
+`ExperienceStory` provides selectable work/education chapters. `EntertainmentLibrary` has a listening shelf and a comfort-show rotation. `WritingRoom` presents a keyboard/swipe notebook ribbon. `fieldnotes.mjs` supplies validated published posts to `/fieldnotes/[slug]`; the empty publication list is intentional. An explicit noindex preview demonstrates figures, doodles, captions, callouts and charts with data tables. There is no invented published post, CMS or live LinkedIn integration. Shared paper/ink styles also apply inside `/story`. Public evidence and uncertainty live in `docs/research`, outside the served application assets.
+
+The UI uses dark glass, glacial blue/lavender, and warm accents. A custom lowercase signature replaces the old monogram. Manrope and Bricolage Grotesque are self-hosted WOFF2 fonts; their OFL licenses remain beside them.
+
+## The connected landscape
+
+`WorldScene` keeps one Canvas and a radius-190 world. Five named destinations contain the SF-inspired top-floor apartment, merged After hours courts/listening space, Yosemite-inspired outdoors, the Foundry ring campus/workshops, and Fieldnotes garden. `CameraRig` moves continuously around the surface and between local stops. On narrower screens, the opening planet fits below the actual introduction height measured by a ResizeObserver. Short phone screens use numbered map markers; phone landscape uses a side-by-side composition with compact controls. Orbit, wheel/pinch travel, and a chapter route remain available. There are no indoor scene swaps.
+
+`world-layout.mjs` defines anchors, tangent coordinate systems, flattened clearings with capped shoulders, both lake basins, and the listening-room hills. The surface solver falls back to bracketed bisection on steep ridges when the fast fixed-point iteration does not converge. Terrain geometry, props, camera ground clearance, and studio terrain colliders sample this same surface. `PlanetSurface` derives land from the authored regions and walking corridors, with restrained shore variation and linear-space glacial colors. `world-paths.mjs` shares route poses between instanced cut-stone paving, curbs, bollards and walkers. There is no photographic Earth texture or random Earth-like geography. `WorldDetails` supplies deterministic stars.
+
+`world-time.mjs` computes approximate solar direction for San Francisco using NOAA fractional-year equations; `Intl` supplies the real America/Los_Angeles clock with DST. `useWorldTime` refreshes every 30 seconds and pauses while hidden. Every biome uses the same clock, with distinct light colors and practical-light intensity. Day/night previews are clearly labeled and do not change the wall clock. `SolarSky` draws the sun; lighting also updates when motion is paused.
+
+`ProjectTown` contains six project workshops with distinct exhibits and roof profiles. `ProjectDistricts` adds an iPhone atelier and shared hackathon hall with individual project exhibits and direct collection entry points. `HackathonPoster`, `WorkshopLaptop`, and `ProjectVisual` share explanatory artwork from `hackathon-art.mjs`, linking the physical hall to the reading stories. Five team projects have direct exhibits; laptop keyboards are instanced. These displays are authored concept illustrations, not product screenshots. `AfterHours` contains a listening house, turntable, speakers, keyboard, chair, fireplace, window view, and small cinema. `FutureStudio` now provides the connection courtyard with a writing desk, social station and facing conversation chairs. Native local stops and physical objects open the same content; only publishing remains upcoming. `StreetFurniture` supplies framed signs, lamps, benches, botanical leaves, and deduplicated instanced pavement. Detail activation depends on proximity and viewport; the active phone biome retains detail at its wider camera distance.
+
+`Landscape` shares the rippling water material and instanced grove. Conifers use branching fronds rather than stacked solid cones. `TerrainPlanting` supplies two instanced meshes for nearby house, court, trail, and project-town planting. `BotanicalPlant` combines instanced split leaves or fern fronds with merged curved stems; pots and soil add two meshes. Plant motion is a small authored leaf-joint sway, not a physics simulation. `RoomMaterialProvider` owns shared wood/fabric/leaf maps and asynchronously loads the local generated walnut base-color texture. Texture source identities remain stable through image updates, and renderer teardown disposes the cache. `ListeningFurniture` adds instanced floorboards, upholstered chair seams, and a record crate; `MaterialLighting` creates a local environment map. The listening house retains a downward-facing ceiling when the exterior roof fades. Its portrait camera has an authored position in `place-stops.mjs` instead of the general phone pullback. The geometry is authored in code. Current model fidelity remains an active art-direction task; the reference-level interiors are not considered complete.
+
+All six selected projects have three-step interactive sketches. Aether branches a conversation, Agentex reviews resume tailoring, GitCue follows a diff to a commit, Mesa moves from an exhibit room to a book and kiosk, csDNA groups illustrative points for researcher review, and SoDA connects tools with onboarding and workshops. `project-exhibits.mjs` supplies shared state and hit regions; the exhibit art modules draw 1,280×840 textures. Mesa uses an open book with curved pages; the others use framed displays. These are labeled interactive sketches, without live AI calls, Git operations, product sessions or real microscopy data. One texture per mounted exhibit repaints on selection/font readiness and is disposed on unmount.
+
+`Workbench` adds three physical field notebooks for Food Thought, Nous and threaded word counting. `workbench-notebooks.mjs` is the shared order for their authored covers and native reading controls. Each opens its exact expanded story; the collection action opens the larger prototype/learning shelf. All 60 public repositories have a recorded disposition in the September 15 coverage audit. Potentially unsafe source links are withheld; private-intent sandboxes are not promoted.
+
+Walkthrough selection lives in `ExperienceShell` and is shared with native keyboard/touch controls. It survives travel and 3D remounts. In close-ups, a concise Project Town back control replaces the full local stop list; the active facade sign is hidden to avoid clipping behind the header. Focus remains in the local controls when navigation removes a trigger, and project-story dismissal restores its trigger. Decorative glass skips raycasting and workshop handlers reject drag gestures. All six exhibit cameras have portrait framing within their own pavilion footprints.
+
+## Motion and physics
+
+`StudioPhysics` loads Rapier when the house is first approached. The mug, book, and cushion use mass, friction, gravity, continuous collision detection, and spring pickup. Visible furniture and colliders share `studio-layout.mjs`; the surrounding ground catches thrown objects. Props remain mounted between visits, and the explicit room reset restores them. The cushion is rigid, not cloth.
+
+`DeskHardware` provides rounded aluminum monitor housings, personal chapter artwork, instanced keys and their legends, a shaped mouse, and merged monitor cables. The center screen opens the Offseason work chapter; the left opens projects and the right opens music/shows. The screens depict Sri's personal narrative, not live applications or an Offseason product interface. Monitor placement is shared with the colliders. `StudioChair` adds curved upholstery, a support frame and instanced twin casters; `StudioLamp` supplies the lamp geometry while `WorldLighting` owns its light. The house uses `houseSection` for its lower pitched shell, joined rafters and standing seams, with a downward-facing ceiling beneath the exterior roof. Framed glazing surrounds an open doorway; a plinth reaches the terrain. `studioArrival` owns laptop/phone exterior framing before the desk and book stops. Instanced walnut floorboards meet the existing floor collider; `StudioSofa` shares fabric upholstery and stitched piping with the listening furniture, while retaining the common collision volumes.
+
+The playground includes badminton, volleyball and basketball areas with individual stops. Ball motion includes gravity, friction, restitution, bounds and release velocity. The shuttle follows a solved trajectory with gravity and air resistance. `CharacterArm` solves fixed-length arm poses; `BadmintonRally` keeps the racket attached to the hand and the shuttle aligned to the string center. Most architecture and scenery are not simulated rigid bodies.
+
+`WorldResidents` animates eleven decorative instanced walkers along the actual routes. Their feet and up directions follow the shared terrain; the last walker uses an on-device color stored in localStorage. These are not real visitor counts. `resident-motion.mjs` shares two-bone leg poses, route progress and gradual heading changes with the Take a walk camera. One clock owned by `ExperienceShell` drives both and survives graphics remounts; the follow view pauses with motion and leaves through the existing local/chapter controls. A tap or the native Say hello button triggers the same short wave. Shirt sleeves follow the arm pose and share each resident’s chosen fabric color. Camera-clearance and limb-length tests cover the authored movement. Shared live presence is not connected and remains a separate acceptance item.
+
+The typing wrist height derives from the rendered keycap top and the tilted palm's vertical radius. The arm test verifies both reach and palm clearance, rather than only checking the wrist center against the keyboard body. Rounded planar outlines are shared through `model-geometry.mjs`.
+
+`CharacterFace` uses a continuous cap with merged tapered hair locks, a smooth face with vertex cheek color, and convex irises. `RoomMaterialProvider` owns the shared iris and hair-grain textures. `CharacterWardrobe` provides a shaped fabric shirt, tapered trousers, rounded shoes with merged laces, and a fitted hiking pack. Geometry is disposed on unmount. The existing arm lengths, wrist targets and typing palm dimensions are retained. These are authored surfaces, not strand or cloth physics. The trailhead stop gives the character a framed introduction and a direct personal-story action.
+
+`PaperPendant` uses instanced shade ribs and a two-axis damped pendulum from `pendulum-motion.mjs`. A pointer nudge adds bounded angular velocity; substeps integrate gravity and damping until it settles. Motion pauses with the scene. This is an approximate independent-axis pendulum, without cord, lamp-to-lamp collisions, or a moving light source. It is a decorative interaction; content remains available through the reading controls.
+
+The directional cursor uses a damped spring and sleeps when still. Touch, reduced motion, text input, reading sheets, and disabled motion use the native cursor. World animation time pauses rather than jumping when resumed.
+
+## Sound, rendering, and verification
+
+`useSoundscape` creates one `SoundEngine` only after an explicit user action. `sensory-design.mjs` owns per-place mixes, tonal cues, validated preferences and restrained haptic pulses. The engine crossfades a slow original score with rain, air, shore or room textures; it softens during reading and ducks beneath Sri’s original track. A separate weather bus ensures even an already-playing rumble fades when leaving home. Assets load on demand, cache per context and abort on disposal. Hidden pages suspend the graph; OS interruption offers an explicit retry. No playback state persists across reloads. Volume, score, effects and optional touch feedback persist locally.
+
+`SoundPreferences` exposes these controls inside View & sound; View & motion remains a disclosure underneath. Touch feedback is opt-in, requires a coarse touch device exposing the Vibration API, respects reduced motion and never follows ambient or simulated ball events. Supported-device detection is not proof of physical hardware output. Native press motion and tuned sound cues provide feedback elsewhere. `MusicCard` plays Sri’s original v4 track on request and stops on hiding, changing its section or closing the sheet. Artist and show taste does not imply a connected Spotify account.
+
+`scripts/render-ambience.py` deterministically renders the five original synthesized assets in `public/audio` using NumPy and ffmpeg. The total is approximately 708 KiB. Their provenance distinguishes the new atmosphere from Sri’s original music; loop-boundary and decoded peak measurements are recorded separately in `docs/research/ambient-audio-signal-2026-09-15.json`. These measurements do not replace listening on actual speakers/headphones.
+
+The demand-rendered Canvas uses a 30 Hz animation driver, with additional frames allowed for camera/controls/physics. Districts behind the planet horizon skip rendering. `WorldLighting` keeps one shadow-casting directional key and five point lights mounted for the whole journey, then moves and dims them with the selected place. This keeps light-count shader variants stable across travel; first-visit geometry and material compilation still need further profiling. DPR is capped at 1.5. Reduced motion and Save-Data disable animation by default. `GraphicsGate`, a React boundary, and context-loss handling expose the still view and retry while keeping content available. `/story` does not require WebGL.
+
+`PreparedGroup` starts preparing the home workspace when Home is selected, before the camera reaches its proximity threshold. It calls `compileAsync` against the existing scene and its configured lighting, reveals the same group when ready, and invalidates the demand renderer even with motion disabled. The visited workspace remains mounted to preserve prop state. Other districts still use their existing detail lifecycle. Project Town now retains its exhibits whenever selected, including the wider arrival camera. `Boxes` merges fixed workshop/bench slats per material without removing bevels, UVs, or normal detail.
+
+Development-only diagnostics measure calls, triangles, geometries, textures, and shader-program count and are stripped from production. An opt-in eight-second trip capture adds peak CPU/frame time, frame-start gaps, draw calls, and browser long-task timing without requesting extra animation frames. Its timer and observer are released on unmount. Local M4 Pro samples and their limitations are in `docs/research/journey-performance-2026-09-14.json`; they are not GPU timings or an old-M1 benchmark. First-entry long tasks remain, and a comprehensive full-world hardware profile is unfinished. Unit tests cover physics, character reach, project matching, graphics support, shared terrain, camera clearance, and lake containment. Builds and manual browser checks cover the JavaScript UI; `check` validates Next configuration/generated TypeScript types only.
+
+## Physical-layout and presentation contracts
+
+`court-layout.mjs` centralizes playing rectangles, aprons, paths, benches, trees, planting, lamps and camera stops. `paving-layout.mjs` generates the exact snapped tile footprints used by rendering and clearance tests. `entertainment-layout.mjs` shares seat positions, target-based yaw, and side-aisle paving. `court-play.mjs` shares metre/second ball contacts, gravity-driven free-flight segments, player poses, hoop coordinates and bounded active-time clocks. `CourtPlay` renders two athletes per sport, textured balls and a deforming diamond basketball net. `SportLegs` keeps feet planted while knees bend; existing badminton motion is unchanged. Basketball completes a warmup then waits for replay; volleyball repeats a short practice rally. Both expose native actions and physical-player/ball targets, reject repeated impulses while playing, and keep the replay button focused through busy states. These are authored practice sequences, not full sports-game AI or arbitrary rigid/soft-body collision simulations. Superseded free-ball dragging code and its six tests were removed in favor of nine contact/trajectory/lifecycle checks.
+
+`CinemaScreen` owns a disposed-on-change canvas texture; show selection belongs to `ExperienceShell` and is shared with `EntertainmentLibrary`. `/story` expands both music and shows. `ProjectDemo` loads original recordings only on explicit request, with native close and external link fallbacks. `project-demos.mjs` records nine recovered demonstration/product destinations. `Connections` supplies socials and collaboration reading content.
+
+Root `AGENTS.md` requires actual desktop and phone visual review after each major unit. Tests do not close that gate. Current visual fidelity remains below Sri's references and AAA ambition; older-M1/physical-phone validation and genuine visitor presence remain open.
+
+`public/official` contains publisher/distributor book and show artwork and official GitHub, LinkedIn and Spotify marks. `official-artwork.mjs` aligns the cinema channel order and source links. `ArtworkTexture` preserves image ratios, loads locally without suspending the world, and disposes the placeholder GPU allocation before resizing. Show artwork is contained, never cropped or covered by controls. Sources and file hashes are in `docs/research/official-assets-2026-09-15.json`.

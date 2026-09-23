@@ -1,0 +1,21 @@
+# Atlas reference review — September 22, 2026
+
+- Live Awwwards entry: https://www.awwwards.com/sites/my-little-storybook . Followed to https://exp-my-little-storybook.lusion.co/ and entered it. Observed a quiet framed introduction, small hand-drawn details around the entry button, then a full 3D grass/river scene with short character-led speech and one clear Next control. Useful lesson: interaction belongs to a scene and a narrative beat; short, placed prompts work better than long floating panels. Do not copy assets or require a linear game to access Sri's professional work.
+- Live https://bruno-simon.com/ . Observed a polished spatial entry: a recognizable vehicle, strong violet/amber lighting contrast, landscape details clustered around a small starting area and a handwritten click-to-start prompt. Did not inspect its complete world or claim its asset/runtime architecture. Sri's navigation remains direct and readable alongside the world.
+- Official Coit/Pioneer Park source: https://sfrecpark.org/facilities/facility/details/pioneerpark-381 . Source describes the Telegraph Hill landmark and approach paths/staircases. City map reference: https://sfrecpark.org/DocumentCenter/View/13930/Telegraph-Hill-Pioneer-Park-Features-List . Use hillside streets and a landmark overlook, not Sri's precise address.
+- Official Golden Gate color/Art Deco reference: https://www.goldengate.org/bridge/history-research/bridge-features/color-art-deco-styling/ . International Orange and structural tower proportions will inform the planned bridge. Bridge not yet implemented; do not count the ordinary current causeways as that landmark.
+
+Implementation this pass: wider SF footprint, connected façade blocks, raised home, Coit-inspired landmark, local close/overview cameras; standalone reading-room addresses and directory. These are stylized authored models, not a literal cartographic replica or an AAA asset-quality claim. Golden Gate, proper lifted street-to-apartment route, rich skyline, Hyderabad island and further individual room art direction remain in the atlas queue.
+
+## Golden Gate crossing follow-up
+
+Reviewed the Bridge District's primary color/Art Deco/lighting page: https://www.goldengate.org/bridge/history-research/bridge-features/color-art-deco-styling/ . Observed references: International Orange chosen to relate to hills and contrast with water/sky; rectangular portals, vertical ribbing, restrained rail posts and warm roadway lights. The implementation is a pedestrian-scale tribute on the existing invented-world route, not an exact SF map or engineering replica. No official photos were copied into the model.
+
+## Expanded districts · September 22
+
+- Salesforce Tower: https://pcparch.com/work/salesforce-tower . The architect's reference informs a rounded/tapered glass profile, horizontal sunshade rhythm and a porous crown. Use the silhouette and construction relationship; a miniature, not a literal height/scale model.
+- Ferry Building: https://www.ferrybuildingmarketplace.com/about/ . Long market wings and a clock tower become a legible destination off the city street. Clock hands should agree with the site's real SF clock.
+- Yosemite: https://www.nps.gov/yose/learn/nature/geology.htm . U-shaped valleys, broad granite walls, rounded exfoliation domes and hanging falls suggest an actual landscape sequence. Prioritize connected water, valley floor and route over another row of rocks. Do not claim Sri has visited.
+- Apple Park: https://www.apple.com/newsroom/2017/02/apple-park-opens-to-employees-in-april/ . Official photos and description show a low ring of curved glass around an orchard/meadow/pond. The Foundry can borrow a circular courtyard with open pedestrian entries and distinct project studios; the narrative belongs to Sri's projects, with no employment/affiliation implication. The guessed Foster project URL returned 404; it was not a reviewed live reference.
+
+Next-unit design acceptance: landmarks need connected approaches and visual proportion; Yosemite needs water fed into its basin and geological relief; the Foundry needs a legible campus route with every existing project/demo preserved; Fieldnotes needs a publishing/photography/contact sequence with one clear entry. More objects alone do not pass the craft gate.

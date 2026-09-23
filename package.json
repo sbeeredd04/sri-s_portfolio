@@ -1,0 +1,11 @@
+{
+  "name": "sri-personal-site",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix sri_portfolio/sri_portfolio run dev --",
+    "build": "npm --prefix sri_portfolio/sri_portfolio run build",
+    "start": "npm --prefix sri_portfolio/sri_portfolio run start --",
+    "check": "npm --prefix sri_portfolio/sri_portfolio run check",
+    "test": "npm --prefix sri_portfolio/sri_portfolio test"
+  }
+}

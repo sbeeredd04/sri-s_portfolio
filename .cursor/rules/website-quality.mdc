@@ -1,0 +1,8 @@
+---
+description: Require rendered UI, 3D layout and narrative critique after each major website change
+alwaysApply: true
+---
+
+Follow the website quality standard in the repository-root `AGENTS.md`.
+After each major implementation unit, inspect the actual desktop and phone experience, identify visual and physical-layout defects, fix them, and inspect again. A passing build is not visual acceptance.
+Every element must earn its place through useful content, orientation, interaction or Sri's personal narrative. Check the full width of every local and connecting path, court boundaries, seat/screen orientation, ground contact, accessible controls and return navigation.

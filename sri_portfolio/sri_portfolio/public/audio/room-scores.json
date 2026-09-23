@@ -1,0 +1,33 @@
+{
+  "source": "Original synthesized arrangements, scripts/render-room-scores.py. No third-party samples; separate from Sri\u2019s v4.",
+  "metrics": {
+    "workbench": {
+      "seconds": 24,
+      "peak_dbfs": -11.06,
+      "rms_dbfs": -21.96,
+      "loop_boundary_delta": 0.0033248232946039274,
+      "bytes": 109484
+    },
+    "paper-light": {
+      "seconds": 24,
+      "peak_dbfs": -11.06,
+      "rms_dbfs": -26.22,
+      "loop_boundary_delta": 0.0014736481825083818,
+      "bytes": 110204
+    },
+    "blue-hour": {
+      "seconds": 24,
+      "peak_dbfs": -11.06,
+      "rms_dbfs": -22.2,
+      "loop_boundary_delta": 0.004736875993774217,
+      "bytes": 100052
+    },
+    "shoreline": {
+      "seconds": 24,
+      "peak_dbfs": -11.06,
+      "rms_dbfs": -22.42,
+      "loop_boundary_delta": 0.00938209414512818,
+      "bytes": 104300
+    }
+  }
+}

@@ -50,6 +50,7 @@ Thumbs.db
 # Logs
 logs/
 *.log
+research/delegation/*.jsonl
 
 # Runtime data
 pids/

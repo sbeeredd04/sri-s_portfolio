@@ -1,7 +1,4 @@
-"use client";
-
-import PortfolioShell from "./components/PortfolioShell";
-
+import ExperienceShell from "./components/personal/ExperienceShell";
 export default function Home() {
-  return <PortfolioShell initialSection="home" />;
+  return <ExperienceShell />;
 }

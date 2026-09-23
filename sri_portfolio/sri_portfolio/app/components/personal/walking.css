@@ -1,0 +1,125 @@
+.walking-controls {
+  width: min(440px, calc(100vw - 40px));
+  padding: 18px 20px;
+  background: #111b21ec;
+  border: 1px solid #b4c6d638;
+  border-radius: 22px;
+  backdrop-filter: blur(20px);
+  color: #e5edf2;
+  box-shadow: 0 10px 50px #0002;
+}
+.walking-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.walking-heading p {
+  margin: 0;
+}
+.walking-heading > span {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: #b8cbc8;
+}
+.walking-help,
+.walking-status {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 10px 0;
+  color: #b9c9cc;
+}
+.walking-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.walking-pad {
+  display: flex;
+  gap: 5px;
+}
+.walking-controls button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #c4d9de20;
+  border-radius: 14px;
+  padding: 8px 12px;
+  color: inherit;
+  background: #e2f4ff0d;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  touch-action: none;
+}
+.walking-pad button {
+  font-size: 21px;
+}
+.walking-controls button:hover {
+  background: #d8eee21f;
+}
+.walking-controls button:focus-visible {
+  outline: 2px solid #a8e1ca;
+  outline-offset: 3px;
+}
+.walking-controls button[aria-pressed="true"] {
+  background: #afd8ca;
+  color: #172a26;
+}
+.walking-controls button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.walking-actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.walking-actions button {
+  background: transparent;
+  border: 0;
+  padding: 5px 9px;
+}
+.walking-status {
+  min-height: 18px;
+}
+@media (max-width: 560px) {
+  .narrative-heading.place-heading.has-stop.walking-heading-card {
+    padding: 10px 14px;
+  }
+  .narrative-heading.place-heading.has-stop.walking-heading-card h1 {
+    font-size: 18px;
+    line-height: 1.2;
+    margin: 5px 0 0;
+  }
+  .narrative-heading.place-heading.has-stop.walking-heading-card .eyebrow {
+    margin-bottom: 0;
+  }
+  .walking-controls {
+    padding: 12px 14px;
+    width: calc(100vw - 40px);
+  }
+  .walking-help {
+    font-size: 11px;
+    margin: 7px 0;
+  }
+  .walking-row {
+    gap: 8px;
+  }
+  .walking-pad {
+    gap: 4px;
+  }
+  .walking-controls button {
+    padding: 7px 10px;
+  }
+  .walking-status {
+    margin: 7px 0;
+  }
+  .walking-actions button {
+    font-size: 11px;
+    min-height: 36px;
+  }
+  .walking-heading .eyebrow {
+    font-size: 10px;
+  }
+}
