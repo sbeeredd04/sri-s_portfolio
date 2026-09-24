@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
+import { useFrame } from "@react-three/fiber";
 import {
   walkingRoutes,
   causeway,
@@ -17,6 +18,10 @@ import usePbrSet from "./usePbrSet";
 export default function PlanetSurface({ surfaceRef }) {
   const geometry = useMemo(createTerrainGeometry, []);
   const ground = usePbrSet("grass");
+  const seaTime = useMemo(() => ({ value: 0 }), []);
+  useFrame((_, dt) => {
+    seaTime.value += Math.min(dt, 0.05);
+  });
   const material = useMemo(() => {
     const m = new THREE.MeshStandardMaterial({
       color: "#96abbf",
@@ -24,6 +29,7 @@ export default function PlanetSurface({ surfaceRef }) {
       envMapIntensity: 0.35,
     });
     m.onBeforeCompile = (shader) => {
+      shader.uniforms.uSeaTime = seaTime;
       shader.uniforms.uRegionCenter = { value: regions.map((r) => r.center) };
       shader.uniforms.uLandCenter = {
         value: regions.map(
@@ -79,6 +85,7 @@ export default function PlanetSurface({ surfaceRef }) {
       shader.fragmentShader =
         `
         varying vec3 vSurface;
+        uniform float uSeaTime;
         uniform vec3 uRegions[${regions.length}];
         uniform vec3 uRegionCenter[${regions.length}];
         uniform vec2 uLandCenter[${regions.length}];
@@ -162,7 +169,24 @@ export default function PlanetSurface({ surfaceRef }) {
           )
           .replace(
             "#include <roughnessmap_fragment>",
-            "#include <roughnessmap_fragment>\nroughnessFactor=mix(.48,.94,land);",
+            "#include <roughnessmap_fragment>\nroughnessFactor=mix(.07,.94,land);",
+          )
+          .replace(
+            "#include <normal_fragment_maps>",
+            `#include <normal_fragment_maps>
+            {
+              // Open water: travelling wind-wave normals so the sea carries a
+              // moving sky reflection and sun glint instead of flat paint.
+              float sea=1.-land;
+              vec3 wp=vSurface*.55;
+              float waves=(worldNoise(wp+vec3(uSeaTime*.35,0.,uSeaTime*.2))
+                +worldNoise(wp*2.3-vec3(0.,uSeaTime*.5,uSeaTime*.3))*.5
+                +worldNoise(wp*6.1+vec3(uSeaTime*.9,uSeaTime*.4,0.))*.2)*.09*sea;
+              vec3 sx=dFdx(-vViewPosition), sy=dFdy(-vViewPosition);
+              vec3 ay=cross(sy,normal), ax=cross(normal,sx);
+              float det=dot(sx,ay)*faceDirection;
+              normal=normalize(abs(det)*normal-sign(det)*(dFdx(waves)*ay+dFdy(waves)*ax));
+            }`,
           );
     };
     // Photographed ground structure on land only; the sea keeps its colour.
@@ -175,7 +199,7 @@ export default function PlanetSurface({ surfaceRef }) {
       normalStrength: 0.9,
       meanLuminance: 0.18,
     });
-  }, [ground]);
+  }, [ground, seaTime]);
   useEffect(
     () => () => {
       geometry.dispose();
