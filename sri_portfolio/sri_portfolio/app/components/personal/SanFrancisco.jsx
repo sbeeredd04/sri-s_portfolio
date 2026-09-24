@@ -4,17 +4,20 @@ import * as THREE from "three";
 import { applyTriplanar } from "../../lib/triplanar.mjs";
 import usePbrSet from "./usePbrSet";
 import {
-  sfNeighborhoodBatches,
   apartmentBaseBatches,
   cityBatchGeometry,
   sfPalette,
-  coitSite,
 } from "../../lib/sf-neighborhood.mjs";
+import { buildCity } from "../../lib/sf-buildings.mjs";
+import { landmarkSites } from "../../lib/sf-plan.mjs";
+import { useQuality } from "./Quality";
 import {
   buildLandmarks,
   clockHandRadians,
   disposeLandmarks,
   marketClockMounts,
+  marketSite,
+  towerSite,
 } from "../../lib/sf-landmarks.mjs";
 import { surfaceHeight } from "../../lib/world-layout.mjs";
 import { Boxes } from "./ScenePrimitives";
@@ -186,26 +189,108 @@ function MarketClocks({ y, iso }) {
     </group>
   ));
 }
+function Placed({ site, authored, children }) {
+  return (
+    <group
+      position={[site.x, surfaceHeight("studio", site.x, site.z), site.z]}
+      rotation={[0, site.rotation || 0, 0]}
+    >
+      <group position={[-authored.x, 0, -authored.z]}>{children}</group>
+    </group>
+  );
+}
+function LandmarkPart({ part, night }) {
+  return (
+    <>
+      {Object.entries(part.boxes).map(([tone, geometry]) => (
+        <FinishMesh key={`box-${tone}`} {...{ geometry, tone, night }} />
+      ))}
+      {Object.entries(part.shells).map(([tone, geometry]) => (
+        <FinishMesh key={`shell-${tone}`} {...{ geometry, tone, night }} />
+      ))}
+    </>
+  );
+}
 function Landmarks({ night, clockIso }) {
   const model = useMemo(() => buildLandmarks(), []);
   useEffect(() => () => disposeLandmarks(model), [model]);
   return (
-    <group>
-      {Object.entries(model.boxes).map(([tone, geometry]) => (
-        <FinishMesh key={`box-${tone}`} {...{ geometry, tone, night }} />
+    <>
+      <Placed site={landmarkSites.salesforce} authored={towerSite}>
+        <LandmarkPart part={model.tower} night={night} />
+      </Placed>
+      <Placed site={landmarkSites.ferry} authored={marketSite}>
+        <LandmarkPart part={model.market} night={night} />
+        <MarketClocks
+          y={model.layout.marketPad.plinthTop + 15.15}
+          iso={clockIso}
+        />
+      </Placed>
+    </>
+  );
+}
+// The generated city: one merged, vertex-coloured mesh per finish.
+const cityLook = {
+  paint: { roughness: 0.84, set: "plaster", scale: 0.9, strength: 0.8 },
+  stone: { roughness: 0.9, set: "concrete", scale: 0.7, strength: 0.9 },
+  glass: { roughness: 0.12, metalness: 0.3, color: "#9fb3c2" },
+  lit: { roughness: 0.2, metalness: 0.1, color: "#d9c7a3", glow: "#ffc27a" },
+  curtain: { roughness: 0.08, metalness: 0.55, color: "#b9cad6", env: 1.6 },
+  door: { roughness: 0.6 },
+  roof: { roughness: 0.95 },
+};
+function CityMesh({ tone, geometry, night }) {
+  const look = cityLook[tone];
+  const maps = usePbrSet(look.set || "plaster");
+  const material = useMemo(() => {
+    const m = new THREE.MeshStandardMaterial({
+      vertexColors: true,
+      roughness: look.roughness,
+      metalness: look.metalness || 0,
+      envMapIntensity: look.env || 1,
+    });
+    if (look.color) m.color.set(look.color);
+    if (!look.set) return m;
+    return applyTriplanar(m, {
+      ...maps,
+      mode: "detail",
+      scale: look.scale,
+      strength: look.strength,
+      normalStrength: look.strength,
+      meanLuminance: 0.45,
+    });
+  }, [look, maps]);
+  useEffect(() => () => material.dispose(), [material]);
+  useEffect(() => {
+    if (!look.glow) return;
+    material.emissive.set(look.glow);
+    material.emissiveIntensity = night ? 0.85 : 0.04;
+  }, [material, look, night]);
+  return (
+    <mesh geometry={geometry} material={material} castShadow receiveShadow />
+  );
+}
+function City({ night }) {
+  const quality = useQuality();
+  const city = useMemo(
+    () => buildCity({ detail: quality.tier !== "low" }),
+    [quality.tier],
+  );
+  useEffect(
+    () => () => Object.values(city.geometries).forEach((g) => g.dispose()),
+    [city],
+  );
+  return (
+    <Suspense fallback={null}>
+      {Object.entries(city.geometries).map(([tone, geometry]) => (
+        <CityMesh key={tone} {...{ tone, geometry, night }} />
       ))}
-      {Object.entries(model.shells).map(([tone, geometry]) => (
-        <FinishMesh key={`shell-${tone}`} {...{ geometry, tone, night }} />
-      ))}
-      <MarketClocks
-        y={model.layout.marketPad.plinthTop + 15.15}
-        iso={clockIso}
-      />
-    </group>
+    </Suspense>
   );
 }
 function CoitTower() {
-  const y = surfaceHeight("studio", coitSite.x, coitSite.z);
+  const coitSite = landmarkSites.coit;
+  const y = surfaceHeight("studio", coitSite.x, coitSite.z) - 0.1;
   const ribs = useMemo(
     () =>
       Array.from({ length: 16 }, (_, i) => {
@@ -269,10 +354,9 @@ export function ApartmentBase({ night }) {
   return <Batches data={data} night={night} />;
 }
 export default function SanFrancisco({ night, clockIso }) {
-  const data = useMemo(sfNeighborhoodBatches, []);
   return (
     <group>
-      <Batches data={data} night={night} />
+      <City night={night} />
       <CoitTower />
       <Landmarks night={night} clockIso={clockIso} />
     </group>

@@ -1,12 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
-  sfBlocks,
-  coitSite,
-  sfNeighborhoodBatches,
-  apartmentBaseBatches,
-  cityBatchGeometry,
-} from "../app/lib/sf-neighborhood.mjs";
+import { apartmentBaseBatches } from "../app/lib/sf-neighborhood.mjs";
 import { APARTMENT_LEVEL, apartmentPoint } from "../app/lib/studio-layout.mjs";
 import { streetRoutes } from "../app/lib/street-view.mjs";
 import {
@@ -14,19 +8,6 @@ import {
   surfaceHeight,
   groundColliderData,
 } from "../app/lib/world-layout.mjs";
-
-test("SF full building projections and landmark plaza clear the street carriageways", () => {
-  for (const block of sfBlocks) {
-    // Include the cornice and the front sill, not merely the wall box.
-    const minX = block.x - block.width / 2 - 0.25,
-      maxX = block.x + block.width / 2 + 0.25;
-    const minZ = block.z - block.depth / 2 - 0.25,
-      maxZ = block.z + block.depth / 2 + 0.55;
-    assert.ok(maxX < 9.9 || minX > 13.1);
-    for (const z of [-10, -22]) assert.ok(maxZ < z - 1.6 || minZ > z + 1.6);
-  }
-  assert.ok(coitSite.x - coitSite.radius > 13.3);
-});
 
 test("apartment base stops below the visible apartment floor and roof walk clears the railing", () => {
   const b = apartmentBaseBatches();
@@ -54,16 +35,4 @@ test("elevated physics terrain still agrees with the outdoor ground", () => {
           surfaceHeight("studio", v[i], v[i + 2]),
       ) < 1e-5,
     );
-});
-
-test("city detail uses bounded merged geometry rather than one draw per window", () => {
-  const data = sfNeighborhoodBatches();
-  assert.ok(Object.keys(data).length <= 12);
-  let triangles = 0;
-  for (const items of Object.values(data)) {
-    const g = cityBatchGeometry(items);
-    triangles += g.attributes.position.count / 3;
-    g.dispose();
-  }
-  assert.ok(triangles < 30000, `city geometry has ${triangles} triangles`);
 });

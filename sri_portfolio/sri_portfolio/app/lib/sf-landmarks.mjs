@@ -8,11 +8,11 @@ import {
 } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { cityBatchGeometry } from "./sf-neighborhood.mjs";
-import { surfaceHeight } from "./world-layout.mjs";
-import { renderedSurfaceHeight } from "./terrain-geometry.mjs";
 import { wallClock } from "./world-time.mjs";
 
 // Miniature tributes. The plan is not a map, an address, or a workplace.
+// Coordinates here are the authoring frame; SanFrancisco.jsx places each
+// model on its sf-plan site.
 export const towerSite = {
   x: 29.2,
   z: 3.4,
@@ -42,11 +42,10 @@ export function towerPlanScale(t) {
   };
 }
 
-function terrainY(x, z) {
-  return Math.min(
-    surfaceHeight("studio", x, z),
-    renderedSurfaceHeight("studio", x, z),
-  );
+// Landmarks are authored on level ground in their own frame and placed on
+// level plan sites (sf-plan landmarkSites); tests hold those sites flat.
+function terrainY() {
+  return 0;
 }
 function pad(xs, zs) {
   const samples = xs.flatMap((x) => zs.map((z) => terrainY(x, z)));
@@ -557,41 +556,6 @@ function addMarketRoof(positions, normals, base) {
     }
   }
 }
-function addStreet(batches, along, fixed, from, to, cuts) {
-  const step = along === "x" ? 1 : -1;
-  for (
-    let cursor = from;
-    step > 0 ? cursor <= to : cursor >= to;
-    cursor += step
-  ) {
-    const x = along === "x" ? cursor : fixed;
-    const z = along === "z" ? cursor : fixed;
-    const y = terrainY(x, z);
-    addBox(
-      batches,
-      "asphalt",
-      [x, y + 0.025, z],
-      along === "x" ? [1.02, 0.05, carriage * 2] : [carriage * 2, 0.05, 1.02],
-    );
-    for (const side of [-1, 1]) {
-      const cx = along === "x" ? x : x + side * (carriage + 0.1);
-      const cz = along === "z" ? z : z + side * (carriage + 0.1);
-      if (
-        cuts.some(
-          (cut) =>
-            Math.abs(cx - cut[0]) < cut[2] && Math.abs(cz - cut[1]) < cut[3],
-        )
-      )
-        continue;
-      addBox(
-        batches,
-        "paving",
-        [cx, y + 0.09, cz],
-        along === "x" ? [1.02, 0.16, 0.18] : [0.18, 0.16, 1.02],
-      );
-    }
-  }
-}
 function clockMarks(batches, origin, basis) {
   for (let i = 0; i < 4; i++) {
     const a = (i / 4) * Math.PI * 2;
@@ -834,8 +798,9 @@ function addClockTowerShaft(batches, base) {
 
 export function buildLandmarks() {
   const layout = landmarkLayout();
-  const batches = {};
-  const { towerPad, marketPad, roadZ } = layout;
+  let batches = {};
+  const towerBatches = batches;
+  const { towerPad, marketPad } = layout;
   const shells = buildTowerShells(towerPad.plinthTop);
   addBox(
     batches,
@@ -873,6 +838,8 @@ export function buildLandmarks() {
     [towerSite.x - 1.2, towerPad.plinthTop + 1.6, towerSite.z],
     [1.4, 0.9, 1.5],
   );
+  batches = {};
+  const marketBatches = batches;
   addBox(
     batches,
     "stone",
@@ -985,88 +952,29 @@ export function buildLandmarks() {
     if (wound.dot(outward) < 0) pushTri(roofP, roofN, a, apex, b);
     else pushTri(roofP, roofN, a, b, apex);
   }
-  shells.oxide = [geometryFrom(roofP, roofN)];
-
-  const towerCuts = [[eastStreetX + carriage + 0.1, towerSite.z, 1.4, 2.1]];
-  const marketCuts = [
-    [eastStreetX + carriage + 0.1, roadZ, 1.6, 2.2],
-    [marketSite.x, roadZ - carriage - 0.1, 2.2, 1.2],
-  ];
-  addStreet(batches, "x", towerSite.z, 13.5, 23.5, [
-    [14.2, towerSite.z + carriage + 0.1, 1.6, 0.5],
-    [14.2, towerSite.z - carriage - 0.1, 1.6, 0.5],
-    ...towerCuts,
-  ]);
-  addStreet(batches, "z", eastStreetX, -23, -39, [
-    [eastStreetX + carriage + 0.1, roadZ, 0.6, 2.2],
-  ]);
-  addStreet(batches, "x", roadZ, 13.5, 40.5, marketCuts);
-  addBox(
-    batches,
-    "paving",
-    [
-      (21.4 + (towerSite.x - towerSite.width / 2)) / 2,
-      terrainY(23, towerSite.z) + 0.05,
-      towerSite.z,
-    ],
-    [towerSite.x - towerSite.width / 2 - 21.4, 0.08, 3.1],
-  );
-  addBox(
-    batches,
-    "paving",
-    [
-      marketSite.x,
-      terrainY(marketSite.x, northZ + 0.8) + 0.05,
-      (northZ + roadZ - carriage) / 2,
-    ],
-    [3.4, 0.08, Math.abs(northZ - (roadZ - carriage))],
-  );
-  addBox(
-    batches,
-    "paving",
-    [(13.05 + west) / 2, terrainY(14.4, marketSite.z) + 0.05, marketSite.z],
-    [west - 13.05, 0.08, 2.2],
-  );
-  const overlookNorth = southZ + 0.05;
-  const overlookSouth = -40.45;
-  const overlookZ = (overlookNorth + overlookSouth) / 2;
-  addBox(
-    batches,
-    "paving",
-    [27, terrainY(27, overlookZ) + 0.04, overlookZ],
-    [18.5, 0.08, Math.abs(overlookSouth - overlookNorth)],
-  );
-  addBox(
-    batches,
-    "stone",
-    [27, terrainY(27, -40.55) + 0.42, -40.55],
-    [18.2, 0.9, 0.28],
-  );
-  addBox(
-    batches,
-    "stone",
-    [17.8, terrainY(17.8, -39.2) + 0.42, -39.2],
-    [0.28, 0.9, 2.8],
-  );
-  addBox(
-    batches,
-    "stone",
-    [36.2, terrainY(36.2, -39.2) + 0.42, -39.2],
-    [0.28, 0.9, 2.8],
-  );
-
-  const boxes = Object.fromEntries(
-    Object.entries(batches).map(([tone, items]) => [
-      tone,
-      cityBatchGeometry(items),
-    ]),
-  );
-  const shellGeometry = Object.fromEntries(
-    Object.entries(shells).map(([tone, parts]) => [tone, mergeShell(parts)]),
-  );
-  return { boxes, shells: shellGeometry, layout };
+  const merge = (parts) =>
+    Object.fromEntries(
+      Object.entries(parts).map(([tone, items]) => [
+        tone,
+        cityBatchGeometry(items),
+      ]),
+    );
+  const shellGeometry = (parts) =>
+    Object.fromEntries(
+      Object.entries(parts).map(([tone, list]) => [tone, mergeShell(list)]),
+    );
+  return {
+    tower: { boxes: merge(towerBatches), shells: shellGeometry(shells) },
+    market: {
+      boxes: merge(marketBatches),
+      shells: shellGeometry({ oxide: [geometryFrom(roofP, roofN)] }),
+    },
+    layout,
+  };
 }
 export function disposeLandmarks(model) {
-  for (const geometry of Object.values(model.boxes)) geometry.dispose();
-  for (const geometry of Object.values(model.shells)) geometry.dispose();
+  for (const part of [model.tower, model.market]) {
+    for (const geometry of Object.values(part.boxes)) geometry.dispose();
+    for (const geometry of Object.values(part.shells)) geometry.dispose();
+  }
 }

@@ -1,27 +1,7 @@
 import { BoxGeometry, Matrix4, Quaternion, Euler, Vector3 } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
-import { surfaceHeight } from "./world-layout.mjs";
 
 import { APARTMENT_LEVEL } from "./studio-layout.mjs";
-export const sfBlocks = [
-  ...[-17, -11, -5, 1, 7].map((x, i) => ({
-    x,
-    z: -16,
-    width: 4.9,
-    depth: 6,
-    height: 7.2 + (i % 3) * 1.2,
-    tone: i % 3,
-  })),
-  ...[-14, -8, -2, 4].map((x, i) => ({
-    x,
-    z: -28,
-    width: 4.9,
-    depth: 6,
-    height: 7.8 + (i % 2) * 2.4,
-    tone: (i + 1) % 3,
-  })),
-];
-export const coitSite = { x: 18, z: -20, radius: 3.7 };
 export const sfPalette = {
   ivory: "#cabfae",
   sage: "#91a69e",
@@ -144,67 +124,6 @@ function facade(
       [width + 0.22, 0.52, 0.22],
     );
   }
-}
-export function sfNeighborhoodBatches() {
-  const b = {};
-  for (const block of sfBlocks) {
-    const corners = [-1, 1].flatMap((a) =>
-      [-1, 1].map((c) =>
-        surfaceHeight(
-          "studio",
-          block.x + (a * block.width) / 2,
-          block.z + (c * block.depth) / 2,
-        ),
-      ),
-    );
-    const ground = Math.max(...corners);
-    facade(b, block, ground);
-    box(
-      b,
-      "stone",
-      [block.x, ground - 0.5, block.z],
-      [block.width, 1, block.depth],
-    );
-    box(
-      b,
-      "paving",
-      [block.x, ground + 0.035, block.z + block.depth / 2 + 0.9],
-      [5.9, 0.07, 1.8],
-    );
-  }
-  // Two parallel east-west streets, with an eastern connection to home.
-  for (const z of [-10, -22])
-    for (let x = -20; x <= 10; x += 1) {
-      const y = surfaceHeight("studio", x, z);
-      box(b, "asphalt", [x, y + 0.025, z], [1.02, 0.05, 3.2]);
-      for (const side of [-1, 1])
-        box(b, "paving", [x, y + 0.09, z + side * 1.7], [1.02, 0.18, 0.2]);
-    }
-  for (let z = -22; z <= 8; z += 1) {
-    const y = surfaceHeight("studio", 11.5, z);
-    box(b, "asphalt", [11.5, y + 0.025, z], [2.8, 0.05, 1.02]);
-    for (const side of [-1, 1]) {
-      // The tower street enters from the east. Drop that curb so the turn is open.
-      if (side === 1 && z >= 2 && z <= 5) continue;
-      box(b, "paving", [11.5 + side * 1.5, y + 0.09, z], [0.2, 0.18, 1.02]);
-    }
-  }
-  for (let x = 13.3; x <= 18; x += 0.5)
-    box(
-      b,
-      "paving",
-      [x, surfaceHeight("studio", x, -20) + 0.06, -20],
-      [0.51, 0.12, 1.5],
-    );
-  // Main door joins the world causeways through a continuous front walk.
-  for (let z = 5.4; z <= 9.4; z += 0.5)
-    box(
-      b,
-      "paving",
-      [0, surfaceHeight("studio", 0, z) + 0.055, z],
-      [1.8, 0.11, 0.51],
-    );
-  return b;
 }
 export function apartmentBaseBatches() {
   const b = {};

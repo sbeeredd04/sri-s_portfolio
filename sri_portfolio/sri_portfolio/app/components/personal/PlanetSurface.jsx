@@ -9,6 +9,7 @@ import {
   isBayCrossing,
 } from "../../lib/world-paths.mjs";
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
+import { streetsGlsl } from "../../lib/sf-streets.mjs";
 
 import { createTerrainGeometry } from "../../lib/terrain-geometry.mjs";
 import { applyTriplanar } from "../../lib/triplanar.mjs";
@@ -108,6 +109,7 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         float worldHash(vec3 p){p=fract(p*.3183099+vec3(.1,.2,.3));p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
         float worldNoise(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);return mix(mix(mix(worldHash(i),worldHash(i+vec3(1,0,0)),f.x),mix(worldHash(i+vec3(0,1,0)),worldHash(i+vec3(1,1,0)),f.x),f.y),mix(mix(worldHash(i+vec3(0,0,1)),worldHash(i+vec3(1,0,1)),f.x),mix(worldHash(i+vec3(0,1,1)),worldHash(i+vec3(1,1,1)),f.x),f.y),f.z);}
         float worldFbm(vec3 p){return worldNoise(p)*.58+worldNoise(p*2.03)*.28+worldNoise(p*4.07)*.14;}
+        ${streetsGlsl()}
       ` +
         shader.fragmentShader
           .replace(
@@ -119,6 +121,7 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         vec3 meadow=vec3(.11,.14,.15);
         float best=0.;
         float city=0.;
+        float cityRoad=0.;
         vec2 cityLocal=vec2(0.);
         float shoreVariation=(worldFbm(vSurface*.17)-.5)*7.;
         for(int i=0;i<${regions.length};i++) {
@@ -198,13 +201,27 @@ export default function PlanetSurface({ surfaceRef, weather }) {
           float slab=worldHash(vec3(floor(g),7.));
           vec3 concrete=vec3(.165,.158,.146)*(.9+slab*.18)*(.94+terrain*.12);
           concrete*=1.-joint*.45;
-          diffuseColor.rgb=mix(diffuseColor.rgb,concrete,city*land);
+          // Streets: asphalt, sidewalks, zebra crossings and a yellow line.
+          // Parks keep their lawn; plazas are pale paving.
+          vec4 st=sfStreets(cityLocal);
+          float fine=1.-smoothstep(.04,.16,footprint);
+          vec3 asphalt=vec3(.042,.045,.049)*(.86+worldNoise(vSurface*2.2)*.28);
+          vec3 sidewalk=vec3(.2,.195,.185)*(.92+slab*.12)*(1.-joint*.35);
+          vec3 street=mix(concrete,sidewalk,st.y);
+          street=mix(street,asphalt,st.x);
+          street=mix(street,vec3(.5,.5,.48),st.z*fine*.8);
+          street=mix(street,vec3(.48,.36,.08),st.w*fine*.8);
+          if(st.w<-1.5)street=vec3(.24,.225,.205)*(.9+slab*.14)*(1.-joint*.4);
+          float lawn=step(st.w,-.5)*step(-1.5,st.w);
+          street=mix(street,meadow*vec3(.9,1.25,.75),lawn);
+          diffuseColor.rgb=mix(diffuseColor.rgb,street,city*land);
+          cityRoad=st.x*city*land;
         }
       `,
           )
           .replace(
             "#include <roughnessmap_fragment>",
-            "#include <roughnessmap_fragment>\n// Distant water: sub-pixel waves average into a rougher, dimmer glint.\nroughnessFactor=mix(mix(.07,.42,smoothstep(.03,.4,footprint)),.94-uWet*.38,land);",
+            "#include <roughnessmap_fragment>\n// Distant water: sub-pixel waves average into a rougher, dimmer glint.\nroughnessFactor=mix(mix(.07,.42,smoothstep(.03,.4,footprint)),.94-uWet*(.38+cityRoad*.3),land);",
           )
           .replace(
             "#include <lights_fragment_maps>",
