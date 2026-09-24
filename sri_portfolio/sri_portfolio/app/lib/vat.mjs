@@ -13,7 +13,7 @@ import {
   Vector3,
 } from "three";
 
-// Parts are tinted per instance. Unknown materials read as "cloth".
+// Parts are tinted per instance.
 export const VAT_PARTS = [
   "skin",
   "hair",
@@ -22,8 +22,16 @@ export const VAT_PARTS = [
   "shoe_upper",
   "shoe_sole",
 ];
+// Small face and accessory parts borrow a dark tint; anything else is cloth.
+const PART_ALIASES = {
+  eye: "hair",
+  lash: "hair",
+  brow: "hair",
+  mouth: "hair",
+  watch: "shoe_sole",
+};
 const partIndex = (name) => {
-  const i = VAT_PARTS.indexOf(name);
+  const i = VAT_PARTS.indexOf(PART_ALIASES[name] || name);
   return i < 0 ? 2 : i;
 };
 

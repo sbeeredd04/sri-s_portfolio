@@ -325,7 +325,7 @@ function CityCrowd({ animate }) {
   return (
     <Suspense fallback={null}>
       <Crowd
-        src="/models/characters/sri.glb"
+        src="/models/characters/crowd.glb"
         agents={agents}
         ground={cityGround}
         animate={animate}
