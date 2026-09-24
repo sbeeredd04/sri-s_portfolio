@@ -51,7 +51,7 @@ function keynoteHall(box) {
     [-hx - 0.06, door.height, dz],
     [0.16, 0.18, door.width],
   );
-  box("roof", rgb("#e7e4de"), [-hx - 2.4, 4.9, dz], [5.2, 0.35, 14]);
+  box("roof", rgb("#e7e4de"), [-hx - 2.4, 4.9, dz], [5.2, 0.35, 14], 0, true);
   for (const s of [-1, 1])
     box(
       "paint",
@@ -60,8 +60,22 @@ function keynoteHall(box) {
       [0.22, 4.9, 0.22],
     );
   // Roof with a fascia band.
-  box("roof", rgb("#a6a39d"), [0, H + 0.25, 0], [W + 0.8, 0.5, D + 0.8]);
-  box("paint", rgb("#e8e6e1"), [0, H + 0.1, 0], [W + 0.9, 0.3, D + 0.9]);
+  box(
+    "roof",
+    rgb("#a6a39d"),
+    [0, H + 0.25, 0],
+    [W + 0.8, 0.5, D + 0.8],
+    0,
+    true,
+  );
+  box(
+    "paint",
+    rgb("#e8e6e1"),
+    [0, H + 0.1, 0],
+    [W + 0.9, 0.3, D + 0.9],
+    0,
+    true,
+  );
 
   // Stage, screen frame, lectern, truss and speaker stacks.
   const sx = hall.stage.x - hall.x,
@@ -94,7 +108,14 @@ function keynoteHall(box) {
   );
   box("paint", rgb("#3a3d42"), [sx - 2.5, H - 1.2, 0], [0.3, 0.3, sw + 2]);
   for (let z = -sw / 2; z <= sw / 2; z += 2)
-    box("lit", rgb("#fff1d6"), [sx - 2.5, H - 1.5, z], [0.3, 0.3, 0.3]);
+    box(
+      "lit",
+      rgb("#fff1d6"),
+      [sx - 2.5, H - 1.5, z],
+      [0.3, 0.3, 0.3],
+      0,
+      true,
+    );
   for (const s of [-1, 1])
     box(
       "paint",
@@ -104,7 +125,7 @@ function keynoteHall(box) {
     );
   // A low wall of ceiling lights across the room.
   for (let x = -hx + 3; x < sx - 3; x += 3)
-    box("lit", rgb("#fff4e0"), [x, H - 0.1, 0], [0.5, 0.08, D - 3]);
+    box("lit", rgb("#fff4e0"), [x, H - 0.1, 0], [0.5, 0.08, D - 3], 0, true);
 }
 
 function office(box, o) {
@@ -127,11 +148,33 @@ function office(box, o) {
         [x, h / 2, s * (d / 2 - 0.05)],
         [0.12, h, 0.2],
       );
+  // Lit bays behind the glass: a steady, uneven pattern per floor.
+  for (let f = 0; f < o.floors; f++)
+    for (let x = -w / 2 + 0.8; x < w / 2; x += 1.6)
+      for (const s of [-1, 1])
+        if (
+          (Math.sin(x * 12.9898 + f * 78.233 + s * 3.7 + o.x) * 43758.5453) %
+            1 >
+          0.35
+        )
+          box(
+            "lit",
+            rgb("#f3e6cc"),
+            [x, f * FLOOR + 1.6, s * (d / 2 - 0.1)],
+            [1.4, 1.9, 0.06],
+          );
   box("roof", rgb("#9b988f"), [0, h + 0.2, 0], [w - 0.8, 0.4, d - 0.8]);
   box("stone", rgb("#b8b4ad"), [w / 5, h + 1, -d / 6], [w / 3, 1.6, d / 3]);
   // Entry canopy toward the nearest walk (north-facing offices face -z).
   const face = o.z < 0 ? 1 : -1;
-  box("roof", rgb("#e7e4de"), [0, 3.1, face * (d / 2 + 1.1)], [5, 0.25, 2.2]);
+  box(
+    "roof",
+    rgb("#e7e4de"),
+    [0, 3.1, face * (d / 2 + 1.1)],
+    [5, 0.25, 2.2],
+    0,
+    true,
+  );
 }
 
 function pylon(box) {
