@@ -179,3 +179,8 @@
     display: none;
   }
 }
+
+/* Tilted cards and ribbons stay inside their panel on narrow phones. */
+.reading-view > main > .window-content {
+  overflow-x: clip;
+}

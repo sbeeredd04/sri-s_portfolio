@@ -449,3 +449,12 @@
     clip-path: inset(50%);
   }
 }
+
+/* The mixer inherits world HUD sizes; keep it readable in rooms. */
+.room-sound-panel :is(small, output, label, span, strong) {
+  font-size: max(12px, 1em);
+}
+.room-sound-panel .sensory-option strong,
+.room-sound-panel output {
+  font-size: 13px;
+}

@@ -18,7 +18,7 @@
 .reading-sheet[data-section="notes"] .sheet-bar :is(button, a, span) {
   color: var(--ink);
 }
-.reading-view [data-outdoor-journal] {
+.reading-view #notes [data-outdoor-journal] {
   background: #f3eee4;
   padding: 40px clamp(20px, 5vw, 48px);
   border-radius: 4px;
