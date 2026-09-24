@@ -14,6 +14,8 @@ import { workbenchNotebooks } from "../../lib/workbench-notebooks.mjs";
 import useSoundscape from "./useSoundscape";
 import SoundPreferences from "./SoundPreferences";
 import useWorldTime from "./useWorldTime";
+import useWeather from "./useWeather";
+import { fallbackWeather, weatherLabel } from "../../lib/weather.mjs";
 import { biomeMoods } from "../../lib/world-time.mjs";
 import { linkedProjectId, projectId } from "../../lib/project-library.mjs";
 import {
@@ -149,6 +151,7 @@ export default function ExperienceShell() {
     }
   }, []);
   const liveTime = useWorldTime();
+  const weather = useWeather();
   const daylight =
     lightMode === "live"
       ? (liveTime?.daylight ?? 0)
@@ -166,6 +169,7 @@ export default function ExperienceShell() {
           ? [-0.6, 0.7, -0.38]
           : [0, -1, 0],
     warmth: lightMode === "live" ? liveTime?.warmth || 0 : 0,
+    weather: weather || fallbackWeather,
   };
   const audio = useSoundscape(
       biome === "studio" &&
@@ -174,6 +178,7 @@ export default function ExperienceShell() {
         : biome,
       sheet,
       roomDetail,
+      weather,
     ),
     returnFocus = useRef(null),
     chapterGuide = useRef(null),
@@ -389,6 +394,9 @@ export default function ExperienceShell() {
           <time dateTime={liveTime?.iso}>
             {liveTime?.label || "Connecting to local time"}
           </time>
+          <span className="world-weather" aria-live="polite">
+            {weatherLabel(weather)}
+          </span>
         </div>
         <nav className="header-links" aria-label="Main navigation">
           <button onClick={() => show("work")}>Work</button>

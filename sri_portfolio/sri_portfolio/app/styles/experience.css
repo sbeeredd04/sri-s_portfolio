@@ -1321,9 +1321,9 @@
   font-variant-numeric: tabular-nums;
 }
 .world-clock > span {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.04em;
-  color: #94a6bf;
+  color: #9fb0c7;
 }
 .light-mode-control {
   padding: 12px 14px;
@@ -1371,12 +1371,15 @@
     right: 16px;
     flex-direction: row;
     align-items: center;
-    line-height: 12px;
+    line-height: 13px;
     gap: 7px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .world-clock > span {
-    font-size: 8px;
+    font-size: 10px;
+  }
+  .world-clock > span:first-child {
+    display: none;
   }
 }
 
