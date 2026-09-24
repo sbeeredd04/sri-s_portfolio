@@ -1,5 +1,6 @@
 import { Vector3, Quaternion, MathUtils } from "three";
 import { carvedTrailHeight, valleyFloorWeight } from "./valley-layout.mjs";
+import { sfCoastFade, sfTerrainHeight } from "./sf-terrain.mjs";
 
 // Props stay at true metres (a 1.3 m character, 7-10 m row houses). The
 // radius sets how large the world feels at eye level: at 450 m the horizon
@@ -161,7 +162,10 @@ export function planetRadiusAt(normal) {
         ? trailHeight(x, z)
         : r.id === "entertainment"
           ? listeningShoreHeight(x, z)
-          : 0;
+          : r.id === "studio"
+            ? sfTerrainHeight(x, z) *
+              sfCoastFade(regionDistance(r, x, z), r.inner)
+            : 0;
     // Keep the flat footprint, then ease a capped shoulder back into the sphere.
     // Extending the tangent plane through the whole blend creates steep rims.
     const plateau = r.offset ? WORLD_RADIUS / d : plateauRadius(r, x, z);
