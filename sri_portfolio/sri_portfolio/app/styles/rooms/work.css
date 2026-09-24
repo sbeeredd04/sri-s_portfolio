@@ -529,6 +529,7 @@
 .work-room .fieldbook-heading > span {
   color: var(--muted);
   letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 .work-room .fieldbook-heading button {
   font: 500 12px var(--font-mono);

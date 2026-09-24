@@ -345,10 +345,9 @@
   letter-spacing: -0.01em;
   color: var(--ink);
 }
+/* Inline, so a wrapped name keeps its marker on the last line. */
 .index-name :is(button, a) {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
+  display: inline-block;
   min-height: 36px;
   padding: 4px 0;
   text-align: left;
@@ -359,6 +358,8 @@
   cursor: pointer;
 }
 .index-name :is(button, a) > span {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   background: linear-gradient(var(--accent), var(--accent)) 0 100% / 0 2px
     no-repeat;
   transition: background-size 0.3s var(--w-ease);
@@ -368,6 +369,8 @@
   background-size: 100% 2px;
 }
 .index-name i {
+  margin-left: 10px;
+  white-space: nowrap;
   font: normal 500 15px var(--font-mono);
   color: var(--accent);
 }

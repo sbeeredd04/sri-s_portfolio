@@ -8,7 +8,7 @@ export default function ProjectFieldbook({ name, story, children }) {
   return (
     <div className="project-fieldbook">
       <div className="fieldbook-heading">
-        <span>INSIDE {name}</span>
+        <span>Inside {name}</span>
         <button aria-pressed={all} onClick={() => setAll(!all)}>
           {all ? "One chapter at a time" : "Read all chapters"}
         </button>
