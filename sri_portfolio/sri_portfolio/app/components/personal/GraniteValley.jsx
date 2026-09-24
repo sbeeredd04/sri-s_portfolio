@@ -2,12 +2,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
-import {
-  buildDeck,
-  buildGraniteForm,
-  buildTalusGeometry,
-  embedBase,
-} from "../../lib/granite-geometry.mjs";
+import { buildDeck, buildTalusGeometry } from "../../lib/granite-geometry.mjs";
 import {
   graniteForms,
   outdoorsLift,
@@ -26,6 +21,23 @@ const sculpted = {
   dome: "/models/granite-dome.glb",
   ridge: "/models/granite-ridge.glb",
 };
+// Baked sculpt normals are wrong in a few crack walls where cage rays missed:
+// they bend far off the surface and catch the sun as tan seams. Relax any
+// texel that disagrees strongly with the geometric normal.
+function limitBakedNormals(material) {
+  const previous = material.onBeforeCompile;
+  material.onBeforeCompile = (shader, renderer) => {
+    previous?.(shader, renderer);
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <normal_fragment_maps>",
+      `#include <normal_fragment_maps>
+      normal=normalize(mix(nonPerturbedNormal,normal,smoothstep(.35,.8,dot(normal,nonPerturbedNormal))));`,
+    );
+  };
+  const key = material.customProgramCacheKey.bind(material);
+  material.customProgramCacheKey = () => `${key()}|bakedLimit`;
+  return material;
+}
 function SculptedForm({ form, granite, heightAt }) {
   const { scene } = useGLTF(sculpted[form.kind]);
   const object = useMemo(() => {
@@ -34,12 +46,14 @@ function SculptedForm({ form, granite, heightAt }) {
       if (!node.isMesh) return;
       node.castShadow = node.receiveShadow = true;
       // Keep the baked sculpt normals; take colour/roughness from the scan.
-      node.material = applyTriplanar(node.material.clone(), {
-        albedo: granite.albedo,
-        roughness: granite.roughness,
-        scale: 0.16,
-        strength: 0.85,
-      });
+      node.material = limitBakedNormals(
+        applyTriplanar(node.material.clone(), {
+          albedo: granite.albedo,
+          roughness: granite.roughness,
+          scale: 0.16,
+          strength: 0.85,
+        }),
+      );
     });
     return clone;
   }, [scene, granite]);
@@ -48,7 +62,10 @@ function SculptedForm({ form, granite, heightAt }) {
     let low = Infinity;
     for (const sx of [-1, 0, 1])
       for (const sz of [-1, 0, 1])
-        low = Math.min(low, heightAt(form.x + sx * form.hx * 0.7, form.z + sz * form.hz * 0.7));
+        low = Math.min(
+          low,
+          heightAt(form.x + sx * form.hx * 0.7, form.z + sz * form.hz * 0.7),
+        );
     return low;
   }, [form, heightAt]);
   return (
@@ -81,9 +98,6 @@ export default function GraniteValley() {
         strength: 0.9,
         normalStrength: 1.4,
       }),
-      forms: graniteForms.map((form) =>
-        embedBase(buildGraniteForm(form), heightAt),
-      ),
       talus: buildTalusGeometry(),
       deck: buildDeck(heightAt),
       spots: talusSpots().map((spot) => ({
@@ -108,7 +122,6 @@ export default function GraniteValley() {
   useEffect(
     () => () => {
       assets.material.dispose();
-      assets.forms.forEach((geometry) => geometry.dispose());
       assets.talus.dispose();
       assets.deck.dispose();
     },
