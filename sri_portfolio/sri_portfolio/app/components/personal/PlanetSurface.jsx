@@ -108,6 +108,7 @@ export default function PlanetSurface({ surfaceRef }) {
         vec3 meadow=vec3(.11,.14,.15);
         float best=0.;
         float city=0.;
+        vec2 cityLocal=vec2(0.);
         float shoreVariation=(worldFbm(vSurface*.17)-.5)*7.;
         for(int i=0;i<${regions.length};i++) {
           vec3 delta=p*(${WORLD_RADIUS.toFixed(1)}/max(.2,dot(p,uRegions[i])))-uRegionCenter[i];
@@ -118,7 +119,7 @@ export default function PlanetSurface({ surfaceRef }) {
           float facing=step(.76,dot(p,uRegions[i]));
           float region=facing*(1.-smoothstep(uRegionEdges[i].x,uRegionEdges[i].y,distance+shoreVariation));
           places=max(places,region);
-          if(i==0) city=region;
+          if(i==0){city=region;cityLocal=local+uLandCenter[i];}
           if(region>best){
             best=region;meadow=uRegionColor[i]*(.88+terrain*.23);
             if(i==2){
@@ -165,11 +166,29 @@ export default function PlanetSurface({ surfaceRef }) {
         float footprint=max(length(dFdx(vSurface)),length(dFdy(vSurface)));
         float grain=(worldNoise(vSurface*16.)-.5)*.018*(1.-smoothstep(.035,.11,footprint));
         diffuseColor.rgb=ground+grain*land;
+        {
+          // City floor: poured concrete in 1.6 m slabs with sawn joints and
+          // per-slab tone, instead of bare paint. Joints fade before they
+          // become sub-pixel so orbit views do not shimmer.
+          vec2 g=cityLocal/1.6;
+          vec2 f=abs(fract(g)-.5);
+          float joint=smoothstep(.465,.5,max(f.x,f.y))*(1.-smoothstep(.04,.14,footprint));
+          float slab=worldHash(vec3(floor(g),7.));
+          vec3 concrete=vec3(.2,.19,.175)*(.9+slab*.18)*(.94+terrain*.12);
+          concrete*=1.-joint*.45;
+          diffuseColor.rgb=mix(diffuseColor.rgb,concrete,city*land);
+        }
       `,
           )
           .replace(
             "#include <roughnessmap_fragment>",
             "#include <roughnessmap_fragment>\n// Distant water: sub-pixel waves average into a rougher, dimmer glint.\nroughnessFactor=mix(mix(.07,.42,smoothstep(.03,.4,footprint)),.94,land);",
+          )
+          .replace(
+            "#include <lights_fragment_maps>",
+            // The surface's low env intensity suits matte land; open water
+            // mirrors the sky, so its image-based specular is lifted back up.
+            "#include <lights_fragment_maps>\nradiance*=mix(3.2,1.,land);",
           )
           .replace(
             "#include <normal_fragment_maps>",
