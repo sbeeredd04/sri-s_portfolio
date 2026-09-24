@@ -101,14 +101,12 @@ export function sfCrowd(tier = "medium") {
       len = Math.hypot(dx, dz);
     const nx = -dz / len,
       nz = dx / len;
-    walkers.push({
-      path: [
-        [ax + nx * lane, az + nz * lane],
-        [bx + nx * lane, bz + nz * lane],
-      ],
-      length: len,
-      speed: 1.05 + random() * 0.45,
-    });
+    const path = [
+      [ax + nx * lane, az + nz * lane],
+      [bx + nx * lane, bz + nz * lane],
+    ];
+    if (!path.every(([x, z]) => walkable(x, z))) continue;
+    walkers.push({ path, length: len, speed: 1.05 + random() * 0.45 });
   }
   return [...walkers, ...groups];
 }

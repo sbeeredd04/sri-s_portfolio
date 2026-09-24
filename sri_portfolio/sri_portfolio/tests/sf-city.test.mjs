@@ -138,3 +138,18 @@ test("street dressing stands on sidewalks, clear of roadways and doorsteps", asy
     for (const t of d.forest) assert.ok(avenueDistance(t.x, t.z) >= 5);
   }
 });
+
+test("the crowd walks sidewalks and stays inside its tier budget", async () => {
+  const { sfCrowd, crowdBudget } = await import("../app/lib/sf-crowd.mjs");
+  for (const tier of ["low", "medium", "high"]) {
+    const crowd = sfCrowd(tier);
+    assert.ok(crowd.length <= crowdBudget[tier]);
+    for (const a of crowd.filter((a) => a.path))
+      for (const [x, z] of a.path)
+        assert.equal(
+          streetAt(x, z),
+          "walk",
+          `walker off the sidewalk at ${x},${z}`,
+        );
+  }
+});
