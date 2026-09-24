@@ -173,17 +173,26 @@ function useGroundMaps(active, surfaceRef, anchorRef, extent) {
 function seedGeometry(count, square) {
   const g = new THREE.InstancedBufferGeometry().copy(tuftGeometry());
   const seeds = new Float32Array(count * 4);
+  const spacing = Math.sqrt(Math.PI / count);
   for (let i = 0; i < count; i++) {
     if (square) {
       // Stratified square for the wrapping near layer.
       seeds[i * 4] = Math.random() * 2 - 1;
       seeds[i * 4 + 1] = Math.random() * 2 - 1;
     } else {
-      // Golden-ratio scatter: even coverage without grid rows or clumps.
+      // Golden-ratio scatter, jittered by about one spacing: the pure spiral
+      // lattice reads as concentric moire rings from orbit.
       const r = Math.sqrt((i + 0.5) / count);
       const a = i * 2.39996323;
-      seeds[i * 4] = Math.cos(a) * r;
-      seeds[i * 4 + 1] = Math.sin(a) * r;
+      let x = Math.cos(a) * r + (Math.random() - 0.5) * spacing * 1.3;
+      let y = Math.sin(a) * r + (Math.random() - 0.5) * spacing * 1.3;
+      const len = Math.hypot(x, y);
+      if (len > 1) {
+        x /= len;
+        y /= len;
+      }
+      seeds[i * 4] = x;
+      seeds[i * 4 + 1] = y;
     }
     seeds[i * 4 + 2] = Math.random();
     seeds[i * 4 + 3] = Math.random();
