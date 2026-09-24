@@ -66,7 +66,6 @@ export default function FoundryDesk({ onRead }) {
           >
             <small>0{i + 1}</small>
             <span>{projectExhibits[item.id].name}</span>
-            <span aria-hidden="true">↗</span>
           </button>
         ))}
       </div>
@@ -79,7 +78,7 @@ export default function FoundryDesk({ onRead }) {
             one works.
           </p>
           <button className="desk-read" onClick={() => onRead(selected)}>
-            The {exhibit.name} story <span aria-hidden="true">↗</span>
+            The {exhibit.name} story <span aria-hidden="true">↓</span>
           </button>
           <span className="desk-margin-note">From Sri’s workbench</span>
         </div>

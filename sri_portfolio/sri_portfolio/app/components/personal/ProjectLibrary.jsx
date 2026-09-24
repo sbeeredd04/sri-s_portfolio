@@ -102,7 +102,7 @@ export default function ProjectLibrary({
               : `Explore ${collection.label}`}{" "}
             ↓
           </a>
-          <a href="/resume">My résumé ↗</a>
+          <a href="/resume">My résumé</a>
         </div>
       </header>
       {showDesk && <FoundryDesk onRead={reveal} />}

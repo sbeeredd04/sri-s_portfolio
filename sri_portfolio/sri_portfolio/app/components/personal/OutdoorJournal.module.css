@@ -69,7 +69,7 @@
   max-width: 100%;
   margin: 0.15rem 0 0.2rem;
   color: var(--oj-ink);
-  font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
+  font-family: var(--font-serif);
   font-size: 3.25rem;
   font-size: clamp(2rem, 11cqi, 6.35rem);
   font-weight: 400;
@@ -95,7 +95,7 @@
 .journal.journal p.lead {
   max-width: min(22ch, 100%);
   color: var(--oj-ink);
-  font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
+  font-family: var(--font-serif);
   font-size: 1.45rem;
   font-size: clamp(1.28rem, 3.2cqi, 1.8rem);
   font-weight: 400;
@@ -320,7 +320,7 @@
   max-width: min(16ch, 100%);
   margin: 0.35rem 0 0.7rem;
   color: var(--oj-ink);
-  font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
+  font-family: var(--font-serif);
   font-size: 2rem;
   font-size: clamp(1.8rem, 4.4cqi, 2.7rem);
   font-weight: 400;
@@ -357,7 +357,7 @@
 
 .index {
   color: var(--oj-rust);
-  font-family: Georgia, "Iowan Old Style", Palatino, serif;
+  font-family: var(--font-serif);
   font-size: 0.95rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.06em;
@@ -365,7 +365,7 @@
 
 .placeName {
   min-width: 0;
-  font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
+  font-family: var(--font-serif);
   font-size: 1.9rem;
   font-size: clamp(1.7rem, 4cqi, 2.55rem);
   font-weight: 400;

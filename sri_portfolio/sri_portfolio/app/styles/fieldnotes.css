@@ -33,7 +33,7 @@
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.6px;
   line-height: 1.8;
 }
@@ -63,8 +63,7 @@
 }
 .fn-index h2 em {
   font:
-    italic 400 1.04em/0.99 Georgia,
-    serif;
+    italic 400 1.04em/0.99 var(--font-serif);
   color: #626d53;
   letter-spacing: -0.065em;
 }
@@ -128,7 +127,7 @@
 .fn-cover-top {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.4px;
   align-items: center;
 }
@@ -136,7 +135,7 @@
   color: var(--fn-notebook-accent);
 }
 .fn-cover-top small {
-  font-size: 10px;
+  font-size: 12px;
 }
 .fn-notebook svg {
   width: 100%;
@@ -159,7 +158,7 @@
   letter-spacing: -0.035em;
 }
 .fn-cover-bottom small {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.3px;
   color: #65695f;
 }
@@ -176,7 +175,7 @@
   min-height: 68px;
 }
 .fn-gallery-caption > span {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.2px;
   color: #a24832;
 }
@@ -207,7 +206,7 @@
   outline-color: var(--fn-red);
 }
 .fn-gallery-nav > span {
-  font-size: 11px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 .fn-gallery-nav i {
@@ -237,7 +236,7 @@
   gap: 10px;
 }
 .fn-preview-link small {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.3px;
 }
 .fn-preview-link strong {
@@ -251,7 +250,7 @@
   line-height: 1.7;
 }
 .fn-preview-link em {
-  font-size: 10px;
+  font-size: 12px;
   font-style: normal;
   color: #74786f;
 }
@@ -274,7 +273,7 @@
   margin: 0;
 }
 .fn-published-title > span {
-  font-size: 11px;
+  font-size: 12px;
   color: #74786f;
 }
 .fn-empty {
@@ -285,8 +284,7 @@
 }
 .fn-empty > span {
   font:
-    400 54px Georgia,
-    serif;
+    400 54px var(--font-serif);
   color: #687256;
 }
 .fn-empty p {
@@ -294,7 +292,7 @@
   margin: 0 0 6px;
 }
 .fn-empty small {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.7;
   color: #666a60;
 }
@@ -311,7 +309,7 @@
   padding: 26px 0;
 }
 .fn-published li :is(span, small) {
-  font-size: 10px;
+  font-size: 12px;
   color: #687256;
 }
 .fn-published li strong {
@@ -329,7 +327,7 @@
   gap: 20px;
   padding: 25px 0 6px;
   border-top: 1px solid var(--line, #25282425);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.8;
 }
 .fn-index-footer a {
@@ -343,7 +341,7 @@
 }
 @media (max-width: 650px) {
   .fn-folio {
-    font-size: 8px;
+    font-size: 12px;
     letter-spacing: 1px;
   }
   .fn-folio > span:last-child {

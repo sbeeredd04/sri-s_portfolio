@@ -1,5 +1,6 @@
 import AppContent from "../components/personal/AppContent";
 import { pageMetadata } from "../lib/page-metadata.mjs";
+import SiteHeader from "../components/personal/SiteHeader";
 export const metadata = pageMetadata({
   title: "The story — Sri Ujjwal Reddy",
   description:
@@ -7,9 +8,9 @@ export const metadata = pageMetadata({
   path: "/story",
 });
 const sections = [
-  ["work", "Work"],
-  ["journey", "Experience"],
   ["about", "About"],
+  ["journey", "Experience"],
+  ["work", "Work"],
   ["skills", "Toolkit"],
   ["music", "Music"],
   ["notes", "Outdoors & photography"],
@@ -20,21 +21,17 @@ const sections = [
 ];
 export default function StoryPage() {
   return (
-    <div className="reading-view">
+    <div className="reading-view" id="top">
       <h1 className="sr-only">Sri Ujjwal Reddy — my story</h1>
-      <header>
-        <a className="wordmark" href="/">
-          Sri Ujjwal
-        </a>
-        <a href="/">Enter my world ↗</a>
-      </header>
-      <nav aria-label="Story sections">
-        <a href="/resume">Résumé</a>
-        {sections.map(([id, name]) => (
-          <a key={id} href={`#${id}`}>
-            {name}
-          </a>
-        ))}
+      <SiteHeader place="The whole story" />
+      <nav className="story-nav" aria-label="Story sections">
+        <div>
+          {sections.map(([id, name]) => (
+            <a key={id} href={`#${id}`}>
+              {name}
+            </a>
+          ))}
+        </div>
       </nav>
       <main>
         {sections.map(([id, name]) => (
@@ -48,8 +45,11 @@ export default function StoryPage() {
           </section>
         ))}
       </main>
+      <a className="story-top" href="#top">
+        Back to top <span aria-hidden="true">↑</span>
+      </a>
       <footer>
-        <a href="/">Back to my world ↗</a>
+        <a href="/">Back to my world</a>
         <span>A work in progress. Like me.</span>
       </footer>
     </div>

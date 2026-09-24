@@ -71,9 +71,7 @@
   padding-bottom: 24px;
 }
 .window-content .listening-intro h2 {
-  font:
-    400 clamp(42px, 5vw, 70px)/0.99 Georgia,
-    serif;
+  font: 400 clamp(42px, 5vw, 70px)/0.99 var(--font-serif);
   letter-spacing: -0.045em;
   margin: 22px 0 0;
 }
@@ -116,13 +114,11 @@
   background: none;
 }
 .entertainment-sections small {
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 0.13em;
 }
 .entertainment-library .shelf-heading h3 {
-  font:
-    400 22px Georgia,
-    serif;
+  font: 400 22px var(--font-serif);
   margin: 0;
 }
 .entertainment-library .shelf-dot {
@@ -189,9 +185,7 @@
   position: absolute;
   left: 16px;
   top: 12px;
-  font:
-    7px/1.5 ui-monospace,
-    monospace;
+  font: 12px/1.5 var(--font-mono);
   letter-spacing: 0.15em;
   color: #e6d8bd;
 }
@@ -253,15 +247,11 @@
   position: absolute;
   left: 17px;
   bottom: 10px;
-  font:
-    10px ui-monospace,
-    monospace;
+  font: 12px var(--font-mono);
   color: #e9d8b8;
 }
 .window-content .entertainment-library .music-copy h3 {
-  font:
-    400 42px Georgia,
-    serif;
+  font: 400 42px var(--font-serif);
   margin: 12px 0 22px;
 }
 .music-copy h3 em {
@@ -281,7 +271,7 @@
 }
 .record-progress label {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   margin-bottom: 5px;
   color: var(--room-muted);
 }
@@ -293,9 +283,7 @@
 .record-progress > div {
   display: flex;
   justify-content: space-between;
-  font:
-    10px ui-monospace,
-    monospace;
+  font: 12px var(--font-mono);
   color: var(--room-muted);
 }
 .entertainment-library .music-tastes {
@@ -313,9 +301,7 @@
   color: var(--room-accent);
 }
 .entertainment-library .music-tastes h4 {
-  font:
-    400 30px Georgia,
-    serif;
+  font: 400 30px var(--font-serif);
 }
 .entertainment-library .spotify-link {
   padding: 17px 22px;
@@ -332,9 +318,7 @@
   border-color: #e3d8c326;
 }
 .entertainment-library .comfort-screen h4 {
-  font:
-    400 clamp(28px, 4vw, 45px)/1.1 Georgia,
-    serif;
+  font: 400 clamp(28px, 4vw, 45px)/1.1 var(--font-serif);
 }
 .entertainment-library .show-rotation > button {
   border-radius: 3px;
@@ -443,9 +427,7 @@
 }
 .foundry-intro h2 em {
   color: #dcaa83;
-  font:
-    italic 400 1em Georgia,
-    serif;
+  font: italic 400 1em var(--font-serif);
 }
 .window-content .foundry-intro .app-lead {
   max-width: 42ch;
@@ -470,9 +452,7 @@
   color: #302a25;
 }
 .window-content .project-library .project-group-heading {
-  font:
-    400 30px Georgia,
-    serif;
+  font: 400 30px var(--font-serif);
   color: #ebe2d4;
   border-bottom: 1px solid var(--line);
   padding-bottom: 16px;
@@ -527,9 +507,7 @@
   text-transform: uppercase;
   letter-spacing: 0.13em;
   color: var(--project-accent);
-  font:
-    9px/1.6 ui-monospace,
-    monospace;
+  font: 12px/1.6 var(--font-mono);
   margin-bottom: 22px;
 }
 .project-library .project-visual {
@@ -579,13 +557,11 @@
   padding-bottom: 10px;
 }
 .fieldbook-heading > span {
-  font:
-    9px/1.6 ui-monospace,
-    monospace;
+  font: 12px/1.6 var(--font-mono);
   letter-spacing: 0.08em;
 }
 .fieldbook-heading button {
-  font-size: 11px;
+  font-size: 12px;
   min-height: 44px;
   color: #63442d;
   background: none;
@@ -605,7 +581,7 @@
   gap: 9px;
   padding: 10px 12px;
   min-height: 44px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   background: transparent;
   border: 1px solid #3f372c35;
@@ -618,9 +594,7 @@
   border-color: #34352f;
 }
 .fieldbook-chapters button span {
-  font:
-    10px ui-monospace,
-    monospace;
+  font: 12px var(--font-mono);
   opacity: 0.7;
 }
 .project-fieldbook .project-story {
@@ -630,16 +604,12 @@
   margin: 26px 0 18px;
 }
 .folio-number {
-  font:
-    italic 400 54px/1 Georgia,
-    serif;
+  font: italic 400 54px/1 var(--font-serif);
   color: #ab9c86;
 }
 .window-content .project-fieldbook .project-story h4 {
   color: #34352f;
-  font:
-    400 27px/1.15 Georgia,
-    serif;
+  font: 400 27px/1.15 var(--font-serif);
   margin: 0 0 16px;
 }
 .window-content .project-fieldbook .project-story p {
@@ -726,9 +696,7 @@
   align-items: center;
 }
 .window-content .journal-intro h2 {
-  font:
-    400 clamp(44px, 5vw, 70px)/1.03 Georgia,
-    serif;
+  font: 400 clamp(44px, 5vw, 70px)/1.03 var(--font-serif);
   margin: 24px 0;
   letter-spacing: -0.05em;
 }
@@ -756,15 +724,13 @@
 }
 .window-content .journal-role {
   color: #704455;
-  font-size: 11px;
+  font-size: 12px;
   margin: 14px 0 0;
 }
 .journal-photo figcaption {
   color: #716672;
   padding: 13px 6px 17px;
-  font:
-    italic 13px/1.5 Georgia,
-    serif;
+  font: italic 13px/1.5 var(--font-serif);
 }
 .journal-route {
   display: flex;
@@ -772,7 +738,7 @@
   align-items: center;
   gap: 8px;
   margin: 25px 0;
-  font-size: 10px;
+  font-size: 12px;
   color: #73656e;
 }
 .journal-route > span {
@@ -792,9 +758,7 @@
 }
 .window-content .journal-now h3 {
   margin: 0 0 12px;
-  font:
-    400 28px Georgia,
-    serif;
+  font: 400 28px var(--font-serif);
 }
 .window-content .journal-now p {
   margin: 0;
@@ -820,12 +784,7 @@
   font-size: 12px;
 }
 .journal-tabs button small {
-  font:
-    10px ui-monospace,
-    monospace;
-}
-.journal-tabs button > span {
-  margin-left: auto;
+  font: 12px var(--font-mono);
 }
 .journal-tabs button[aria-pressed="true"] {
   background: #563d50;
@@ -842,20 +801,16 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  font-size: 10px;
+  font-size: 12px;
   color: #8b7481;
   padding-top: 7px;
 }
 .window-content .journal-margin strong {
   color: #bea5b1;
-  font:
-    italic 52px Georgia,
-    serif;
+  font: italic 52px var(--font-serif);
 }
 .window-content .journal-chapter h3 {
-  font:
-    400 clamp(27px, 3vw, 38px)/1.15 Georgia,
-    serif;
+  font: 400 clamp(27px, 3vw, 38px)/1.15 var(--font-serif);
   margin: 0 0 22px;
   max-width: 26ch;
 }
@@ -884,16 +839,14 @@
 }
 .journal-book small {
   letter-spacing: 0.13em;
-  font-size: 8px;
+  font-size: 12px;
   color: #946d7f;
 }
 .window-content .journal-book strong {
-  font:
-    400 24px Georgia,
-    serif;
+  font: 400 24px var(--font-serif);
 }
 .journal-book span > span {
-  font-size: 11px;
+  font-size: 12px;
 }
 .window-content .journal-book p {
   font-size: 12px;
@@ -1024,9 +977,7 @@
   border-left: 3px solid #ceb793;
 }
 .reading-sheet[data-section="journey"] .experience-feature h3 {
-  font:
-    400 clamp(28px, 4vw, 44px) Georgia,
-    serif;
+  font: 400 clamp(28px, 4vw, 44px) var(--font-serif);
   color: #f1e4d1;
 }
 .reading-sheet[data-section="journey"] .experience-dimensions > div {
@@ -1051,9 +1002,7 @@
   color-scheme: light;
 }
 .reading-sheet:is([data-section="notes"], [data-section="writing"]) h2 {
-  font:
-    400 clamp(38px, 5vw, 66px)/1.05 Georgia,
-    serif;
+  font: 400 clamp(38px, 5vw, 66px)/1.05 var(--font-serif);
   max-width: 16ch;
 }
 .reading-sheet:is([data-section="notes"], [data-section="writing"]) .sheet-bar {
@@ -1081,9 +1030,7 @@
   border-left: 3px solid #6f825b;
 }
 .reading-sheet[data-section="notes"] .destination-list strong {
-  font:
-    400 30px Georgia,
-    serif;
+  font: 400 30px var(--font-serif);
 }
 .reading-sheet[data-section="notes"] .destination-list :is(span, small) {
   color: #687257;
@@ -1096,9 +1043,7 @@
 }
 .reading-sheet[data-section="writing"] .unwritten-page h3 {
   color: #6b5140;
-  font:
-    italic 400 36px/1.15 Georgia,
-    serif;
+  font: italic 400 36px/1.15 var(--font-serif);
 }
 .reading-sheet[data-section="writing"] .unwritten-page > span {
   color: #94715d;
@@ -1118,9 +1063,7 @@
   --line: #d4bcd02e;
 }
 .reading-sheet:is([data-section="contact"], [data-section="socials"]) h2 {
-  font:
-    400 clamp(38px, 5vw, 66px)/1.06 Georgia,
-    serif;
+  font: 400 clamp(38px, 5vw, 66px)/1.06 var(--font-serif);
 }
 .reading-sheet:is([data-section="contact"], [data-section="socials"])
   .connection-links
@@ -1162,7 +1105,7 @@
   padding-left: 24px;
 }
 .reading-sheet[data-section="skills"] .toolkit-group span {
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   border-radius: 4px;
   color: #c5d9c7;
 }
@@ -1186,7 +1129,7 @@
   max-width: 55ch;
 }
 .reading-view .window-content .eyebrow {
-  font-size: 9px;
+  font-size: 12px;
   line-height: 1.7;
   letter-spacing: 1.4px;
 }
@@ -1204,7 +1147,7 @@
   padding-top: 20px;
   border-top: 1px solid #d5c29e30;
   color: #c9b995;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.04em;
 }
 .work-chapters {
@@ -1219,7 +1162,7 @@
 }
 .work-chapter-number {
   color: #c1a67d;
-  font-size: 10px;
+  font-size: 12px;
   padding-top: 6px;
 }
 .experience-feature .work-chapters h4 {
@@ -1247,7 +1190,7 @@
   border-radius: 3px;
 }
 .work-photo figcaption {
-  font-size: 11px;
+  font-size: 12px;
   color: #b4b5b7;
   margin-top: 10px;
   line-height: 1.6;
@@ -1276,9 +1219,7 @@
   border-left: 2px solid #a15c51;
 }
 .journal-chapter .journal-principle p {
-  font:
-    400 27px/1.3 Georgia,
-    serif;
+  font: 400 27px/1.3 var(--font-serif);
   color: #603d39;
   margin: 12px 0;
 }
@@ -1307,71 +1248,6 @@
 /* A single search result gets the room needed to read its story. */
 .project-grid > .app-project:only-child {
   grid-column: 1 / -1;
-}
-
-/* Sound controls belong to the room and inherit its ink and material. */
-.room-sound-controls {
-  margin: 0 0 26px;
-  border-bottom: 1px solid currentColor;
-  border-color: color-mix(in srgb, currentColor 20%, transparent);
-}
-.room-sound-controls > summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  min-height: 58px;
-  cursor: pointer;
-  list-style: none;
-  padding-bottom: 14px;
-  font-size: 12px;
-}
-.room-sound-controls > summary::-webkit-details-marker {
-  display: none;
-}
-.room-sound-controls > summary > span:first-child {
-  display: grid;
-  gap: 5px;
-}
-.room-sound-controls > summary small {
-  font-size: 8px;
-  letter-spacing: 0.12em;
-  opacity: 0.7;
-}
-.room-sound-controls > summary > span:last-child {
-  white-space: nowrap;
-}
-.room-sound-controls > summary:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 4px;
-}
-.room-sound-controls .sound-preferences {
-  background: color-mix(in srgb, currentColor 5%, transparent);
-  color: inherit;
-  border-radius: 12px;
-  padding: 22px;
-  margin: 8px 0 20px;
-  color-scheme: inherit;
-}
-.reading-sheet .room-sound-controls .sound-preferences h2 {
-  font:
-    500 24px/1.2 var(--font-bricolage),
-    sans-serif;
-  color: inherit;
-  margin: 10px 0;
-}
-.reading-sheet .room-sound-controls .sound-preferences p {
-  color: inherit;
-  font-size: 13px;
-}
-@media (max-width: 600px) {
-  .room-sound-controls > summary {
-    font-size: 11px;
-    gap: 10px;
-  }
-}
-.room-sound-controls {
-  --mixer-accent: #947057;
 }
 .room-sound-controls .sensory-heading p,
 .room-sound-controls .sensory-option small,
@@ -1409,35 +1285,16 @@
   outline-offset: 4px;
 }
 @media (min-width: 650px) {
-  .room-sound-controls .sound-preferences {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 25px;
-  }
   .room-sound-controls .sensory-heading,
   .room-sound-controls .sensory-power,
   .room-sound-controls .sensory-error {
     grid-column: 1 / -1;
   }
 }
-.reading-sheet .room-sound-controls strong {
-  color: inherit;
-}
-.reading-sheet[data-section="music"] .room-sound-controls {
-  margin: 24px 28px 26px;
-}
-@media (max-width: 600px) {
-  .reading-sheet[data-section="music"] .room-sound-controls {
-    margin: 20px 24px 24px;
-  }
-}
 
 /* The Foundry opens on an explorable idea, before its searchable archive. */
 .reading-sheet[data-section="work"] .window-content {
   padding-top: 24px;
-}
-.reading-sheet[data-section="work"] .room-sound-controls {
-  margin-bottom: 24px;
 }
 .foundry-heading {
   display: flex;
@@ -1454,9 +1311,7 @@
   letter-spacing: -0.045em;
 }
 .foundry-heading h2 em {
-  font:
-    italic 400 1em Georgia,
-    serif;
+  font: italic 400 1em var(--font-serif);
   color: #d6b18f;
 }
 .foundry-links {
@@ -1509,15 +1364,12 @@
 .desk-editions button:last-child {
   border-right: 0;
 }
-.desk-editions button > span:last-child {
-  margin-left: auto;
-}
 .desk-editions button[aria-pressed="true"] {
   color: #252627;
   background: var(--edition);
 }
 .desk-editions small {
-  font-size: 10px;
+  font-size: 12px;
 }
 .desk-spread {
   display: grid;
@@ -1544,7 +1396,7 @@
   color: #b9b5ac;
 }
 .desk-caption .eyebrow {
-  font-size: 9px;
+  font-size: 12px;
   color: #c2b9a9;
 }
 .desk-read {
@@ -1563,9 +1415,7 @@
 .desk-margin-note {
   margin-top: auto;
   padding-top: 26px;
-  font:
-    italic 16px Georgia,
-    serif;
+  font: italic 16px var(--font-serif);
   color: #b8ac98;
 }
 .desk-experiment {
@@ -1608,7 +1458,7 @@
   border-color: var(--edition);
 }
 .desk-steps small {
-  font-size: 9px;
+  font-size: 12px;
 }
 .window-content .desk-result {
   min-height: 3em;
@@ -1619,7 +1469,7 @@
 }
 .desk-disclosure {
   color: #b0a99e;
-  font-size: 10px;
+  font-size: 12px;
 }
 .foundry-desk button:focus-visible {
   outline: 2px solid #fff5e3;
@@ -1632,9 +1482,7 @@
   scroll-margin-top: 20px;
 }
 .window-content .foundry-archive-heading h3 {
-  font:
-    400 30px Georgia,
-    serif;
+  font: 400 30px var(--font-serif);
   margin: 0 0 10px;
 }
 .window-content .foundry-archive-heading p {
@@ -1670,9 +1518,6 @@
     flex-direction: column;
     font-size: 12px;
   }
-  .desk-editions button > span:last-child {
-    display: none;
-  }
   .desk-experiment {
     padding: 12px;
   }
@@ -1690,13 +1535,6 @@
   .desk-steps small {
     display: none;
   }
-}
-.reading-sheet[data-section="work"] .room-sound-controls > summary {
-  min-height: 44px;
-  padding-bottom: 8px;
-}
-.reading-sheet[data-section="work"] .room-sound-controls {
-  margin-bottom: 18px;
 }
 @media (max-width: 700px) {
   .desk-caption {
@@ -1744,10 +1582,6 @@
   .reading-sheet .foundry-archive-heading {
     padding-top: 28px;
   }
-  .reading-sheet .room-sound-controls,
-  .reading-sheet[data-section="work"] .room-sound-controls {
-    margin-bottom: 16px;
-  }
   .reading-sheet .sheet-bar {
     min-height: 52px;
     padding-block: 4px;
@@ -1769,9 +1603,6 @@
     margin: 0;
     padding: 20px 20px 24px;
   }
-  .reading-sheet[data-section="music"] .room-sound-controls {
-    margin: 16px 20px;
-  }
 }
 @media (min-width: 701px) and (max-height: 800px) {
   .reading-sheet .sheet-bar {
@@ -1788,8 +1619,5 @@
   .reading-sheet[data-section="music"] .detail-continuation {
     margin: 0;
     padding: 20px clamp(28px, 4vw, 48px) 24px;
-  }
-  .reading-sheet[data-section="music"] .room-sound-controls {
-    margin: 16px clamp(28px, 4vw, 48px);
   }
 }

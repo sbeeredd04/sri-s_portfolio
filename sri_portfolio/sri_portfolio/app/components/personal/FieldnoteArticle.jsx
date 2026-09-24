@@ -2,6 +2,7 @@
 import FieldnoteDoodle from "./FieldnoteDoodle";
 import RoomSoundControls from "./RoomSoundControls";
 import useSoundscape from "./useSoundscape";
+import SiteHeader from "./SiteHeader";
 
 function NoteBlock({ block }) {
   if (block.type === "paragraph") return <p>{block.text}</p>;
@@ -110,18 +111,9 @@ export default function FieldnoteArticle({ note }) {
       <a className="room-skip" href="#note-body">
         Skip to the note
       </a>
-      <header className="fn-article-nav">
-        <a href="/rooms/writing" aria-label="Fieldnotes — all notes">
-          <span className="fn-wordmark">
-            fieldnotes<span>.</span>
-          </span>
-          <small>BY SRI</small>
-        </a>
-        <nav aria-label="Article navigation">
-          <a href="/rooms/writing">All notes</a>
-          <a href="/?room=writing">In the world ↗</a>
-        </nav>
-      </header>
+      <SiteHeader place="The writing room" worldHref="/?room=writing">
+        <RoomSoundControls audio={audio} />
+      </SiteHeader>
       <main>
         {note.preview && (
           <div className="fn-preview-notice">
@@ -162,9 +154,6 @@ export default function FieldnoteArticle({ note }) {
             <FieldnoteDoodle kind={note.art || "notice"} />
           </div>
         </div>
-        <div className="fn-article-sound">
-          <RoomSoundControls audio={audio} />
-        </div>
         <div className="fn-article-layout">
           <aside className="fn-toc">
             <span>ON THIS PAGE</span>
@@ -177,7 +166,7 @@ export default function FieldnoteArticle({ note }) {
               ))}
             </nav>
             <a className="fn-back-note" href="/rooms/writing">
-              ← Back to Fieldnotes
+              ← The writing room
             </a>
           </aside>
           <article className="fn-article-body" id="note-body" tabIndex={-1}>
@@ -205,7 +194,7 @@ export default function FieldnoteArticle({ note }) {
                   ? "The format is ready. The stories come next."
                   : "Thanks for spending a little time here."}
               </p>
-              <a href="/rooms/writing">Back to the notebooks ↗</a>
+              <a href="/rooms/writing">Back to the writing room</a>
               {note.linkedIn && (
                 <a href={note.linkedIn} target="_blank" rel="noreferrer">
                   Continue the conversation on LinkedIn ↗
@@ -218,7 +207,7 @@ export default function FieldnoteArticle({ note }) {
       <footer className="fn-colophon">
         <a href="/">sri.</a>
         <span>Made with a little curiosity.</span>
-        <a href="/rooms/contact">Say hello ↗</a>
+        <a href="/rooms/contact">Say hello</a>
       </footer>
     </div>
   );

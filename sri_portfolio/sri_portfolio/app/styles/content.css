@@ -21,7 +21,7 @@
   color: #e0eafa;
 }
 .window-content .eyebrow {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.4px;
   margin-bottom: 5px;
 }
@@ -156,7 +156,7 @@
   padding: 20px 0;
 }
 .destination-list span {
-  font-size: 11px;
+  font-size: 12px;
   color: #b3c3df;
 }
 .destination-list strong {
@@ -165,7 +165,7 @@
 .destination-list small {
   margin-left: auto;
   color: #9fafd0;
-  font-size: 11px;
+  font-size: 12px;
 }
 .music-card {
   background: linear-gradient(150deg, #39436070, #1c2c4440);
@@ -204,7 +204,7 @@
   letter-spacing: -1.5px;
 }
 .record small {
-  font-size: 5px;
+  font-size: 12px;
   letter-spacing: 0.5px;
   margin-top: 3px;
 }
@@ -318,7 +318,7 @@
     gap: 13px;
   }
   .destination-list small {
-    font-size: 10px;
+    font-size: 12px;
   }
   .reading-view {
     padding: 22px;
@@ -348,7 +348,7 @@
 .app-project .project-permalink {
   flex-shrink: 0;
   min-height: 44px;
-  font-size: 11px;
+  font-size: 12px;
   gap: 5px;
   color: #a4b8d6;
 }
@@ -364,7 +364,7 @@
   border: 1px solid #bfceed20;
   border-radius: 7px;
   padding: 5px 8px;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.5;
   color: #b9cce8;
   background: #adbbd708;
@@ -432,7 +432,7 @@
   min-height: 36px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 .project-filters button[aria-pressed="true"] {
@@ -442,7 +442,7 @@
 }
 .project-result-count {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: #99adcb;
   margin-top: 13px;
 }
@@ -451,7 +451,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 15px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 .window-content .project-group-heading {
@@ -506,7 +506,7 @@
 }
 .personal-photo figcaption,
 .project-screenshot figcaption {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.7;
   color: #a2b4d0;
   margin-top: 12px;
@@ -534,7 +534,7 @@
   z-index: 1;
   left: 19px;
   top: 17px;
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 1.8px;
   color: #9cb3cf;
 }
@@ -542,7 +542,7 @@
   height: 145px;
 }
 .project-grid .visual-caption {
-  font-size: 7px;
+  font-size: 12px;
   letter-spacing: 1.4px;
 }
 .visual-momentum,
@@ -560,14 +560,14 @@
   padding: 6px 10px;
   border: 1px solid #b9d0ee25;
   border-radius: 15px;
-  font-size: 9px;
+  font-size: 12px;
   color: #b9cfde;
   background: #afd4dc08;
 }
 .app-project .project-source {
   display: block;
   margin-top: 8px;
-  font-size: 10px;
+  font-size: 12px;
   color: #93a9c6;
 }
 .collection-intro {
@@ -588,11 +588,11 @@
   border: 1px solid #c6d9f228;
   border-radius: 21px;
   background: #b3cced08;
-  font-size: 10px;
+  font-size: 12px;
   color: #a9bfd9;
 }
 .experience-selector button > span {
-  font-size: 8px;
+  font-size: 12px;
   opacity: 0.6;
 }
 .experience-selector button[aria-pressed="true"] {
@@ -627,12 +627,12 @@
 }
 .experience-dimensions span {
   display: block;
-  font-size: 8px;
+  font-size: 12px;
   color: #7d98b8;
   margin-bottom: 8px;
 }
 .experience-dimensions strong {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
   font-weight: 500;
 }
@@ -725,7 +725,7 @@
   border-radius: 17px;
 }
 .music-tastes article > span {
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 1.1px;
   color: #8dac9f;
 }
@@ -734,7 +734,7 @@
   margin: 18px 0 7px;
 }
 .music-tastes article p {
-  font-size: 11px;
+  font-size: 12px;
   color: #9eb8b0;
 }
 .comfort-screen {
@@ -769,7 +769,7 @@
   margin-top: 20px;
   background: none;
   color: #e2c1cd;
-  font-size: 11px;
+  font-size: 12px;
 }
 .screen-1 {
   background-color: #14252c;
@@ -830,7 +830,7 @@
   background-color: #292331;
 }
 .show-art small {
-  font-size: 8px;
+  font-size: 12px;
   color: #d2c3d677;
 }
 .show-art strong {
@@ -849,7 +849,7 @@
   box-shadow: inset 7px 0 #08101c30;
 }
 .unwritten-page > span {
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 1.7px;
   color: #b3c1d4;
 }
@@ -865,7 +865,7 @@
 }
 .unwritten-page p {
   margin-top: 27px;
-  font-size: 11px;
+  font-size: 12px;
   color: #9fb4cd;
 }
 .writing-topics {
@@ -878,7 +878,7 @@
   padding: 8px 12px;
   border: 1px solid #c7d9ee25;
   border-radius: 18px;
-  font-size: 10px;
+  font-size: 12px;
   color: #aebed7;
 }
 @media (max-width: 560px) {
@@ -1111,7 +1111,7 @@
 }
 .reading-book-card small {
   letter-spacing: 0.15em;
-  font-size: 9px;
+  font-size: 12px;
   color: #a4b3c9;
 }
 .reading-book-card strong {

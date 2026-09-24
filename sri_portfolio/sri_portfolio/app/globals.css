@@ -6,3 +6,17 @@
 @import "./styles/standalone-rooms.css";
 @import "./styles/fieldnotes.css";
 @import "./styles/fieldnote-article.css";
+
+@import "./styles/rooms/shell.css";
+@import "./styles/rooms/directory.css";
+@import "./styles/rooms/work.css";
+@import "./styles/rooms/journey.css";
+@import "./styles/rooms/about.css";
+@import "./styles/rooms/skills.css";
+@import "./styles/rooms/music.css";
+@import "./styles/rooms/notes.css";
+@import "./styles/rooms/writing.css";
+@import "./styles/rooms/socials.css";
+@import "./styles/rooms/contact.css";
+@import "./styles/rooms/discoveries.css";
+@import "./styles/rooms/story.css";

@@ -25,7 +25,7 @@ export default function ExperienceStory({
         ways to see.
       </p>
       <a className="app-action" href="/resume">
-        Read my résumé ↗
+        Read my résumé
       </a>
       {!expanded && (
         <div
@@ -92,7 +92,7 @@ export default function ExperienceStory({
                     href={`${projectPage}${story.link.href}`}
                   >
                     {story.link.label}
-                    <span aria-hidden="true">↗</span>
+                    <span aria-hidden="true">→</span>
                   </a>
                 )}
               </div>

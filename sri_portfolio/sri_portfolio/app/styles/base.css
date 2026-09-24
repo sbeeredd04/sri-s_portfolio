@@ -8,6 +8,8 @@
   --font-sans:
     var(--font-manrope), -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
+  --font-serif: var(--font-newsreader), "Iowan Old Style", "Times New Roman", serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
   color-scheme: dark;
 }
 * {

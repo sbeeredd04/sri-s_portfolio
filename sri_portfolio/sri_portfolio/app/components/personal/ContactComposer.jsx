@@ -111,7 +111,7 @@ export default function ContactComposer() {
               ? "Note received ✓"
               : status === "sending"
                 ? "Sending…"
-                : "Send your note ↗"}
+                : "Send your note"}
           </button>
         )}
         <a

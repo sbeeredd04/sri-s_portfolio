@@ -98,7 +98,6 @@ export default function AboutJournal({ expanded = false }) {
             >
               <small>0{i + 1}</small>
               {entry.name}
-              <span aria-hidden="true">↗</span>
             </button>
           ))}
         </div>

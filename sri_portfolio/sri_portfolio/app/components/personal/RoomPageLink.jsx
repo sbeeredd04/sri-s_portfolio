@@ -15,7 +15,7 @@ export default function RoomPageLink({ id, collection, projectHash = null }) {
       href={roomPageHref(id, collection, projectHash ?? hash)}
       aria-label="Open this room as a full page"
     >
-      Open page ↗
+      Open page
     </a>
   );
 }

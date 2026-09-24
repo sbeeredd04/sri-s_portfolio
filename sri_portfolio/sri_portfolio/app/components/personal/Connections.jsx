@@ -91,7 +91,7 @@ export default function Connections({ collaboration = false }) {
         <span>San Francisco, California</span>
       </div>
       <a className="app-action" href="/resume">
-        For the professional details, my résumé ↗
+        For the professional details, my résumé
       </a>
     </div>
   );

@@ -1,4 +1,8 @@
 "use client";
 export default function PrintResume() {
-  return <button onClick={() => window.print()}>Print / save PDF</button>;
+  return (
+    <button className="site-tool" onClick={() => window.print()}>
+      Print or save PDF
+    </button>
+  );
 }

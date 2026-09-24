@@ -1,6 +1,7 @@
 import { history, projects, toolkit } from "../json/personal";
 import { hackathonProjects } from "../json/more-work";
 import PrintResume from "./PrintResume";
+import SiteHeader from "../components/personal/SiteHeader";
 import { pageMetadata } from "../lib/page-metadata.mjs";
 import "./resume.css";
 export const metadata = pageMetadata({
@@ -12,11 +13,9 @@ export const metadata = pageMetadata({
 export default function ResumePage() {
   return (
     <div className="resume-page">
-      <nav className="resume-actions" aria-label="Résumé actions">
-        <a href="/">← My world</a>
-        <a href="/story#work">Project stories</a>
+      <SiteHeader place="Résumé">
         <PrintResume />
-      </nav>
+      </SiteHeader>
       <main className="resume-paper">
         <header>
           <p className="eyebrow">ENGINEERING · PRODUCT · DESIGN</p>
@@ -106,9 +105,8 @@ export default function ResumePage() {
       <aside className="resume-archive">
         <h2>Looking for the original PDF?</h2>
         <p>
-          The previous résumé is preserved here. It predates Offseason and still
-          has older role dates and project claims; the overview above reflects
-          the current website.
+          An earlier version, kept for reference. The overview above is the
+          current one.
         </p>
         <a href="/sri_resume.pdf" target="_blank" rel="noreferrer">
           Open the earlier résumé (PDF) ↗

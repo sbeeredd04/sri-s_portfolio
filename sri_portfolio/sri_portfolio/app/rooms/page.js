@@ -1,5 +1,6 @@
 import { readingSections } from "../lib/world-story.mjs";
 import { pageMetadata } from "../lib/page-metadata.mjs";
+import SiteHeader from "../components/personal/SiteHeader";
 export const metadata = pageMetadata({
   title: "All places — Sri Ujjwal Reddy",
   description:
@@ -17,15 +18,7 @@ const groups = [
 export default function RoomDirectory() {
   return (
     <div className="room-directory">
-      <header>
-        <a className="room-signature" href="/">
-          sri.
-        </a>
-        <nav aria-label="Directory navigation">
-          <a href="/resume">Résumé</a>
-          <a href="/">Enter the world ↗</a>
-        </nav>
-      </header>
+      <SiteHeader place="All places" />
       <main>
         <div className="directory-intro">
           <span className="eyebrow">SRI UJJWAL REDDY / AN INDEX</span>
@@ -64,7 +57,7 @@ export default function RoomDirectory() {
         ))}
       </main>
       <footer>
-        <a href="/story">Read everything on one page ↗</a>
+        <a href="/story">Read everything on one page</a>
         <span>Still making things. Still figuring things out.</span>
       </footer>
     </div>

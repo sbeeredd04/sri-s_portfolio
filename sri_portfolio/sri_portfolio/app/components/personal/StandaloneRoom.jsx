@@ -2,6 +2,7 @@
 import { useState } from "react";
 import AppContent from "./AppContent";
 import RoomSoundControls from "./RoomSoundControls";
+import SiteHeader from "./SiteHeader";
 import useSoundscape from "./useSoundscape";
 import { readingSections } from "../../lib/world-story.mjs";
 import {
@@ -24,31 +25,18 @@ export default function StandaloneRoom({ id, initialCollection = "all" }) {
       <a className="room-skip" href="#room-content">
         Skip to content
       </a>
-      <header className="standalone-header">
-        <a
-          className="room-signature"
-          href="/"
-          aria-label="Sri — enter the world"
-        >
-          sri.
-        </a>
-        <span>{room.name}</span>
-        <nav aria-label="Room navigation">
-          <a href="/rooms">All places</a>
-          <a
-            href={roomWorldHref(
-              id,
-              projectLocation.collection,
-              projectLocation.hash,
-            )}
-          >
-            In the world ↗
-          </a>
-        </nav>
-      </header>
+      <SiteHeader
+        place={room.name}
+        worldHref={roomWorldHref(
+          id,
+          projectLocation.collection,
+          projectLocation.hash,
+        )}
+      >
+        <RoomSoundControls audio={audio} />
+      </SiteHeader>
       <main id="room-content" className="window-content" tabIndex={-1}>
         <h1 className="sr-only">{room.name} — Sri Ujjwal Reddy</h1>
-        <RoomSoundControls audio={audio} />
         {
           <AppContent
             id={id}
@@ -65,7 +53,8 @@ export default function StandaloneRoom({ id, initialCollection = "all" }) {
             <span className="eyebrow">FOLLOW THE THREAD</span>
             <p>{next.note}</p>
             <a href={roomPageHref(next.id)}>
-              {next.label} <span aria-hidden="true">→</span>
+              <span className="continuation-label">{next.label}</span>{" "}
+              <span aria-hidden="true">→</span>
             </a>
           </footer>
         )}

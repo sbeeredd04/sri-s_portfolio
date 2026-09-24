@@ -67,6 +67,7 @@ export default function ReadingSheet({
       <div className="sheet-bar">
         <span>{name}</span>
         <div>
+          {audio && id !== "index" && <RoomSoundControls audio={audio} />}
           {id !== "index" && (
             <RoomPageLink
               id={id}
@@ -89,7 +90,6 @@ export default function ReadingSheet({
         </div>
       </div>
       <div className="window-content" tabIndex={-1} key={id}>
-        {audio && <RoomSoundControls audio={audio} />}
         {id === "index" ? (
           <>
             <p className="eyebrow">A FEW WAYS INTO MY WORLD</p>
@@ -99,7 +99,7 @@ export default function ReadingSheet({
               yourself at home.
             </p>
             <a className="app-action" href="/resume">
-              Read my résumé ↗
+              Read my résumé
             </a>
             <div className="reading-index">
               {readingSections.map((s, i) => (
@@ -111,12 +111,12 @@ export default function ReadingSheet({
                     <strong>{s.name}</strong>
                     <small>{s.caption}</small>
                   </span>
-                  <span aria-hidden="true">↗</span>
+                  <span aria-hidden="true">→</span>
                 </button>
               ))}
             </div>
             <a className="app-list-link" href="/rooms">
-              Browse the standalone pages ↗
+              Browse the standalone pages
             </a>
             <h3>Go somewhere</h3>
             <div className="index-places">
@@ -128,7 +128,7 @@ export default function ReadingSheet({
               ))}
             </div>
             <a className="app-list-link" href="/story">
-              Read the whole story on one page ↗
+              Read the whole story on one page
             </a>
           </>
         ) : (
@@ -146,7 +146,9 @@ export default function ReadingSheet({
                 <span className="eyebrow">FOLLOW THE THREAD</span>
                 <p>{continuations[id].note}</p>
                 <button onClick={() => onOpen(continuations[id].id)}>
-                  {continuations[id].label}
+                  <span className="continuation-label">
+                    {continuations[id].label}
+                  </span>
                   <span aria-hidden="true">→</span>
                 </button>
               </footer>
