@@ -138,8 +138,8 @@ def trousers():
         z = p[:, 2]
         dist = ellipsoid(p, (0, 0.004, 0.58), (0.118, 0.09, 0.085))
         for g in legs:
-            thigh = round_cone(p, g["hip"] + v3((0, 0, 0.02)), g["knee"], 0.062, 0.054)
-            shin = round_cone(p, g["knee"], g["ankle"] + v3((0, -0.004, 0.0)), 0.056, 0.051)
+            thigh = round_cone(p, g["hip"] + v3((0, 0, 0.02)), g["knee"], 0.066, 0.059)
+            shin = round_cone(p, g["knee"], g["ankle"] + v3((0, -0.004, 0.0)), 0.059, 0.057)
             dist = smin(dist, smin(thigh, shin, 0.03), 0.035)
         # stacked folds at the ankles and a few creases behind the knee
         stack = np.clip((0.17 - z) / 0.08, 0, 1)
@@ -160,7 +160,7 @@ def shoe(s: int):
     def fn(p):
         q = p.copy()
         q[:, 2] -= 1.4 * np.maximum(0.0, -0.07 - (p[:, 1])) ** 2  # toe spring
-        sole = rbox(q, (x, -0.036, 0.0135), (0.045, 0.094, 0.0135), 0.011)
+        sole = rbox(q, (x, -0.036, 0.012), (0.0435, 0.093, 0.012), 0.01)
         toe = ellipsoid(q, (x, -0.076, 0.035), (0.042, 0.056, 0.031))
         heel = ellipsoid(q, (x, 0.012, 0.052), (0.04, 0.044, 0.05))
         upper = smin(toe, heel, 0.035)
@@ -182,8 +182,25 @@ def shoe_part(p: np.ndarray, x: float) -> np.ndarray:
     """Face classifier for the shoe: 0 sole, 1 upper, 2 laces."""
     part = np.ones(len(p), dtype=np.int32)
     lift = 1.4 * np.maximum(0.0, -0.07 - p[:, 1]) ** 2
-    part[p[:, 2] - lift < 0.026] = 0
+    part[p[:, 2] - lift < 0.023] = 0
     top = 0.098 - 0.25 * np.maximum(0.0, -p[:, 1])
     lace = (p[:, 2] > top - 0.004) & (p[:, 1] < -0.004) & (p[:, 1] > -0.07) & (np.abs(p[:, 0] - x) < 0.022)
     part[lace] = 2
     return part
+
+
+def watch(s: int = 1):
+    """Black sport watch on the left wrist, like the avatar reference."""
+    a = A.arm(s)
+    d, n, t = a["dir"], a["palm_n"], a["thumb_side"]
+    c = a["elbow"] + (a["wrist"] - a["elbow"]) * 0.87
+    rot = rot_from(d, t, n)
+
+    def fn(p):
+        q = (p - c) @ rot
+        radial = np.sqrt(q[:, 1] ** 2 + (q[:, 2] * 1.1) ** 2)
+        band = smax(np.abs(radial - 0.0272) - 0.0022, np.abs(q[:, 0]) - 0.0075, 0.0015)
+        face = rbox(p, c - n * 0.0265, (0.0105, 0.0115, 0.0035), 0.003, rot)
+        return smin(band, face, 0.002)
+
+    return fn, c - 0.05, c + 0.05, 0.0008

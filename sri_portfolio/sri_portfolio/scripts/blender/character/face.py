@@ -15,7 +15,7 @@ import numpy as np
 import anatomy as A
 from sdf import gradient, raycast
 
-EYE_A, EYE_B = 0.0255, 0.031  # half width / half height
+EYE_A, EYE_B = 0.0275, 0.0335  # half width / half height
 RINGS, SEGS = 7, 28
 MATS = ("eye", "lash", "brow", "mouth")
 
@@ -93,8 +93,8 @@ def brow(b: Builder, s: int, n: int = 12):
     for i in range(n):
         t = i / (n - 1)  # inner -> outer
         x = (0.034 + 0.064 * t) * s
-        z = 1.064 + 0.011 * math.sin(math.pi * (0.25 + 0.75 * t)) - 0.004 * t
-        half = 0.0062 * (1 - 0.45 * t) + 0.0016
+        z = 1.05 + 0.01 * math.sin(math.pi * (0.25 + 0.75 * t)) - 0.004 * t
+        half = 0.0068 * (1 - 0.45 * t) + 0.0018
         for row, k in enumerate((-1, 0, 1)):
             pts.append((x, z + half * k))
             lift.append(0.0022 if row == 1 else 0.0008)
@@ -181,6 +181,7 @@ def orient(fn, verts, faces):
 def _key(obj, name, co):
     key = obj.shape_key_add(name=name, from_mix=False)
     key.data.foreach_set("co", co.ravel())
+    key.value = 0.0
 
 
 def _blink(p2, lift, spans):

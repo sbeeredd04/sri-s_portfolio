@@ -44,3 +44,7 @@ next-env.d.ts
 
 # CC0 source cache for scripts/blender (rebuildable)
 /asset-src/
+
+# Python bytecode from the Blender asset scripts
+__pycache__/
+*.pyc

@@ -14,11 +14,12 @@ F = np.float32
 ARM_DROP = math.radians(45)
 
 HEAD_BASE = (0.0, 0.004, 0.885)
+HEAD_SCALE = 1.1  # head, face and hair are authored at 1.0 then scaled about HEAD_BASE
 HEAD_TOP = (0.0, 0.004, 1.13)
 HEAD_CENTER = np.array([0.0, 0.006, 1.052], F)
 SKULL_R = np.array([0.183, 0.172, 0.168], F)
 EYE_Z = 1.0
-EYE_X = 0.066
+EYE_X = 0.068
 
 
 def side(p, s: int) -> np.ndarray:

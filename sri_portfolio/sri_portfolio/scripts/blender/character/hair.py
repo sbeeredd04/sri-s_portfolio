@@ -12,7 +12,7 @@ import math
 import bpy
 import numpy as np
 
-from sdf import ellipsoid, mesh_sdf, smax, decimate
+from sdf import decimate, ellipsoid, mesh_sdf, orient_outward, smax
 
 C = np.array([0.0, 0.012, 1.066], np.float32)
 R = np.array([0.182, 0.172, 0.16], np.float32)
@@ -27,7 +27,7 @@ RINGS = 10
 
 def hairline(phi):
     knots = [0.0, 0.45, 0.9, 1.25, 1.6, 2.2, math.pi]
-    zs = [1.074, 1.082, 1.05, 1.005, 1.022, 0.955, 0.93]
+    zs = [1.088, 1.09, 1.055, 1.005, 1.02, 0.92, 0.875]
     return np.interp(np.abs(phi), knots, zs)
 
 
@@ -46,7 +46,7 @@ def on_shell(alpha, beta, off):
 
 
 def beta_end(alpha0, sweep, beta0):
-    betas = np.linspace(beta0, 2.4, 240)
+    betas = np.linspace(beta0, 2.7, 270)
     alphas = alpha0 + sweep * (betas - beta0)
     p, _ = on_shell(alphas, betas, np.zeros_like(betas))
     phi = np.arctan2(p[:, 0], -p[:, 1])
@@ -54,13 +54,15 @@ def beta_end(alpha0, sweep, beta0):
     return betas[below[0]] if len(below) else betas[-1]
 
 
-def clump(verts, faces, uvs, alpha0, beta0, width, lift, sweep, rng, extra_len=0.0, curl=0.0):
-    b1 = beta_end(alpha0, sweep, beta0) + extra_len
+def clump(verts, faces, uvs, alpha0, beta0, width, lift, sweep, rng, extra_len=0.0, curl=0.0, span=None):
+    b1 = beta0 + span if span else beta_end(alpha0, sweep, beta0) + extra_len
     s = np.linspace(0, 1, RINGS)
     beta = beta0 + (b1 - beta0) * s
     phase = rng.uniform(0, 2 * math.pi)
     alpha = alpha0 + sweep * (beta - beta0) + 0.05 * np.sin(s * 2 * math.pi * 1.1 + phase)
-    off = 0.004 + lift * np.sin(np.pi * np.minimum(s / 0.55, 1.0) / 2) - lift * 0.35 * np.maximum(0, s - 0.6) / 0.4
+    back = max(0.0, -math.cos(alpha0)) * min(1.0, beta0 / 0.5 + 0.4)
+    settle = 0.35 + 0.6 * back  # back locks fall in toward the nape
+    off = 0.004 + lift * np.sin(np.pi * np.minimum(s / 0.55, 1.0) / 2) - lift * settle * np.maximum(0, s - 0.55) / 0.45
     off += curl * s ** 2
     pts, normals = on_shell(alpha, beta, off)
     tang = np.gradient(pts, axis=0)
@@ -68,8 +70,8 @@ def clump(verts, faces, uvs, alpha0, beta0, width, lift, sweep, rng, extra_len=0
     side = np.cross(tang, normals)
     side /= np.linalg.norm(side, axis=1, keepdims=True)
     up = np.cross(side, tang)
-    w = width * np.clip(1 - s ** 2.2, 0, 1) ** 0.7 * (0.75 + 0.25 * np.minimum(1, s / 0.2))
-    t = np.minimum(w * 0.42, 0.016)
+    w = width * np.clip(1 - s ** 3, 0, 1) ** 0.55 * (0.8 + 0.2 * np.minimum(1, s / 0.2))
+    t = np.minimum(w * 0.38, 0.02)
     base = len(verts)
     u0 = rng.uniform(0, 1)
     for i in range(RINGS - 1):
@@ -96,20 +98,20 @@ def build_clumps(seed: int = 7) -> bpy.types.Object:
     rng = np.random.default_rng(seed)
     verts, faces, uvs = [], [], []
     layers = [  # count, beta0 range, width, lift, alpha span
-        (22, (0.1, 0.22), 0.058, 0.014, (-math.pi, math.pi)),
-        (20, (0.32, 0.55), 0.05, 0.024, (-math.pi, math.pi)),
-        (13, (0.62, 0.95), 0.047, 0.03, (-1.35, 1.35)),
+        (18, (0.1, 0.22), 0.078, 0.016, (-math.pi, math.pi)),
+        (16, (0.32, 0.55), 0.07, 0.03, (-math.pi, math.pi)),
+        (11, (0.62, 0.95), 0.064, 0.038, (-1.35, 1.35)),
     ]
     for count, (b0, b1), width, lift, (a0, a1) in layers:
         for i in range(count):
             alpha = a0 + (a1 - a0) * (i + rng.uniform(0.25, 0.75)) / count
             front = math.cos(alpha)
-            sweep = -0.42 * max(0.0, front) ** 1.5 + 0.12
-            extra = 0.06 * max(0.0, front) ** 2  # fringe tips fall a little past the hairline
+            sweep = -0.42 * max(0.0, front) ** 1.5 + 0.12 + rng.uniform(-0.12, 0.12)
+            extra = 0.03 * max(0.0, front) ** 2  # fringe tips fall a little past the hairline
             clump(verts, faces, uvs, alpha, rng.uniform(b0, b1), width * rng.uniform(0.85, 1.15),
-                  lift * rng.uniform(0.85, 1.2), sweep, rng, extra_len=extra)
+                  lift * rng.uniform(0.8, 1.3), sweep, rng, extra_len=extra)
     for alpha, beta, width in ((2.2, 0.2, 0.034), (2.6, 0.26, 0.03)):  # cowlick at the crown
-        clump(verts, faces, uvs, alpha, beta, width, 0.02, 0.0, rng, extra_len=-0.2 - beta, curl=0.05)
+        clump(verts, faces, uvs, alpha, beta, width, 0.02, 0.0, rng, curl=0.05, span=0.4)
     mesh = bpy.data.meshes.new("HairClumps")
     mesh.from_pydata(np.array(verts).tolist(), [], faces)
     uvl = mesh.uv_layers.new(name="UVMap")
@@ -119,6 +121,7 @@ def build_clumps(seed: int = 7) -> bpy.types.Object:
     mesh.validate()
     obj = bpy.data.objects.new("HairClumps", mesh)
     bpy.context.scene.collection.objects.link(obj)
+    orient_outward(obj)
     for poly in mesh.polygons:
         poly.use_smooth = True
     return obj
