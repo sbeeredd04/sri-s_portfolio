@@ -86,10 +86,12 @@ export default function WorldLighting({
   const fieldnotes = world === "future";
   // Inside the apartment the room should be lit by its lamps and screens;
   // sky fill through the glass is kept low so night reads warm, not blue.
-  const interior = world === "studio" && (stop === "desk" || stop === "bookshelf");
+  const interior =
+    world === "studio" && (stop === "desk" || stop === "bookshelf");
   const key = useRef(),
     points = useRef([]),
-    time = useRef(0);
+    time = useRef(0),
+    shadowFrame = useRef(0);
   const target = useMemo(() => new THREE.Object3D(), []);
   const scratch = useMemo(
     () => ({
@@ -123,6 +125,15 @@ export default function WorldLighting({
   useFrame((_, dt) => {
     const step = Math.min(dt, 0.05),
       close = world !== "planet";
+    // Mid-tier devices redraw every shadow caster on alternate frames only;
+    // the pass is ~40% of their draw calls and a one-frame lag is invisible.
+    const keyShadow = key.current.shadow;
+    keyShadow.autoUpdate = quality.shadowEvery <= 1;
+    if (
+      !keyShadow.autoUpdate &&
+      ++shadowFrame.current % quality.shadowEvery === 0
+    )
+      keyShadow.needsUpdate = true;
     if (animate) time.current += step;
     scratch.position.copy(
       close
