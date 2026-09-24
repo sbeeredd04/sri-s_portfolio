@@ -133,6 +133,35 @@ button.peg-tag:hover {
   background: var(--tag);
   color: var(--ink);
 }
+.peg-mark {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-left: -4px;
+  background: #fffdf8;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px #1d1a1626;
+}
+.peg-mark img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+.peg-mark[data-wide] {
+  width: 46px;
+}
+.peg-mark[data-wide] img {
+  width: 40px;
+  height: 16px;
+}
+.peg-credit {
+  margin: 18px 0 0;
+  font: 400 11px/1.5 var(--font-mono);
+  color: var(--ink);
+  opacity: 0.62;
+}
 .peg-tag[data-quiet] {
   border-style: dashed;
   background: #f4ecddb3;

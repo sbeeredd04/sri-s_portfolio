@@ -1,5 +1,6 @@
 "use client";
 import { Suspense, useEffect, useMemo, useRef } from "react";
+import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import CityMesh from "./CityMesh";
@@ -16,6 +17,7 @@ import {
   tools,
 } from "../../lib/tech-plan.mjs";
 import { speaker, standHeight } from "../../lib/amphitheatre.mjs";
+import { pylonLogos } from "../../lib/official-logos.mjs";
 import { surfaceHeight } from "../../lib/world-layout.mjs";
 import { projects } from "../../json/personal";
 
@@ -87,34 +89,88 @@ function Booth({ booth, project, onOpen }) {
   );
 }
 
+// Loads an official SVG or raster as an image with its true aspect ratio.
+async function loadLogo(src) {
+  let url = src,
+    aspect = null;
+  if (src.endsWith(".svg")) {
+    const text = await (await fetch(src)).text();
+    const box = text.match(/viewBox="([^"]+)"/)?.[1].split(/[\s,]+/).map(Number);
+    if (box?.length === 4) aspect = box[2] / box[3];
+    url = URL.createObjectURL(new Blob([text], { type: "image/svg+xml" }));
+  }
+  const img = new Image();
+  img.src = url;
+  await img.decode();
+  if (url !== src) URL.revokeObjectURL(url);
+  return { img, aspect: aspect || img.naturalWidth / img.naturalHeight };
+}
+
+function drawPylon(x, w, h, font, tool, logo) {
+  x.clearRect(0, 0, w, h);
+  x.fillStyle = "#22262c";
+  x.fillRect(0, 0, w, h);
+  x.fillStyle = "#ffae98";
+  x.fillRect(48, 96, 40, 5);
+  const mark = pylonLogos[tool.id];
+  let nameAt = 250;
+  if (logo) {
+    // A lockup spans the face; a bare mark sits above the name.
+    const maxW = mark.lockup ? w - 96 : 150,
+      maxH = mark.lockup ? 110 : 112;
+    const lw = Math.min(maxW, maxH * logo.aspect),
+      lh = lw / logo.aspect;
+    x.drawImage(logo.img, 48, mark.lockup ? 250 - lh : 130, lw, lh);
+    nameAt = mark.lockup ? 0 : 130 + lh + 90;
+  }
+  if (nameAt) {
+    x.font = `600 ${tool.name.length > 7 ? 84 : 100}px ${font}`;
+    x.fillStyle = "#f2efe9";
+    x.fillText(tool.name, 44, nameAt, w - 88);
+  }
+  x.font = `400 34px ${font}`;
+  x.fillStyle = "#aab4c2";
+  let line = "",
+    y = Math.max(330, nameAt + 80);
+  for (const word of tool.role.split(" ")) {
+    if (x.measureText(line + word).width > w - 100 && line) {
+      x.fillText(line, 48, y);
+      line = "";
+      y += 46;
+    }
+    line += word + " ";
+  }
+  x.fillText(line, 48, y);
+}
+
 function ToolPylon({ tool, onOpen }) {
+  const invalidate = useThree((s) => s.invalidate);
+  const font = useRef("");
   const texture = useMemo(
     () =>
-      canvasTexture(512, 768, (x, w, h, font) => {
-        x.fillStyle = "#22262c";
-        x.fillRect(0, 0, w, h);
-        x.fillStyle = "#ffae98";
-        x.fillRect(48, 96, 40, 5);
-        x.font = `600 ${tool.name.length > 7 ? 84 : 100}px ${font}`;
-        x.fillStyle = "#f2efe9";
-        x.fillText(tool.name, 44, 250, w - 88);
-        x.font = `400 34px ${font}`;
-        x.fillStyle = "#aab4c2";
-        const words = tool.role.split(" ");
-        let line = "",
-          y = 330;
-        for (const word of words) {
-          if (x.measureText(line + word).width > w - 100 && line) {
-            x.fillText(line, 48, y);
-            line = "";
-            y += 46;
-          }
-          line += word + " ";
-        }
-        x.fillText(line, 48, y);
+      canvasTexture(512, 768, (x, w, h, f) => {
+        font.current = f;
+        // Until its mark arrives, a tool with a logo waits on a quiet face.
+        drawPylon(x, w, h, f, pylonLogos[tool.id] ? { ...tool, name: "" } : tool, null);
       }),
     [tool],
   );
+  useEffect(() => {
+    const mark = pylonLogos[tool.id];
+    if (!mark) return;
+    let live = true;
+    const paint = (logo) => {
+      if (!live) return;
+      const c = texture.image;
+      drawPylon(c.getContext("2d"), c.width, c.height, font.current, tool, logo);
+      texture.needsUpdate = true;
+      invalidate();
+    };
+    loadLogo(mark.src).then(paint, () => paint(null));
+    return () => {
+      live = false;
+    };
+  }, [tool, texture, invalidate]);
   useEffect(() => () => texture.dispose(), [texture]);
   return (
     <group

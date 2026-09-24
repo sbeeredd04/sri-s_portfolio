@@ -2,6 +2,22 @@
 import { useState } from "react";
 import { allProjects, projectCollections, toolkit } from "../../json/personal";
 import { projectId } from "../../lib/project-library.mjs";
+import {
+  logoCredit,
+  toolkitLogos,
+  wideLogos,
+} from "../../lib/official-logos.mjs";
+
+// The official mark on a light chip, so it reads on either tag state.
+function Mark({ name }) {
+  const src = toolkitLogos[name];
+  if (!src) return null;
+  return (
+    <span className="peg-mark" data-wide={wideLogos.has(name) || undefined}>
+      <img src={src} alt="" width="18" height="18" loading="lazy" />
+    </span>
+  );
+}
 
 // A toolkit name can cover several stack labels, or a kind of work named in
 // the project's category. Only listed evidence counts; nothing is inferred.
@@ -66,6 +82,7 @@ export default function ToolkitPegboard() {
                           aria-pressed={tool === item}
                           onClick={() => setTool(item)}
                         >
+                          <Mark name={item} />
                           <span>{item}</span>
                           <small>
                             {n}
@@ -76,6 +93,7 @@ export default function ToolkitPegboard() {
                         </button>
                       ) : (
                         <span className="peg-tag" data-quiet>
+                          <Mark name={item} />
                           <span>{item}</span>
                         </span>
                       )}
@@ -123,6 +141,7 @@ export default function ToolkitPegboard() {
             </a>
           </aside>
         </div>
+        <p className="peg-credit">{logoCredit}</p>
       </div>
     </div>
   );
