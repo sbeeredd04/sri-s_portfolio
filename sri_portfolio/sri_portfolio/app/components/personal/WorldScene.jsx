@@ -431,10 +431,12 @@ function ConnectedWorld({
 }
 export default function WorldScene(props) {
   const [activeTier, setActiveTier] = useState(props.tier);
+  const [activeDpr, setActiveDpr] = useState(null);
   const { onTier } = props;
   const reportTier = useCallback(
-    (tier) => {
+    (tier, dpr) => {
       setActiveTier(tier);
+      setActiveDpr(dpr);
       onTier?.(tier);
     },
     [onTier],
@@ -449,7 +451,7 @@ export default function WorldScene(props) {
     <GraphicsGate onUnavailable={props.onUnavailable}>
       <Canvas
         shadows={props.tier !== "low"}
-        dpr={tierSettings[activeTier]?.dpr || 1}
+        dpr={activeDpr || tierSettings[activeTier]?.dpr || 1}
         frameloop="demand"
         camera={{
           position: [0, WORLD_RADIUS * 2.1, WORLD_RADIUS * 0.9],

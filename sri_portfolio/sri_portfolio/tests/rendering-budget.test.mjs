@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  dprSteps,
   chooseTier,
   lowerTier,
   raiseTier,
@@ -22,13 +23,19 @@ test("phones never start at full detail", () => {
   assert.equal(chooseTier({ ...phone, cores: 4 }), "low");
 });
 
-test("capable desktops get full detail with 2x density for 4K clarity", () => {
+test("capable desktops get full detail at near-native density", () => {
   assert.equal(
     chooseTier({ renderer: "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro)", cores: 12 }),
     "high",
   );
-  assert.equal(tierSettings.high.dpr[1], 2);
+  assert.equal(tierSettings.high.dpr[1], 1.75);
   assert.equal(tierSettings.low.ao, false);
+});
+
+test("a struggling frame sheds pixels before it sheds a tier", () => {
+  assert.deepEqual(dprSteps("high", 2), [1.75, 1.5, 1.25]);
+  assert.deepEqual(dprSteps("medium", 3), [1.5, 1.25, 1]);
+  assert.deepEqual(dprSteps("low", 1), [1, 0.75]);
 });
 
 test("runtime monitor never climbs above the starting ceiling", () => {
