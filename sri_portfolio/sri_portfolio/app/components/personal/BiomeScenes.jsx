@@ -6,7 +6,7 @@ export { default as Court } from "./Playground";
 import Landscape, { Grove, groundHeight } from "./Landscape";
 import { outdoorsLift } from "../../lib/valley-layout.mjs";
 import DeskTablet from "./DeskTablet";
-import Character from "./Character";
+import SriCharacter from "./SriCharacter";
 import StudioDesk from "./StudioDesk";
 import StudioChair from "./StudioChair";
 import StudioLamp from "./StudioLamp";
@@ -109,8 +109,16 @@ export function Workspace({
       </Suspense>
       <StudioChair animate={animate} />
       <Suspense fallback={null}>
-        <Model src="/models/plant-tall.glb" position={[-2.8, 0, 1.82]} rotation={0.6} />
-        <Model src="/models/plant-leafy.glb" position={[2.62, 0, -1.9]} rotation={-0.4} />
+        <Model
+          src="/models/plant-tall.glb"
+          position={[-2.8, 0, 1.82]}
+          rotation={0.6}
+        />
+        <Model
+          src="/models/plant-leafy.glb"
+          position={[2.62, 0, -1.9]}
+          rotation={-0.4}
+        />
       </Suspense>
       <StudioSofa />
       <Box
@@ -175,15 +183,16 @@ export function Trail({ animate, detailed = true, onHover, onCue }) {
       <Landscape animate={animate} detailed={detailed} onCue={onCue} />
       {detailed && (
         <>
-          <Character
-            position={[2.7, groundHeight(2.7, 1.25), 1.25]}
-            rotation={-0.3}
-            color="#8c93bc"
-            animate={animate}
-            interactive
-            backpack
-            onHover={onHover}
-          />
+          <Suspense fallback={null}>
+            <SriCharacter
+              position={[2.7, groundHeight(2.7, 1.25), 1.25]}
+              rotation={-0.3}
+              shirt="#5d6f8f"
+              animate={animate}
+              interactive
+              onHover={onHover}
+            />
+          </Suspense>
         </>
       )}
       <Rod

@@ -17,7 +17,7 @@ import {
   studioMonitors,
   studioMonitorScale,
   studioProps,
-  studioCharacter,
+  studioSri,
 } from "../../lib/studio-layout.mjs";
 import { groundColliderData } from "../../lib/world-layout.mjs";
 import * as THREE from "three";
@@ -193,19 +193,19 @@ export default function StudioPhysics({ animate, reset, onHover, onCue }) {
         ))}
         <CuboidCollider
           position={[
-            studioCharacter.position[0],
-            studioCharacter.position[1] + 0.68,
-            studioCharacter.position[2],
+            studioSri.position[0],
+            studioSri.position[1] + studioSri.torso.offset,
+            studioSri.position[2],
           ]}
-          args={[0.3, 0.29, 0.2]}
+          args={studioSri.torso.half}
         />
         <BallCollider
           position={[
-            studioCharacter.position[0],
-            studioCharacter.position[1] + 1.17,
-            studioCharacter.position[2],
+            studioSri.position[0],
+            studioSri.position[1] + studioSri.head.offset,
+            studioSri.position[2],
           ]}
-          args={[0.265]}
+          args={[studioSri.head.radius]}
         />
       </RigidBody>
       <HeldObject

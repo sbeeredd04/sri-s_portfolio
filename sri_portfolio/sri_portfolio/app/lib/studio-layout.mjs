@@ -9,7 +9,7 @@ export const studioSurfaces = {
   sofaSeat: { position: [2.52, 0.41, 1.14], size: [0.7, 0.1, 1.85] },
   coffeeTable: { position: [1.15, 0.55, 1.35], size: [0.68, 0.075, 1.1] },
   keyboard: { position: [-0.5, 0.795, -0.57], size: [0.4725, 0.02475, 0.1665] },
-  chairSeat: { position: [-0.5, 0.5, -0.07], size: [0.72, 0.15, 0.65] },
+  chairSeat: { position: [-0.5, 0.425, -0.07], size: [0.72, 0.15, 0.65] },
   chairBack: { position: [-0.5, 0.96, 0.24], size: [0.72, 0.78, 0.12] },
 };
 export const studioMonitors = [
@@ -42,6 +42,15 @@ export const studioProps = {
   },
 };
 
+// The rigged character's typing clip (public/models/characters/README.md):
+// root on the floor under the hips of a 0.50 m seat, keyboard 0.30 m ahead.
+export const studioSri = {
+  position: [-0.5, 0, -0.28],
+  rotation: Math.PI,
+  // Seated torso and head volumes for the physics props to collide with.
+  torso: { offset: 0.7, half: [0.2, 0.17, 0.15] },
+  head: { offset: 1.1, radius: 0.2 },
+};
 export const studioCharacter = {
   position: [-0.5, 0.14, -0.18],
   rotation: Math.PI,

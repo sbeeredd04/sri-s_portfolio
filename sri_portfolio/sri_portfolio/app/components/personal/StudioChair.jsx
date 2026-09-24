@@ -1,8 +1,8 @@
 "use client";
 import { Suspense } from "react";
-import { studioSurfaces, studioCharacter } from "../../lib/studio-layout.mjs";
+import { studioSurfaces, studioSri } from "../../lib/studio-layout.mjs";
 import { Model } from "./ModelInstances";
-import Character from "./Character";
+import SriCharacter from "./SriCharacter";
 
 // Blender-built task chair (scripts/blender/build_props.py). Its cushion top
 // sits at 0.44 m (armrests reach 0.69) and it faces +Z; it is turned toward
@@ -27,7 +27,14 @@ export default function StudioChair({ animate }) {
           envMapIntensity={1.1}
         />
       </Suspense>
-      <Character {...studioCharacter} seated animate={animate} />
+      <Suspense fallback={null}>
+        <SriCharacter
+          position={studioSri.position}
+          rotation={studioSri.rotation}
+          clip="typing"
+          animate={animate}
+        />
+      </Suspense>
     </group>
   );
 }
