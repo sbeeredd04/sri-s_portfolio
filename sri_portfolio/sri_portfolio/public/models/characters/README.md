@@ -15,7 +15,7 @@ Rebuild: `blender -b --python scripts/blender/character/build.py -- --out public
 
 | | |
 |---|---|
-| File | 716,724 bytes (EXT_meshopt_compression, WebP textures) |
+| File | 741,544 bytes (EXT_meshopt_compression, WebP textures) |
 | Triangles | 21,461 (Body 6,459 · Hair 6,082 · Shirt 2,900 · Trousers 2,300 · Shoes 2,200 · Face 1,020 · Watch 500) |
 | Height | 1.285 m to the top of the hair; head with hair is about 1/3 of the height |
 | Units / axes | metres, +Y up, facing +Z |
@@ -58,6 +58,7 @@ All meshes are skinned to the one skeleton.
 |---|---|---|---|---|
 | `idle` | 120 | 4.0 | yes | Breathing, weight shift, head drift, blink at 1.3 s |
 | `walk` | 18 | 0.6 | yes | Authored for 1.2 m/s (stride 0.72 m per cycle). Feet stay planted during stance with a heel-toe roll. For another speed, set `action.timeScale = speed / 1.2` |
+| `jog` | 16 | 0.533 | yes | Authored for 2.6 m/s (stride 1.39 m per cycle) with a short flight phase, forward lean and bent, pumping arms. Crossfade from `walk` above about 1.9 m/s and set `timeScale = speed / 2.6` |
 | `typing` | 120 | 4.0 | yes | Seated on a 0.50 m seat at a 0.78 m desk, finger taps, two blinks |
 | `wave` | 66 | 2.2 | no (one-shot) | Right-hand wave with a smile morph. Starts and ends on the idle pose. Use `LoopOnce` and `clampWhenFinished = false`, then crossfade back to idle |
 | `sit` | 150 | 5.0 | yes | Relaxed on a 0.46 m sofa, leaning back 9°, hands on thighs, feet swinging, blinks, light smile |

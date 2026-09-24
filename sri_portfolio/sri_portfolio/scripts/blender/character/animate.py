@@ -1,4 +1,4 @@
-"""The five glTF actions: idle, walk, typing, wave, sit (30 fps, in place).
+"""The six glTF actions: idle, walk, jog, typing, wave, sit (30 fps, in place).
 
 Seated clips keep the armature origin on the floor directly under the hip
 joints; thighs point along -Y (glTF +Z, forward). See README for measurements.
@@ -16,6 +16,9 @@ from pose import Limb, Pose, Solver, euler, frame_from, quat
 FPS = 30
 WALK_SPEED = 1.2        # m/s the walk cycle is authored for
 WALK_FRAMES = 18        # 0.6 s cycle -> 0.72 m stride
+JOG_SPEED = 2.6         # m/s the jog cycle is authored for
+JOG_FRAMES = 16         # 0.533 s cycle -> 1.39 m stride, with a flight phase
+JOG_STANCE = 0.36
 SOFA_SEAT = 0.46
 DESK_SEAT = 0.50
 DESK_WRIST_Z = 0.80
@@ -103,10 +106,9 @@ def idle(t: float, dur: float) -> Pose:
 STANCE = 0.56
 
 
-def walk_foot(phase: float, s: int, travel: float):
+def walk_foot(phase: float, s: int, travel: float, stance: float = STANCE, lift: float = 0.055):
     """Ankle offset from rest and foot pitch; `travel` is the ground covered in stance."""
     g = A.leg(s)
-    stance = STANCE
     half = travel / 2
     stride = travel
     if phase < stance:
@@ -119,7 +121,7 @@ def walk_foot(phase: float, s: int, travel: float):
         u = (phase - stance) / (1 - stance)
         e = 0.5 - 0.5 * math.cos(math.pi * u)
         y = half - stride * e
-        z = 0.055 * math.sin(math.pi * min(1.0, u * 1.1))
+        z = lift * math.sin(math.pi * min(1.0, u * 1.1))
         pitch = 30 * (1 - u) ** 2 - 14 * u ** 2
     ball = Vector(g["ball"]) - Vector(g["ankle"])
     if pitch > 0:  # heel up: pivot the foot about the ball
@@ -148,6 +150,31 @@ def walk(t: float, dur: float) -> Pose:
         arm_phase = math.cos(w + (0 if s > 0 else math.pi))  # left arm swings back as the left leg reaches
         hanging_arm(p, s, sfx, swing=-26 * arm_phase + 4, bend=18 + 10 * max(0.0, -arm_phase), out=0.02)
         curl(p, sfx, RELAXED, {k: (6, 8, 6) for k in RELAXED})
+    return p
+
+
+def jog(t: float, dur: float) -> Pose:
+    """A light jog: shorter stance, both feet briefly off the ground, a
+    forward lean, higher knees and bent arms pumping opposite the legs."""
+    p = Pose()
+    phase = (t / dur) % 1.0
+    travel = JOG_SPEED * dur * JOG_STANCE
+    w = 2 * math.pi * phase
+    bob = math.cos(2 * w)
+    p.hips_loc = V(0.008 * math.sin(w), 0, -0.05 + 0.022 * bob)
+    trunk(p, pitch=11 + 1.5 * bob, yaw=-9 * math.cos(w), roll=2 * math.sin(w),
+          chest=(2, 14 * math.cos(w), -2.5 * math.sin(w)), neck=(-5, -3 * math.cos(w), 0),
+          head=(-5 + 1.5 * bob, -3 * math.cos(w), -1 * math.sin(w)))
+    for s, sfx in SIDES:
+        ph = (phase + (0.0 if s > 0 else 0.5)) % 1.0
+        off, pitch = walk_foot(ph, s, travel, JOG_STANCE, 0.12)
+        g = A.leg(s)
+        target = Vector(g["ankle"]) + off
+        p.limbs[f"leg_{sfx}"] = Limb(target, V(0.1 * s, -1, 0), foot_rot(pitch, s))
+        p.local[f"toes_{sfx}"] = euler(x=max(0.0, pitch) * 0.9)
+        arm_phase = math.cos(w + (0 if s > 0 else math.pi))
+        hanging_arm(p, s, sfx, swing=-38 * arm_phase + 8, bend=72 + 12 * max(0.0, -arm_phase), out=0.04)
+        curl(p, sfx, RELAXED, {k: (18, 24, 16) for k in RELAXED})
     return p
 
 
@@ -221,6 +248,7 @@ def _envelope(t, a0, a1, b0, b1):
 CLIPS = {  # name: (pose fn, frames, blink times (s), smile curve)
     "idle": (idle, 120, (1.3,), None),
     "walk": (walk, WALK_FRAMES, (), None),
+    "jog": (jog, JOG_FRAMES, (), None),
     "typing": (typing, 120, (0.9, 3.2), None),
     "wave": (wave, 66, (1.6,), lambda t: _envelope(t, 0.1, 0.5, 1.6, 2.1)),
     "sit": (sit, 150, (1.0, 3.6), lambda t: 0.25),
