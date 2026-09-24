@@ -174,7 +174,7 @@ export default function PlanetSurface({ surfaceRef }) {
           vec2 f=abs(fract(g)-.5);
           float joint=smoothstep(.465,.5,max(f.x,f.y))*(1.-smoothstep(.04,.14,footprint));
           float slab=worldHash(vec3(floor(g),7.));
-          vec3 concrete=vec3(.2,.19,.175)*(.9+slab*.18)*(.94+terrain*.12);
+          vec3 concrete=vec3(.165,.158,.146)*(.9+slab*.18)*(.94+terrain*.12);
           concrete*=1.-joint*.45;
           diffuseColor.rgb=mix(diffuseColor.rgb,concrete,city*land);
         }
@@ -187,8 +187,9 @@ export default function PlanetSurface({ surfaceRef }) {
           .replace(
             "#include <lights_fragment_maps>",
             // The surface's low env intensity suits matte land; open water
-            // mirrors the sky, so its image-based specular is lifted back up.
-            "#include <lights_fragment_maps>\nradiance*=mix(3.2,1.,land);",
+            // mirrors the sky, so its image-based specular is lifted back up
+            // near the camera. From orbit the blurred sky would read milky.
+            "#include <lights_fragment_maps>\nradiance*=mix(mix(3.2,1.,smoothstep(.06,.3,footprint)),1.,land);",
           )
           .replace(
             "#include <normal_fragment_maps>",
