@@ -1865,6 +1865,68 @@
 }
 
 /* Each place keeps its own material voice inside the common interface. */
+/* ...and its own type: a display face for the title, a voice for the eyebrow
+   and the stop chips. All faces are local (app/fonts). */
+.experience-shell {
+  --place-display: var(--font-bricolage), var(--font-sans);
+  --place-display-weight: 500;
+  --place-display-style: normal;
+  --place-display-tracking: -0.02em;
+  --place-voice: var(--font-sans);
+  --place-voice-tracking: 0.16em;
+}
+.experience-shell[data-biome="projects"] {
+  --place-display: var(--font-manrope), var(--font-sans);
+  --place-display-weight: 700;
+  --place-display-tracking: -0.035em;
+  --place-voice: var(--font-jetbrains), monospace;
+  --place-voice-tracking: 0.06em;
+}
+.experience-shell[data-biome="court"],
+.experience-shell[data-biome="entertainment"] {
+  --place-display: var(--font-fraunces), serif;
+  --place-display-weight: 600;
+  --place-display-style: italic;
+  --place-display-tracking: -0.01em;
+  --place-voice: var(--font-courier), monospace;
+  --place-voice-tracking: 0.08em;
+}
+.experience-shell[data-biome="trail"] {
+  --place-display: var(--font-instrument), serif;
+  --place-display-weight: 400;
+  --place-display-tracking: 0;
+}
+.experience-shell[data-biome="future"] {
+  --place-display: var(--font-newsreader), serif;
+  --place-display-weight: 500;
+  --place-display-tracking: -0.01em;
+  --place-voice: var(--font-caveat), cursive;
+  --place-voice-tracking: 0.02em;
+}
+.place-heading h1 {
+  font-family: var(--place-display);
+  font-weight: var(--place-display-weight);
+  font-style: var(--place-display-style);
+  letter-spacing: var(--place-display-tracking);
+}
+.place-heading .eyebrow,
+.place-stops button {
+  font-family: var(--place-voice);
+  letter-spacing: var(--place-voice-tracking);
+}
+[data-biome="future"] .place-heading .eyebrow {
+  font-size: 15px;
+  text-transform: none;
+}
+[data-biome="trail"] .place-heading h1 {
+  font-size: 36px;
+}
+[data-biome="trail"] .place-heading.has-stop h1 {
+  font-size: 29px;
+}
+[data-biome="future"] .place-stops button {
+  font-size: 14px;
+}
 [data-biome="projects"] .place-heading {
   background: #211c1aec;
   border-color: #c89c6840;
