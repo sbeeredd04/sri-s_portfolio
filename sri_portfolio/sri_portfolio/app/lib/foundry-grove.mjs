@@ -3,6 +3,7 @@
 import { regions, worldPoint } from "./world-layout.mjs";
 import { makeWalkNetwork, nearestWalk } from "./walk-network.mjs";
 import { campusCenter, campusRadii } from "./campus-layout.mjs";
+import { inTechFootprint } from "./tech-plan.mjs";
 
 export const GROVE_WALK_CLEARANCE = 3;
 const CORE = { x: 0, z: 1, radius: 17 };
@@ -25,6 +26,7 @@ export function foundryGroveTrees() {
       campusRadii.eaveOuter + 3
     )
       continue;
+    if (inTechFootprint(x, z)) continue;
     const walk = nearestWalk(worldPoint("projects", [x, 0, z]), network);
     if (
       walk &&

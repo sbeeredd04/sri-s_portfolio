@@ -1,4 +1,5 @@
 import { campusPaths } from "./campus-layout.mjs";
+import { techWalks } from "./tech-plan.mjs";
 
 export const workshops = [
   {
@@ -66,7 +67,11 @@ export const projectTownWalks = [
   [[0, 1], [0, -2.5], 1],
   [[5.5, 1], [5.5, 0], 1],
 ];
-export const projectWalks = [...projectTownWalks, ...campusPaths()];
+export const projectWalks = [
+  ...projectTownWalks,
+  ...campusPaths(),
+  ...techWalks,
+];
 
 export const projectLamps = [
   [-1.5, 0, 2.5],

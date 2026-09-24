@@ -3,6 +3,7 @@ import { campusView } from "./campus-layout.mjs";
 import { courtViews } from "./court-layout.mjs";
 import { bridgeView } from "./bay-bridge.mjs";
 import { cityViews } from "./sf-views.mjs";
+import { techViews } from "./tech-plan.mjs";
 import { trailView } from "./valley-layout.mjs";
 import { fieldnotesCameras } from "./fieldnotes-layout.mjs";
 // Content and camera positions share the same coordinates as the visible objects.
@@ -98,6 +99,7 @@ export const placeStops = {
       prompt: "The ideas we built in a weekend",
       hint: "Devils Invent, three times. AZ Spark. Voxel51. Made with a team.",
     },
+    ...techViews,
     {
       id: "ring",
       label: "The ring",

@@ -12,6 +12,7 @@ import {
 import { useRoomTexture } from "./RoomMaterials";
 import ProjectDistricts from "./ProjectDistricts";
 import FoundryCampus from "./FoundryCampus";
+import TechDistrict from "./TechDistrict";
 import Workbench from "./Workbench";
 import { FinishBox, useFinish } from "./Finishes";
 import { Grove } from "./Landscape";
@@ -257,6 +258,7 @@ function Workshop({
 }
 export default function ProjectTown({
   detailed,
+  animate,
   night,
   onProjectOpen,
   onContentOpen,
@@ -280,6 +282,9 @@ export default function ProjectTown({
       />
       <ProjectDistricts
         {...{ detailed, night, onProjectOpen, onContentOpen, onHover }}
+      />
+      <TechDistrict
+        {...{ detailed, night, animate, onContentOpen, onProjectOpen }}
       />
       <FoundryCampus
         night={night}
