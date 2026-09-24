@@ -28,7 +28,7 @@ export const biomeHaze = {
   projects: 0.17,
   court: 0.22,
   entertainment: 0.24,
-  trail: 0.36,
+  trail: 0.27,
   future: 0.24,
 };
 const MIN_SHOT = 45;

@@ -3,11 +3,11 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useQuality } from "./Quality";
-import { grassProfile, grassCount } from "../../lib/grass.mjs";
+import { grassProfile, grassCount, nearGrassCount, NEAR_EXTENT } from "../../lib/grass.mjs";
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
 
 const MAP = 512;
-const CLEAR = 0.035; // metres a surface may sit above the soil and still be ground
+const CLEAR = 0.012; // metres a surface may sit above the soil and still be ground (trail paving sits 2.7cm up)
 
 // A tuft of three curved, tapered blades (4 segments each). Each blade keeps
 // its own lean and offset in the attribute "tuft" so wind moves them apart.
@@ -170,34 +170,30 @@ function useGroundMaps(active, surfaceRef, anchorRef, extent) {
   return maps;
 }
 
-export default function GrassField({ biome, active, surfaceRef, animate, sun }) {
-  const quality = useQuality();
-  const profile = grassProfile[biome];
-  const count = grassCount(biome, quality.tier);
-  const enabled = Boolean(profile && count && active);
-  const anchor = useRef();
-  const mesh = useRef();
-  const time = useRef(0);
-  const maps = useGroundMaps(enabled, surfaceRef, anchor, profile?.extent || 1);
-  const geometry = useMemo(() => {
-    if (!enabled) return null;
-    const g = new THREE.InstancedBufferGeometry().copy(tuftGeometry());
-    const seeds = new Float32Array(count * 4);
-    for (let i = 0; i < count; i++) {
+function seedGeometry(count, square) {
+  const g = new THREE.InstancedBufferGeometry().copy(tuftGeometry());
+  const seeds = new Float32Array(count * 4);
+  for (let i = 0; i < count; i++) {
+    if (square) {
+      // Stratified square for the wrapping near layer.
+      seeds[i * 4] = Math.random() * 2 - 1;
+      seeds[i * 4 + 1] = Math.random() * 2 - 1;
+    } else {
       // Golden-ratio scatter: even coverage without grid rows or clumps.
       const r = Math.sqrt((i + 0.5) / count);
       const a = i * 2.39996323;
       seeds[i * 4] = Math.cos(a) * r;
       seeds[i * 4 + 1] = Math.sin(a) * r;
-      seeds[i * 4 + 2] = Math.random();
-      seeds[i * 4 + 3] = Math.random();
     }
-    g.setAttribute("seed", new THREE.InstancedBufferAttribute(seeds, 4));
-    g.instanceCount = count;
-    return g;
-  }, [enabled, count]);
-  const material = useMemo(() => {
-    if (!profile) return null;
+    seeds[i * 4 + 2] = Math.random();
+    seeds[i * 4 + 3] = Math.random();
+  }
+  g.setAttribute("seed", new THREE.InstancedBufferAttribute(seeds, 4));
+  g.instanceCount = count;
+  return g;
+}
+
+function grassMaterial(profile, maps, biome, near) {
     const m = new THREE.MeshStandardMaterial({
       side: THREE.DoubleSide,
       roughness: 0.78,
@@ -206,8 +202,13 @@ export default function GrassField({ biome, active, surfaceRef, animate, sun }) 
     const uniforms = {
       uTime: { value: 0 },
       uExtent: { value: profile.extent },
+      // Near layer: a dense square of tufts that recycles around the point
+      // the camera is looking at, so close shots are full, not ribbons.
+      uPlace: { value: near ? NEAR_EXTENT : profile.extent },
+      uCenter: { value: new THREE.Vector2() },
+      uNear: { value: near ? 1 : 0 },
       uHeight: { value: profile.height },
-      uWidth: { value: profile.width },
+      uWidth: { value: profile.width * (near ? 0.8 : 1) },
       uBase: { value: new THREE.Color(profile.base) },
       uTip: { value: new THREE.Color(profile.tip) },
       uDry: { value: new THREE.Color(profile.dry) },
@@ -233,9 +234,9 @@ export default function GrassField({ biome, active, surfaceRef, animate, sun }) 
           `#include <common>
           attribute vec4 seed;
           attribute vec4 tuft;
-          uniform float uTime, uExtent, uHeight, uWidth, uReady, uClear, uFade, uR, uInner;
+          uniform float uTime, uExtent, uPlace, uNear, uHeight, uWidth, uReady, uClear, uFade, uR, uInner;
           uniform sampler2D uSoil, uTop;
-          uniform vec3 uCam;
+          uniform vec3 uCam; uniform vec2 uCenter;
           varying float vT; varying float vShade; varying float vDry;
           float gh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
           float gn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(gh(i),gh(i+vec2(1,0)),f.x),mix(gh(i+vec2(0,1)),gh(i+vec2(1,1)),f.x),f.y);}`,
@@ -247,7 +248,12 @@ export default function GrassField({ biome, active, surfaceRef, animate, sun }) 
         )
         .replace(
           "#include <begin_vertex>",
-          `vec2 local=seed.xy*uExtent;
+          `vec2 local=seed.xy*uPlace;
+          float edge=1.;
+          if(uNear>.5){
+            local=mod(local-uCenter+uPlace,vec2(2.*uPlace))-uPlace+uCenter;
+            edge=1.-smoothstep(uPlace*.55,uPlace,length(local-uCenter));
+          }
           vec2 uvMap=vec2(local.x/uExtent*.5+.5,.5-local.y/uExtent*.5);
           float soil=texture2D(uSoil,uvMap).r;
           float top=texture2D(uTop,uvMap).r;
@@ -255,7 +261,8 @@ export default function GrassField({ biome, active, surfaceRef, animate, sun }) 
           float rr=dot(local,local);
           float sphereY=sqrt(max(0.,uR*uR-rr))-uR;
           float land=max(step(rr,uInner*uInner),step(.12,soil-sphereY));
-          float open=uReady*step(top-soil,uClear)*land;
+          float open=uReady*step(top-soil,uClear)*land*edge
+            *step(abs(local.x),uExtent)*step(abs(local.y),uExtent);
           // Patchy density and height: meadows have clearings and tall tufts.
           float meadowPatch=gn(local*.09+seed.z*.1);
           float clump=gn(local*.55);
@@ -301,16 +308,66 @@ export default function GrassField({ biome, active, surfaceRef, animate, sun }) 
         );
     };
     return m;
-  }, [profile, maps, biome]);
+}
+
+export default function GrassField({ biome, active, surfaceRef, animate, sun }) {
+  const quality = useQuality();
+  const profile = grassProfile[biome];
+  const count = grassCount(biome, quality.tier);
+  const near = nearGrassCount(biome, quality.tier);
+  const enabled = Boolean(profile && count && active);
+  const anchor = useRef();
+  const mesh = useRef();
+  const time = useRef(0);
+  const maps = useGroundMaps(enabled, surfaceRef, anchor, profile?.extent || 1);
+  const geometry = useMemo(
+    () => (enabled ? seedGeometry(count, false) : null),
+    [enabled, count],
+  );
+  const nearGeometry = useMemo(
+    () => (enabled && near ? seedGeometry(near, true) : null),
+    [enabled, near],
+  );
+  const material = useMemo(
+    () => (profile ? grassMaterial(profile, maps, biome, false) : null),
+    [profile, maps, biome],
+  );
+  const nearMaterial = useMemo(
+    () => (profile ? grassMaterial(profile, maps, biome, true) : null),
+    [profile, maps, biome],
+  );
   useEffect(() => () => geometry?.dispose(), [geometry]);
+  useEffect(() => () => nearGeometry?.dispose(), [nearGeometry]);
   useEffect(() => () => material?.dispose(), [material]);
+  useEffect(() => () => nearMaterial?.dispose(), [nearMaterial]);
+  const ray = useMemo(
+    () => ({
+      origin: new THREE.Vector3(),
+      direction: new THREE.Vector3(),
+      hit: new THREE.Vector3(),
+    }),
+    [],
+  );
   useFrame(({ camera }, dt) => {
     if (!enabled || !material) return;
     if (animate) time.current += Math.min(dt, 0.05);
-    const u = material.userData.uniforms;
-    u.uTime.value = time.current;
-    u.uCam.value.copy(camera.position);
-    if (sun) u.uSun.value.copy(sun);
+    // Where the view meets the ground (in the district frame), held within a
+    // short distance in front of the camera for wide establishing shots.
+    const group = anchor.current;
+    ray.origin.copy(camera.position);
+    group.worldToLocal(ray.origin);
+    camera.getWorldDirection(ray.direction);
+    ray.direction.transformDirection(group.matrixWorld.clone().invert());
+    const t = ray.direction.y < -0.05 ? -ray.origin.y / ray.direction.y : 10;
+    ray.hit.copy(ray.origin).addScaledVector(ray.direction, Math.min(t, 14));
+    for (const m of [material, nearMaterial]) {
+      if (!m) continue;
+      const u = m.userData.uniforms;
+      u.uTime.value = time.current;
+      u.uCam.value.copy(camera.position);
+      u.uCenter.value.set(ray.hit.x, ray.hit.z);
+      if (sun) u.uSun.value.copy(sun);
+    }
   });
   return (
     <group ref={anchor}>
@@ -319,6 +376,15 @@ export default function GrassField({ biome, active, surfaceRef, animate, sun }) 
           ref={mesh}
           geometry={geometry}
           material={material}
+          frustumCulled={false}
+          receiveShadow
+          raycast={() => null}
+        />
+      )}
+      {enabled && nearGeometry && (
+        <mesh
+          geometry={nearGeometry}
+          material={nearMaterial}
           frustumCulled={false}
           receiveShadow
           raycast={() => null}

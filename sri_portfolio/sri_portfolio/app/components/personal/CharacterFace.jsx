@@ -92,12 +92,19 @@ export default function CharacterFace({ leftEye, rightEye }) {
   return (
     <group>
       <mesh geometry={geometry.face} castShadow receiveShadow>
+        {/* Skin: soft oily clearcoat, warm red sheen at grazing angles and a
+            faint warm emissive lift that stands in for subsurface scattering,
+            so shadowed cheeks read as flesh rather than painted plastic. */}
         <meshPhysicalMaterial
           vertexColors
-          roughness={0.68}
-          sheen={0.12}
-          sheenColor="#e4b99b"
-          sheenRoughness={0.8}
+          roughness={0.52}
+          clearcoat={0.12}
+          clearcoatRoughness={0.55}
+          sheen={0.4}
+          sheenColor="#ff9f82"
+          sheenRoughness={0.55}
+          emissive="#5a2616"
+          emissiveIntensity={0.12}
         />
       </mesh>
       {[-1, 1].map((s) => (
@@ -159,10 +166,12 @@ export default function CharacterFace({ leftEye, rightEye }) {
           map={hair}
           bumpMap={hair}
           bumpScale={0.004}
-          roughness={0.7}
-          sheen={0.18}
-          sheenColor="#826a55"
-          sheenRoughness={0.75}
+          roughness={0.42}
+          anisotropy={0.85}
+          anisotropyRotation={Math.PI / 2}
+          sheen={0.35}
+          sheenColor="#9c7a5e"
+          sheenRoughness={0.5}
         />
       </mesh>
     </group>

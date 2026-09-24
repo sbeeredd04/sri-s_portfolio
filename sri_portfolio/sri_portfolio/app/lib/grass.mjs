@@ -53,3 +53,10 @@ export function grassCount(biome, tier) {
   const area = Math.min(1, (profile.extent * profile.extent) / (30 * 30));
   return Math.round((budget[tier] ?? 0) * Math.max(0.45, area));
 }
+
+// Dense near-field layer that follows the view (half-width, metres).
+export const NEAR_EXTENT = 9;
+const nearBudget = { low: 0, medium: 12000, high: 36000 };
+export function nearGrassCount(biome, tier) {
+  return grassProfile[biome] ? nearBudget[tier] ?? 0 : 0;
+}

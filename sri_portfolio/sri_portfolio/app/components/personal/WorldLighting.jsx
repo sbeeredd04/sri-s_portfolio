@@ -169,7 +169,7 @@ export default function WorldLighting({
     target.position.lerp(scratch.target, blend);
     const keyIntensity = close
       ? (valley ? 1.1 : foundry || fieldnotes ? 0.95 : 0.8) +
-        daylight * 2.7 * mood.exposure
+        daylight * 3.6 * mood.exposure
       : 1.2 + daylight;
     key.current.intensity = THREE.MathUtils.lerp(
       key.current.intensity,
@@ -238,7 +238,7 @@ export default function WorldLighting({
     <>
       <ambientLight
         intensity={
-          ((valley || foundry || fieldnotes ? 0.16 : 0.12) + daylight * 0.2) *
+          ((valley || foundry || fieldnotes ? 0.16 : 0.12) - daylight * 0.08) *
           (interior ? 0.5 : 1)
         }
       />
@@ -246,7 +246,7 @@ export default function WorldLighting({
         args={[
           mood.sky,
           "#3b3a44",
-          ((valley || foundry || fieldnotes ? 0.5 : 0.42) + daylight * 0.55) *
+          ((valley || foundry || fieldnotes ? 0.5 : 0.42) - daylight * 0.12) *
             (interior ? 0.4 + daylight * 0.4 : 1),
         ]}
       />
