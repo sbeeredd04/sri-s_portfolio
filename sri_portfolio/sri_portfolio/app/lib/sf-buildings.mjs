@@ -24,6 +24,10 @@ const palettes = {
   warehouse: ["#8a5645", "#794c3c", "#a0684f", "#6f6a63", "#9a7a5c"],
   office: ["#bdb6aa", "#8d9197", "#cbc4b6", "#a9a39a"],
 };
+// Flat tar-and-gravel roofs in pale greys, with the odd warmer one.
+const roofTones = ["#8d8f8e", "#7a7d7e", "#a19d96", "#6b6f72", "#948a80"];
+const roofColor = (lot) =>
+  rgb(roofTones[Math.floor(lot.detail * 97) % roofTones.length]);
 const trimColor = {
   victorian: "#efe7d8",
   edwardian: "#f2eee6",
@@ -361,7 +365,7 @@ function rowHouse(box, lot, ground, detail) {
     );
   box(
     "roof",
-    rgb("#3c4146"),
+    roofColor(lot),
     [0, top + 0.05, zc - 0.1],
     [w - 0.1, 0.1, d - 0.2],
   );
@@ -400,7 +404,7 @@ function warehouse(box, lot, ground) {
   box("paint", trim, [0, top + 0.25, front + 0.1], [w + 0.14, 0.5, 0.32]);
   box(
     "roof",
-    rgb("#34383c"),
+    roofColor(lot),
     [0, top + 0.05, front - d / 2],
     [w - 0.1, 0.1, d - 0.1],
   );

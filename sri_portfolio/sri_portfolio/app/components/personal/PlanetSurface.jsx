@@ -206,6 +206,9 @@ export default function PlanetSurface({ surfaceRef, weather }) {
           vec4 st=sfStreets(cityLocal);
           float fine=1.-smoothstep(.04,.16,footprint);
           vec3 asphalt=vec3(.042,.045,.049)*(.86+worldNoise(vSurface*2.2)*.28);
+          // From altitude streets average with their kerbs and roofs, so
+          // they soften toward the paving tone instead of a hard black grid.
+          asphalt=mix(asphalt,concrete*.72,smoothstep(.08,.45,footprint));
           vec3 sidewalk=vec3(.2,.195,.185)*(.92+slab*.12)*(1.-joint*.35);
           vec3 street=mix(concrete,sidewalk,st.y);
           street=mix(street,asphalt,st.x);
