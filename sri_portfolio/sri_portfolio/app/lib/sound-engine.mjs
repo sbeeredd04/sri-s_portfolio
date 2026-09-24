@@ -62,7 +62,7 @@ export class SoundEngine {
     this.city = context.createGain();
     this.city.gain.value = 0;
     this.city.connect(this.master);
-    // The keynote hall: a room of people murmuring, and now and then applause.
+    // The keynote crowd: a full house murmuring, and now and then applause.
     this.hall = context.createGain();
     this.hall.gain.value = 0;
     this.hall.connect(this.master);

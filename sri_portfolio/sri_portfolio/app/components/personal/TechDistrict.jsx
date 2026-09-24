@@ -1,128 +1,26 @@
 "use client";
 import { Suspense, useEffect, useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import CityMesh from "./CityMesh";
 import Crowd from "./Crowd";
+import KeynoteAmphitheatre, { canvasTexture } from "./KeynoteAmphitheatre";
 import { useQuality } from "./Quality";
 import { buildTechDistrict } from "../../lib/tech-buildings.mjs";
 import {
   audience,
   booths,
   browsers,
-  hall,
-  hallBounds,
   strollers,
   techPalms,
   tools,
 } from "../../lib/tech-plan.mjs";
+import { speaker, standHeight } from "../../lib/amphitheatre.mjs";
 import { surfaceHeight } from "../../lib/world-layout.mjs";
 import { projects } from "../../json/personal";
 
-const HALL_FLOOR = 0.03;
-const ground = (x, z) =>
-  surfaceHeight("projects", x, z) +
-  (x > hallBounds.x0 &&
-  x < hallBounds.x1 &&
-  z > hallBounds.z0 &&
-  z < hallBounds.z1
-    ? HALL_FLOOR
-    : 0);
-
-function canvasTexture(width, height, draw) {
-  const c = document.createElement("canvas");
-  c.width = width;
-  c.height = height;
-  draw(
-    c.getContext("2d"),
-    width,
-    height,
-    getComputedStyle(document.body).fontFamily,
-  );
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = 4;
-  return t;
-}
-
-// The keynote screen cycles through the projects, one slide at a time.
-function drawSlide(x, w, h, font, project, index, total) {
-  const g = x.createLinearGradient(0, 0, w, h);
-  g.addColorStop(0, "#0d1420");
-  g.addColorStop(1, "#1b2740");
-  x.fillStyle = g;
-  x.fillRect(0, 0, w, h);
-  x.fillStyle = "#ffae98";
-  x.fillRect(80, 120, 60, 6);
-  x.font = `500 30px ${font}`;
-  x.fillStyle = "#9fb3cc";
-  x.fillText(project.category || "PROJECT", 80, 190, w - 160);
-  x.font = `600 150px ${font}`;
-  x.fillStyle = "#f4f1ea";
-  x.fillText(project.name, 74, 350, w - 160);
-  x.font = `400 38px ${font}`;
-  x.fillStyle = "#c8d2de";
-  const words = (project.description || "").split(" ");
-  let line = "",
-    y = 440;
-  for (const word of words) {
-    if (x.measureText(line + word).width > w - 180 && line) {
-      x.fillText(line, 80, y);
-      line = "";
-      y += 54;
-      if (y > 560) break;
-    }
-    line += word + " ";
-  }
-  if (y <= 560) x.fillText(line, 80, y);
-  x.font = `500 26px ${font}`;
-  x.fillStyle = "#7f8ea3";
-  x.fillText(
-    `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`,
-    80,
-    h - 60,
-  );
-  x.fillText((project.stack || []).join("  ·  "), 260, h - 60, w - 340);
-}
-
-function KeynoteScreen({ animate, onProjectOpen }) {
-  const slides = useMemo(
-    () =>
-      projects.map((p, i) =>
-        canvasTexture(1280, 640, (x, w, h, font) =>
-          drawSlide(x, w, h, font, p, i, projects.length),
-        ),
-      ),
-    [],
-  );
-  useEffect(() => () => slides.forEach((t) => t.dispose()), [slides]);
-  const material = useRef();
-  const state = useRef({ index: 0, clock: 0 });
-  useFrame((_, dt) => {
-    if (!animate || !material.current) return;
-    const s = state.current;
-    s.clock += Math.min(dt, 0.1);
-    if (s.clock < 7) return;
-    s.clock = 0;
-    s.index = (s.index + 1) % slides.length;
-    material.current.map = slides[s.index];
-  });
-  const sc = hall.screen;
-  return (
-    <mesh
-      position={[hallBounds.x1 - hall.wall - 0.4, sc.y, hall.z]}
-      rotation={[0, -Math.PI / 2, 0]}
-      onClick={(e) => {
-        e.stopPropagation();
-        onProjectOpen?.(projects[state.current.index].id);
-      }}
-    >
-      <planeGeometry args={[sc.width, sc.height]} />
-      <meshBasicMaterial ref={material} map={slides[0]} toneMapped={false} />
-    </mesh>
-  );
-}
+// Feet land on the tiers, on the stage, and on the ground elsewhere.
+const ground = (x, z) => surfaceHeight("projects", x, z) + standHeight(x, z);
 
 function Booth({ booth, project, onOpen }) {
   const [header, screen] = useMemo(
@@ -319,7 +217,12 @@ function Palms() {
 function DistrictCrowd({ animate }) {
   const { tier } = useQuality();
   const agents = useMemo(
-    () => [...audience(tier), ...browsers(tier), ...strollers(tier)],
+    () => [
+      speaker,
+      ...audience(tier),
+      ...browsers(tier),
+      ...strollers(tier),
+    ],
     [tier],
   );
   return (
@@ -351,7 +254,7 @@ export default function TechDistrict({
           <CityMesh key={tone} {...{ tone, geometry, night }} />
         ))}
       </Suspense>
-      <KeynoteScreen animate={animate} onProjectOpen={onProjectOpen} />
+      <KeynoteAmphitheatre animate={animate} onProjectOpen={onProjectOpen} />
       {booths.map((booth, i) =>
         projects[i] ? (
           <Booth

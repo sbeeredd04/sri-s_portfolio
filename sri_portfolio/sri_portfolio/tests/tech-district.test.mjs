@@ -4,8 +4,6 @@ import {
   audience,
   booths,
   browsers,
-  hall,
-  hallBounds,
   offices,
   plaza,
   strollers,
@@ -14,6 +12,16 @@ import {
   techWalks,
   tools,
 } from "../app/lib/tech-plan.mjs";
+import {
+  bowl,
+  bowlOuter,
+  canopyHeight,
+  canopySurface,
+  screen,
+  stage,
+  tierAt,
+  tierHeight,
+} from "../app/lib/amphitheatre.mjs";
 import { foundryGroveTrees } from "../app/lib/foundry-grove.mjs";
 import { inTechFootprint } from "../app/lib/tech-plan.mjs";
 import { surfaceHeight } from "../app/lib/world-layout.mjs";
@@ -33,7 +41,7 @@ const onWalk = (x, z, pad = 0) =>
 
 test("the district sits on level ground", () => {
   const sites = [
-    [hall.x, hall.z, ...hall.size],
+    [stage.x - bowlOuter / 2 + 1.5, stage.z, bowlOuter + 3, 24],
     [plaza.x, plaza.z, plaza.half[0] * 2, plaza.half[1] * 2],
     ...offices.map((o) => [o.x, o.z, ...o.size]),
   ];
@@ -50,23 +58,22 @@ test("the district sits on level ground", () => {
   }
 });
 
-test("walks enter the hall only through its door", () => {
-  const { x0, x1, z0, z1 } = hallBounds;
+test("walks reach the stage up the aisle, never across the tiers", () => {
   for (const [a, b] of techWalks)
     for (let t = 0; t <= 1; t += 0.01) {
       const x = a[0] + (b[0] - a[0]) * t,
         z = a[1] + (b[1] - a[1]) * t;
-      const nearWall = Math.abs(x - x0) < 0.5 && z > z0 && z < z1;
-      if (nearWall)
-        assert.ok(
-          Math.abs(z - hall.door.z) < hall.door.width / 2,
-          `wall at ${z}`,
-        );
-      assert.ok(
-        !(x > x1 - 0.5 && z > z0 && z < z1),
-        "walk through the back wall",
-      );
+      assert.equal(tierAt(x, z), -1, `walk over a tier at ${x},${z}`);
+      assert.ok(x < stage.x - stage.depth / 2, "walk onto the stage");
     }
+  assert.ok(onWalk(stage.x - bowl.inner + 1, stage.z), "no walk to the front");
+});
+
+test("the canopy clears the screen, the side screens and the truss", () => {
+  assert.ok(canopyHeight(screen.x, stage.z) > screen.y + screen.height / 2 + 2.5);
+  assert.ok(canopyHeight(stage.x - 2.6, stage.z - 10) > 10);
+  for (const p of canopySurface().posts)
+    assert.equal(tierAt(p.x, p.z) >= 0 && Math.abs(p.z - stage.z) < 1.5, false);
 });
 
 test("offices, pylons and palms keep off the walks", () => {
@@ -86,12 +93,14 @@ test("offices, pylons and palms keep off the walks", () => {
     assert.ok(!onWalk(p.x, p.z, 0.3), `palm at ${p.x},${p.z} on a walk`);
 });
 
-test("the audience fills the hall and leaves the aisle open", () => {
+test("the audience fills the tiers, faces the stage, and leaves the aisle open", () => {
   const people = audience("high");
-  assert.ok(people.length >= 60);
+  assert.ok(people.length >= 100);
   for (const p of people) {
-    assert.ok(p.x > hallBounds.x0 && p.x < hall.stage.x - hall.stage.depth / 2);
-    assert.ok(Math.abs(p.z - hall.door.z) > 1);
+    assert.ok(tierAt(p.x, p.z) >= 0, `standing off the tiers at ${p.x},${p.z}`);
+    assert.ok(tierHeight(p.x, p.z) > 0);
+    const toStage = Math.atan2(stage.x - p.x, stage.z - p.z);
+    assert.ok(Math.abs(p.yaw - toStage) < 0.2, "turned away from the stage");
   }
   for (const s of strollers("high"))
     for (const [x, z] of s.path)
@@ -113,12 +122,18 @@ test("the district's stops are listed in the Foundry", () => {
   for (const v of techViews) assert.ok(ids.includes(v.id));
 });
 
-test("booths line the hall wall without blocking the demo walk", () => {
+test("booths stand clear of the bowl without blocking the demo walk", () => {
   for (const b of booths) {
-    assert.ok(
-      b.z + b.depth / 2 <= hallBounds.z0 + 0.01,
-      "booth inside the hall",
-    );
+    for (const [x, z] of [
+      [b.x - b.width / 2, b.z + b.depth / 2],
+      [b.x + b.width / 2, b.z + b.depth / 2],
+      [b.x, b.z + b.depth / 2],
+    ])
+      assert.ok(
+        Math.hypot(x - stage.x, z - stage.z) > bowlOuter + 0.3 ||
+          Math.abs(Math.atan2(z - stage.z, stage.x - x)) > bowl.span,
+        `booth inside the bowl at ${x},${z}`,
+      );
     for (const [x, z] of [
       [b.x - b.width / 2, b.z - b.depth / 2],
       [b.x + b.width / 2, b.z - b.depth / 2],

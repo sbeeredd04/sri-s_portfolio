@@ -67,7 +67,7 @@ const text = {
   whoami:
     "Sri Ujjwal Reddy. Founding Engineer at Offseason, San Francisco.\nASU graduate · 4.0 GPA · entrepreneurship certificate.\nCurious about how things work. Particular about how they feel.",
   now: "Building an AI agent for personal wellness at Offseason.\nSide projects, iPhone apps, a little music, and one more game when the day is done.",
-  ls: "home/  three screens and a rainy window\nmade/  projects, a keynote hall and the tools\nafter-hours/  courts, records, familiar shows\nout-there/  a trail, a lake and a camp\nfieldnotes/  a newsstand and future stories",
+  ls: "home/  three screens and a rainy window\nmade/  projects, an open-air keynote and the tools\nafter-hours/  courts, records, familiar shows\nout-there/  a trail, a lake and a camp\nfieldnotes/  a newsstand and future stories",
   "agent plan":
     "A small, prepared plan for an idea:\n1. Who is it for?\n2. What is the smallest useful thing?\n3. Make it. Try it. Notice what feels wrong.\n4. Make it better.",
 };

@@ -1,27 +1,18 @@
 // The Foundry's tech district, in the projects biome's tangent frame
-// (+x east, +z south). An invented Valley: a keynote hall across a plaza
-// from the workshops, a row of tool pylons, palms along a boulevard and a
-// few low glass offices. Everything here is data; the scene reads it.
+// (+x east, +z south). An invented Valley: an open-air keynote stage
+// across a plaza from the workshops, a row of tool pylons, palms along a
+// boulevard and a few low glass offices. Everything here is data; the
+// scene reads it.
+import {
+  bowlOuter,
+  seats,
+  stage,
+  venueBounds,
+} from "./amphitheatre.mjs";
+
+export { stage, venueBounds };
 
 export const plaza = { x: 18.5, z: 4, half: [5.5, 9] };
-
-// Door on the west wall, facing the plaza; the stage is on the east wall.
-export const hall = {
-  x: 36,
-  z: 4,
-  size: [24, 20],
-  height: 9,
-  wall: 0.35,
-  door: { z: 4, width: 6, height: 4.2 },
-  stage: { x: 45.5, depth: 4, width: 14, height: 1 },
-  screen: { width: 13, height: 6.5, y: 5.4 },
-};
-export const hallBounds = {
-  x0: hall.x - hall.size[0] / 2,
-  x1: hall.x + hall.size[0] / 2,
-  z0: hall.z - hall.size[1] / 2,
-  z1: hall.z + hall.size[1] / 2,
-};
 
 // Wordmarks only: names as type, no logos. Roles stay general.
 export const tools = [
@@ -30,7 +21,7 @@ export const tools = [
   { id: "cursor", name: "Cursor", role: "Where the code gets written" },
   { id: "claude", name: "Claude", role: "A pair on every build" },
   { id: "codex", name: "Codex", role: "A second set of eyes" },
-  // A row along the plaza's town edge, faces turned toward the hall.
+  // A row along the plaza's town edge, faces turned toward the stage.
 ].map((tool, i) => ({
   ...tool,
   x: plaza.x - plaza.half[0] + 0.8,
@@ -46,12 +37,12 @@ export const offices = [
 ];
 
 const BOULEVARD_Z = -16;
-// Demo row: one booth per project along the hall's north wall, facing a
-// walk off the boulevard link. Projects are assigned in order by the scene.
+// Demo row: one booth per project just north of the amphitheatre, facing
+// a walk off the boulevard link. Projects are assigned in order by the scene.
 export const DEMO_Z = -9.6;
 export const booths = Array.from({ length: 6 }, (_, i) => ({
   x: 27.4 + i * 3.3,
-  z: hallBounds.z0 - 1.25,
+  z: -7.25,
   width: 2.8,
   depth: 1.8,
 }));
@@ -61,7 +52,8 @@ export const techWalks = [
   [[plaza.x, BOULEVARD_Z], [plaza.x, plaza.z - plaza.half[1]], 3],
   [[8.5, 1], [plaza.x, 1], 2],
   [[plaza.x, plaza.z - plaza.half[1]], [plaza.x, plaza.z + plaza.half[1]], 3],
-  [[plaza.x, hall.door.z], [hallBounds.x1 - 6, hall.door.z], 2],
+  // Up the centre aisle to the front of the stage.
+  [[plaza.x, stage.z], [stage.x - stage.depth / 2 - 4, stage.z], 2],
   [[plaza.x, DEMO_Z], [46, DEMO_Z], 2],
   [[-2.8, 12.1], [-2.8, 19], 2],
   [[-2.8, 19], [22, 19], 2],
@@ -98,7 +90,12 @@ export function techFootprints(margin = 2.5) {
   });
   return [
     rect(plaza.x, plaza.z, ...plaza.half),
-    rect(hall.x, hall.z, hall.size[0] / 2, hall.size[1] / 2),
+    rect(
+      (venueBounds.x0 + venueBounds.x1) / 2,
+      (venueBounds.z0 + venueBounds.z1) / 2,
+      (venueBounds.x1 - venueBounds.x0) / 2,
+      (venueBounds.z1 - venueBounds.z0) / 2,
+    ),
     rect(27, BOULEVARD_Z, 22, 3.5),
     ...offices.map((o) => rect(o.x, o.z, o.size[0] / 2, o.size[1] / 2)),
   ];
@@ -108,28 +105,22 @@ export const inTechFootprint = (x, z, margin) =>
     (r) => x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1,
   );
 
-// Standing audience facing the stage, with an aisle kept on the door line.
-export const audienceBudget = { low: 18, medium: 40, high: 72 };
+// A full house on the tiers, everyone turned toward the stage. Seats are
+// drawn with a bias to the front so a small tier still fills the good rows.
+export const audienceBudget = { low: 24, medium: 56, high: 110 };
 export function audience(tier = "medium") {
   const count = audienceBudget[tier] ?? audienceBudget.medium;
-  const spots = [];
   let seed = 17;
   const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  for (
-    let x = hall.stage.x - hall.stage.depth / 2 - 2.2;
-    x > hallBounds.x0 + 7;
-    x -= 1.15
-  )
-    for (let z = hallBounds.z0 + 1.6; z < hallBounds.z1 - 1.5; z += 1.05) {
-      if (Math.abs(z - hall.door.z) < 1.5) continue;
-      spots.push({
-        x: x + (rand() - 0.5) * 0.35,
-        z: z + (rand() - 0.5) * 0.3,
-        yaw: Math.PI / 2 + (rand() - 0.5) * 0.5,
-      });
-    }
-  // Fill from the stage back so small tiers still read as a crowd up front.
-  return spots.slice(0, count);
+  return seats()
+    .map((s) => ({ ...s, order: s.row + rand() * 3.5 }))
+    .sort((a, b) => a.order - b.order)
+    .slice(0, count)
+    .map(({ x, z }) => ({
+      x,
+      z,
+      yaw: Math.atan2(stage.x - x, stage.z - z) + (rand() - 0.5) * 0.3,
+    }));
 }
 // Visitors crossing the plaza and walking the boulevard.
 export const strollBudget = { low: 6, medium: 12, high: 20 };
@@ -152,8 +143,8 @@ export function strollers(tier = "medium") {
       [4, BOULEVARD_Z + 0.6],
     ],
     [
-      [plaza.x, hall.door.z + 0.5],
-      [hallBounds.x0 - 0.5, hall.door.z + 0.5],
+      [plaza.x, stage.z + 0.5],
+      [stage.x - bowlOuter - 1, stage.z + 0.5],
     ],
   ];
   const count = strollBudget[tier] ?? strollBudget.medium;
@@ -181,17 +172,18 @@ export function browsers(tier = "medium") {
 export const techViews = [
   {
     id: "keynote",
-    label: "Keynote hall",
-    position: [hallBounds.x0 + 4.5, 4.8, hall.z + 0.3],
-    target: [hall.stage.x, hall.screen.y - 0.6, hall.z],
+    label: "Keynote stage",
+    // From the back rows, a little off the aisle, over the crowd's heads.
+    position: [stage.x - 17.1, 7.8, stage.z + 3.4],
+    target: [stage.x + 1, 2.2, stage.z - 0.2],
     portrait: {
-      position: [hallBounds.x0 + 3, 4.6, hall.z],
-      target: [hall.stage.x, hall.screen.y - 0.8, hall.z],
-      fov: 70,
+      position: [stage.x - 15.5, 8, stage.z + 1.6],
+      target: [stage.x + 1, 2.6, stage.z],
+      fov: 74,
     },
     content: "work",
     prompt: "What I've been making, on the big screen",
-    hint: "A full house for the projects. Open one to read how it was built.",
+    hint: "A full house under the canopy. Tap the screen to open the project that's up.",
   },
   {
     id: "tools",
@@ -224,11 +216,11 @@ export const techViews = [
   {
     id: "valley",
     label: "The valley",
-    position: [-4, 24, 30],
-    target: [26, 0, -6],
-    portrait: { position: [-2, 34, 40], target: [24, 0, -4], fov: 64 },
+    position: [6, 25, 33],
+    target: [33, 0, -1],
+    portrait: { position: [10, 36, 42], target: [34, 0, 0], fov: 64 },
     content: "work",
     prompt: "A small valley of things being built",
-    hint: "Workshops, a keynote hall across the plaza, and offices along the palms.",
+    hint: "Workshops, an open-air stage across the plaza, and offices along the palms.",
   },
 ];

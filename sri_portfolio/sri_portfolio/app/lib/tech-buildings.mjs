@@ -1,10 +1,10 @@
 // Geometry for the tech district, merged by tone like the city: the
-// keynote hall, low glass offices and the tool pylons' bodies. Wordmarks
+// amphitheatre's tiers and stage, low glass offices and the tool pylons' bodies. Wordmarks
 // and the stage screen are textured separately in the scene.
 import { Batch, FLOOR, frame, rgb } from "./sf-buildings.mjs";
+import { buildAmphitheatre } from "./amphitheatre.mjs";
 import {
   booths,
-  hall,
   offices,
   plaza,
   techWalks,
@@ -13,127 +13,8 @@ import {
 
 export const techTones = ["stone", "glass", "curtain", "paint", "roof", "lit"];
 
-const concrete = "#c9c5bd",
-  darkConcrete = "#8f8b85",
-  mullion = "#3b4148",
-  stageBlack = "#1d1f22";
+const darkConcrete = "#8f8b85";
 const officeGlass = ["#9fb7c4", "#a9bcc0", "#98aabb"];
-
-function keynoteHall(box) {
-  const [W, D] = hall.size,
-    H = hall.height,
-    t = hall.wall;
-  const hx = W / 2,
-    hz = D / 2;
-  box("stone", rgb(darkConcrete), [0, 0, 0], [W, 0.06, D]);
-  // Back wall behind the stage, and solid end bays on the long sides.
-  box("stone", rgb(concrete), [hx - t / 2, H / 2, 0], [t, H, D]);
-  for (const side of [-1, 1]) {
-    const z = side * (hz - t / 2);
-    box("stone", rgb(concrete), [0, 0.6, z], [W, 1.2, t]);
-    box("stone", rgb(concrete), [0, H - 0.75, z], [W, 1.5, t]);
-    box("stone", rgb(concrete), [hx - 2, H / 2, z], [4, H, t]);
-    box("curtain", rgb("#b9cad6"), [-2, 4.35, z], [W - 4, 6.3, 0.08]);
-    for (let x = -hx + 2; x < hx - 4; x += 2.4)
-      box("paint", rgb(mullion), [x, 4.35, z + side * 0.08], [0.1, 6.3, 0.12]);
-  }
-  // Glass front with a door opening onto the plaza, and a deep canopy.
-  const door = hall.door,
-    dz = door.z - hall.z;
-  const left = dz - door.width / 2 + hz,
-    right = hz - (dz + door.width / 2);
-  box("glass", rgb("#a8bcc8"), [-hx, H / 2, -hz + left / 2], [0.1, H, left]);
-  box("glass", rgb("#a8bcc8"), [-hx, H / 2, hz - right / 2], [0.1, H, right]);
-  box(
-    "glass",
-    rgb("#a8bcc8"),
-    [-hx, (H + door.height) / 2, dz],
-    [0.1, H - door.height, door.width],
-  );
-  for (let z = -hz; z <= hz; z += 2.5)
-    box("paint", rgb(mullion), [-hx - 0.06, H / 2, z], [0.14, H, 0.1]);
-  box(
-    "paint",
-    rgb(mullion),
-    [-hx - 0.06, door.height, dz],
-    [0.16, 0.18, door.width],
-  );
-  box("roof", rgb("#e7e4de"), [-hx - 2.4, 4.9, dz], [5.2, 0.35, 14], 0, true);
-  for (const s of [-1, 1])
-    box(
-      "paint",
-      rgb(mullion),
-      [-hx - 4.6, 2.45, dz + s * 6.8],
-      [0.22, 4.9, 0.22],
-    );
-  // Roof with a fascia band.
-  box(
-    "roof",
-    rgb("#a6a39d"),
-    [0, H + 0.25, 0],
-    [W + 0.8, 0.5, D + 0.8],
-    0,
-    true,
-  );
-  box(
-    "paint",
-    rgb("#e8e6e1"),
-    [0, H + 0.1, 0],
-    [W + 0.9, 0.3, D + 0.9],
-    0,
-    true,
-  );
-
-  // Stage, screen frame, lectern, truss and speaker stacks.
-  const sx = hall.stage.x - hall.x,
-    sw = hall.stage.width;
-  box(
-    "paint",
-    rgb(stageBlack),
-    [sx, hall.stage.height / 2, 0],
-    [hall.stage.depth, hall.stage.height, sw],
-  );
-  for (let i = 0; i < 3; i++)
-    box(
-      "paint",
-      rgb("#2a2c30"),
-      [sx - hall.stage.depth / 2 - 0.25 - i * 0.3, (i + 0.5) * 0.25 + 0.03, 0],
-      [0.3 + i * 0.3, (3 - i) * 0.25, 3],
-    );
-  const sc = hall.screen;
-  box(
-    "paint",
-    rgb("#101113"),
-    [hx - t - 0.2, sc.y, 0],
-    [0.25, sc.height + 0.5, sc.width + 0.5],
-  );
-  box(
-    "paint",
-    rgb("#2c2e31"),
-    [sx - 0.6, hall.stage.height + 0.55, -3.5],
-    [0.6, 1.1, 0.8],
-  );
-  box("paint", rgb("#3a3d42"), [sx - 2.5, H - 1.2, 0], [0.3, 0.3, sw + 2]);
-  for (let z = -sw / 2; z <= sw / 2; z += 2)
-    box(
-      "lit",
-      rgb("#fff1d6"),
-      [sx - 2.5, H - 1.5, z],
-      [0.3, 0.3, 0.3],
-      0,
-      true,
-    );
-  for (const s of [-1, 1])
-    box(
-      "paint",
-      rgb("#191a1c"),
-      [sx, hall.stage.height + 1.2, s * (sw / 2 + 0.6)],
-      [1, 2.4 + hall.stage.height, 0.9],
-    );
-  // A low wall of ceiling lights across the room.
-  for (let x = -hx + 3; x < sx - 3; x += 3)
-    box("lit", rgb("#fff4e0"), [x, H - 0.1, 0], [0.5, 0.08, D - 3], 0, true);
-}
 
 function office(box, o) {
   const [w, d] = o.size,
@@ -243,7 +124,7 @@ function paving(batches) {
 
 export function buildTechDistrict() {
   const batches = Object.fromEntries(techTones.map((t) => [t, new Batch()]));
-  keynoteHall(frame(batches, hall.x, 0, hall.z, 0));
+  buildAmphitheatre((x, z, yaw) => frame(batches, x, 0, z, yaw));
   for (const o of offices) office(frame(batches, o.x, 0, o.z, 0), o);
   for (const b of booths) booth(frame(batches, b.x, 0, b.z, 0), b);
   for (const t of tools) pylon(frame(batches, t.x, 0, t.z, t.yaw));
