@@ -7,6 +7,7 @@ import {
   foundDiscoveries,
 } from "../../lib/discoveries.mjs";
 import { dispatchCommandAction } from "./command-events";
+import useVisitorCount from "./useVisitorCount";
 
 const promptPath = {
   planet: "~",
@@ -27,6 +28,7 @@ export default function CommandBar({ biome }) {
   const [value, setValue] = useState("");
   const [reply, setReply] = useState(null);
   const [found, setFound] = useState([]);
+  const visitors = useVisitorCount();
   const history = useRef({ items: [], at: -1 });
   const input = useRef(null);
   const button = useRef(null);
@@ -73,6 +75,7 @@ export default function CommandBar({ biome }) {
     const result = runCommand(text, {
       found: foundDiscoveries(),
       total: discoveries.length,
+      visitors,
     });
     if (result.discovery) discover(result.discovery);
     setValue("");

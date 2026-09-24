@@ -101,12 +101,13 @@ export const commandHelp = [
   ["ls", "what is where"],
   ["whoami · now · resume", "the short version"],
   ["eggs", "how many little discoveries you have found"],
+  ["visitors", "how many people have wandered through"],
   ["clear", "start over"],
 ];
 
 export function runCommand(
   input,
-  { found = [], total = discoveries.length } = {},
+  { found = [], total = discoveries.length, visitors = null } = {},
 ) {
   const command = normalise(input);
   if (!command) return { text: "" };
@@ -129,6 +130,12 @@ export function runCommand(
       label: "Open my résumé ↗",
     };
   if (command === "clear") return { clear: true };
+  if (command === "visitors" || command === "who")
+    return {
+      text: Number.isInteger(visitors)
+        ? `${visitors.toLocaleString("en-US")} visitors have wandered through so far. Hello to you, too.`
+        : "The visitor counter is resting right now.",
+    };
   if (command === "eggs" || command === "discoveries")
     return {
       text: `${found.length} of ${total} little discoveries found.${found.length < total ? " Keep poking around." : " All of them. Thank you for looking so closely."}`,

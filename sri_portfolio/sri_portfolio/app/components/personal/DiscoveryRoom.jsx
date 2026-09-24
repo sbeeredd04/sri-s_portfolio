@@ -7,6 +7,7 @@ import {
 } from "../../lib/discoveries.mjs";
 import { runCommand } from "../../lib/commands.mjs";
 import { dispatchCommandAction } from "./command-events";
+import useVisitorCount from "./useVisitorCount";
 
 const SUGGESTIONS = ["help", "whoami", "now", "ls"];
 
@@ -39,6 +40,7 @@ const CURIOS = {
 };
 
 export default function DiscoveryRoom() {
+  const visitors = useVisitorCount();
   const [found, setFound] = useState([]),
     [fresh, setFresh] = useState(null),
     [command, setCommand] = useState(""),
@@ -68,7 +70,7 @@ export default function DiscoveryRoom() {
   }, [lines]);
   function run(value) {
     if (!value.trim()) return;
-    const reply = runCommand(value, { found: foundDiscoveries() });
+    const reply = runCommand(value, { found: foundDiscoveries(), visitors });
     if (reply.discovery) discover(reply.discovery);
     // Navigation from here closes the room and moves the world.
     if (reply.action && reply.action.content !== "discoveries")
@@ -179,6 +181,8 @@ export default function DiscoveryRoom() {
             <h3 id="curio-heading">The cabinet</h3>
             <span>
               {found.length} of {discoveries.length} found
+              {Number.isInteger(visitors) &&
+                ` · ${visitors.toLocaleString("en-US")} visitors so far`}
             </span>
           </div>
           <ol className="curio-drawers">
