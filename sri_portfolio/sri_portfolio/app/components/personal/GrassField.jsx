@@ -284,7 +284,11 @@ function grassMaterial(profile, maps, biome, near) {
           float h=uHeight*(.45+meadowPatch*.55+clump*.35)*(.7+seed.w*.6)*open*lod;
           float angle=seed.z*6.2831853+tuft.z;
           float ca=cos(angle),sa=sin(angle);
-          vec3 transformed=vec3(position.x*uWidth*(.7+seed.w*.6),position.y*h,0.);
+          // A culled blade must lose its width as well as its height: a
+          // zero-height sliver still rasterizes, and thousands of them read
+          // as specks strewn over the far land and the sea.
+          float alive=step(.0005,h);
+          vec3 transformed=vec3(position.x*uWidth*(.7+seed.w*.6)*alive,position.y*h,0.);
           // Natural lean plus travelling gusts; tips move most.
           float gust=gn(local*.05+vec2(uTime*.35,uTime*.12));
           float sway=(sin(uTime*1.9+local.x*.4+local.y*.3+seed.w*6.)*.12+gust*.55)*uGust;
