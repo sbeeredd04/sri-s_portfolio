@@ -11,6 +11,8 @@ import { campusCenter, campusFeet, onCampusPath } from "./campus-layout.mjs";
 import { campusPavingHeight } from "./campus-surface.mjs";
 import { trailFootHeight } from "./trail-surface.mjs";
 import { streetRoutes } from "./street-view.mjs";
+import { cityWalkRuns } from "./sf-streets.mjs";
+import { STREET } from "./sf-plan.mjs";
 import { pavingPlacements, pavingSize } from "./paving-layout.mjs";
 import { APARTMENT_LEVEL } from "./studio-layout.mjs";
 import {
@@ -104,6 +106,17 @@ export function makeWalkNetwork(roof = false) {
   const network = Object.entries(locals).flatMap(([id, paths]) =>
     localSegments(id, [...paths, ...(walkingJoins[id] || [])]),
   );
+  const studio = regions.find((r) => r.id === "studio");
+  const cityPoint = ([x, z]) =>
+    worldPoint("studio", [x, renderedSurfaceHeight("studio", x, z) + 0.031, z]);
+  for (const [a, b] of cityWalkRuns())
+    network.push({
+      a: cityPoint(a),
+      b: cityPoint(b),
+      up: studio.normal.clone(),
+      half: STREET.road / 2 + STREET.walk - WALK_RADIUS,
+      world: "studio",
+    });
   for (const route of walkingRoutes) {
     const count = Math.ceil(route.length / 0.8);
     for (let i = 0; i < count; i++) {

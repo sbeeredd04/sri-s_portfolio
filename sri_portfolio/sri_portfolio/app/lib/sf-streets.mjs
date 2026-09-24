@@ -9,7 +9,9 @@ import {
   marketStreet,
   marketSide,
   parks,
+  coastDistance,
 } from "./sf-plan.mjs";
+import { sfSlope } from "./sf-terrain.mjs";
 
 const band = STREET.road / 2 + STREET.walk;
 const lineDistance = (c, pitch) =>
@@ -91,4 +93,42 @@ export function streetsGlsl() {
     if(dm<.07&&d>B)centre=1.;
     return vec4(road,walk,zebra*road,centre*road);
   }`;
+}
+
+// Walkable city: every street is open to visitors kerb to kerb (the city
+// has no traffic), split into short runs so the walker hugs the hills.
+// Runs stop at the coast, in parks and where a grade is stair-steep.
+export function cityWalkRuns(step = 2) {
+  const runs = [];
+  const flush = (run) => {
+    for (let i = 1; i < run.length; i++) runs.push([run[i - 1], run[i]]);
+  };
+  const lines = [];
+  for (const grid of [grids.north, grids.south]) {
+    const frame = gridFrame(grid);
+    for (let k = -7; k <= 7; k++) {
+      lines.push((t) => frame.toWorld(k * grid.pitch[0], t));
+      lines.push((t) => frame.toWorld(t, k * grid.pitch[1]));
+    }
+  }
+  const [fx, fz] = marketStreet.from,
+    [dx, dz] = marketStreet.direction;
+  lines.push((t) => [fx + dx * (t + 200), fz + dz * (t + 200)]);
+  for (const line of lines) {
+    let run = [];
+    for (let t = -200; t <= 200; t += step) {
+      const [x, z] = line(t);
+      const open =
+        streetAt(x, z) === "road" &&
+        coastDistance(x, z) > 2.5 &&
+        sfSlope(x, z) < 0.36;
+      if (open) run.push([x, z]);
+      else {
+        flush(run);
+        run = [];
+      }
+    }
+    flush(run);
+  }
+  return runs;
 }
