@@ -24,6 +24,22 @@ import {
   surfaceHeight,
 } from "../../lib/world-layout.mjs";
 
+// Arrival cinematic: a longer flight that lifts with the distance covered
+// and swings about the destination's up axis before it settles.
+function arrivalShot(from, to, arrival) {
+  if (!arrival) return { arrival: false, duration: 2.8, lift: 0, swing: 0 };
+  const angle = from
+    .clone()
+    .normalize()
+    .angleTo(to.position.clone().normalize());
+  return {
+    arrival: true,
+    duration: 3.6 + Math.min(1.2, angle),
+    lift: Math.min(140, angle * WORLD_RADIUS * 0.28),
+    swing: 0.5,
+  };
+}
+
 export default function CameraRig({
   introBottom = 0,
   world,
@@ -51,10 +67,30 @@ export default function CameraRig({
       target: new THREE.Vector3(),
       direction: new THREE.Vector3(),
       up: new THREE.Vector3(),
+      offset: new THREE.Vector3(),
       rotation: new THREE.Quaternion(),
     }),
     [],
   );
+  // Any key, click or scroll during an arrival skips straight to the shot.
+  useEffect(() => {
+    const skip = () => {
+      const f = flight.current;
+      if (f?.arrival && f.elapsed < f.duration) {
+        f.elapsed = f.duration;
+        invalidate();
+      }
+    };
+    const element = gl.domElement;
+    element.addEventListener("pointerdown", skip);
+    element.addEventListener("wheel", skip, { passive: true });
+    window.addEventListener("keydown", skip);
+    return () => {
+      element.removeEventListener("pointerdown", skip);
+      element.removeEventListener("wheel", skip);
+      window.removeEventListener("keydown", skip);
+    };
+  }, [gl, invalidate]);
 
   const street = streetStop(world, stop);
   const roaming = stop.startsWith("roam");
@@ -201,6 +237,8 @@ export default function CameraRig({
   function begin(id, immediate = false) {
     if (!controls.current) return;
     const to = destination(id);
+    // Arriving at a new place from elsewhere plays as a short cinematic.
+    const arrival = focused.current !== id && id !== "planet" && !street;
     exitDistance.current = Math.max(
       75,
       to.position.distanceTo(to.target) * 1.8,
@@ -239,6 +277,7 @@ export default function CameraRig({
           to.position.clone().normalize(),
         ),
         elapsed: 0,
+        ...arrivalShot(from, to, arrival),
       };
     }
     invalidate();
@@ -420,8 +459,10 @@ export default function CameraRig({
     if (flight.current) {
       const f = flight.current;
       f.elapsed += animate ? Math.min(delta, 0.05) : 3;
-      const t = Math.min(f.elapsed / (street ? 1.15 : 2.8), 1),
-        ease = t * t * (3 - 2 * t);
+      const t = Math.min(f.elapsed / (street ? 1.15 : f.duration), 1),
+        ease = f.arrival
+          ? t * t * t * (t * (t * 6 - 15) + 10)
+          : t * t * (3 - 2 * t);
       scratch.rotation.identity().slerp(f.rotation, ease);
       scratch.direction
         .copy(f.from)
@@ -432,8 +473,23 @@ export default function CameraRig({
         .multiplyScalar(
           THREE.MathUtils.lerp(f.from.length(), f.to.length(), ease),
         );
-      scratch.position.copy(safeCameraPoint(scratch.position));
       scratch.target.lerpVectors(f.fromTarget, f.target, ease);
+      if (f.arrival) {
+        // Climb over the curve of the world, then swing round the place as
+        // it comes into view and settle on the framed shot.
+        scratch.position.addScaledVector(
+          scratch.direction,
+          f.lift * Math.sin(Math.PI * ease) ** 1.3,
+        );
+        const swing =
+          f.swing * (1 - ease) ** 2 * THREE.MathUtils.smoothstep(t, 0.3, 0.65);
+        scratch.offset
+          .copy(scratch.position)
+          .sub(f.target)
+          .applyAxisAngle(f.up, swing);
+        scratch.position.copy(f.target).add(scratch.offset);
+      }
+      scratch.position.copy(safeCameraPoint(scratch.position));
       camera.up.lerpVectors(f.fromUp, f.up, ease).normalize();
       c.updateCameraUp();
       c.setLookAt(
