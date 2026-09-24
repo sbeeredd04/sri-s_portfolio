@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -36,7 +36,8 @@ import PreparedGroup from "./PreparedGroup";
 import PostEffects from "./PostEffects";
 import AtmosphereSky from "./AtmosphereSky";
 import GrassField from "./GrassField";
-import { QualityProvider, useQuality } from "./Quality";
+import { QualityProvider } from "./Quality";
+import { tierSettings } from "../../lib/device-tier.mjs";
 
 // Reports once the scene has actually drawn, after Suspense content resolves.
 function FirstFrame({ onReady }) {
@@ -403,6 +404,15 @@ function ConnectedWorld({
   );
 }
 export default function WorldScene(props) {
+  const [activeTier, setActiveTier] = useState(props.tier);
+  const { onTier } = props;
+  const reportTier = useCallback(
+    (tier) => {
+      setActiveTier(tier);
+      onTier?.(tier);
+    },
+    [onTier],
+  );
   useEffect(
     () => () => {
       document.body.style.cursor = "";
@@ -413,7 +423,7 @@ export default function WorldScene(props) {
     <GraphicsGate onUnavailable={props.onUnavailable}>
       <Canvas
         shadows={props.tier !== "low"}
-        dpr={1}
+        dpr={tierSettings[activeTier]?.dpr || 1}
         frameloop="demand"
         camera={{
           position: [0, WORLD_RADIUS * 2.1, WORLD_RADIUS * 0.9],
@@ -429,7 +439,7 @@ export default function WorldScene(props) {
         }
       >
         <GraphicsHealth onUnavailable={props.onUnavailable} />
-        <QualityProvider ceiling={props.tier} onTier={props.onTier}>
+        <QualityProvider ceiling={props.tier} onTier={reportTier}>
           <FirstFrame onReady={props.onReady} />
           <RoomMaterialProvider>
             <ConnectedWorld {...props} />

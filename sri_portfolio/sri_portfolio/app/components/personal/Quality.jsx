@@ -1,6 +1,5 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useThree } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import {
   chooseTier,
@@ -31,19 +30,31 @@ export function initialTier() {
 // stuttering; it only climbs back toward the original ceiling.
 export function QualityProvider({ ceiling, onTier, children }) {
   const [tier, setTier] = useState(ceiling);
-  const setDpr = useThree((s) => s.setDpr);
   const settings = tierSettings[tier];
+  // Shader compilation and texture upload stall the first seconds of every
+  // visit; judging frame rate then would downgrade every device.
+  // Each change remounts passes and recompiles shaders, which itself stalls a
+  // frame; a cooldown after every change prevents a downgrade cascade.
+  const [armed, setArmed] = useState(false);
   useEffect(() => {
-    const [min, max] = settings.dpr;
-    setDpr(Math.max(min, Math.min(max, window.devicePixelRatio || 1)));
+    setArmed(false);
+    const timer = setTimeout(() => setArmed(true), 6000);
+    return () => clearTimeout(timer);
+  }, [tier]);
+  // The Canvas owns pixel ratio (its dpr prop is re-applied on every render),
+  // so the active tier is reported upward and the Canvas prop follows it.
+  useEffect(() => {
     onTier?.(tier);
-  }, [tier, settings, setDpr, onTier]);
+  }, [tier, onTier]);
   return (
     <PerformanceMonitor
-      bounds={(refresh) => (refresh > 90 ? [50, 90] : [38, 58])}
+      // Step down only below ~30 fps sustained (45 on high-refresh displays).
+      bounds={(refresh) => (refresh > 90 ? [45, 100] : [30, 57])}
+      ms={400}
+      iterations={12}
       flipflops={3}
-      onDecline={() => setTier((t) => lowerTier(t))}
-      onIncline={() => setTier((t) => raiseTier(t, ceiling))}
+      onDecline={() => armed && setTier((t) => lowerTier(t))}
+      onIncline={() => armed && setTier((t) => raiseTier(t, ceiling))}
     >
       <QualityContext.Provider value={{ tier, ...settings }}>
         {children}
