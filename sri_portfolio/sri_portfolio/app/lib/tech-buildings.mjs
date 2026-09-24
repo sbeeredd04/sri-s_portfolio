@@ -2,7 +2,14 @@
 // keynote hall, low glass offices and the tool pylons' bodies. Wordmarks
 // and the stage screen are textured separately in the scene.
 import { Batch, FLOOR, frame, rgb } from "./sf-buildings.mjs";
-import { hall, offices, plaza, techWalks, tools } from "./tech-plan.mjs";
+import {
+  booths,
+  hall,
+  offices,
+  plaza,
+  techWalks,
+  tools,
+} from "./tech-plan.mjs";
 
 export const techTones = ["stone", "glass", "curtain", "paint", "roof", "lit"];
 
@@ -177,6 +184,31 @@ function office(box, o) {
   );
 }
 
+// An expo booth facing -z: back wall with a screen, a counter, side fins
+// and a header that carries the project's name (textured in the scene).
+function booth(box, b) {
+  const { width: w, depth: d } = b;
+  box("stone", rgb("#d8d5cf"), [0, 0.04, 0], [w, 0.08, d]);
+  box("paint", rgb("#2a2e35"), [0, 1.3, d / 2 - 0.06], [w, 2.6, 0.12]);
+  for (const s of [-1, 1])
+    box(
+      "paint",
+      rgb("#e6e3dd"),
+      [s * (w / 2 - 0.04), 1.3, d / 2 - 0.35],
+      [0.08, 2.6, 0.7],
+    );
+  box("stone", rgb("#f1efea"), [0, 0.52, -d / 2 + 0.35], [w * 0.7, 1.04, 0.5]);
+  box("paint", rgb("#ffae98"), [0, 1.02, -d / 2 + 0.1], [w * 0.7, 0.04, 0.02]);
+  box(
+    "paint",
+    rgb("#e6e3dd"),
+    [0, 2.75, -d / 2 + 0.3],
+    [w, 0.4, 0.12],
+    0,
+    true,
+  );
+}
+
 function pylon(box) {
   box("stone", rgb(darkConcrete), [0, 0.12, 0], [1.9, 0.24, 0.7]);
   box("paint", rgb("#22262c"), [0, 1.55, 0], [1.7, 2.6, 0.3]);
@@ -213,6 +245,7 @@ export function buildTechDistrict() {
   const batches = Object.fromEntries(techTones.map((t) => [t, new Batch()]));
   keynoteHall(frame(batches, hall.x, 0, hall.z, 0));
   for (const o of offices) office(frame(batches, o.x, 0, o.z, 0), o);
+  for (const b of booths) booth(frame(batches, b.x, 0, b.z, 0), b);
   for (const t of tools) pylon(frame(batches, t.x, 0, t.z, t.yaw));
   paving(batches);
   return Object.fromEntries(

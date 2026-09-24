@@ -46,6 +46,15 @@ export const offices = [
 ];
 
 const BOULEVARD_Z = -16;
+// Demo row: one booth per project along the hall's north wall, facing a
+// walk off the boulevard link. Projects are assigned in order by the scene.
+export const DEMO_Z = -9.6;
+export const booths = Array.from({ length: 6 }, (_, i) => ({
+  x: 27.4 + i * 3.3,
+  z: hallBounds.z0 - 1.25,
+  width: 2.8,
+  depth: 1.8,
+}));
 export const techWalks = [
   [[2.8, BOULEVARD_Z], [plaza.x, BOULEVARD_Z], 3],
   [[plaza.x, BOULEVARD_Z], [46, BOULEVARD_Z], 3],
@@ -53,6 +62,7 @@ export const techWalks = [
   [[8.5, 1], [plaza.x, 1], 2],
   [[plaza.x, plaza.z - plaza.half[1]], [plaza.x, plaza.z + plaza.half[1]], 3],
   [[plaza.x, hall.door.z], [hallBounds.x1 - 6, hall.door.z], 2],
+  [[plaza.x, DEMO_Z], [46, DEMO_Z], 2],
   [[-2.8, 12.1], [-2.8, 19], 2],
   [[-2.8, 19], [22, 19], 2],
   [[-8.5, 1], [-23, 1], 2],
@@ -154,6 +164,20 @@ export function strollers(tier = "medium") {
   });
 }
 
+// A few people stopping at the booths.
+export const browserBudget = { low: 3, medium: 6, high: 10 };
+export function browsers(tier = "medium") {
+  const count = browserBudget[tier] ?? browserBudget.medium;
+  return Array.from({ length: count }, (_, i) => {
+    const booth = booths[(i * 5) % booths.length];
+    return {
+      x: booth.x + ((i % 3) - 1) * 0.7,
+      z: DEMO_Z + 0.55 + (i % 2) * 0.25,
+      yaw: ((i % 3) - 1) * 0.3,
+    };
+  });
+}
+
 export const techViews = [
   {
     id: "keynote",
@@ -182,6 +206,20 @@ export const techViews = [
     content: "skills",
     prompt: "The tools I reach for every day",
     hint: "Notion, Obsidian, Cursor, Claude and Codex, beside the stack behind the builds.",
+  },
+  {
+    id: "demos",
+    label: "Demo row",
+    position: [booths[1].x, 2.5, DEMO_Z - 3.5],
+    target: [booths[3].x, 1.4, booths[0].z],
+    portrait: {
+      position: [booths[1].x, 2.8, DEMO_Z - 3.5],
+      target: [booths[1].x + 0.8, 1.4, booths[0].z],
+      fov: 78,
+    },
+    content: "work",
+    prompt: "Every project gets a booth",
+    hint: "Walk the row, then open one to see how it was built.",
   },
   {
     id: "valley",

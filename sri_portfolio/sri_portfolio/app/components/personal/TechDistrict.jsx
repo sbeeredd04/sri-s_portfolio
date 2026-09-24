@@ -9,6 +9,8 @@ import { useQuality } from "./Quality";
 import { buildTechDistrict } from "../../lib/tech-buildings.mjs";
 import {
   audience,
+  booths,
+  browsers,
   hall,
   hallBounds,
   strollers,
@@ -119,6 +121,71 @@ function KeynoteScreen({ animate, onProjectOpen }) {
       <planeGeometry args={[sc.width, sc.height]} />
       <meshBasicMaterial ref={material} map={slides[0]} toneMapped={false} />
     </mesh>
+  );
+}
+
+function Booth({ booth, project, onOpen }) {
+  const [header, screen] = useMemo(
+    () => [
+      canvasTexture(1024, 146, (x, w, h, font) => {
+        x.fillStyle = "#e6e3dd";
+        x.fillRect(0, 0, w, h);
+        let size = 84;
+        do x.font = `600 ${size}px ${font}`;
+        while (x.measureText(project.name).width > w - 80 && (size -= 4) > 40);
+        x.fillStyle = "#1d2127";
+        x.textAlign = "center";
+        x.fillText(project.name, w / 2, 73 + size * 0.34, w - 60);
+      }),
+      canvasTexture(768, 512, (x, w, h, font) => {
+        x.fillStyle = "#141a24";
+        x.fillRect(0, 0, w, h);
+        x.fillStyle = "#ffae98";
+        x.fillRect(56, 70, 44, 5);
+        x.font = `500 30px ${font}`;
+        x.fillStyle = "#9fb3cc";
+        x.fillText(project.category || "", 56, 130, w - 112);
+        x.font = `600 88px ${font}`;
+        x.fillStyle = "#f4f1ea";
+        x.fillText(project.name, 52, 250, w - 104);
+        x.font = `400 30px ${font}`;
+        x.fillStyle = "#8d9bb0";
+        x.fillText(
+          (project.stack || []).slice(0, 3).join("  ·  "),
+          56,
+          330,
+          w - 112,
+        );
+        x.fillText(project.year || "", 56, h - 60);
+      }),
+    ],
+    [project],
+  );
+  useEffect(
+    () => () => {
+      header.dispose();
+      screen.dispose();
+    },
+    [header, screen],
+  );
+  const { x, z, depth: d } = booth;
+  return (
+    <group
+      position={[x, 0, z]}
+      onClick={(e) => {
+        e.stopPropagation();
+        onOpen?.(project.id);
+      }}
+    >
+      <mesh position={[0, 2.75, -d / 2 + 0.235]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[2.7, 0.385]} />
+        <meshStandardMaterial map={header} roughness={0.7} />
+      </mesh>
+      <mesh position={[0, 1.55, d / 2 - 0.125]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[2.2, 1.47]} />
+        <meshBasicMaterial map={screen} toneMapped={false} />
+      </mesh>
+    </group>
   );
 }
 
@@ -251,7 +318,10 @@ function Palms() {
 
 function DistrictCrowd({ animate }) {
   const { tier } = useQuality();
-  const agents = useMemo(() => [...audience(tier), ...strollers(tier)], [tier]);
+  const agents = useMemo(
+    () => [...audience(tier), ...browsers(tier), ...strollers(tier)],
+    [tier],
+  );
   return (
     <Crowd
       src="/models/characters/crowd.glb"
@@ -282,6 +352,16 @@ export default function TechDistrict({
         ))}
       </Suspense>
       <KeynoteScreen animate={animate} onProjectOpen={onProjectOpen} />
+      {booths.map((booth, i) =>
+        projects[i] ? (
+          <Booth
+            key={i}
+            booth={booth}
+            project={projects[i]}
+            onOpen={onProjectOpen}
+          />
+        ) : null,
+      )}
       {tools.map((tool) => (
         <ToolPylon
           key={tool.id}

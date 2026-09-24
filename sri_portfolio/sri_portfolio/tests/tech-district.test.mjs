@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   audience,
+  booths,
+  browsers,
   hall,
   hallBounds,
   offices,
@@ -109,4 +111,20 @@ test("grove trees stay out of the district", () => {
 test("the district's stops are listed in the Foundry", () => {
   const ids = placeStops.projects.map((s) => s.id);
   for (const v of techViews) assert.ok(ids.includes(v.id));
+});
+
+test("booths line the hall wall without blocking the demo walk", () => {
+  for (const b of booths) {
+    assert.ok(
+      b.z + b.depth / 2 <= hallBounds.z0 + 0.01,
+      "booth inside the hall",
+    );
+    for (const [x, z] of [
+      [b.x - b.width / 2, b.z - b.depth / 2],
+      [b.x + b.width / 2, b.z - b.depth / 2],
+    ])
+      assert.ok(!onWalk(x, z), `booth corner on a walk at ${x},${z}`);
+  }
+  for (const p of browsers("high"))
+    assert.ok(onWalk(p.x, p.z), "browser off the walk");
 });
