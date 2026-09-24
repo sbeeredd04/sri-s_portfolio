@@ -24,6 +24,11 @@ export async function GET() {
 export async function POST(request) {
   if (!sameOrigin(request)) return new Response(null, { status: 403 });
   const result = await countVisit(request);
-  if (!result) return Response.json({ count: null }, { status: 503 });
+  // Resting is not an error for the page: it just shows no number.
+  if (!result)
+    return Response.json(
+      { count: null },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   return Response.json(result, { headers: { "Cache-Control": "no-store" } });
 }
