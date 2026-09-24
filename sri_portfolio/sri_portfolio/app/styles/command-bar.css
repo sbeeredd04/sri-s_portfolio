@@ -1,0 +1,155 @@
+/* The dock's command line. Monospace, the place accent for the path. */
+/* The panel anchors to the dock itself, so it lines up on any width. */
+.command-bar {
+  display: flex;
+  align-self: stretch;
+}
+.command-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 54px;
+  padding: 2px 10px;
+  border-right: 1px solid #c6d9ff1f;
+  color: #a8bbd4;
+  font-family: var(--font-jetbrains), monospace;
+}
+.command-toggle .command-glyph {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+.command-toggle span:last-child {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+.command-toggle:hover,
+.command-toggle.is-open {
+  color: #e9f5ff;
+}
+.command-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 12px);
+  width: min(660px, 100%);
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid #dceaff2e;
+  border-radius: 18px;
+  background: linear-gradient(160deg, #1c2a44f0, #0a111ef7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 18px 44px #0008;
+  color: #d7e3f4;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 12.5px;
+  animation: command-rise 180ms ease-out;
+}
+@keyframes command-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.command-output {
+  max-height: 38vh;
+  overflow: auto;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #c6d9ff1a;
+}
+.command-output pre {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  font: inherit;
+  line-height: 1.65;
+  color: #c3d1e4;
+}
+.command-output a {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--place-accent, #adcae8);
+}
+.command-echo {
+  margin: 0;
+  color: #8ea3bf;
+}
+.command-echo span,
+.command-path {
+  color: var(--place-accent, #adcae8);
+}
+.command-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.command-line label {
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+  color: #8ea3bf;
+}
+.command-user {
+  color: #8fe4d4;
+}
+.command-line input {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  border: 0;
+  background: none;
+  color: #f1f6fd;
+  font: inherit;
+  font-size: 14px;
+  caret-color: var(--place-accent, #adcae8);
+  outline: none;
+}
+.command-line input::placeholder {
+  color: #6c7f99;
+}
+.command-panel:focus-within {
+  border-color: color-mix(
+    in srgb,
+    var(--place-accent, #adcae8) 45%,
+    transparent
+  );
+}
+.command-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.command-suggestions button {
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 1px solid #c7d8f02b;
+  border-radius: 12px;
+  background: #101c30d9;
+  color: #b9c9df;
+  font: inherit;
+  font-size: 11px;
+}
+.command-suggestions button:hover,
+.command-suggestions button:focus-visible {
+  color: #f1f6fd;
+  border-color: var(--place-accent, #adcae8);
+}
+@media (max-width: 640px) {
+  .command-toggle {
+    min-width: 46px;
+    padding: 2px 8px;
+  }
+  .command-line .command-user {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .command-panel {
+    animation: none;
+  }
+}

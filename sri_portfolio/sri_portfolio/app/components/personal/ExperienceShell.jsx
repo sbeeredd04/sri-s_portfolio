@@ -4,6 +4,8 @@ import { Component, useCallback, useEffect, useRef, useState } from "react";
 import WalkingControls from "./WalkingControls";
 import DiscoveryToast from "./DiscoveryToast";
 import { discover } from "../../lib/discoveries.mjs";
+import CommandBar from "./CommandBar";
+import { COMMAND_EVENT } from "./command-events";
 import PhysicsCursor from "./PhysicsCursor";
 import ReadingSheet from "./ReadingSheet";
 import PersonalSignature from "./PersonalSignature";
@@ -314,6 +316,21 @@ export default function ExperienceShell() {
     setStop(id);
     setReset((n) => n + 1);
   }
+  // Terminals (the "/" bar, the Discoveries console) act through one event.
+  const commandAction = useRef(null);
+  commandAction.current = (action) => {
+    if (action.type === "travel") travel(action.biome);
+    else if (action.type === "stop") {
+      if (action.biome !== biome) travel(action.biome);
+      else setSheet(null);
+      explore(action.stop);
+    } else if (action.type === "open") show(action.content);
+  };
+  useEffect(() => {
+    const onCommand = (event) => commandAction.current?.(event.detail);
+    window.addEventListener(COMMAND_EVENT, onCommand);
+    return () => window.removeEventListener(COMMAND_EVENT, onCommand);
+  }, []);
   function changeExhibit(id, value) {
     if (!projectExhibits[id] || exhibitStep(id, value)?.id !== value) return;
     audio.cue("object");
@@ -897,6 +914,7 @@ export default function ExperienceShell() {
           </svg>
           <span>World</span>
         </button>
+        <CommandBar biome={biome} />
         <nav
           ref={chapterGuide}
           className="chapter-route"

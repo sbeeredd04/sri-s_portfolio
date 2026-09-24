@@ -1,6 +1,7 @@
 @import "./styles/base.css";
 @import "./styles/content.css";
 @import "./styles/experience.css";
+@import "./styles/command-bar.css";
 @import "./styles/detail-worlds.css";
 
 @import "./styles/standalone-rooms.css";

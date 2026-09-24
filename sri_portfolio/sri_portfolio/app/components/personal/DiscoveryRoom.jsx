@@ -4,8 +4,9 @@ import {
   discoveries,
   foundDiscoveries,
   discover,
-  terminalReply,
 } from "../../lib/discoveries.mjs";
+import { runCommand } from "../../lib/commands.mjs";
+import { dispatchCommandAction } from "./command-events";
 
 const SUGGESTIONS = ["help", "whoami", "now", "ls"];
 
@@ -58,8 +59,11 @@ export default function DiscoveryRoom() {
   }, [lines]);
   function run(value) {
     if (!value.trim()) return;
-    const reply = terminalReply(value);
+    const reply = runCommand(value, { found: foundDiscoveries() });
     if (reply.discovery) discover(reply.discovery);
+    // Navigation from here closes the room and moves the world.
+    if (reply.action && reply.action.content !== "discoveries")
+      dispatchCommandAction(reply.action);
     setLines((previous) =>
       reply.clear ? [] : [...previous.slice(-39), { command: value, ...reply }],
     );

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {terminalReply,discoveries} from '../app/lib/discoveries.mjs';
+import {discoveries} from '../app/lib/discoveries.mjs';
+import {runCommand as terminalReply} from '../app/lib/commands.mjs';
 import {discoveryIds} from '../app/lib/contact-validation.mjs';
 test('discovery events are restricted to the actual collection',()=>assert.deepEqual(discoveries.map(d=>d.id).sort(),[...discoveryIds].sort()));
 test('the local terminal treats shell and markup as inert input',()=>{
