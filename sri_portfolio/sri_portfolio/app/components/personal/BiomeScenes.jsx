@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { studioSurfaces, studioMonitors } from "../../lib/studio-layout.mjs";
 export { default as Court } from "./Playground";
 import Landscape, { Grove, groundHeight } from "./Landscape";
+import TrailCamp from "./TrailCamp";
 import { outdoorsLift } from "../../lib/valley-layout.mjs";
 import DeskTablet from "./DeskTablet";
 import SriCharacter from "./SriCharacter";
@@ -177,10 +178,11 @@ function TrailSign() {
     </group>
   );
 }
-export function Trail({ animate, detailed = true, onHover, onCue }) {
+export function Trail({ animate, detailed = true, night, onHover, onCue }) {
   return (
     <group position={[0, outdoorsLift, 0]}>
       <Landscape animate={animate} detailed={detailed} onCue={onCue} />
+      <TrailCamp night={night} animate={animate} detailed={detailed} />
       {detailed && (
         <>
           <Suspense fallback={null}>

@@ -3,6 +3,8 @@
 // replica and not a record of a visit.
 export const outdoorsLift = 0.035;
 export const lake = { x: -8, z: -3, radius: 6, level: -0.02 };
+// A clearing east of the trail for a small camp; planting keeps out.
+export const campsite = { x: 7.6, z: -8, radius: 3.4 };
 export const trailCenter = (z) => Math.sin(z * 0.14) * 2.2;
 
 export const wall = {
@@ -392,7 +394,8 @@ export function blocksValleyPlanting(x, z, margin = 0) {
     inGraniteFootprint(x, z, margin) ||
     nearValleyWater(x, z, margin) ||
     inOverlookDeck(x, z, margin) ||
-    lakeDistance(x, z) < lake.radius + margin
+    lakeDistance(x, z) < lake.radius + margin ||
+    Math.hypot(x - campsite.x, z - campsite.z) < campsite.radius + margin
   );
 }
 

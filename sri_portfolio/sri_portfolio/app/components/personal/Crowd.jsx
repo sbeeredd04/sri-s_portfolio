@@ -79,6 +79,26 @@ function crowdMaterial(vat, uniforms) {
   return m;
 }
 
+// The leg of a polyline path the agent is on, with its fraction in a.leg.
+function legAt(a) {
+  const path = a.path;
+  if (path.length === 2) {
+    a.leg = a.along / a.length;
+    return path;
+  }
+  let rest = a.along;
+  for (let i = 1; i < path.length; i++) {
+    const [ax, az] = path[i - 1],
+      [bx, bz] = path[i];
+    const l = Math.hypot(bx - ax, bz - az);
+    if (rest <= l || i === path.length - 1) {
+      a.leg = l ? Math.min(1, rest / l) : 0;
+      return [path[i - 1], path[i]];
+    }
+    rest -= l;
+  }
+}
+
 // A crowd walking the given routes (polylines in the parent's frame), in one
 // instanced draw. `ground(x, z)` places feet; idle agents stand and chat.
 export default function Crowd({ src, agents, ground, scale = 1.25, animate }) {
@@ -176,8 +196,8 @@ export default function Crowd({ src, agents, ground, scale = 1.25, animate }) {
           a.dir *= -1;
           a.along = Math.max(0, Math.min(a.length, a.along));
         }
-        const [[ax, az], [bx, bz]] = a.path;
-        const t = a.along / a.length;
+        const [[ax, az], [bx, bz]] = legAt(a);
+        const t = a.leg;
         x = ax + (bx - ax) * t;
         z = az + (bz - az) * t;
         yaw = Math.atan2((bx - ax) * a.dir, (bz - az) * a.dir);

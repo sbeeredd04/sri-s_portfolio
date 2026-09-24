@@ -5,6 +5,7 @@ import { bridgeView } from "./bay-bridge.mjs";
 import { cityViews } from "./sf-views.mjs";
 import { techViews } from "./tech-plan.mjs";
 import { trailView } from "./valley-layout.mjs";
+import { campFire } from "./trail-life.mjs";
 import { fieldnotesCameras } from "./fieldnotes-layout.mjs";
 import { quarterViews } from "./fieldnotes-quarter.mjs";
 // Content and camera positions share the same coordinates as the visible objects.
@@ -262,6 +263,20 @@ export const placeStops = {
       target: [-8, 0, -3],
       content: "notes",
       prompt: "Places I want to go",
+    },
+    {
+      id: "camp",
+      label: "Round the fire",
+      position: [campFire.x - 4.6, 3, campFire.z + 4.2],
+      target: [campFire.x, 0.6, campFire.z],
+      portrait: {
+        position: [campFire.x - 3.4, 2.6, campFire.z + 4.8],
+        target: [campFire.x + 0.4, 0.5, campFire.z],
+        fov: 70,
+      },
+      content: "about",
+      prompt: "The end of a good hike",
+      hint: "A tent, a fire, and a few people who walked in before dark.",
     },
     {
       id: "overlook",

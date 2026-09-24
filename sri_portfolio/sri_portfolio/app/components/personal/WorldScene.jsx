@@ -297,6 +297,7 @@ function ConnectedWorld({
             <Trail
               animate={animate && near.trail}
               detailed={near.trail}
+              night={night}
               onCue={onCue}
               onHover={onHover}
             />
