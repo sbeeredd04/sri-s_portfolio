@@ -5,7 +5,7 @@ import {
   BasketballCourt,
 } from "./SportsCourts";
 import { PavedWalks, Bench, Sign } from "./StreetFurniture";
-import { Suspense } from "react";
+import { Suspense, useMemo } from "react";
 import { Grove } from "./Landscape";
 import ModelInstances from "./ModelInstances";
 import { Box, Rods } from "./ScenePrimitives";
@@ -17,6 +17,26 @@ import {
   courts,
   courtLamps,
 } from "../../lib/court-layout.mjs";
+import Crowd from "./Crowd";
+import { useQuality } from "./Quality";
+import { courtCrowd } from "../../lib/court-crowd.mjs";
+import { surfaceHeight } from "../../lib/world-layout.mjs";
+
+const courtGround = (x, z) => surfaceHeight("court", x, z);
+function CourtCrowd({ animate }) {
+  const { tier } = useQuality();
+  const agents = useMemo(() => courtCrowd(tier), [tier]);
+  return (
+    <Suspense fallback={null}>
+      <Crowd
+        src="/models/characters/crowd.glb"
+        agents={agents}
+        ground={courtGround}
+        animate={animate}
+      />
+    </Suspense>
+  );
+}
 
 export default function Playground({
   animate,
@@ -53,6 +73,7 @@ export default function Playground({
         audible={activeCourt === "basketball"}
       />
       <Grove park detailed={detailed} />
+      {detailed && <CourtCrowd animate={animate} />}
       <Suspense fallback={null}>
         <ModelInstances
           src="/models/picnic-table.glb"
