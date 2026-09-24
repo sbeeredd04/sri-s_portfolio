@@ -1,6 +1,7 @@
 import AppContent from "../components/personal/AppContent";
 import { pageMetadata } from "../lib/page-metadata.mjs";
 import SiteHeader from "../components/personal/SiteHeader";
+import StoryNav from "./StoryNav";
 export const metadata = pageMetadata({
   title: "The story — Sri Ujjwal Reddy",
   description:
@@ -24,15 +25,7 @@ export default function StoryPage() {
     <div className="reading-view" id="top">
       <h1 className="sr-only">Sri Ujjwal Reddy — my story</h1>
       <SiteHeader place="The whole story" />
-      <nav className="story-nav" aria-label="Story sections">
-        <div>
-          {sections.map(([id, name]) => (
-            <a key={id} href={`#${id}`}>
-              {name}
-            </a>
-          ))}
-        </div>
-      </nav>
+      <StoryNav sections={sections} />
       <main>
         {sections.map(([id, name]) => (
           <section
@@ -45,10 +38,7 @@ export default function StoryPage() {
           </section>
         ))}
       </main>
-      <a className="story-top" href="#top">
-        Back to top <span aria-hidden="true">↑</span>
-      </a>
-      <footer>
+      <footer className="story-footer">
         <a href="/">Back to my world</a>
         <span>A work in progress. Like me.</span>
       </footer>

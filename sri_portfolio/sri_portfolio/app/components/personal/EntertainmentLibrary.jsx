@@ -31,6 +31,9 @@ export default function EntertainmentLibrary({
             <br />
             <em>good on.</em>
           </h2>
+          <svg className="enso" viewBox="0 0 120 120" aria-hidden="true">
+            <path d="M92 26C78 12 50 10 32 26 12 44 14 78 36 94c20 15 52 12 67-9 10-14 10-33 2-47" />
+          </svg>
         </div>
         <p className="app-lead">
           A song while I build. A familiar episode while I unwind. Some things
@@ -41,7 +44,8 @@ export default function EntertainmentLibrary({
         <div
           className="entertainment-sections"
           role="group"
-          aria-label="Explore music and shows"
+          aria-label="Choose a side"
+          data-side={section === "shows" ? "b" : "a"}
         >
           <button
             aria-pressed={section === "music"}
@@ -49,6 +53,10 @@ export default function EntertainmentLibrary({
           >
             <small>SIDE A</small> Music
           </button>
+          <span className="side-disc" aria-hidden="true">
+            <i>A</i>
+            <i>B</i>
+          </span>
           <button
             aria-pressed={section === "shows"}
             onClick={() => setSection("shows")}
@@ -58,46 +66,49 @@ export default function EntertainmentLibrary({
         </div>
       )}
       {(expanded || section === "music") && (
-        <section className="listening-shelf">
-          <div className="shelf-heading">
-            <span className="shelf-dot" />
-            <h3>The listening room</h3>
-          </div>
+        <section className="listening-shelf" aria-label="Music">
           <MusicCard />
           <div className="music-tastes">
+            <h3 className="shelf-label">On the shelf</h3>
             <article>
-              <span>01 / LATELY</span>
-              <h4>Fred again..</h4>
-              <p>A lot of repeat listens lately.</p>
+              <span className="sleeve" aria-hidden="true" />
+              <div>
+                <small>LATELY</small>
+                <h4>Fred again..</h4>
+                <p>A lot of repeat listens lately.</p>
+              </div>
             </article>
             <article>
-              <span>02 / ALWAYS ROOM FOR</span>
-              <h4>Tollywood</h4>
-              <p>Always part of the mix.</p>
+              <span className="sleeve sleeve-warm" aria-hidden="true" />
+              <div>
+                <small>ALWAYS ROOM FOR</small>
+                <h4>Tollywood</h4>
+                <p>Always part of the mix.</p>
+              </div>
             </article>
+            <a
+              className="spotify-link"
+              href="https://open.spotify.com/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <small>ELSEWHERE</small>
+              <img
+                src="/official/spotify-white.webp"
+                width="88"
+                height="24"
+                alt="Spotify"
+              />
+              <span>
+                Open Spotify <span aria-hidden="true">↗</span>
+              </span>
+            </a>
           </div>
-          <a
-            className="app-list-link spotify-link"
-            href="https://open.spotify.com/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              src="/official/spotify-white.webp"
-              width="110"
-              height="30"
-              alt="Spotify"
-            />{" "}
-            <span>Open Spotify ↗</span>
-          </a>
         </section>
       )}
       {(expanded || section === "shows") && (
         <section className="cinema-shelf">
-          <div className="shelf-heading">
-            <span className="shelf-dot" />
-            <h3>The comfort cinema</h3>
-          </div>
+          <h3 className="shelf-label">The comfort cinema</h3>
           <div className={`comfort-screen screen-${channel}`}>
             <img
               className="comfort-cover"
@@ -114,7 +125,7 @@ export default function EntertainmentLibrary({
                 target="_blank"
                 rel="noreferrer"
               >
-                Explore the show ↗
+                Explore the show <span aria-hidden="true">↗</span>
               </a>
               <button onClick={() => setChannel((channel + 1) % shows.length)}>
                 Next in the rotation <span>→</span>

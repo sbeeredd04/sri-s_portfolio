@@ -13,14 +13,11 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  padding: clamp(1.25rem, 4vw, 2.75rem) clamp(1.05rem, 3vw, 2.4rem)
-    clamp(1.75rem, 5vw, 3.25rem);
+  padding: 0;
   color: var(--oj-ink);
   color-scheme: light;
-  background:
-    radial-gradient(90% 55% at 0% 0%, #f8f4ec 0%, transparent 58%),
-    linear-gradient(180deg, #f7f2e8 0%, #f1e9db 100%);
-  border: 1px solid var(--oj-line);
+  background: transparent;
+  border: 0;
   font-family: var(--font-sans);
   font-size: 1.0625rem;
   line-height: 1.6;
@@ -36,7 +33,7 @@
 .sectionLabel {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 0.35rem 0.75rem;
   min-width: 0;
   margin: 0;
@@ -47,6 +44,36 @@
   letter-spacing: 0.16em;
   line-height: 1.4;
   text-transform: uppercase;
+}
+
+.kicker > span + span::before {
+  content: "·";
+  margin-right: 0.75rem;
+  color: var(--oj-rust);
+}
+
+.scribble {
+  font-family: var(--font-caveat), cursive;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  color: var(--oj-rust);
+}
+
+.stamp {
+  justify-self: end;
+  padding: 0.1rem 0.55rem 0.2rem;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  color: var(--oj-rust);
+  font-family: var(--font-caveat), cursive;
+  font-size: 1.2rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  transform: rotate(-4deg);
+  opacity: 0.9;
 }
 
 .rule {
@@ -128,7 +155,7 @@
   flex-direction: column;
   align-items: stretch;
   gap: 0.75rem;
-  width: min(100%, 16.5rem);
+  width: min(100%, 22rem);
   max-width: 100%;
   margin-left: auto;
 }
@@ -233,12 +260,15 @@
 
 .caption {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin-top: 0.6rem;
 }
 
 .controlLabel {
+  margin-top: 0.4rem;
   color: var(--oj-muted);
   font-family: var(--font-bricolage), var(--font-sans);
   font-size: 0.75rem;
@@ -268,7 +298,7 @@
   background: transparent;
   color: var(--oj-muted);
   font-family: var(--font-bricolage), var(--font-sans);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.08em;
   line-height: 1.2;
@@ -343,7 +373,7 @@
 
 .place {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   column-gap: 0.8rem;
   row-gap: 0.25rem;
   align-items: baseline;
@@ -375,6 +405,7 @@
 
 .placeMeta {
   grid-column: 2;
+  grid-row: 2;
   max-width: 16rem;
   color: var(--oj-muted);
   font-family: var(--font-bricolage), var(--font-sans);
@@ -422,8 +453,47 @@
 }
 
 .plateCaption {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
   margin-top: 0.75rem;
+}
+
+.contour path[pathLength] {
+  transition: stroke-dashoffset 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.contour[data-draw="pending"] path[pathLength],
+.contour[data-draw="drawing"] path[pathLength] {
+  stroke-dasharray: 1;
+}
+
+.contour[data-draw="pending"] path[pathLength] {
+  stroke-dashoffset: 1;
+}
+
+.contour[data-draw="drawing"] path[pathLength] {
+  stroke-dashoffset: 0;
+}
+
+.contour[data-draw="drawing"] path:nth-child(2) {
+  transition-delay: 0.2s;
+}
+
+.contour[data-draw="drawing"] path:nth-child(3) {
+  transition-delay: 0.4s;
+}
+
+.contour[data-draw="drawing"] path:nth-child(4) {
+  transition-delay: 0.6s;
+}
+
+.contour[data-draw="drawing"] path:nth-child(5) {
+  transition-delay: 0.8s;
+}
+
+.contour[data-draw="drawing"] > path {
+  transition-delay: 1.4s;
 }
 
 @container outdoor (min-width: 38rem) {
@@ -442,16 +512,18 @@
     column-gap: clamp(1.5rem, 4cqi, 3.5rem);
   }
 
-  .city {
-    margin-top: 3.25rem;
+  .interests {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .place {
-    grid-template-columns: 2.8rem minmax(0, 1fr) minmax(0, 12.5rem);
+    grid-template-columns: 2.8rem minmax(0, 1fr) auto auto;
+    column-gap: 1.5rem;
   }
 
   .placeMeta {
     grid-column: auto;
+    grid-row: auto;
     text-align: right;
   }
 
@@ -468,12 +540,6 @@
   .plateCopy {
     grid-column: 2;
     grid-row: 1;
-  }
-}
-
-@media (max-width: 400px) {
-  .journal.journal {
-    padding: 1rem 0.85rem 1.4rem;
   }
 }
 

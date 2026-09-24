@@ -8,6 +8,8 @@ export default function MusicCard() {
     [error, setError] = useState(false),
     [duration, setDuration] = useState(0),
     [position, setPosition] = useState(0);
+  const pendingDrop = useRef(null);
+  const progress = duration ? Math.min(1, position / duration) : 0;
   const timestamp = (seconds) =>
     `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
   useEffect(() => {
@@ -33,6 +35,29 @@ export default function MusicCard() {
       element?.pause();
     };
   }, []);
+  // Outer groove is the start, the label edge is the end.
+  async function dropNeedle(event) {
+    const box = event.currentTarget.getBoundingClientRect();
+    const dx = event.clientX - (box.left + box.width / 2);
+    const dy = event.clientY - (box.top + box.height / 2);
+    const radius = Math.hypot(dx, dy) / (box.width / 2);
+    if (radius > 1 || radius < 0.38) return;
+    const fraction = Math.min(1, Math.max(0, (1 - radius) / 0.62));
+    const element = audio.current;
+    if (!element) return;
+    if (duration) {
+      element.currentTime = fraction * duration;
+      setPosition(fraction * duration);
+    } else pendingDrop.current = fraction;
+    if (element.paused) {
+      try {
+        await element.play();
+        setError(false);
+      } catch {
+        setError(true);
+      }
+    }
+  }
   async function toggle() {
     if (!audio.current) return;
     if (playing) {
@@ -48,20 +73,35 @@ export default function MusicCard() {
   }
   return (
     <article className="music-card" data-playing={playing}>
-      <div className="turntable" aria-hidden="true">
-        <div className="turntable-plaque">SRI / ORIGINAL RECORDING</div>
-        <div className={`record ${playing ? "record-playing" : ""}`}>
-          <div>
-            <span>sri.</span>
-            <small>v4 / ORIGINAL</small>
+      <figure className="music-alcove">
+        <div
+          className="turntable"
+          style={{ "--progress": progress }}
+          data-cued={playing || position > 0 || undefined}
+        >
+          <span className="turntable-plaque" aria-hidden="true">
+            Sri · original recording
+          </span>
+          <div
+            className={`record ${playing ? "record-playing" : ""}`}
+            onPointerDown={dropNeedle}
+            aria-hidden="true"
+          >
+            <div>
+              <span>sri.</span>
+              <small>v4</small>
+            </div>
           </div>
+          <div className="tonearm" aria-hidden="true" />
+          <span className="turntable-light" aria-hidden="true" />
+          <span className="turntable-speed" aria-hidden="true">
+            33⅓
+          </span>
         </div>
-        <div className="tonearm" />
-        <span className="turntable-light" />
-        <span className="turntable-speed">33⅓</span>
-      </div>
+        <figcaption>Drop the needle anywhere on the record.</figcaption>
+      </figure>
       <div className="music-copy">
-        <p className="eyebrow">THE ONE I MADE</p>
+        <p className="eyebrow">LINER NOTES · THE ONE I MADE</p>
         <h3>
           v4 <em>by Sri.</em>
         </h3>
@@ -79,9 +119,6 @@ export default function MusicCard() {
             <span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span>{" "}
             {playing ? "Pause" : "Play my track"}
           </button>
-          <span>
-            v4 <span>·</span> Sri
-          </span>
         </div>
         <div className="record-progress">
           <label htmlFor={`${id}-seek`}>Track position</label>
@@ -120,13 +157,16 @@ export default function MusicCard() {
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
           onEnded={() => setPlaying(false)}
-          onLoadedMetadata={() =>
-            setDuration(
-              Number.isFinite(audio.current.duration)
-                ? audio.current.duration
-                : 0,
-            )
-          }
+          onLoadedMetadata={() => {
+            const length = Number.isFinite(audio.current.duration)
+              ? audio.current.duration
+              : 0;
+            setDuration(length);
+            if (length && pendingDrop.current !== null) {
+              audio.current.currentTime = pendingDrop.current * length;
+              pendingDrop.current = null;
+            }
+          }}
           onTimeUpdate={() => setPosition(audio.current.currentTime)}
         />
       </div>

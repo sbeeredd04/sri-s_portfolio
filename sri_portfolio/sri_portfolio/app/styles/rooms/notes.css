@@ -1,1 +1,25 @@
-/* notes */
+/* The outdoor journal: warm field-book paper, forest ink, rust pencil. */
+.reading-sheet[data-section="notes"] {
+  --paper: #f3eee4;
+  --ink: #1b291f;
+  --muted: #3f4f42;
+  --line: #1b291f29;
+  --accent: #8f3e1c;
+  --room-display: var(--font-serif);
+  background:
+    radial-gradient(#1b291f14 1px, transparent 1.2px) 0 0 / 22px 22px,
+    var(--paper);
+  color: var(--ink);
+  color-scheme: light;
+}
+.reading-sheet[data-section="notes"] .sheet-bar {
+  border-color: var(--line);
+}
+.reading-sheet[data-section="notes"] .sheet-bar :is(button, a, span) {
+  color: var(--ink);
+}
+.reading-view [data-outdoor-journal] {
+  background: #f3eee4;
+  padding: 40px clamp(20px, 5vw, 48px);
+  border-radius: 4px;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import styles from "./OutdoorJournal.module.css";
 
 const FRAMES = [
@@ -78,17 +78,54 @@ function ViewfinderScene() {
 }
 
 function ContourPlate() {
+  const plate = useRef(null);
+  const [draw, setDraw] = useState("done");
+  useEffect(() => {
+    const svg = plate.current;
+    if (!svg || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!("IntersectionObserver" in window)) return;
+    setDraw("pending");
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setDraw("drawing");
+        observer.disconnect();
+      },
+      { threshold: 0.35 },
+    );
+    observer.observe(svg);
+    return () => observer.disconnect();
+  }, []);
   return (
-    <svg className={styles.contour} viewBox="0 0 680 400" aria-hidden="true">
+    <svg
+      ref={plate}
+      className={styles.contour}
+      viewBox="0 0 680 400"
+      aria-hidden="true"
+      data-draw={draw}
+    >
       <g className={styles.ink}>
         <path d="M24 48 H48 M24 48 V72 M656 48 H632 M656 48 V72 M24 352 H48 M24 352 V328 M656 352 H632 M656 352 V328" />
-        <path d="M70 268 C160 220 230 246 310 196 C390 146 450 176 560 156 C610 146 640 164 656 176" />
-        <path d="M58 222 C150 168 230 198 330 150 C420 106 480 136 650 158" />
-        <path d="M78 312 C180 268 270 292 360 248 C450 204 510 228 652 236" />
-        <path d="M92 348 C200 316 310 334 420 292 C510 258 570 280 654 292" />
-        <path d="M118 346 C190 328 250 312 330 322" />
+        <path
+          pathLength="1"
+          d="M70 268 C160 220 230 246 310 196 C390 146 450 176 560 156 C610 146 640 164 656 176"
+        />
+        <path
+          pathLength="1"
+          d="M58 222 C150 168 230 198 330 150 C420 106 480 136 650 158"
+        />
+        <path
+          pathLength="1"
+          d="M78 312 C180 268 270 292 360 248 C450 204 510 228 652 236"
+        />
+        <path
+          pathLength="1"
+          d="M92 348 C200 316 310 334 420 292 C510 258 570 280 654 292"
+        />
+        <path pathLength="1" d="M118 346 C190 328 250 312 330 322" />
       </g>
       <path
+        pathLength="1"
         className={styles.lightEdge}
         d="M300 186 C380 154 460 172 548 160"
       />
@@ -140,7 +177,7 @@ export default function OutdoorJournal() {
                 <span className={styles.brackets} aria-hidden="true" />
               </div>
               <figcaption className={styles.caption}>
-                <span>{frame.label} crop</span>
+                <span className={styles.scribble}>{frame.label} crop</span>
                 <span>Illustrated field study</span>
               </figcaption>
             </figure>
@@ -216,9 +253,8 @@ export default function OutdoorJournal() {
                 {String(index + 1).padStart(2, "0")}
               </span>
               <span className={styles.placeName}>{name}</span>
-              <span className={styles.placeMeta}>
-                California · On the wish list
-              </span>
+              <span className={styles.placeMeta}>California</span>
+              <span className={styles.stamp}>on the wish list</span>
             </li>
           ))}
         </ol>
@@ -239,7 +275,8 @@ export default function OutdoorJournal() {
           <figure className={styles.plateFigure}>
             <ContourPlate />
             <figcaption className={styles.plateCaption}>
-              Contour study. Drawn for this page.
+              <span className={styles.scribble}>contour study</span>
+              Drawn for this page.
             </figcaption>
           </figure>
         </div>

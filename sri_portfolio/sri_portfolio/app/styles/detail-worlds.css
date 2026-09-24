@@ -17,325 +17,6 @@
 .reading-sheet .window-content {
   padding: clamp(24px, 4vw, 54px);
 }
-.reading-sheet[data-section="music"] {
-  background: #e9e3d7;
-  color: #302e29;
-  --muted: #686156;
-  --line: #3c372c2b;
-  --ink: #302e29;
-}
-.reading-sheet[data-section="music"] .sheet-bar {
-  border-color: #53473826;
-}
-.reading-sheet[data-section="music"] .sheet-bar button {
-  color: #463d31;
-}
-.reading-sheet[data-section="music"] .sheet-close {
-  background: #6f60451a;
-}
-.reading-sheet[data-section="music"] .window-content {
-  padding: 0;
-}
-.entertainment-library {
-  --room-ink: #302e29;
-  --room-muted: #686156;
-  --room-accent: #963f30;
-  color: var(--room-ink);
-  background: #e9e3d7;
-  padding: clamp(24px, 4vw, 54px);
-  transition:
-    background 0.4s,
-    color 0.4s;
-}
-.entertainment-library[data-room="shows"] {
-  --room-ink: #f0e5d6;
-  --room-muted: #c4b4a5;
-  --room-accent: #e9ad82;
-  background: #232421;
-}
-.window-content .entertainment-library p,
-.window-content .entertainment-library .app-lead {
-  color: var(--room-muted);
-}
-.window-content .entertainment-library a {
-  color: var(--room-ink);
-}
-.window-content .entertainment-library a:hover {
-  color: var(--room-accent);
-}
-.listening-intro {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 36px;
-  align-items: end;
-  padding-bottom: 24px;
-}
-.window-content .listening-intro h2 {
-  font: 400 clamp(42px, 5vw, 70px)/0.99 var(--font-serif);
-  letter-spacing: -0.045em;
-  margin: 22px 0 0;
-}
-.listening-intro h2 em {
-  font-weight: 400;
-  color: var(--room-accent);
-}
-.window-content .listening-intro .app-lead {
-  font-size: 15px;
-  line-height: 1.8;
-  max-width: 29ch;
-  margin: 0 0 4px;
-}
-.entertainment-library .entertainment-sections {
-  display: flex;
-  gap: 28px;
-  border: 0;
-  border-block: 1px solid currentColor;
-  border-radius: 0;
-  padding: 0;
-  margin: 20px 0 0;
-  background: none;
-}
-.entertainment-sections button {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-.entertainment-library .entertainment-sections button {
-  color: var(--room-muted);
-  border-radius: 0;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -1px;
-  padding: 18px 0;
-  background: none;
-}
-.entertainment-library .entertainment-sections button[aria-pressed="true"] {
-  color: var(--room-ink);
-  border-bottom-color: var(--room-accent);
-  background: none;
-}
-.entertainment-sections small {
-  font-size: 12px;
-  letter-spacing: 0.13em;
-}
-.entertainment-library .shelf-heading h3 {
-  font: 400 22px var(--font-serif);
-  margin: 0;
-}
-.entertainment-library .shelf-dot {
-  background: var(--room-accent);
-}
-.entertainment-library .music-card {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 42px;
-  padding: 0;
-  border: 0;
-  background: none;
-  border-radius: 0;
-}
-.turntable {
-  width: 100%;
-  max-width: 380px;
-  aspect-ratio: 1.15;
-  position: relative;
-  display: grid;
-  place-items: center;
-  padding: 30px;
-  border: 7px solid #65503c;
-  border-radius: 8px;
-  background:
-    repeating-linear-gradient(1deg, #553f2d11 0 2px, transparent 2px 5px),
-    linear-gradient(120deg, #b39b78, #7c654b);
-  box-shadow:
-    inset 0 0 0 2px #d9cba142,
-    0 12px 0 -3px #473b2f,
-    0 23px 25px -16px #39271670;
-}
-.turntable .record {
-  width: 88%;
-  height: auto;
-  aspect-ratio: 1;
-  margin-right: 10%;
-  background: repeating-radial-gradient(
-    circle,
-    #222321 0 1px,
-    #31312d 1px 2px,
-    #181a19 2px 4px
-  );
-  border: 5px solid #1d201e;
-  box-shadow: 0 3px 7px #0009;
-}
-.turntable .record > div {
-  background: #a84a36;
-  color: #f5dfc1;
-  width: 34%;
-  height: 34%;
-  border: 1px solid #c286624d;
-}
-.turntable .record > div::after {
-  content: "";
-  width: 7px;
-  height: 7px;
-  background: #d5d4c9;
-  border: 2px solid #352e29;
-  border-radius: 50%;
-  margin-top: 5px;
-}
-.turntable-plaque {
-  position: absolute;
-  left: 16px;
-  top: 12px;
-  font: 12px/1.5 var(--font-mono);
-  letter-spacing: 0.15em;
-  color: #e6d8bd;
-}
-.tonearm {
-  position: absolute;
-  right: 13%;
-  top: 18%;
-  width: 7px;
-  height: 58%;
-  background: linear-gradient(90deg, #747773, #e5e3d6, #8c8c7b);
-  border-radius: 5px;
-  transform: rotate(-8deg);
-  transform-origin: 50% 6%;
-  transition: transform 0.7s ease;
-  box-shadow: 3px 3px 3px #17191488;
-}
-.tonearm::before {
-  content: "";
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: radial-gradient(
-    #bebcac 20%,
-    #4a4c46 30%,
-    #b6b6a3 60%,
-    #65675f 65%
-  );
-  left: -9px;
-  top: -3px;
-}
-.tonearm::after {
-  content: "";
-  width: 12px;
-  height: 25px;
-  background: #272b28;
-  position: absolute;
-  bottom: -9px;
-  left: -3px;
-  border-radius: 3px;
-}
-[data-playing="true"] .tonearm {
-  transform: rotate(22deg);
-}
-.turntable-light {
-  position: absolute;
-  right: 17px;
-  bottom: 14px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #59372b;
-}
-[data-playing="true"] .turntable-light {
-  background: #f4ba76;
-  box-shadow: 0 0 8px #f6a853;
-}
-.turntable-speed {
-  position: absolute;
-  left: 17px;
-  bottom: 10px;
-  font: 12px var(--font-mono);
-  color: #e9d8b8;
-}
-.window-content .entertainment-library .music-copy h3 {
-  font: 400 42px var(--font-serif);
-  margin: 12px 0 22px;
-}
-.music-copy h3 em {
-  font-size: 25px;
-  color: var(--room-muted);
-}
-.entertainment-library .music-controls > button {
-  color: #f9f0e1;
-  background: #823c2e;
-  font-size: 13px;
-}
-.entertainment-library .music-controls > span {
-  color: var(--room-muted);
-}
-.record-progress {
-  margin-top: 20px;
-}
-.record-progress label {
-  display: block;
-  font-size: 12px;
-  margin-bottom: 5px;
-  color: var(--room-muted);
-}
-.record-progress input {
-  width: 100%;
-  min-height: 44px;
-  accent-color: #963f30;
-}
-.record-progress > div {
-  display: flex;
-  justify-content: space-between;
-  font: 12px var(--font-mono);
-  color: var(--room-muted);
-}
-.entertainment-library .music-tastes {
-  margin-top: 44px;
-  gap: 28px;
-}
-.entertainment-library .music-tastes article {
-  padding: 22px 0;
-  border: 0;
-  border-top: 1px solid #68615650;
-  border-radius: 0;
-  background: none;
-}
-.entertainment-library .music-tastes article > span {
-  color: var(--room-accent);
-}
-.entertainment-library .music-tastes h4 {
-  font: 400 30px var(--font-serif);
-}
-.entertainment-library .spotify-link {
-  padding: 17px 22px;
-  background: #293d31;
-  border-radius: 4px;
-  color: #f0eadc;
-}
-.entertainment-library .spotify-link span {
-  color: #e0e6d5;
-}
-.entertainment-library .comfort-screen {
-  background: #161916;
-  border-radius: 3px;
-  border-color: #e3d8c326;
-}
-.entertainment-library .comfort-screen h4 {
-  font: 400 clamp(28px, 4vw, 45px)/1.1 var(--font-serif);
-}
-.entertainment-library .show-rotation > button {
-  border-radius: 3px;
-  padding: 5px;
-  border: 1px solid transparent;
-}
-.entertainment-library .show-rotation > button[aria-pressed="true"] {
-  border-color: var(--room-accent);
-  background: #c99b5814;
-}
-.entertainment-library .show-art {
-  border-radius: 2px;
-}
-.entertainment-library :focus-visible {
-  outline: 2px solid var(--room-accent);
-  outline-offset: 4px;
-}
 @media (max-width: 650px) {
   .reading-sheet:not(.index-sheet) {
     width: calc(100vw - 16px);
@@ -349,55 +30,6 @@
   .reading-sheet .window-content {
     padding: 24px;
   }
-  .reading-sheet[data-section="music"] .window-content {
-    padding: 0;
-  }
-  .listening-intro {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  .window-content .listening-intro h2 {
-    font-size: clamp(39px, 10vw, 58px);
-  }
-  .window-content .listening-intro .app-lead {
-    max-width: 36ch;
-    font-size: 14px;
-  }
-  .entertainment-library .music-card {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  .turntable {
-    max-width: 370px;
-    justify-self: center;
-  }
-  .entertainment-library .entertainment-sections {
-    gap: 20px;
-  }
-  .entertainment-sections button {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    font-size: 13px;
-  }
-  .entertainment-library .music-tastes {
-    gap: 20px;
-  }
-  .entertainment-library .music-tastes h4 {
-    font-size: 24px;
-  }
-  .entertainment-library .show-rotation {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .entertainment-library,
-  .tonearm {
-    transition: none;
-  }
-  .record-playing {
-    animation: none;
-  }
 }
 
 /* The Foundry: a working archive, with a different material for each subject. */
@@ -407,63 +39,11 @@
   --muted: #bcb8b0;
   --line: #d6caba2c;
 }
-.foundry-intro {
-  position: relative;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--line);
-}
-.window-content .foundry-intro h2 {
-  font:
-    500 clamp(42px, 5vw, 60px)/0.98 var(--font-bricolage),
-    sans-serif;
-  letter-spacing: -0.055em;
-  margin: 18px 0;
-}
-.foundry-intro .app-action {
-  margin: 8px 0 0;
-}
-.project-library .project-library-controls {
-  margin: 22px 0;
-}
-.foundry-intro h2 em {
-  color: #dcaa83;
-  font: italic 400 1em var(--font-serif);
-}
-.window-content .foundry-intro .app-lead {
-  max-width: 42ch;
-  color: #c9c2b7;
-  font-size: 17px;
-}
 .reading-sheet[data-section="work"] .app-action {
   background: #e5d7bf;
   color: #292724;
   border-radius: 5px;
   border: 0;
-}
-.project-library .project-search input {
-  border-radius: 5px;
-}
-.project-library .project-filters button {
-  border-radius: 5px;
-  min-height: 44px;
-}
-.project-library .project-filters button[aria-pressed="true"] {
-  background: #e6d9c2;
-  color: #302a25;
-}
-.window-content .project-library .project-group-heading {
-  font: 400 30px var(--font-serif);
-  color: #ebe2d4;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 16px;
-}
-.project-library .app-project {
-  --project-accent: #ddba8f;
-  --project-wash: #302b24;
-  border-radius: 8px;
-  background: var(--project-wash);
-  border: 1px solid color-mix(in srgb, var(--project-accent) 25%, transparent);
-  padding: clamp(20px, 3vw, 34px);
 }
 .project-library [data-project="aether"] {
   --project-accent: #c5b2ef;
@@ -502,14 +82,6 @@
   --project-accent: #c2bbae;
   --project-wash: #242423;
 }
-.project-folio {
-  display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.13em;
-  color: var(--project-accent);
-  font: 12px/1.6 var(--font-mono);
-  margin-bottom: 22px;
-}
 .project-library .project-visual {
   background: radial-gradient(
     ellipse at center,
@@ -518,28 +90,6 @@
   );
   border: 0;
   border-radius: 0;
-}
-.project-library .featured-project .project-title-row h3 {
-  font-size: clamp(28px, 4vw, 44px);
-  margin: 12px 0;
-  letter-spacing: -0.045em;
-}
-.project-library .app-project > p {
-  max-width: 62ch;
-  color: #d5cfc4;
-}
-.project-library .project-stack li {
-  border-color: color-mix(in srgb, var(--project-accent) 25%, transparent);
-  color: var(--project-accent);
-  border-radius: 3px;
-}
-.project-library .app-project > a,
-.project-library .project-permalink {
-  color: var(--project-accent);
-}
-.project-library .project-detail summary {
-  color: var(--project-accent);
-  padding-block: 18px;
 }
 .project-fieldbook {
   background: #eee8dc;
@@ -624,14 +174,6 @@
 .project-fieldbook .project-screenshot figcaption {
   color: #635a4d;
 }
-@media (min-width: 850px) {
-  .foundry-intro .app-lead {
-    position: absolute;
-    right: 0;
-    top: 50px;
-    width: 38%;
-  }
-}
 @media (max-width: 650px) {
   .project-fieldbook .project-story {
     grid-template-columns: 1fr;
@@ -651,253 +193,6 @@
   }
   .window-content .project-fieldbook .project-story h4 {
     font-size: 24px;
-  }
-}
-
-/* About: an editorial journal built from Sri's own photograph and stories. */
-.reading-sheet[data-section="about"] {
-  background: #eee9e6;
-  color: #362c35;
-  --muted: #706470;
-  --ink: #362c35;
-  --line: #6a536332;
-}
-.reading-sheet[data-section="about"] .sheet-bar {
-  border-color: var(--line);
-}
-.reading-sheet[data-section="about"] .sheet-bar button {
-  color: #554653;
-}
-.reading-sheet[data-section="about"] .sheet-close {
-  background: #6d51621a;
-}
-.about-journal {
-  --journal-ink: #362c35;
-  --journal-muted: #706470;
-  color: var(--journal-ink);
-}
-.reading-view .about-journal {
-  background: #eee9e6;
-  padding: clamp(24px, 4vw, 48px);
-  border-radius: 6px;
-}
-.window-content .about-journal p,
-.window-content .about-journal .app-lead {
-  color: var(--journal-muted);
-}
-.window-content .about-journal strong,
-.window-content .about-journal a {
-  color: var(--journal-ink);
-}
-.journal-intro {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 36px;
-  align-items: center;
-}
-.window-content .journal-intro h2 {
-  font: 400 clamp(44px, 5vw, 70px)/1.03 var(--font-serif);
-  margin: 24px 0;
-  letter-spacing: -0.05em;
-}
-.journal-intro h2 em {
-  color: #8a5068;
-  font-weight: 400;
-}
-.window-content .journal-intro .app-lead {
-  font-size: 16px;
-  max-width: 35ch;
-}
-.journal-photo {
-  margin: 0;
-  padding: 9px 9px 0;
-  background: #fbf8f3;
-  transform: rotate(2deg);
-  box-shadow: 0 9px 22px #60404f16;
-}
-.journal-photo img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1.2;
-  object-fit: cover;
-}
-.window-content .journal-role {
-  color: #704455;
-  font-size: 12px;
-  margin: 14px 0 0;
-}
-.journal-photo figcaption {
-  color: #716672;
-  padding: 13px 6px 17px;
-  font: italic 13px/1.5 var(--font-serif);
-}
-.journal-route {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin: 25px 0;
-  font-size: 12px;
-  color: #73656e;
-}
-.journal-route > span {
-  color: #9e5a6a;
-}
-.journal-now {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 22px;
-  border-block: 1px solid #6a536332;
-  padding: 30px 0;
-  margin: 42px 0 24px;
-}
-.window-content .journal-now .eyebrow {
-  margin-top: 7px;
-  color: #88556a;
-}
-.window-content .journal-now h3 {
-  margin: 0 0 12px;
-  font: 400 28px var(--font-serif);
-}
-.window-content .journal-now p {
-  margin: 0;
-  max-width: 64ch;
-}
-.journal-tabs {
-  display: flex;
-  gap: 10px;
-  margin: 24px 0 36px;
-}
-.journal-tabs button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-height: 56px;
-  padding: 14px 12px;
-  background: none;
-  border: 1px solid #6a536338;
-  color: #685260;
-  border-radius: 5px;
-  text-align: left;
-  font-size: 12px;
-}
-.journal-tabs button small {
-  font: 12px var(--font-mono);
-}
-.journal-tabs button[aria-pressed="true"] {
-  background: #563d50;
-  color: #f8ebed;
-  border-color: #563d50;
-}
-.journal-chapter {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 22px;
-  margin: 30px 0;
-}
-.journal-margin {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  font-size: 12px;
-  color: #8b7481;
-  padding-top: 7px;
-}
-.window-content .journal-margin strong {
-  color: #bea5b1;
-  font: italic 52px var(--font-serif);
-}
-.window-content .journal-chapter h3 {
-  font: 400 clamp(27px, 3vw, 38px)/1.15 var(--font-serif);
-  margin: 0 0 22px;
-  max-width: 26ch;
-}
-.window-content .journal-chapter p {
-  max-width: 62ch;
-  font-size: 15px;
-}
-.journal-book {
-  display: grid;
-  grid-template-columns: 86px 1fr;
-  gap: 25px;
-  padding: 24px 0;
-  margin-top: 25px;
-  border-top: 1px solid #6a536338;
-}
-.journal-book > img {
-  width: 86px;
-  height: auto;
-  box-shadow: 3px 4px 7px #221d2825;
-}
-.journal-book > span {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 7px;
-}
-.journal-book small {
-  letter-spacing: 0.13em;
-  font-size: 12px;
-  color: #946d7f;
-}
-.window-content .journal-book strong {
-  font: 400 24px var(--font-serif);
-}
-.journal-book span > span {
-  font-size: 12px;
-}
-.window-content .journal-book p {
-  font-size: 12px;
-  line-height: 1.7;
-  margin: 0;
-}
-.about-journal :focus-visible {
-  outline: 2px solid #8a5068;
-  outline-offset: 4px;
-}
-@media (max-width: 650px) {
-  .journal-intro {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .window-content .journal-intro h2 {
-    font-size: clamp(42px, 11vw, 58px);
-  }
-  .journal-photo {
-    width: 92%;
-    margin: 0 auto;
-  }
-  .journal-photo img {
-    aspect-ratio: 1.3;
-  }
-  .journal-now {
-    grid-template-columns: 1fr;
-    gap: 6px;
-    margin-top: 36px;
-  }
-  .journal-tabs {
-    flex-direction: column;
-    gap: 7px;
-  }
-  .journal-tabs button {
-    min-height: 48px;
-  }
-  .journal-chapter {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .journal-margin {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .window-content .journal-margin strong {
-    font-size: 30px;
-  }
-  .journal-book {
-    gap: 18px;
   }
 }
 
@@ -933,74 +228,6 @@
   max-width: 56ch;
   margin: 12px 0 0;
 }
-.reading-sheet[data-section="music"] .detail-continuation {
-  margin: 0;
-  padding: 30px clamp(24px, 4vw, 54px);
-}
-.reading-sheet[data-section="about"] .detail-continuation p {
-  color: #706470;
-}
-.reading-sheet[data-section="about"],
-.reading-sheet[data-section="music"] {
-  color-scheme: light;
-}
-
-/* A professional archive, with the current role taking the first position. */
-.reading-sheet[data-section="journey"] {
-  background: #20242a;
-  --ink: #ece9df;
-  --muted: #bec1bb;
-  --line: #d7d4bd28;
-}
-.reading-sheet[data-section="journey"] h2 {
-  font:
-    500 clamp(38px, 5vw, 62px)/1.04 var(--font-bricolage),
-    sans-serif;
-}
-.reading-sheet[data-section="journey"] .experience-selector {
-  border-radius: 4px;
-}
-.reading-sheet[data-section="journey"] .experience-selector button {
-  border-radius: 4px;
-  min-height: 44px;
-}
-.reading-sheet[data-section="journey"]
-  .experience-selector
-  button[aria-pressed="true"] {
-  background: #dac4a1;
-  color: #252724;
-}
-.reading-sheet[data-section="journey"] .experience-feature {
-  border-radius: 5px;
-  border-color: #c2af863d;
-  background: linear-gradient(120deg, #cebfa810, transparent), #282d32;
-  border-left: 3px solid #ceb793;
-}
-.reading-sheet[data-section="journey"] .experience-feature h3 {
-  font: 400 clamp(28px, 4vw, 44px) var(--font-serif);
-  color: #f1e4d1;
-}
-.reading-sheet[data-section="journey"] .experience-dimensions > div {
-  border-radius: 3px;
-}
-
-/* Field notes and the unwritten page keep the quiet texture of a notebook. */
-.reading-sheet[data-section="notes"] {
-  background: #ece7dc;
-  color: #33412f;
-  --ink: #33412f;
-  --muted: #5f6a59;
-  --line: #43523735;
-  color-scheme: light;
-}
-.reading-sheet[data-section="writing"] {
-  background: #ece4d6;
-  color: #4a3931;
-  --ink: #4a3931;
-  --muted: #756456;
-  --line: #76604a35;
-  color-scheme: light;
-}
 .reading-sheet:is([data-section="notes"], [data-section="writing"]) h2 {
   font: 400 clamp(38px, 5vw, 66px)/1.05 var(--font-serif);
   max-width: 16ch;
@@ -1023,110 +250,10 @@
   border-radius: 4px;
   border: 0;
 }
-.reading-sheet[data-section="notes"] .destination-list > div {
-  border-radius: 2px;
-  border-color: #63735055;
-  background: #f2f2e94d;
-  border-left: 3px solid #6f825b;
-}
-.reading-sheet[data-section="notes"] .destination-list strong {
-  font: 400 30px var(--font-serif);
-}
-.reading-sheet[data-section="notes"] .destination-list :is(span, small) {
-  color: #687257;
-}
-.reading-sheet[data-section="writing"] .unwritten-page {
-  background: #f8f1e5;
-  border-radius: 2px;
-  border: 1px solid #b7a993;
-  box-shadow: 5px 5px 0 #d9cebd;
-}
-.reading-sheet[data-section="writing"] .unwritten-page h3 {
-  color: #6b5140;
-  font: italic 400 36px/1.15 var(--font-serif);
-}
-.reading-sheet[data-section="writing"] .unwritten-page > span {
-  color: #94715d;
-}
-.reading-sheet[data-section="writing"] .writing-topics > span {
-  color: #755b47;
-  background: none;
-  border: 1px solid #96754d40;
-  border-radius: 3px;
-}
-
-/* Correspondence stays dark, with paper inside the actual message composer. */
-.reading-sheet:is([data-section="contact"], [data-section="socials"]) {
-  background: #29232c;
-  --ink: #eee3e8;
-  --muted: #c6b7c1;
-  --line: #d4bcd02e;
-}
-.reading-sheet:is([data-section="contact"], [data-section="socials"]) h2 {
-  font: 400 clamp(38px, 5vw, 66px)/1.06 var(--font-serif);
-}
-.reading-sheet:is([data-section="contact"], [data-section="socials"])
-  .connection-links
-  > a {
-  border-radius: 5px;
-  border-color: #c9acc438;
-  background: #a2869f0b;
-}
-.reading-sheet[data-section="contact"] .contact-composer {
-  background: #ede5e1;
-  color: #44383d;
-  border: 0;
-  border-radius: 5px;
-}
-.reading-sheet[data-section="contact"] .contact-composer :is(p, label) {
-  color: #6e5a65;
-}
-.reading-sheet[data-section="contact"] .contact-composer :is(input, textarea) {
-  color: #382e35;
-  background: #fffaf360;
-  border-color: #90778855;
-  border-radius: 4px;
-  color-scheme: light;
-}
-.reading-sheet[data-section="contact"] .contact-composer .app-action {
-  background: #574254;
-  color: #f8eaf2;
-  border-radius: 4px;
-}
-.reading-sheet[data-section="contact"] .contact-composer .app-list-link {
-  color: #62405a;
-}
-.reading-sheet[data-section="skills"] {
-  background: #182323;
-  --muted: #b0c8bf;
-}
-.reading-sheet[data-section="skills"] .toolkit-group {
-  border-left: 2px solid #9dbfa7;
-  padding-left: 24px;
-}
-.reading-sheet[data-section="skills"] .toolkit-group span {
-  font-family: var(--font-mono);
-  border-radius: 4px;
-  color: #c5d9c7;
-}
 @media (prefers-reduced-motion: reduce) {
   .detail-continuation button span {
     transition: none;
   }
-}
-.reading-sheet[data-section="writing"] .unwritten-page p {
-  color: #756456;
-  font-size: 13px;
-}
-.reading-sheet[data-section="writing"] .unwritten-page i {
-  background: #b4a28c40;
-}
-.reading-sheet[data-section="notes"] .destination-list > div {
-  padding-inline: 16px;
-}
-.reading-sheet .connections-room > .app-lead,
-.reading-sheet .writing-room > .app-lead {
-  max-width: 55ch;
 }
 .reading-view .window-content .eyebrow {
   font-size: 12px;
@@ -1134,120 +261,9 @@
   letter-spacing: 1.4px;
 }
 @media (max-width: 650px) {
-  .reading-sheet .experience-story > .app-lead,
-  .reading-sheet .connections-room > .app-lead,
-  .reading-sheet .writing-room > .app-lead {
+  .reading-sheet .experience-story > .app-lead{
     font-size: 16px;
   }
-}
-
-/* Work is a readable dossier, with the original context restored. */
-.experience-feature .work-setting {
-  margin: 25px 0 0;
-  padding-top: 20px;
-  border-top: 1px solid #d5c29e30;
-  color: #c9b995;
-  font-size: 12px;
-  letter-spacing: 0.04em;
-}
-.work-chapters {
-  display: grid;
-  gap: 25px;
-  margin: 25px 0;
-}
-.work-chapters section {
-  display: grid;
-  grid-template-columns: 25px minmax(0, 1fr);
-  gap: 16px;
-}
-.work-chapter-number {
-  color: #c1a67d;
-  font-size: 12px;
-  padding-top: 6px;
-}
-.experience-feature .work-chapters h4 {
-  font:
-    500 20px/1.35 var(--font-bricolage),
-    sans-serif;
-  color: #f1e4d1;
-  margin: 0 0 9px;
-}
-.experience-feature .work-chapters p {
-  font-size: 14px;
-  line-height: 1.85;
-  margin: 0;
-  max-width: 65ch;
-  color: #c6c8cb;
-}
-.work-photo {
-  margin: 28px 0;
-  max-width: 700px;
-}
-.work-photo img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 3px;
-}
-.work-photo figcaption {
-  font-size: 12px;
-  color: #b4b5b7;
-  margin-top: 10px;
-  line-height: 1.6;
-}
-.work-project-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  min-height: 48px;
-  padding: 12px 0;
-  color: #e4cda8;
-  border-block: 1px solid #d5c29e30;
-  font-size: 13px;
-}
-.work-project-link:hover {
-  color: #fff2d9;
-}
-.work-project-link:focus-visible {
-  outline: 2px solid #e4cda8;
-  outline-offset: 5px;
-}
-.journal-principle {
-  margin: 30px 0;
-  padding: 24px 0 24px 22px;
-  border-left: 2px solid #a15c51;
-}
-.journal-chapter .journal-principle p {
-  font: 400 27px/1.3 var(--font-serif);
-  color: #603d39;
-  margin: 12px 0;
-}
-.journal-principle footer {
-  font-size: 12px;
-  line-height: 1.8;
-  color: #735e57;
-  max-width: 45ch;
-}
-@media (max-width: 600px) {
-  .work-chapters section {
-    grid-template-columns: 18px minmax(0, 1fr);
-    gap: 10px;
-  }
-  .experience-feature .work-chapters h4 {
-    font-size: 19px;
-  }
-  .experience-feature .work-chapters p {
-    font-size: 14px;
-  }
-  .journal-chapter .journal-principle p {
-    font-size: 24px;
-  }
-}
-
-/* A single search result gets the room needed to read its story. */
-.project-grid > .app-project:only-child {
-  grid-column: 1 / -1;
 }
 .room-sound-controls .sensory-heading p,
 .room-sound-controls .sensory-option small,
@@ -1324,21 +340,6 @@
 .foundry-links a {
   color: #e3d7c5;
   text-underline-offset: 5px;
-}
-.project-collection-picker > summary {
-  min-height: 44px;
-  padding: 12px 2px;
-  color: #e3d7c5;
-  cursor: pointer;
-  font-size: 14px;
-}
-.project-collection-picker > summary:focus-visible {
-  outline: 2px solid #d6b18f;
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-.project-collection-picker[open] {
-  padding-bottom: 12px;
 }
 .foundry-desk {
   border: 1px solid #514a42;
@@ -1477,18 +478,6 @@
   position: relative;
   z-index: 1;
 }
-.foundry-archive-heading {
-  padding-top: 46px;
-  scroll-margin-top: 20px;
-}
-.window-content .foundry-archive-heading h3 {
-  font: 400 30px var(--font-serif);
-  margin: 0 0 10px;
-}
-.window-content .foundry-archive-heading p {
-  font-size: 14px;
-  color: #b9b5ac;
-}
 @media (max-width: 700px) {
   .foundry-heading {
     display: block;
@@ -1555,15 +544,6 @@
 /* Short laptops and narrow phones: tighten vertical room spacing.
    Wide short windows keep a readable side inset; type size stays put. */
 @media (max-width: 700px), (max-height: 800px) {
-  .reading-sheet .listening-intro {
-    gap: 20px;
-    padding-bottom: 16px;
-  }
-  .reading-sheet .window-content .listening-intro h2,
-  .reading-sheet .window-content .journal-intro h2 {
-    margin-top: 12px;
-    margin-bottom: 12px;
-  }
   .reading-sheet .foundry-heading {
     gap: 16px;
     margin-bottom: 16px;
@@ -1571,16 +551,6 @@
   .reading-sheet .detail-continuation {
     margin-top: 28px;
     padding-top: 16px;
-  }
-  .reading-sheet .journal-intro {
-    gap: 20px;
-  }
-  .reading-sheet .entertainment-library .music-tastes {
-    margin-top: 28px;
-    gap: 20px;
-  }
-  .reading-sheet .foundry-archive-heading {
-    padding-top: 28px;
   }
   .reading-sheet .sheet-bar {
     min-height: 52px;
@@ -1592,16 +562,8 @@
     padding: 4px 12px 4px 20px;
   }
   .reading-sheet .window-content,
-  .reading-sheet[data-section="work"] .window-content,
-  .reading-sheet .entertainment-library {
+  .reading-sheet[data-section="work"] .window-content{
     padding: 20px 20px 28px;
-  }
-  .reading-sheet[data-section="music"] .window-content {
-    padding: 0;
-  }
-  .reading-sheet[data-section="music"] .detail-continuation {
-    margin: 0;
-    padding: 20px 20px 24px;
   }
 }
 @media (min-width: 701px) and (max-height: 800px) {
@@ -1609,15 +571,7 @@
     padding: 4px 16px 4px clamp(28px, 4vw, 48px);
   }
   .reading-sheet .window-content,
-  .reading-sheet[data-section="work"] .window-content,
-  .reading-sheet .entertainment-library {
-    padding: 20px clamp(28px, 4vw, 48px) 24px;
-  }
-  .reading-sheet[data-section="music"] .window-content {
-    padding: 0;
-  }
-  .reading-sheet[data-section="music"] .detail-continuation {
-    margin: 0;
+  .reading-sheet[data-section="work"] .window-content{
     padding: 20px clamp(28px, 4vw, 48px) 24px;
   }
 }

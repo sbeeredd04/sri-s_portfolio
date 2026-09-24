@@ -1,1 +1,351 @@
-/* contact */
+/* Say hello: correspondence. A letter on laid paper, typed, sealed, stamped. */
+.reading-sheet[data-section="contact"],
+.correspondence {
+  --paper: #f3eee4;
+  --ink: #1d2638;
+  --muted: #4d566a;
+  --line: #1d263824;
+  --accent: #2d4a7a;
+  --wax: #a3302a;
+  --sheet: #fbf8f1;
+  color-scheme: light;
+}
+.reading-sheet[data-section="contact"] {
+  background: var(--paper);
+  color: var(--ink);
+}
+.reading-sheet[data-section="contact"] .sheet-bar {
+  border-color: var(--line);
+}
+.reading-sheet[data-section="contact"] .sheet-bar :is(button, a, span) {
+  color: var(--ink);
+}
+.reading-sheet[data-section="contact"] .sheet-close {
+  background: #1d263812;
+}
+.reading-view .correspondence {
+  background: var(--paper);
+  color: var(--ink);
+  padding: clamp(20px, 4vw, 40px);
+  border-radius: 6px;
+}
+.window-content .correspondence .eyebrow {
+  color: var(--accent);
+}
+.window-content .correspondence h2 {
+  font: 400 clamp(46px, 6.4vw, 82px)/1 var(--font-serif);
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 12px 0 18px;
+}
+.window-content .correspondence .app-lead {
+  color: var(--muted);
+  font-size: 18px;
+  max-width: 46ch;
+}
+
+/* The sheet, with a typed note clipped beside it */
+.letter-desk {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: 48px;
+  align-items: start;
+}
+.letter-margin {
+  margin-top: clamp(96px, 12vw, 150px);
+  padding: 22px 22px 24px;
+  background: #fffdf7;
+  box-shadow: 0 12px 24px -16px #1d263859;
+  transform: rotate(1.5deg);
+  border-top: 3px solid var(--accent);
+  max-width: 300px;
+}
+.window-content .letter-margin h3 {
+  font: 700 14px/1.4 var(--font-courier);
+  color: var(--ink);
+  margin: 0 0 10px;
+  letter-spacing: 0;
+}
+.window-content .letter-margin p {
+  font: 400 13px/1.65 var(--font-courier);
+  color: var(--muted);
+  margin: 0;
+}
+.correspondence .letter {
+  margin: clamp(36px, 5vw, 56px) 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  perspective: 1400px;
+}
+.letter-sheet {
+  position: relative;
+  max-width: 780px;
+  padding: clamp(28px, 5vw, 60px) clamp(22px, 5vw, 64px) clamp(28px, 4vw, 44px);
+  color: var(--ink);
+  background-color: var(--sheet);
+  background-image:
+    repeating-linear-gradient(90deg, #1d263807 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(90deg, transparent 0 120px, #1d26380c 120px 121px);
+  box-shadow:
+    0 1px 0 #1d263814,
+    0 30px 50px -30px #1d263859;
+  transform-origin: 50% 0;
+}
+.letter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 20px;
+}
+.correspondence .letter-date {
+  font: 400 15px/1.5 var(--font-courier);
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+.letter-stamp {
+  flex: none;
+  width: 70px;
+  height: 84px;
+  display: grid;
+  place-content: center;
+  gap: 4px;
+  text-align: center;
+  background: var(--accent);
+  color: #f3eee4;
+  outline: 4px dotted var(--sheet);
+  outline-offset: -4px;
+  box-shadow: 0 0 0 1px #1d263833;
+  transform: rotate(4deg);
+}
+.letter-stamp b {
+  font:
+    700 22px/1 var(--font-bricolage),
+    var(--font-sans);
+  letter-spacing: -0.06em;
+}
+.letter-stamp small {
+  font: 400 12px/1 var(--font-courier);
+}
+.correspondence .letter-salutation {
+  font: italic 400 clamp(30px, 3.6vw, 40px)/1.2 var(--font-serif);
+  color: var(--ink);
+  margin: 28px 0 10px;
+}
+.correspondence .letter label {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.correspondence .letter label > span {
+  font: 500 12px/1.4 var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.correspondence .letter-body > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.correspondence .letter :is(input, textarea) {
+  font: 400 17px/32px var(--font-courier);
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0 2px;
+  caret-color: var(--wax);
+}
+.correspondence .letter textarea {
+  min-height: 192px;
+  background-image: repeating-linear-gradient(
+    transparent 0 31px,
+    #2d4a7a33 31px 32px
+  );
+  background-attachment: local;
+  resize: vertical;
+}
+.correspondence .letter input {
+  height: 40px;
+  border-bottom: 1px solid #2d4a7a55;
+}
+.correspondence .letter ::placeholder {
+  color: #5d667a;
+  opacity: 1;
+}
+.correspondence .letter :is(input, textarea):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+.correspondence .letter-signoff {
+  font: italic 400 24px/1.3 var(--font-serif);
+  color: var(--ink);
+  margin: 26px 0 8px;
+}
+.correspondence .contact-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 32px;
+}
+.correspondence .contact-submit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  margin-top: 34px;
+}
+.letter-send {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 24px;
+  background: var(--accent);
+  color: #fbf8f1;
+  border-radius: 2px;
+  font: 600 14px/1 var(--font-sans);
+  letter-spacing: 0.02em;
+  transition: background 0.2s;
+}
+.letter-send:hover {
+  background: #213a62;
+  color: #fbf8f1;
+}
+.letter-send:disabled {
+  background: #3d5a88;
+  cursor: default;
+}
+.letter-send:focus-visible,
+.letter-alt:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+.window-content .correspondence .letter-alt,
+.letter-alt {
+  color: var(--accent);
+  font-size: 14px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.correspondence .contact-status {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.letter-postmark {
+  position: absolute;
+  top: clamp(18px, 4vw, 42px);
+  right: clamp(84px, 13vw, 130px);
+  width: 138px;
+  height: 138px;
+  border-radius: 50%;
+  border: 2px solid var(--wax);
+  box-shadow:
+    inset 0 0 0 5px var(--sheet),
+    inset 0 0 0 6px var(--wax);
+  color: var(--wax);
+  display: grid;
+  place-content: center;
+  gap: 3px;
+  text-align: center;
+  font: 700 12px/1.25 var(--font-courier);
+  transform: rotate(-14deg);
+  mix-blend-mode: multiply;
+  animation: postmark 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) 0.55s both;
+}
+.letter-postmark b {
+  font-size: 12px;
+  max-width: 11ch;
+  border-block: 1px solid currentColor;
+  padding: 3px 0;
+}
+.letter[data-status="sent"] .letter-sheet {
+  animation: letter-fold 0.6s ease-in-out;
+}
+.letter[data-status="sent"] .letter-sheet::after {
+  /* the creases a folded letter keeps */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(#1d263814, #1d263814) 0 33.3% / 100% 1px no-repeat,
+    linear-gradient(#1d263814, #1d263814) 0 66.6% / 100% 1px no-repeat;
+}
+@keyframes letter-fold {
+  0% {
+    transform: none;
+  }
+  40% {
+    transform: rotateX(16deg) scaleY(0.94);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes postmark {
+  from {
+    opacity: 0;
+    transform: rotate(-14deg) scale(1.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-14deg) scale(1);
+  }
+}
+.window-content .correspondence .letter-elsewhere {
+  margin: 28px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.window-content .correspondence .letter-elsewhere a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 960px) {
+  .letter-desk {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .letter-margin {
+    margin-top: 0;
+    transform: none;
+    max-width: none;
+  }
+}
+@media (max-width: 600px) {
+  .correspondence .letter-date {
+    font-size: 13px;
+  }
+  .correspondence .contact-fields {
+    grid-template-columns: 1fr;
+  }
+  .letter-stamp {
+    width: 64px;
+    height: 72px;
+    transform: rotate(3deg) translateX(6px);
+  }
+  .letter-postmark {
+    width: 112px;
+    height: 112px;
+    right: 70px;
+  }
+  .window-content .correspondence .app-lead {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .letter[data-status="sent"] .letter-sheet,
+  .letter-postmark {
+    animation: none;
+  }
+}

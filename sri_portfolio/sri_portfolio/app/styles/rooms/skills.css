@@ -1,1 +1,283 @@
-/* skills */
+/* Skills: a pegboard tool wall. Kraft board, graphite outlines, and a tray
+   that shows where each tool was actually used. */
+.reading-sheet[data-section="skills"],
+.reading-view #skills {
+  --paper: #c9b28e;
+  --ink: #221f1a;
+  --muted: #4a4135;
+  --line: #221f1a38;
+  --accent: #221f1a;
+  --board: #c9b28e;
+  --hole: #8f7757;
+  --tag: #f4ecdd;
+  background: var(--paper);
+  color: var(--ink);
+  color-scheme: light;
+}
+.reading-view #skills {
+  padding-inline: 24px;
+}
+.pegboard-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px 48px;
+  align-items: end;
+  margin-bottom: 36px;
+}
+.pegboard-intro .eyebrow {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+.window-content .pegboard-intro h2 {
+  font:
+    600 clamp(40px, 5.4vw, 64px) / 1 var(--font-bricolage),
+    var(--font-sans);
+  letter-spacing: -0.05em;
+  color: var(--ink);
+  margin: 0;
+}
+.window-content .pegboard-intro .app-lead {
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 40ch;
+  margin: 0;
+}
+.pegboard-boards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(260px, 320px);
+  gap: 20px;
+  align-items: start;
+}
+.peg-panel {
+  position: relative;
+  padding: 26px 24px 28px;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background-color: var(--board);
+  background-image: radial-gradient(circle, var(--hole) 2.4px, transparent 3px);
+  background-size: 22px 22px;
+  background-position: 11px 11px;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.window-content .peg-panel h3 {
+  display: inline-block;
+  font:
+    600 18px/1.2 var(--font-bricolage),
+    var(--font-sans);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  background: var(--tag);
+  padding: 8px 12px;
+  margin: 0 0 22px;
+  border: 1.5px solid var(--ink);
+}
+.peg-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px 10px;
+}
+.peg-panel li {
+  position: relative;
+  padding-top: 10px;
+}
+/* The peg each tag hangs from. */
+.peg-panel li::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 1px 0 #ffffff55 inset;
+}
+.peg-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 12px;
+  font: 500 13px/1 var(--font-mono);
+  color: var(--ink);
+  background: var(--tag);
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+  transform-origin: 50% -10px;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+button.peg-tag:hover {
+  transform: rotate(-3deg);
+}
+.peg-tag small {
+  font: 600 12px/1 var(--font-mono);
+  padding: 4px 6px;
+  background: var(--ink);
+  color: var(--tag);
+  border-radius: 2px;
+}
+.peg-tag[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--tag);
+  animation: peg-swing 0.7s ease-out;
+}
+.peg-tag[aria-pressed="true"] small {
+  background: var(--tag);
+  color: var(--ink);
+}
+.peg-tag[data-quiet] {
+  border-style: dashed;
+  background: #f4ecddb3;
+}
+.peg-tag:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+.window-content .peg-note {
+  margin: 20px 0 0;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--tag);
+  display: inline-block;
+  padding: 6px 10px;
+}
+@keyframes peg-swing {
+  0% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(5deg);
+  }
+  60% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+/* The tray: where the chosen tool went. */
+.peg-tray {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  position: sticky;
+  top: 96px;
+  padding: 24px;
+  background: var(--ink);
+  color: var(--tag);
+  border-radius: 3px;
+}
+.peg-tray-count {
+  display: block;
+  font: 500 72px/0.9 var(--font-mono);
+  letter-spacing: -0.06em;
+}
+.window-content .peg-tray p {
+  margin: 8px 0 18px;
+  font-size: 15px;
+  color: #e6dccb;
+}
+.window-content .peg-tray p strong {
+  color: var(--tag);
+}
+.peg-tray ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  border-top: 1px solid #f4ecdd33;
+}
+.peg-tray li a {
+  display: grid;
+  gap: 2px;
+  padding: 10px 0;
+  min-height: 44px;
+  border-bottom: 1px solid #f4ecdd26;
+  color: var(--tag);
+}
+.peg-tray li a span {
+  font-weight: 600;
+  font-size: 15px;
+}
+.peg-tray li a small {
+  font: 12px/1.4 var(--font-mono);
+  color: #d9ceb9;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.peg-tray li a:hover span {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.pegboard .peg-tray-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  font: 500 13px/1 var(--font-mono);
+  background: var(--board);
+  color: var(--ink);
+  border-radius: 2px;
+}
+.pegboard .peg-tray-all:hover {
+  color: var(--ink);
+  background: var(--tag);
+}
+.peg-tray a:focus-visible {
+  outline: 2px solid var(--tag);
+  outline-offset: 3px;
+}
+@media (max-width: 1000px) {
+  .pegboard-boards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .peg-tray {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    position: relative;
+    top: 0;
+    order: 99;
+  }
+}
+@media (max-width: 700px) {
+  .pegboard-intro,
+  .pegboard-boards {
+    grid-template-columns: 1fr;
+  }
+  /* On a phone the tray hangs right under the panel you picked from. */
+  .peg-tray {
+    order: var(--tray-order, 99);
+  }
+  .peg-panel {
+    padding: 22px 18px 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .peg-tag,
+  .peg-tag[aria-pressed="true"] {
+    animation: none;
+    transition: none;
+  }
+  button.peg-tag:hover {
+    transform: none;
+  }
+}
+
+/* In-world sheet bar on kraft */
+.reading-sheet[data-section="skills"] .sheet-bar {
+  border-color: var(--line);
+}
+.reading-sheet[data-section="skills"] .sheet-bar button {
+  color: var(--ink);
+}
+.reading-sheet[data-section="skills"] .sheet-close {
+  background: #221f1a1a;
+}

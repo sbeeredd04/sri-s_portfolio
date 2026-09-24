@@ -1,1 +1,362 @@
-/* directory */
+/* The directory: a lobby board of key plates. Each plate is cut from its
+   room's own paper, ink and typeface; focusing a door tints the lobby. */
+.room-directory {
+  --paper: #161a1b;
+  --ink: #ece8de;
+  --muted: #b3b8b0;
+  --line: #d9dccf26;
+  --accent: #e3c68a;
+  --lobby: var(--paper);
+  min-height: 100svh;
+  background: var(--lobby);
+  color: var(--ink);
+  transition: background-color 0.5s ease;
+}
+.room-directory [data-room="work"] {
+  --door-paper: #1d1c1a;
+  --door-ink: #e8c766;
+  --door-font: var(--font-mono);
+}
+.room-directory [data-room="journey"] {
+  --door-paper: #e7e1d3;
+  --door-ink: #b3261e;
+  --door-font: var(--font-serif);
+}
+.room-directory [data-room="about"] {
+  --door-paper: #eee9e6;
+  --door-ink: #5a3a50;
+  --door-font: var(--font-fraunces), var(--font-serif);
+}
+.room-directory [data-room="skills"] {
+  --door-paper: #c9b28e;
+  --door-ink: #221f1a;
+  --door-font: var(--font-mono);
+}
+.room-directory [data-room="music"] {
+  --door-paper: #ebe4d6;
+  --door-ink: #9a3b2a;
+  --door-font: var(--font-shippori), var(--font-serif);
+}
+.room-directory [data-room="notes"] {
+  --door-paper: #dfe4d2;
+  --door-ink: #1b291f;
+  --door-font: var(--font-caveat), var(--font-serif);
+}
+.room-directory [data-room="writing"] {
+  --door-paper: #f4f1ea;
+  --door-ink: #5e6b50;
+  --door-font: var(--font-instrument), var(--font-serif);
+}
+.room-directory [data-room="socials"] {
+  --door-paper: #b98f63;
+  --door-ink: #2b1d10;
+  --door-font: var(--font-mono);
+}
+.room-directory [data-room="contact"] {
+  --door-paper: #f3eee4;
+  --door-ink: #2d4a7a;
+  --door-font: var(--font-courier), var(--font-mono);
+}
+.room-directory [data-room="discoveries"] {
+  --door-paper: #0f1a2b;
+  --door-ink: #9fe6a0;
+  --door-font: var(--font-mono);
+}
+/* The lobby takes a little of the focused room's paper. */
+.room-directory:has([data-room="work"] a:is(:hover, :focus-visible)) {
+  --lobby: #1f1e1a;
+}
+.room-directory:has([data-room="journey"] a:is(:hover, :focus-visible)) {
+  --lobby: #242320;
+}
+.room-directory:has([data-room="about"] a:is(:hover, :focus-visible)) {
+  --lobby: #231c22;
+}
+.room-directory:has([data-room="skills"] a:is(:hover, :focus-visible)) {
+  --lobby: #25211a;
+}
+.room-directory:has([data-room="music"] a:is(:hover, :focus-visible)) {
+  --lobby: #261c19;
+}
+.room-directory:has([data-room="notes"] a:is(:hover, :focus-visible)) {
+  --lobby: #18221b;
+}
+.room-directory:has([data-room="writing"] a:is(:hover, :focus-visible)) {
+  --lobby: #1c201a;
+}
+.room-directory:has([data-room="socials"] a:is(:hover, :focus-visible)) {
+  --lobby: #261d15;
+}
+.room-directory:has([data-room="contact"] a:is(:hover, :focus-visible)) {
+  --lobby: #161d2a;
+}
+.room-directory:has([data-room="discoveries"] a:is(:hover, :focus-visible)) {
+  --lobby: #0f1824;
+}
+.room-directory .site-header {
+  background: var(--lobby);
+  transition: background-color 0.5s ease;
+}
+
+.room-directory main,
+.room-directory > footer {
+  width: min(var(--shell-max), 100%);
+  margin: 0 auto;
+  padding: 0 var(--shell-pad);
+}
+.directory-intro {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 16px 48px;
+  align-items: end;
+  padding: clamp(40px, 7vw, 88px) 0 clamp(40px, 6vw, 72px);
+}
+.directory-intro > .eyebrow {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+}
+.directory-intro h1 {
+  margin: 0;
+  font: 500 clamp(52px, 7.4vw, 96px) / 0.98 var(--font-bricolage),
+    var(--font-sans);
+  letter-spacing: -0.06em;
+}
+.directory-intro h1 em {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--accent);
+}
+.directory-intro p {
+  margin: 0 0 8px;
+  max-width: 34ch;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.directory-chapter {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+.directory-chapter > span {
+  font: 500 12px/1 var(--font-mono);
+  color: var(--accent);
+}
+.directory-chapter h2 {
+  margin: 0;
+  font: 500 12px/1.4 var(--font-sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.room-directory ol {
+  list-style: none;
+  margin: 0 0 56px;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.room-directory li {
+  border-bottom: 1px solid var(--line);
+}
+.room-directory li a {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr) auto 28px;
+  align-items: center;
+  gap: 28px;
+  padding: 18px 4px;
+  color: inherit;
+  text-decoration: none;
+}
+.room-directory li a:hover {
+  color: inherit;
+}
+.room-directory li a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* The key plate */
+.door-plate {
+  position: relative;
+  display: block;
+  width: 132px;
+  height: 80px;
+  border-radius: 6px;
+  background: var(--door-paper);
+  color: var(--door-ink);
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px #0000001a,
+    0 1px 0 #ffffff14;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.35s ease;
+}
+.door-plate > span {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  z-index: 1;
+  font: 400 18px/1 var(--door-font);
+}
+.door-plate svg {
+  position: absolute;
+  right: -6px;
+  bottom: -4px;
+  width: 104px;
+  height: 62px;
+  opacity: 0.75;
+  transform: translateX(14px);
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.3s ease;
+}
+.door-plate::after {
+  /* the key-ring hole */
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lobby);
+  box-shadow: inset 0 1px 1px #0000004d;
+  transition: background-color 0.5s ease;
+}
+.room-directory li a:is(:hover, :focus-visible) .door-plate {
+  transform: rotate(-2.5deg) translateY(-2px);
+  box-shadow:
+    inset 0 0 0 1px #0000001a,
+    0 12px 26px #00000059;
+}
+.room-directory li a:is(:hover, :focus-visible) .door-plate svg {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.door-text {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.room-directory li strong {
+  font: 450 clamp(24px, 3vw, 36px) / 1.1 var(--font-bricolage),
+    var(--font-sans);
+  letter-spacing: -0.04em;
+}
+.door-caption {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 48ch;
+}
+.door-status {
+  grid-column: 3;
+  font: 400 13px/1 var(--font-mono);
+  color: var(--muted);
+  white-space: nowrap;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.door-arrow {
+  grid-column: 4;
+  font-size: 22px;
+  color: var(--muted);
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease;
+}
+.room-directory li a:is(:hover, :focus-visible) .door-arrow {
+  transform: translateX(5px);
+  color: var(--ink);
+}
+
+.room-directory > footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  padding-bottom: 56px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.room-directory > footer a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+
+@media (max-width: 760px) {
+  .directory-intro {
+    grid-template-columns: 1fr;
+  }
+  .room-directory li a {
+    grid-template-columns: 84px minmax(0, 1fr) 20px;
+    gap: 6px 16px;
+    padding: 16px 0;
+  }
+  .door-plate {
+    width: 84px;
+    height: 64px;
+    grid-row: span 2;
+    align-self: start;
+  }
+  .door-plate svg {
+    width: 76px;
+    height: 46px;
+    transform: none;
+    opacity: 0.85;
+  }
+  .door-plate > span {
+    font-size: 15px;
+  }
+  .door-text {
+    grid-column: 2;
+  }
+  .door-status {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+  .door-arrow {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .room-directory li strong {
+    font-size: 22px;
+  }
+  .door-caption {
+    font-size: 14px;
+  }
+  .room-directory > footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-directory,
+  .room-directory .site-header,
+  .door-plate,
+  .door-plate svg,
+  .door-plate::after,
+  .door-arrow {
+    transition: none;
+  }
+  .room-directory li a:is(:hover, :focus-visible) .door-plate {
+    transform: none;
+  }
+}

@@ -13,6 +13,24 @@ export default function WritingRoom() {
     swiped = useRef(false);
   const id = useId(),
     current = fieldnoteShelves[active];
+  const [opening, setOpening] = useState(false);
+  // A note opens like a page turning; reduced motion and new-tab clicks go straight there.
+  function openNote(event) {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
+    event.preventDefault();
+    const href = event.currentTarget.href;
+    setOpening(true);
+    setTimeout(() => window.location.assign(href), 520);
+  }
   function select(index, focus = false) {
     const next = (index + fieldnoteShelves.length) % fieldnoteShelves.length;
     setActive(next);
@@ -34,9 +52,9 @@ export default function WritingRoom() {
     <div className="writing-room fn-index">
       <header className="fn-index-heading">
         <div className="fn-folio">
-          <span>FIELDNOTES / BY SRI</span>
+          <span>FIELDNOTES · BY SRI</span>
           <span>
-            AN OPEN NOTEBOOK <i aria-hidden="true">↙</i>
+            {String(fieldnoteShelves.length).padStart(2, "0")} NOTEBOOKS
           </span>
         </div>
         <div className="fn-intro-grid">
@@ -115,7 +133,7 @@ export default function WritingRoom() {
                 <FieldnoteDoodle kind={shelf.art} />
                 <span className="fn-cover-bottom">
                   <strong>{shelf.title}</strong>
-                  <small>A notebook, opening soon</small>
+                  <small>Opening soon</small>
                 </span>
               </button>
             );
@@ -141,7 +159,8 @@ export default function WritingRoom() {
             <span
               aria-label={`Notebook ${active + 1} of ${fieldnoteShelves.length}`}
             >
-              {String(active + 1).padStart(2, "0")} <i>/</i> 03
+              {String(active + 1).padStart(2, "0")} <i>/</i>{" "}
+              {String(fieldnoteShelves.length).padStart(2, "0")}
             </span>
             <button
               aria-label="Next notebook"
@@ -152,49 +171,39 @@ export default function WritingRoom() {
           </div>
         </div>
       </section>
-      <a className="fn-preview-link" href="/fieldnotes/preview">
-        <span className="fn-preview-mark" aria-hidden="true">
-          ✳
-        </span>
-        <span>
-          <small>BEFORE THE FIRST ENTRY</small>
-          <strong>Explore the reading format.</strong>
-          <span>
-            Images, sketches, evidence. A little less text, a little more
-            meaning.
-          </span>
-          <em>A layout preview — not a published post.</em>
-        </span>
-        <b aria-hidden="true">↗</b>
-      </a>
       <section className="fn-published" aria-labelledby={`${id}-published`}>
-        <div className="fn-published-title">
-          <h3 id={`${id}-published`}>Published notes</h3>
-          <span>{String(publishedFieldnotes.length).padStart(2, "0")}</span>
-        </div>
+        <h3 id={`${id}-published`} className="fn-published-title">
+          {publishedFieldnotes.length ? "Published notes" : "The first page"}
+        </h3>
         {publishedFieldnotes.length ? (
           <ol>
             {publishedFieldnotes.map((note) => (
               <li key={note.slug}>
-                <a href={`/fieldnotes/${note.slug}`}>
+                <a href={`/fieldnotes/${note.slug}`} onClick={openNote}>
                   <span>{note.category}</span>
                   <strong>{note.title}</strong>
                   <p>{note.summary}</p>
-                  <small>{note.publishedAt} ↗</small>
+                  <small>{note.publishedAt}</small>
                 </a>
               </li>
             ))}
           </ol>
         ) : (
-          <div className="fn-empty">
-            <span aria-hidden="true">⌁</span>
-            <div>
-              <p>The first note is still taking shape.</p>
-              <small>
-                Good things need a little room. Come back for the first page.
-              </small>
-            </div>
-          </div>
+          <a className="fn-first" href="/fieldnotes/preview" onClick={openNote}>
+            <span className="fn-first-sketch" aria-hidden="true">
+              <FieldnoteDoodle kind="notice" />
+            </span>
+            <span className="fn-first-copy">
+              <strong>The first note is still taking shape.</strong>
+              <span>
+                Until then, here’s how one will read. Images, sketches,
+                evidence, and a little less text.
+              </span>
+              <em>
+                See the reading format <span aria-hidden="true">→</span>
+              </em>
+            </span>
+          </a>
         )}
       </section>
       <footer className="fn-index-footer">
@@ -204,9 +213,10 @@ export default function WritingRoom() {
           target="_blank"
           rel="noreferrer"
         >
-          Find me on LinkedIn ↗
+          Find me on LinkedIn <span aria-hidden="true">↗</span>
         </a>
       </footer>
+      {opening && <div className="fn-page-turn" aria-hidden="true" />}
     </div>
   );
 }

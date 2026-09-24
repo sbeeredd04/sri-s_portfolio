@@ -1,1 +1,9 @@
-/* writing */
+/* The writing room paper. Index styles live in app/styles/fieldnotes.css,
+   articles in app/styles/fieldnote-article.css. */
+.reading-sheet[data-section="writing"] {
+  --paper: #f4f1ea;
+  --ink: #1f1f1c;
+  --muted: #57564f;
+  --line: #1f1f1c24;
+  --accent: #b23f29;
+}

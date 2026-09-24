@@ -398,3 +398,54 @@
   --paper: #0d1422;
   --ink: #edf3ff;
 }
+
+/* Modal header: room ink on every paper, one line on phones. */
+.reading-sheet .sheet-bar {
+  color: var(--ink);
+  border-color: var(--line);
+  flex-wrap: nowrap;
+}
+.reading-sheet .sheet-bar > span {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.reading-sheet .sheet-bar > div {
+  flex-shrink: 0;
+}
+.reading-sheet .sheet-bar :is(button, .room-page-link) {
+  color: var(--ink);
+}
+.reading-sheet .sheet-bar .sheet-close {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+}
+@media (max-width: 560px) {
+  .reading-sheet .sheet-bar {
+    padding: 8px 10px 8px 18px;
+    gap: 8px;
+  }
+  .reading-sheet .sheet-bar > div {
+    gap: 0;
+  }
+  .reading-sheet .sheet-bar :is(button, .room-page-link) {
+    padding: 8px;
+  }
+  .reading-sheet .sheet-bar .room-sound-controls {
+    margin-right: 0;
+  }
+  .reading-sheet .sheet-bar .room-sound-controls > summary {
+    min-width: 40px;
+    justify-content: center;
+  }
+  .reading-sheet .sheet-bar .room-sound-controls > summary > span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}

@@ -41,7 +41,10 @@ function NoteBlock({ block }) {
           {block.source && (
             <>
               {" "}
-              · <a href={block.source}>Source ↗</a>
+              ·{" "}
+              <a href={block.source}>
+                Source <span aria-hidden="true">↗</span>
+              </a>
             </>
           )}
         </figcaption>
@@ -74,7 +77,10 @@ function NoteBlock({ block }) {
           {block.source && (
             <>
               {" "}
-              · <a href={block.source}>Source ↗</a>
+              ·{" "}
+              <a href={block.source}>
+                Source <span aria-hidden="true">↗</span>
+              </a>
             </>
           )}
         </figcaption>
@@ -127,7 +133,7 @@ export default function FieldnoteArticle({ note }) {
         <div className="fn-article-header">
           <div>
             <p className="fn-kicker">
-              {note.category}
+              FIELDNOTES · {note.category}
               {note.publishedAt && (
                 <>
                   {" "}
@@ -195,6 +201,7 @@ export default function FieldnoteArticle({ note }) {
                   : "Thanks for spending a little time here."}
               </p>
               <a href="/rooms/writing">Back to the writing room</a>
+              <a href="/rooms/contact">Start a conversation</a>
               {note.linkedIn && (
                 <a href={note.linkedIn} target="_blank" rel="noreferrer">
                   Continue the conversation on LinkedIn ↗
@@ -204,11 +211,6 @@ export default function FieldnoteArticle({ note }) {
           </article>
         </div>
       </main>
-      <footer className="fn-colophon">
-        <a href="/">sri.</a>
-        <span>Made with a little curiosity.</span>
-        <a href="/rooms/contact">Say hello</a>
-      </footer>
     </div>
   );
 }

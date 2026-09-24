@@ -7,7 +7,7 @@ import Connections from "./Connections";
 import WritingRoom from "./WritingRoom";
 import ExperienceStory from "./ExperienceStory";
 import OutdoorJournal from "./OutdoorJournal";
-import { toolkit } from "../../json/personal";
+import ToolkitPegboard from "./ToolkitPegboard";
 export default function AppContent({
   id,
   expanded = false,
@@ -24,31 +24,12 @@ export default function AppContent({
       <ProjectLibrary
         initialCollection={collection}
         onLocationChange={onProjectLocationChange}
+        compact={expanded}
       />
     );
   if (id === "journey")
     return <ExperienceStory expanded={expanded} projectPage={projectPage} />;
-  if (id === "skills")
-    return (
-      <div>
-        <p className="eyebrow">TOOLS ARE A WAY TO GET THERE</p>
-        <h2>Whatever the idea needs.</h2>
-        <p className="app-lead">
-          I work across interfaces, AI, and the systems behind them. I like
-          learning the tool that makes the idea possible.
-        </p>
-        {toolkit.map((g) => (
-          <section className="toolkit-group" key={g.title}>
-            <h3>{g.title}</h3>
-            <div>
-              {g.items.map((i) => (
-                <span key={i}>{i}</span>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
-    );
+  if (id === "skills") return <ToolkitPegboard />;
   if (id === "music")
     return (
       <EntertainmentLibrary

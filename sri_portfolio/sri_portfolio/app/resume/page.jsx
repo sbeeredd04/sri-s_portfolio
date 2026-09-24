@@ -66,7 +66,7 @@ export default function ResumePage() {
               <article key={p.id}>
                 <div className="resume-row">
                   <h3>{p.name}</h3>
-                  <a href={`/story#project-${p.id}`}>Project story ↗</a>
+                  <a href={`/rooms/work#project-${p.id}`}>Project story →</a>
                 </div>
                 <p>{p.description}</p>
               </article>
@@ -82,7 +82,7 @@ export default function ResumePage() {
             .filter((p) => p.status)
             .map((p) => (
               <article key={p.id} className="resume-award">
-                <a href={`/story#project-${p.id}`}>{p.name} ↗</a>
+                <a href={`/rooms/work#project-${p.id}`}>{p.name}</a>
                 <span>{p.status}</span>
               </article>
             ))}
