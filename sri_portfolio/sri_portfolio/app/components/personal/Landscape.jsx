@@ -135,13 +135,20 @@ function TexturedGrove({
       trees.map((t, i) => ({
         position: [t.x, renderedSurfaceHeight(biome, t.x, t.z) - 0.05, t.z],
         rotation: i * 2.1,
-        scale: 0.36 * t.s * (0.9 + (i % 4) * 0.05),
+        scale:
+          (biome === "trail" ? 0.85 : 0.36) * t.s * (0.9 + (i % 4) * 0.05),
       })),
     [trees, biome],
   );
   return (
     <ModelInstances
-      src={biome === "studio" ? "/models/tree-small-broadleaf.glb" : "/models/tree-fir.glb"}
+      src={
+        biome === "studio"
+          ? "/models/tree-small-broadleaf.glb"
+          : biome === "trail"
+            ? "/models/tree-pine-dense.glb"
+            : "/models/tree-fir.glb"
+      }
       items={
         biome === "studio"
           ? items.map((item) => ({ ...item, scale: item.scale * 2 }))

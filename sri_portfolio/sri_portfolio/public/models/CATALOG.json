@@ -1,0 +1,2293 @@
+{
+ "models": [
+  {
+   "file": "models/armchair-modern.glb",
+   "name": "Modern Arm Chair 01",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/modern_arm_chair_01",
+   "author": "Vibrant Nordic (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 6000,
+   "lods": [
+    {
+     "node": "armchair-modern",
+     "tris": 6000
+    }
+   ],
+   "source_triangles": 8916,
+   "bytes": 291500,
+   "dimensions_m": {
+    "width_x": 0.82,
+    "depth_z": 0.987,
+    "height_y": 1.023
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "armchair-modern"
+   ],
+   "materials": [
+    {
+     "name": "modern_arm_chair_01_legs",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "modern_arm_chair_01_pillow",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Workspace reading chair / lounge seat beside the desk"
+  },
+  {
+   "file": "models/sofa-leather.glb",
+   "name": "Sofa 02",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/sofa_02",
+   "author": "Kirill Sannikov (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 2728,
+   "lods": [
+    {
+     "node": "sofa-leather",
+     "tris": 2728
+    }
+   ],
+   "source_triangles": 2728,
+   "bytes": 160224,
+   "dimensions_m": {
+    "width_x": 1.807,
+    "depth_z": 0.818,
+    "height_y": 0.709
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "sofa-leather"
+   ],
+   "materials": [
+    {
+     "name": "sofa_02",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Living/listening room sofa"
+  },
+  {
+   "file": "models/throw-pillows.glb",
+   "name": "Throw Pillows 01",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/throw_pillows_01",
+   "author": "Serhii Khromov (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 3000,
+   "lods": [
+    {
+     "node": "throw-pillows",
+     "tris": 3000
+    }
+   ],
+   "source_triangles": 6362,
+   "bytes": 202184,
+   "dimensions_m": {
+    "width_x": 0.94,
+    "depth_z": 0.452,
+    "height_y": 0.45
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "throw-pillows"
+   ],
+   "materials": [
+    {
+     "name": "throw_pillows_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Cushions dressed on the sofa"
+  },
+  {
+   "file": "models/coffee-table-round.glb",
+   "name": "Coffee Table Round 01",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/coffee_table_round_01",
+   "author": "Ulan Cabanilla (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 4000,
+   "lods": [
+    {
+     "node": "coffee-table-round",
+     "tris": 4000
+    }
+   ],
+   "source_triangles": 4044,
+   "bytes": 193780,
+   "dimensions_m": {
+    "width_x": 1.301,
+    "depth_z": 1.301,
+    "height_y": 0.491
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "coffee-table-round"
+   ],
+   "materials": [
+    {
+     "name": "coffee_table_round_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Marble coffee table in front of the sofa"
+  },
+  {
+   "file": "models/desk-metal.glb",
+   "name": "Metal Office Desk",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/metal_office_desk",
+   "author": "Ulan Cabanilla (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 6898,
+   "lods": [
+    {
+     "node": "desk-metal",
+     "tris": 6898
+    }
+   ],
+   "source_triangles": 6898,
+   "bytes": 218852,
+   "dimensions_m": {
+    "width_x": 2.0,
+    "depth_z": 0.947,
+    "height_y": 0.788
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "desk-metal"
+   ],
+   "materials": [
+    {
+     "name": "metal_office_desk",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Workspace desk (hosts DeskHardware monitors/keyboard)"
+  },
+  {
+   "file": "models/desk-wooden.glb",
+   "name": "Wooden Table 01",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/WoodenTable_01",
+   "author": "Ethan Place (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 952,
+   "lods": [
+    {
+     "node": "desk-wooden",
+     "tris": 952
+    }
+   ],
+   "source_triangles": 952,
+   "bytes": 193348,
+   "dimensions_m": {
+    "width_x": 1.8,
+    "depth_z": 0.657,
+    "height_y": 0.549
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "desk-wooden"
+   ],
+   "materials": [
+    {
+     "name": "WoodenTable_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Alternative lighter wooden desk / side table"
+  },
+  {
+   "file": "models/bookshelf.glb",
+   "name": "Wooden Bookshelf Worn",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/wooden_bookshelf_worn",
+   "author": "Ulan Cabanilla (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 6000,
+   "lods": [
+    {
+     "node": "bookshelf",
+     "tris": 6000
+    }
+   ],
+   "source_triangles": 10106,
+   "bytes": 522084,
+   "dimensions_m": {
+    "width_x": 1.374,
+    "depth_z": 0.581,
+    "height_y": 2.063
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "bookshelf"
+   ],
+   "materials": [
+    {
+     "name": "wooden_bookshelf_worn",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Bookshelf against a wall"
+  },
+  {
+   "file": "models/books-set.glb",
+   "name": "Book Encyclopedia Set 01",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/book_encyclopedia_set_01",
+   "author": "John Malcolm (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 6000,
+   "lods": [
+    {
+     "node": "books-set",
+     "tris": 6000
+    }
+   ],
+   "source_triangles": 67282,
+   "bytes": 311536,
+   "dimensions_m": {
+    "width_x": 0.551,
+    "depth_z": 0.164,
+    "height_y": 0.237
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "books-set"
+   ],
+   "materials": [
+    {
+     "name": "book_encyclopedia_set_01_cover",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "book_encyclopedia_set_01_paper",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Row of encyclopedia books to fill the bookshelf"
+  },
+  {
+   "file": "models/desk-lamp.glb",
+   "name": "Desk Lamp Arm 01",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/desk_lamp_arm_01",
+   "author": "Yann Kervran (Rigging), Kuutti Siitonen (Modeling & texturing)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 5999,
+   "lods": [
+    {
+     "node": "desk-lamp",
+     "tris": 5999
+    }
+   ],
+   "source_triangles": 24102,
+   "bytes": 242940,
+   "dimensions_m": {
+    "width_x": 0.202,
+    "depth_z": 0.614,
+    "height_y": 0.893
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "desk-lamp"
+   ],
+   "materials": [
+    {
+     "name": "desk_lamp_arm_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "desk_lamp_arm_01_light",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Articulated desk lamp on the workspace desk"
+  },
+  {
+   "file": "models/ceiling-lamp.glb",
+   "name": "Modern Ceiling Lamp 01",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/modern_ceiling_lamp_01",
+   "author": "James Ray Cock (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 5600,
+   "lods": [
+    {
+     "node": "ceiling-lamp",
+     "tris": 5600
+    }
+   ],
+   "source_triangles": 5602,
+   "bytes": 120368,
+   "dimensions_m": {
+    "width_x": 0.432,
+    "depth_z": 0.432,
+    "height_y": 0.952
+   },
+   "pivot": "top-centre of bounding box at origin (y=0 is the ceiling mount; model hangs to -y)",
+   "nodes": [
+    "ceiling-lamp"
+   ],
+   "materials": [
+    {
+     "name": "modern_ceiling_lamp_01_glass",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "modern_ceiling_lamp_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "modern_ceiling_globe",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Pendant glass lamp over the desk or sofa"
+  },
+  {
+   "file": "models/plant-tall.glb",
+   "name": "Potted Plant 01",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/potted_plant_01",
+   "author": "Rico Cilliers (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 7876,
+   "lods": [
+    {
+     "node": "plant-tall",
+     "tris": 7876
+    }
+   ],
+   "source_triangles": 176094,
+   "bytes": 675804,
+   "dimensions_m": {
+    "width_x": 0.586,
+    "depth_z": 0.634,
+    "height_y": 1.336
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "plant-tall"
+   ],
+   "materials": [
+    {
+     "name": "potted_plant_01_pot",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "potted_plant_01_leaves",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Tall floor plant in terracotta pot"
+  },
+  {
+   "file": "models/plant-leafy.glb",
+   "name": "Potted Plant 02",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/potted_plant_02",
+   "author": "Rico Cilliers (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 7999,
+   "lods": [
+    {
+     "node": "plant-leafy",
+     "tris": 7999
+    }
+   ],
+   "source_triangles": 69806,
+   "bytes": 550028,
+   "dimensions_m": {
+    "width_x": 0.701,
+    "depth_z": 0.659,
+    "height_y": 0.841
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "plant-leafy"
+   ],
+   "materials": [
+    {
+     "name": "potted_plant_02_pot",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "potted_plant_02_leaves",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Medium leafy pot plant for corners"
+  },
+  {
+   "file": "models/plant-succulent.glb",
+   "name": "Potted Plant 04",
+   "group": "interior",
+   "source": "https://polyhaven.com/a/potted_plant_04",
+   "author": "James Ray Cock (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 3000,
+   "lods": [
+    {
+     "node": "plant-succulent",
+     "tris": 3000
+    }
+   ],
+   "source_triangles": 8929,
+   "bytes": 161716,
+   "dimensions_m": {
+    "width_x": 0.168,
+    "depth_z": 0.185,
+    "height_y": 0.267
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "plant-succulent"
+   ],
+   "materials": [
+    {
+     "name": "potted_plant_04",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Small succulent on the desk or shelf"
+  },
+  {
+   "file": "models/tree-fir.glb",
+   "name": "Fir Tree 01",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/fir_tree_01",
+   "author": "Rob Tuytel (photography), Rico Cilliers (modeling)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 12159,
+   "lods": [
+    {
+     "node": "tree-fir_LOD0",
+     "tris": 10441
+    },
+    {
+     "node": "tree-fir_LOD1",
+     "tris": 1718
+    }
+   ],
+   "source_triangles": 6982937,
+   "bytes": 1218144,
+   "dimensions_m": {
+    "width_x": 6.434,
+    "depth_z": 6.26,
+    "height_y": 18.74
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "tree-fir_LOD0",
+    "tree-fir_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "fir_tree_01_bark",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "fir_tree_01_trunk_a",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "fir_tree_01_dead_branches",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "tree-fir_cards_foliage",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "KHR_texture_transform",
+    "EXT_texture_webp"
+   ],
+   "foliage": "baked billboard-cloud cards",
+   "use": "Mature fir for forest/Yosemite biome; LOD0 near, LOD1 far"
+  },
+  {
+   "file": "models/sapling-pine.glb",
+   "name": "Pine Sapling Small",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/pine_sapling_small",
+   "author": "Rob Tuytel (photography), Rico Cilliers (modeling)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 6102,
+   "lods": [
+    {
+     "node": "sapling-pine_LOD0",
+     "tris": 5179
+    },
+    {
+     "node": "sapling-pine_LOD1",
+     "tris": 923
+    }
+   ],
+   "source_triangles": 398144,
+   "bytes": 586016,
+   "dimensions_m": {
+    "width_x": 0.784,
+    "depth_z": 0.756,
+    "height_y": 1.301
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "sapling-pine_LOD0",
+    "sapling-pine_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "pine_sapling_small_bark",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "pine_sapling_small_twig",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": "alpha cards thinned",
+   "use": "Young pine for understory, forest edges, clearings"
+  },
+  {
+   "file": "models/tree-broadleaf.glb",
+   "name": "Jacaranda Tree",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/jacaranda_tree",
+   "author": "Rob Tuytel (guidance), Rico Cilliers (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 17617,
+   "lods": [
+    {
+     "node": "tree-broadleaf_LOD0",
+     "tris": 15617
+    },
+    {
+     "node": "tree-broadleaf_LOD1",
+     "tris": 2000
+    }
+   ],
+   "source_triangles": 3748776,
+   "bytes": 1508744,
+   "dimensions_m": {
+    "width_x": 24.203,
+    "depth_z": 19.061,
+    "height_y": 19.429
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "tree-broadleaf_LOD0",
+    "tree-broadleaf_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "jacaranda_tree_branches",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "tree-broadleaf_cards_foliage",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor"
+     ]
+    },
+    {
+     "name": "jacaranda_tree_trunk",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": "baked billboard-cloud cards",
+   "use": "Broadleaf shade tree for park / SF streets / home garden"
+  },
+  {
+   "file": "models/tree-small-broadleaf.glb",
+   "name": "Tree Small 02",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/tree_small_02",
+   "author": "Rico Cilliers (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 12000,
+   "lods": [
+    {
+     "node": "tree-small-broadleaf_LOD0",
+     "tris": 10000
+    },
+    {
+     "node": "tree-small-broadleaf_LOD1",
+     "tris": 2000
+    }
+   ],
+   "source_triangles": 2062487,
+   "bytes": 1136548,
+   "dimensions_m": {
+    "width_x": 2.955,
+    "depth_z": 4.235,
+    "height_y": 4.563
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "tree-small-broadleaf_LOD0",
+    "tree-small-broadleaf_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "tree_small_02_branches",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "tree_small_02_trunk",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "tree-small-broadleaf_cards_foliage",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "KHR_texture_transform",
+    "EXT_texture_webp"
+   ],
+   "foliage": "baked billboard-cloud cards",
+   "use": "Small broadleaf tree for gardens, streets and park edges"
+  },
+  {
+   "file": "models/shrub-sapling.glb",
+   "name": "Shrub 02",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/shrub_02",
+   "author": "Rico Cilliers (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 6199,
+   "lods": [
+    {
+     "node": "shrub-sapling_LOD0",
+     "tris": 4999
+    },
+    {
+     "node": "shrub-sapling_LOD1",
+     "tris": 1200
+    }
+   ],
+   "source_triangles": 27254,
+   "bytes": 226756,
+   "dimensions_m": {
+    "width_x": 1.312,
+    "depth_z": 1.641,
+    "height_y": 1.689
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "shrub-sapling_LOD0",
+    "shrub-sapling_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "shrub_02",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": "alpha cards thinned",
+   "use": "Woodland shrub / understory"
+  },
+  {
+   "file": "models/shrub-small.glb",
+   "name": "Shrub 04",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/shrub_04",
+   "author": "Rico Cilliers (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 3769,
+   "lods": [
+    {
+     "node": "shrub-small_LOD0",
+     "tris": 3000
+    },
+    {
+     "node": "shrub-small_LOD1",
+     "tris": 769
+    }
+   ],
+   "source_triangles": 27327,
+   "bytes": 181652,
+   "dimensions_m": {
+    "width_x": 0.583,
+    "depth_z": 0.146,
+    "height_y": 0.219
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "shrub-small_LOD0",
+    "shrub-small_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "shrub_04",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": "alpha cards thinned",
+   "use": "Low bush for garden beds and path edges"
+  },
+  {
+   "file": "models/fern.glb",
+   "name": "Fern 02",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/fern_02",
+   "author": "Rob Tuytel (scanning), Rico Cilliers (modeling)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 3384,
+   "lods": [
+    {
+     "node": "fern_LOD0",
+     "tris": 2384
+    },
+    {
+     "node": "fern_LOD1",
+     "tris": 1000
+    }
+   ],
+   "source_triangles": 6232,
+   "bytes": 98704,
+   "dimensions_m": {
+    "width_x": 0.99,
+    "depth_z": 0.894,
+    "height_y": 0.428
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "fern_LOD0",
+    "fern_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "fern_02",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": "alpha cards thinned",
+   "use": "Fern clumps under trees"
+  },
+  {
+   "file": "models/tropical-bush.glb",
+   "name": "Anthurium Botany 01",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/anthurium_botany_01",
+   "author": "Rob Tuytel (scanning), Rico Cilliers (modeling)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 4200,
+   "lods": [
+    {
+     "node": "tropical-bush",
+     "tris": 4200
+    }
+   ],
+   "source_triangles": 67152,
+   "bytes": 110004,
+   "dimensions_m": {
+    "width_x": 0.896,
+    "depth_z": 1.142,
+    "height_y": 0.5
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "tropical-bush"
+   ],
+   "materials": [
+    {
+     "name": "anthurium_botany_01",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": "alpha cards thinned",
+   "use": "Broad-leaf ground bush for warmer garden areas"
+  },
+  {
+   "file": "models/grass-clump.glb",
+   "name": "Grass Bermuda 01",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/grass_bermuda_01",
+   "author": "Rico Cilliers (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 7500,
+   "lods": [
+    {
+     "node": "grass-clump_LOD0",
+     "tris": 6000
+    },
+    {
+     "node": "grass-clump_LOD1",
+     "tris": 1500
+    }
+   ],
+   "source_triangles": 941,
+   "bytes": 272536,
+   "dimensions_m": {
+    "width_x": 0.631,
+    "depth_z": 0.621,
+    "height_y": 0.186
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "grass-clump_LOD0",
+    "grass-clump_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "grass_bermuda_01",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": "alpha cards thinned",
+   "use": "Grass clump to instance over terrain"
+  },
+  {
+   "file": "models/boulder-granite.glb",
+   "name": "Namaqualand Boulder 02",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/namaqualand_boulder_02",
+   "author": "Greg Zaal (Photography), Rico Cilliers (modeling)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 6200,
+   "lods": [
+    {
+     "node": "boulder-granite_LOD0",
+     "tris": 5000
+    },
+    {
+     "node": "boulder-granite_LOD1",
+     "tris": 1200
+    }
+   ],
+   "source_triangles": 97964,
+   "bytes": 602520,
+   "dimensions_m": {
+    "width_x": 2.525,
+    "depth_z": 1.233,
+    "height_y": 0.877
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "boulder-granite_LOD0",
+    "boulder-granite_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "boulder_02",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Rounded granite boulders (Yosemite-inspired)"
+  },
+  {
+   "file": "models/boulder-lichen.glb",
+   "name": "Boulder 01",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/boulder_01",
+   "author": "Rico Cilliers (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 5000,
+   "lods": [
+    {
+     "node": "boulder-lichen_LOD0",
+     "tris": 4000
+    },
+    {
+     "node": "boulder-lichen_LOD1",
+     "tris": 1000
+    }
+   ],
+   "source_triangles": 66122,
+   "bytes": 621548,
+   "dimensions_m": {
+    "width_x": 1.284,
+    "depth_z": 1.832,
+    "height_y": 0.996
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "boulder-lichen_LOD0",
+    "boulder-lichen_LOD1"
+   ],
+   "materials": [
+    {
+     "name": "boulder_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Lichen boulder for trails and forest"
+  },
+  {
+   "file": "models/rock-small.glb",
+   "name": "Rock 07",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/rock_07",
+   "author": "Jenelle van Heerden (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 2000,
+   "lods": [
+    {
+     "node": "rock-small",
+     "tris": 2000
+    }
+   ],
+   "source_triangles": 14844,
+   "bytes": 100232,
+   "dimensions_m": {
+    "width_x": 0.168,
+    "depth_z": 0.32,
+    "height_y": 0.144
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "rock-small"
+   ],
+   "materials": [
+    {
+     "name": "rock_07",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Small rock scatter"
+  },
+  {
+   "file": "models/stones-pebbles.glb",
+   "name": "Stone 01",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/stone_01",
+   "author": "Dario Barresi (Photography), Rico Cilliers (photography, processing)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 1500,
+   "lods": [
+    {
+     "node": "stones-pebbles",
+     "tris": 1500
+    }
+   ],
+   "source_triangles": 53520,
+   "bytes": 138324,
+   "dimensions_m": {
+    "width_x": 0.146,
+    "depth_z": 0.089,
+    "height_y": 0.071
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "stones-pebbles"
+   ],
+   "materials": [
+    {
+     "name": "stone_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Pebble scatter along paths / shoreline"
+  },
+  {
+   "file": "models/tree-stump.glb",
+   "name": "Tree Stump 01",
+   "group": "nature",
+   "source": "https://polyhaven.com/a/tree_stump_01",
+   "author": "Rob Tuytel (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 2999,
+   "lods": [
+    {
+     "node": "tree-stump",
+     "tris": 2999
+    }
+   ],
+   "source_triangles": 41046,
+   "bytes": 245300,
+   "dimensions_m": {
+    "width_x": 1.423,
+    "depth_z": 1.591,
+    "height_y": 0.573
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "tree-stump"
+   ],
+   "materials": [
+    {
+     "name": "tree_stump_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Stump / forest floor detail"
+  },
+  {
+   "file": "models/picnic-table.glb",
+   "name": "Wooden Picnic Table",
+   "group": "street",
+   "source": "https://polyhaven.com/a/wooden_picnic_table",
+   "author": "Ulan Cabanilla (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 5000,
+   "lods": [
+    {
+     "node": "picnic-table",
+     "tris": 5000
+    }
+   ],
+   "source_triangles": 10210,
+   "bytes": 404320,
+   "dimensions_m": {
+    "width_x": 2.241,
+    "depth_z": 3.022,
+    "height_y": 0.746
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "picnic-table"
+   ],
+   "materials": [
+    {
+     "name": "wooden_picnic_table_bottom",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "wooden_picnic_table_table",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Park picnic table near the courts / garden"
+  },
+  {
+   "file": "models/bench-wooden.glb",
+   "name": "Painted Wooden Bench",
+   "group": "street",
+   "source": "https://polyhaven.com/a/painted_wooden_bench",
+   "author": "Kirill Sannikov (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 630,
+   "lods": [
+    {
+     "node": "bench-wooden",
+     "tris": 630
+    }
+   ],
+   "source_triangles": 630,
+   "bytes": 59408,
+   "dimensions_m": {
+    "width_x": 1.165,
+    "depth_z": 0.497,
+    "height_y": 0.889
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "bench-wooden"
+   ],
+   "materials": [
+    {
+     "name": "painted_wooden_bench",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Simple wooden park bench"
+  },
+  {
+   "file": "models/street-lamp.glb",
+   "name": "Street Lamp 01",
+   "group": "street",
+   "source": "https://polyhaven.com/a/street_lamp_01",
+   "author": "Josh Dean (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 5000,
+   "lods": [
+    {
+     "node": "street-lamp",
+     "tris": 5000
+    }
+   ],
+   "source_triangles": 30610,
+   "bytes": 146004,
+   "dimensions_m": {
+    "width_x": 0.704,
+    "depth_z": 0.385,
+    "height_y": 3.87
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "street-lamp"
+   ],
+   "materials": [
+    {
+     "name": "street_lamp_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "street_lamp_01_glass",
+     "alphaMode": "MASK",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "street_lamp_01_bulb",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Street lamp for roads / park paths"
+  },
+  {
+   "file": "models/planter-box.glb",
+   "name": "Planter Box 01",
+   "group": "street",
+   "source": "https://polyhaven.com/a/planter_box_01",
+   "author": "James Ray Cock (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 4000,
+   "lods": [
+    {
+     "node": "planter-box",
+     "tris": 4000
+    }
+   ],
+   "source_triangles": 8094,
+   "bytes": 159848,
+   "dimensions_m": {
+    "width_x": 0.913,
+    "depth_z": 0.414,
+    "height_y": 0.425
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "planter-box"
+   ],
+   "materials": [
+    {
+     "name": "planter_box_01",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Wooden planter (fill with shrub-small/fern)"
+  },
+  {
+   "file": "models/fire-hydrant.glb",
+   "name": "Fire Hydrant",
+   "group": "street",
+   "source": "https://polyhaven.com/a/fire_hydrant",
+   "author": "Gon\u00e7alo Fel\u00edcio (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 4000,
+   "lods": [
+    {
+     "node": "fire-hydrant",
+     "tris": 4000
+    }
+   ],
+   "source_triangles": 86316,
+   "bytes": 151996,
+   "dimensions_m": {
+    "width_x": 0.254,
+    "depth_z": 0.284,
+    "height_y": 0.799
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "fire-hydrant"
+   ],
+   "materials": [
+    {
+     "name": "fire_hydrant",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Hydrant detail for SF sidewalks"
+  },
+  {
+   "file": "models/trash-can.glb",
+   "name": "Metal Trash Can",
+   "group": "street",
+   "source": "https://polyhaven.com/a/metal_trash_can",
+   "author": "GurJas Studios (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "triangles": 2999,
+   "lods": [
+    {
+     "node": "trash-can",
+     "tris": 2999
+    }
+   ],
+   "source_triangles": 13960,
+   "bytes": 134804,
+   "dimensions_m": {
+    "width_x": 0.778,
+    "depth_z": 0.555,
+    "height_y": 0.906
+   },
+   "pivot": "bottom-centre of LOD0 bounding box at origin (y=0 is ground contact)",
+   "nodes": [
+    "trash-can"
+   ],
+   "materials": [
+    {
+     "name": "metal_trash_can",
+     "alphaMode": "OPAQUE",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "foliage": null,
+   "use": "Street trash can / bin"
+  }
+ ],
+ "sculpted": [
+  {
+   "file": "models/granite-dome.glb",
+   "source": "original: scripts/blender/sculpt_granite.py (procedural)",
+   "license": "project-owned original (texture inputs CC0 where noted)",
+   "triangles": 8999,
+   "lods": null,
+   "high_poly_triangles": 254246,
+   "bytes": 539152,
+   "bounds_local_m": {
+    "min": [
+     -4.099,
+     -0.5,
+     -2.678
+    ],
+    "max": [
+     4.09,
+     8.274,
+     3.329
+    ],
+    "size": [
+     8.189,
+     8.774,
+     6.007
+    ],
+    "exclusion_fill": 0.992
+   },
+   "dimensions_m": null,
+   "screen": null,
+   "pivot": "valley-layout local frame: (lx, y, lz), origin = form.x/z at y=0",
+   "materials": [
+    {
+     "name": "granite-dome_granite",
+     "maps": [
+      "metallicRoughness",
+      "normal",
+      "occlusion"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "use": "Half Dome-inspired dome: exfoliation plates on the back, sheared face toward -Z"
+  },
+  {
+   "file": "models/granite-ridge.glb",
+   "source": "original: scripts/blender/sculpt_granite.py (procedural)",
+   "license": "project-owned original (texture inputs CC0 where noted)",
+   "triangles": 9000,
+   "lods": null,
+   "high_poly_triangles": 191992,
+   "bytes": 598756,
+   "bounds_local_m": {
+    "min": [
+     -6.715,
+     -0.5,
+     -1.773
+    ],
+    "max": [
+     6.568,
+     3.755,
+     1.836
+    ],
+    "size": [
+     13.283,
+     4.255,
+     3.609
+    ],
+    "exclusion_fill": 0.992
+   },
+   "dimensions_m": null,
+   "screen": null,
+   "pivot": "valley-layout local frame: (lx, y, lz), origin = form.x/z at y=0",
+   "materials": [
+    {
+     "name": "granite-ridge_granite",
+     "maps": [
+      "metallicRoughness",
+      "normal",
+      "occlusion"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "use": "Broken granite ridgeline behind the valley"
+  },
+  {
+   "file": "models/granite-wall.glb",
+   "source": "original: scripts/blender/sculpt_granite.py (procedural)",
+   "license": "project-owned original (texture inputs CC0 where noted)",
+   "triangles": 8998,
+   "lods": null,
+   "high_poly_triangles": 566646,
+   "bytes": 614492,
+   "bounds_local_m": {
+    "min": [
+     -4.587,
+     -0.5,
+     -5.78
+    ],
+    "max": [
+     2.761,
+     10.227,
+     5.78
+    ],
+    "size": [
+     7.348,
+     10.727,
+     11.56
+    ],
+    "exclusion_fill": 0.997
+   },
+   "dimensions_m": null,
+   "screen": null,
+   "pivot": "valley-layout local frame: (lx, y, lz), origin = form.x/z at y=0",
+   "materials": [
+    {
+     "name": "granite-wall_granite",
+     "maps": [
+      "metallicRoughness",
+      "normal",
+      "occlusion"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "use": "El Capitan-inspired sheer wall: face +X, waterfall chute at lz=+0.78, 2.5 m talus apron"
+  },
+  {
+   "file": "models/monitor-27.glb",
+   "source": "original procedural model",
+   "license": "project-owned original (texture inputs CC0 where noted)",
+   "triangles": 594,
+   "lods": null,
+   "high_poly_triangles": null,
+   "bytes": 14332,
+   "bounds_local_m": null,
+   "dimensions_m": {
+    "width_x": 0.609,
+    "height_y": 0.48,
+    "depth_z": 0.19
+   },
+   "screen": {
+    "material": "screen",
+    "visible_area_m": [
+     0.597,
+     0.336
+    ],
+    "centre_y_m": 0.306,
+    "uv": "0..1 across the visible area, u left->right, v bottom->top from the front"
+   },
+   "pivot": "desk contact under the foot; screen faces +Z",
+   "materials": [
+    {
+     "name": "monitor_body",
+     "maps": []
+    },
+    {
+     "name": "monitor_stand",
+     "maps": []
+    },
+    {
+     "name": "screen",
+     "maps": []
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression"
+   ],
+   "use": "27-inch thin-bezel monitor; material 'screen' is the display quad (UV 0..1)"
+  },
+  {
+   "file": "models/office-chair.glb",
+   "source": "original procedural model; fabric maps from Poly Haven rough_linen (CC0)",
+   "license": "project-owned original (texture inputs CC0 where noted)",
+   "triangles": 4360,
+   "lods": null,
+   "high_poly_triangles": null,
+   "bytes": 144364,
+   "bounds_local_m": null,
+   "dimensions_m": {
+    "width_x": 0.642,
+    "height_y": 1.125,
+    "depth_z": 0.647
+   },
+   "screen": null,
+   "pivot": "floor contact under the base centre; front faces +Z",
+   "materials": [
+    {
+     "name": "chair_plastic",
+     "maps": []
+    },
+    {
+     "name": "chair_metal",
+     "maps": []
+    },
+    {
+     "name": "chair_fabric",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "chair_mesh",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "use": "Task chair for the home desk; faces +Z, seat top 0.515 m"
+  },
+  {
+   "file": "models/tree-pine-dense.glb",
+   "source": "original procedural tree; needle sprays baked from Poly Haven fir_tree_01 twig atlas (CC0)",
+   "license": "project-owned original (texture inputs CC0 where noted)",
+   "triangles": 6944,
+   "lods": {
+    "tree-pine-dense_LOD0": 5896,
+    "tree-pine-dense_LOD1": 1048
+   },
+   "high_poly_triangles": null,
+   "bytes": 499956,
+   "bounds_local_m": null,
+   "dimensions_m": {
+    "width_x": 4.143,
+    "height_y": 5.65,
+    "depth_z": 4.287
+   },
+   "screen": null,
+   "pivot": "trunk base at origin (y=0 ground; trunk extends 0.15 m below for embedding)",
+   "materials": [
+    {
+     "name": "pine_bark",
+     "maps": [
+      "baseColor",
+      "metallicRoughness",
+      "normal"
+     ]
+    },
+    {
+     "name": "pine_needles",
+     "maps": [
+      "baseColor"
+     ]
+    }
+   ],
+   "extensionsRequired": [
+    "EXT_meshopt_compression",
+    "EXT_texture_webp"
+   ],
+   "use": "Dense Sierra-style conifer, 5.5 m, crown radius 1.8 m; LOD0/LOD1 nodes for <Detailed>"
+  }
+ ],
+ "materials": [
+  {
+   "folder": "materials/grass/",
+   "name": "Leafy Grass",
+   "source": "https://polyhaven.com/a/leafy_grass",
+   "author": "Charlotte Baglioni (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    2.0,
+    2.0
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 776540,
+   "use": "Lawns, meadows, park ground"
+  },
+  {
+   "folder": "materials/forest-floor/",
+   "name": "Forest Leaves 04",
+   "source": "https://polyhaven.com/a/forest_leaves_04",
+   "author": "Rob Tuytel (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    1.5,
+    1.5
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 871950,
+   "use": "Pine forest floor under conifers"
+  },
+  {
+   "folder": "materials/dirt-trail/",
+   "name": "Rocky Trail",
+   "source": "https://polyhaven.com/a/rocky_trail",
+   "author": "Amal Kumar (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    2.0,
+    2.0
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 722594,
+   "use": "Dirt / gravel hiking trails and bare ground patches"
+  },
+  {
+   "folder": "materials/granite-cliff/",
+   "name": "Rock 026",
+   "source": "https://ambientcg.com/a/Rock026",
+   "author": "ambientCG (Lennart Demes) (all)",
+   "license": "CC0 1.0 (public domain) via ambientCG",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    3.0,
+    3.0
+   ],
+   "tile_size_note": "estimate: ambientCG publishes no scale for this scan",
+   "bytes": 379272,
+   "use": "Light fractured granite cliff faces (Yosemite-inspired); primary rock set"
+  },
+  {
+   "folder": "materials/granite/",
+   "name": "Rock Boulder Dry",
+   "source": "https://polyhaven.com/a/rock_boulder_dry",
+   "author": "Dimitrios Savva (Photography), Rico Cilliers (Processing)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    1.8,
+    1.8
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 268848,
+   "use": "Smoother rounded granite for boulders and domes"
+  },
+  {
+   "folder": "materials/asphalt/",
+   "name": "Asphalt 02",
+   "source": "https://polyhaven.com/a/asphalt_02",
+   "author": "Rob Tuytel (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    3.0,
+    3.0
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 722180,
+   "use": "SF streets and court run-offs"
+  },
+  {
+   "folder": "materials/concrete/",
+   "name": "Concrete Floor 02",
+   "source": "https://polyhaven.com/a/concrete_floor_02",
+   "author": "Rob Tuytel (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    2.0,
+    2.0
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 454316,
+   "use": "Sidewalks, plinths, garage/utility floors"
+  },
+  {
+   "folder": "materials/pavers/",
+   "name": "Square Concrete Pavers",
+   "source": "https://polyhaven.com/a/square_concrete_pavers",
+   "author": "Amal Kumar (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    1.8,
+    1.8
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 296722,
+   "use": "Plaza and path paving"
+  },
+  {
+   "folder": "materials/cobblestone/",
+   "name": "Cobblestone Floor 04",
+   "source": "https://polyhaven.com/a/cobblestone_floor_04",
+   "author": "Rob Tuytel (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    1.5,
+    1.5
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 360850,
+   "use": "Old-town lanes and garden paths"
+  },
+  {
+   "folder": "materials/wood-floor/",
+   "name": "Wood Floor",
+   "source": "https://polyhaven.com/a/wood_floor",
+   "author": "Dimitrios Savva (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    1.7,
+    1.7
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 103406,
+   "use": "Interior floor boards"
+  },
+  {
+   "folder": "materials/wood-table/",
+   "name": "Wood Table 001",
+   "source": "https://polyhaven.com/a/wood_table_001",
+   "author": "Dimitrios Savva (Photography), Rico Cilliers (Processing)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    1.5,
+    1.5
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 131534,
+   "use": "Desk tops, shelves, furniture wood"
+  },
+  {
+   "folder": "materials/plaster/",
+   "name": "Painted Plaster Wall",
+   "source": "https://polyhaven.com/a/painted_plaster_wall",
+   "author": "Amal Kumar (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    2.0,
+    2.0
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 240910,
+   "use": "Interior/exterior painted walls (tint in shader)"
+  },
+  {
+   "folder": "materials/roof-tiles/",
+   "name": "Grey Roof Tiles",
+   "source": "https://polyhaven.com/a/grey_roof_tiles",
+   "author": "Rob Tuytel (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    3.0,
+    3.0
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 264632,
+   "use": "House roof"
+  },
+  {
+   "folder": "materials/roof-metal/",
+   "name": "Corrugated Iron",
+   "source": "https://polyhaven.com/a/corrugated_iron",
+   "author": "Jenelle van Heerden (Processing), Dimitrios Savva (Photography)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    1.12,
+    1.12
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 182216,
+   "use": "Sheds, industrial roofs, cladding"
+  },
+  {
+   "folder": "materials/fabric-linen/",
+   "name": "Rough Linen",
+   "source": "https://polyhaven.com/a/rough_linen",
+   "author": "colormass (Photography), Rico Cilliers (Processing)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    0.27,
+    0.27
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 329332,
+   "use": "Rugs, curtains, upholstery"
+  },
+  {
+   "folder": "materials/court-painted/",
+   "name": "Painted Concrete",
+   "source": "https://polyhaven.com/a/painted_concrete",
+   "author": "Dario Barresi (Processing), Dimitrios Savva (Photography)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    2.0,
+    2.0
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 250600,
+   "use": "Sport court surface (tint + line decals on top)"
+  },
+  {
+   "folder": "materials/sand/",
+   "name": "Coast Sand 01",
+   "source": "https://polyhaven.com/a/coast_sand_01",
+   "author": "Rob Tuytel (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    15.0,
+    15.0
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 502626,
+   "use": "Beach / shoreline"
+  },
+  {
+   "folder": "materials/brick/",
+   "name": "Red Brick",
+   "source": "https://polyhaven.com/a/red_brick",
+   "author": "Rob Tuytel (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "maps": {
+    "color": "sRGB",
+    "normal": "linear, OpenGL +Y",
+    "arm": "linear, R=AO G=rough B=metal (half res)"
+   },
+   "tile_size_m": [
+    1.4,
+    1.4
+   ],
+   "tile_size_note": "Poly Haven measured real-world size",
+   "bytes": 319846,
+   "use": "Brick walls, SF buildings"
+  }
+ ],
+ "hdris": [
+  {
+   "file": "hdri/night-city.hdr",
+   "name": "Shanghai Bund",
+   "source": "https://polyhaven.com/a/shanghai_bund",
+   "author": "Greg Zaal (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "resolution": "1024x512 equirectangular",
+   "bytes": 1640377,
+   "use": "Night / blue-hour city lighting and reflections"
+  },
+  {
+   "file": "hdri/sunset-sky.hdr",
+   "name": "Belfast Sunset (Pure Sky)",
+   "source": "https://polyhaven.com/a/belfast_sunset_puresky",
+   "author": "Greg Zaal (Processing), Dimitrios Savva (Photography), Jarod Guest (Sky edits)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "resolution": "1024x512 equirectangular",
+   "bytes": 1190247,
+   "use": "Sunset / dusk sky (no ground, good for a spherical world)"
+  },
+  {
+   "file": "hdri/clear-day-sky.hdr",
+   "name": "Kloofendal 48d Partly Cloudy (Pure Sky)",
+   "source": "https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky",
+   "author": "Greg Zaal (Original), Jarod Guest (Sky edits)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "resolution": "1024x512 equirectangular",
+   "bytes": 1435119,
+   "use": "Clear daytime sky (no ground)"
+  },
+  {
+   "file": "hdri/interior-studio.hdr",
+   "name": "Studio Small 09",
+   "source": "https://polyhaven.com/a/studio_small_09",
+   "author": "Sergej Majboroda (All)",
+   "license": "CC0 1.0 (public domain) via Poly Haven",
+   "resolution": "1024x512 equirectangular",
+   "bytes": 1615248,
+   "use": "Interior / close-up exhibit lighting and reflections"
+  }
+ ],
+ "totals": {
+  "models_mb": 11.95,
+  "sculpted_mb": 2.41,
+  "materials_mb": 7.18,
+  "hdri_mb": 5.88,
+  "all_mb": 27.42
+ }
+}

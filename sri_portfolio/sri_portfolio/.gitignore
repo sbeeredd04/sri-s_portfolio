@@ -41,3 +41,6 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# CC0 source cache for scripts/blender (rebuildable)
+/asset-src/

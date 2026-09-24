@@ -1,0 +1,445 @@
+{
+ "defaults": {
+  "model_res": "1k",
+  "texture_res": "1k",
+  "hdri_res": "1k",
+  "tex_max": 1024,
+  "image_quality": 75
+ },
+ "models": [
+  {
+   "id": "modern_arm_chair_01",
+   "out": "armchair-modern",
+   "group": "interior",
+   "target_tris": 6000,
+   "use": "Workspace reading chair / lounge seat beside the desk"
+  },
+  {
+   "id": "sofa_02",
+   "out": "sofa-leather",
+   "group": "interior",
+   "target_tris": 3000,
+   "use": "Living/listening room sofa"
+  },
+  {
+   "id": "throw_pillows_01",
+   "out": "throw-pillows",
+   "group": "interior",
+   "target_tris": 3000,
+   "tex_max": 512,
+   "use": "Cushions dressed on the sofa"
+  },
+  {
+   "id": "coffee_table_round_01",
+   "out": "coffee-table-round",
+   "group": "interior",
+   "target_tris": 4000,
+   "use": "Marble coffee table in front of the sofa"
+  },
+  {
+   "id": "metal_office_desk",
+   "out": "desk-metal",
+   "group": "interior",
+   "target_tris": 7000,
+   "use": "Workspace desk (hosts DeskHardware monitors/keyboard)"
+  },
+  {
+   "id": "WoodenTable_01",
+   "out": "desk-wooden",
+   "group": "interior",
+   "target_tris": 1000,
+   "use": "Alternative lighter wooden desk / side table"
+  },
+  {
+   "id": "wooden_bookshelf_worn",
+   "out": "bookshelf",
+   "group": "interior",
+   "target_tris": 6000,
+   "use": "Bookshelf against a wall"
+  },
+  {
+   "id": "book_encyclopedia_set_01",
+   "out": "books-set",
+   "group": "interior",
+   "target_tris": 6000,
+   "use": "Row of encyclopedia books to fill the bookshelf"
+  },
+  {
+   "id": "desk_lamp_arm_01",
+   "out": "desk-lamp",
+   "group": "interior",
+   "target_tris": 6000,
+   "tex_max": 512,
+   "use": "Articulated desk lamp on the workspace desk"
+  },
+  {
+   "id": "modern_ceiling_lamp_01",
+   "out": "ceiling-lamp",
+   "group": "interior",
+   "target_tris": 5600,
+   "tex_max": 512,
+   "use": "Pendant glass lamp over the desk or sofa",
+   "pivot": "top"
+  },
+  {
+   "id": "potted_plant_01",
+   "out": "plant-tall",
+   "group": "interior",
+   "target_tris": 8000,
+   "use": "Tall floor plant in terracotta pot"
+  },
+  {
+   "id": "potted_plant_02",
+   "out": "plant-leafy",
+   "group": "interior",
+   "target_tris": 8000,
+   "use": "Medium leafy pot plant for corners"
+  },
+  {
+   "id": "potted_plant_04",
+   "out": "plant-succulent",
+   "group": "interior",
+   "target_tris": 3000,
+   "tex_max": 512,
+   "use": "Small succulent on the desk or shelf"
+  },
+  {
+   "id": "fir_tree_01",
+   "out": "tree-fir",
+   "group": "nature",
+   "target_tris": 10000,
+   "lod1_tris": 1500,
+   "foliage": true,
+   "use": "Mature fir for forest/Yosemite biome; LOD0 near, LOD1 far",
+   "normal_max": 512,
+   "pick": [
+    "^fir_tree_01_a_LOD0$"
+   ],
+   "cards": {
+    "count": 700,
+    "atlas": 2048
+   }
+  },
+  {
+   "id": "pine_sapling_small",
+   "out": "sapling-pine",
+   "group": "nature",
+   "target_tris": 5000,
+   "lod1_tris": 1000,
+   "foliage": true,
+   "use": "Young pine for understory, forest edges, clearings",
+   "pick": [
+    "^pine_sapling_small_a$"
+   ],
+   "normal_max": 512
+  },
+  {
+   "id": "jacaranda_tree",
+   "out": "tree-broadleaf",
+   "group": "nature",
+   "target_tris": 12000,
+   "lod1_tris": 2000,
+   "foliage": true,
+   "use": "Broadleaf shade tree for park / SF streets / home garden",
+   "normal_max": 512,
+   "cards": {
+    "count": 900,
+    "atlas": 2048
+   }
+  },
+  {
+   "id": "tree_small_02",
+   "out": "tree-small-broadleaf",
+   "group": "nature",
+   "target_tris": 10000,
+   "lod1_tris": 2000,
+   "foliage": true,
+   "normal_max": 512,
+   "use": "Small broadleaf tree for gardens, streets and park edges",
+   "cards": {
+    "count": 600,
+    "atlas": 2048
+   }
+  },
+  {
+   "id": "shrub_02",
+   "out": "shrub-sapling",
+   "group": "nature",
+   "target_tris": 5000,
+   "lod1_tris": 1200,
+   "foliage": true,
+   "use": "Woodland shrub / understory",
+   "pick": [
+    "^shrub_02_a$"
+   ],
+   "normal_max": 512
+  },
+  {
+   "id": "shrub_04",
+   "out": "shrub-small",
+   "group": "nature",
+   "target_tris": 3000,
+   "lod1_tris": 800,
+   "foliage": true,
+   "tex_max": 512,
+   "use": "Low bush for garden beds and path edges",
+   "normal_max": 512
+  },
+  {
+   "id": "fern_02",
+   "out": "fern",
+   "group": "nature",
+   "target_tris": 4000,
+   "lod1_tris": 1000,
+   "foliage": true,
+   "tex_max": 512,
+   "use": "Fern clumps under trees",
+   "pick": [
+    "^fern_02_b$"
+   ],
+   "normal_max": 512
+  },
+  {
+   "id": "anthurium_botany_01",
+   "out": "tropical-bush",
+   "group": "nature",
+   "target_tris": 4200,
+   "foliage": true,
+   "tex_max": 512,
+   "use": "Broad-leaf ground bush for warmer garden areas",
+   "pick": [
+    "^anthurium_botany_01_a$"
+   ],
+   "normal_max": 512
+  },
+  {
+   "id": "grass_bermuda_01",
+   "out": "grass-clump",
+   "group": "nature",
+   "target_tris": 6000,
+   "lod1_tris": 1500,
+   "foliage": true,
+   "tex_max": 512,
+   "use": "Grass clump to instance over terrain",
+   "scatter": {
+    "count": 150,
+    "radius": 0.3,
+    "seed": 7
+   },
+   "normal_max": 512
+  },
+  {
+   "id": "namaqualand_boulder_02",
+   "out": "boulder-granite",
+   "group": "nature",
+   "target_tris": 5000,
+   "lod1_tris": 1200,
+   "use": "Rounded granite boulders (Yosemite-inspired)"
+  },
+  {
+   "id": "boulder_01",
+   "out": "boulder-lichen",
+   "group": "nature",
+   "target_tris": 4000,
+   "lod1_tris": 1000,
+   "use": "Lichen boulder for trails and forest"
+  },
+  {
+   "id": "rock_07",
+   "out": "rock-small",
+   "group": "nature",
+   "target_tris": 2000,
+   "tex_max": 512,
+   "use": "Small rock scatter"
+  },
+  {
+   "id": "stone_01",
+   "out": "stones-pebbles",
+   "group": "nature",
+   "target_tris": 1500,
+   "tex_max": 512,
+   "use": "Pebble scatter along paths / shoreline"
+  },
+  {
+   "id": "tree_stump_01",
+   "out": "tree-stump",
+   "group": "nature",
+   "target_tris": 3000,
+   "tex_max": 512,
+   "use": "Stump / forest floor detail"
+  },
+  {
+   "id": "wooden_picnic_table",
+   "out": "picnic-table",
+   "group": "street",
+   "target_tris": 5000,
+   "use": "Park picnic table near the courts / garden"
+  },
+  {
+   "id": "painted_wooden_bench",
+   "out": "bench-wooden",
+   "group": "street",
+   "target_tris": 700,
+   "tex_max": 512,
+   "use": "Simple wooden park bench"
+  },
+  {
+   "id": "street_lamp_01",
+   "out": "street-lamp",
+   "group": "street",
+   "target_tris": 5000,
+   "tex_max": 512,
+   "use": "Street lamp for roads / park paths"
+  },
+  {
+   "id": "planter_box_01",
+   "out": "planter-box",
+   "group": "street",
+   "target_tris": 4000,
+   "tex_max": 512,
+   "use": "Wooden planter (fill with shrub-small/fern)"
+  },
+  {
+   "id": "fire_hydrant",
+   "out": "fire-hydrant",
+   "group": "street",
+   "target_tris": 4000,
+   "tex_max": 512,
+   "use": "Hydrant detail for SF sidewalks",
+   "pick": [
+    "^fire_hydrant$"
+   ]
+  },
+  {
+   "id": "metal_trash_can",
+   "out": "trash-can",
+   "group": "street",
+   "target_tris": 3000,
+   "tex_max": 512,
+   "use": "Street trash can / bin",
+   "pick": [
+    "^metal_trash_can(_handle_left|_handle_right|_lid)?$"
+   ]
+  }
+ ],
+ "textures": [
+  {
+   "id": "leafy_grass",
+   "out": "grass",
+   "use": "Lawns, meadows, park ground"
+  },
+  {
+   "id": "forest_leaves_04",
+   "out": "forest-floor",
+   "use": "Pine forest floor under conifers"
+  },
+  {
+   "id": "rocky_trail",
+   "out": "dirt-trail",
+   "use": "Dirt / gravel hiking trails and bare ground patches"
+  },
+  {
+   "id": "Rock026",
+   "source": "ambientcg",
+   "out": "granite-cliff",
+   "tile_size_m": [
+    3.0,
+    3.0
+   ],
+   "tile_size_note": "estimate: ambientCG publishes no scale for this scan",
+   "use": "Light fractured granite cliff faces (Yosemite-inspired); primary rock set"
+  },
+  {
+   "id": "rock_boulder_dry",
+   "out": "granite",
+   "use": "Smoother rounded granite for boulders and domes"
+  },
+  {
+   "id": "asphalt_02",
+   "out": "asphalt",
+   "use": "SF streets and court run-offs"
+  },
+  {
+   "id": "concrete_floor_02",
+   "out": "concrete",
+   "use": "Sidewalks, plinths, garage/utility floors"
+  },
+  {
+   "id": "square_concrete_pavers",
+   "out": "pavers",
+   "use": "Plaza and path paving"
+  },
+  {
+   "id": "cobblestone_floor_04",
+   "out": "cobblestone",
+   "use": "Old-town lanes and garden paths"
+  },
+  {
+   "id": "wood_floor",
+   "out": "wood-floor",
+   "use": "Interior floor boards"
+  },
+  {
+   "id": "wood_table_001",
+   "out": "wood-table",
+   "use": "Desk tops, shelves, furniture wood"
+  },
+  {
+   "id": "painted_plaster_wall",
+   "out": "plaster",
+   "use": "Interior/exterior painted walls (tint in shader)"
+  },
+  {
+   "id": "grey_roof_tiles",
+   "out": "roof-tiles",
+   "use": "House roof"
+  },
+  {
+   "id": "corrugated_iron",
+   "out": "roof-metal",
+   "use": "Sheds, industrial roofs, cladding"
+  },
+  {
+   "id": "rough_linen",
+   "out": "fabric-linen",
+   "use": "Rugs, curtains, upholstery"
+  },
+  {
+   "id": "painted_concrete",
+   "out": "court-painted",
+   "use": "Sport court surface (tint + line decals on top)"
+  },
+  {
+   "id": "coast_sand_01",
+   "out": "sand",
+   "use": "Beach / shoreline"
+  },
+  {
+   "id": "red_brick",
+   "out": "brick",
+   "use": "Brick walls, SF buildings"
+  }
+ ],
+ "hdris": [
+  {
+   "id": "shanghai_bund",
+   "out": "night-city",
+   "use": "Night / blue-hour city lighting and reflections"
+  },
+  {
+   "id": "belfast_sunset_puresky",
+   "out": "sunset-sky",
+   "use": "Sunset / dusk sky (no ground, good for a spherical world)"
+  },
+  {
+   "id": "kloofendal_48d_partly_cloudy_puresky",
+   "out": "clear-day-sky",
+   "use": "Clear daytime sky (no ground)"
+  },
+  {
+   "id": "studio_small_09",
+   "out": "interior-studio",
+   "use": "Interior / close-up exhibit lighting and reflections"
+  }
+ ]
+}

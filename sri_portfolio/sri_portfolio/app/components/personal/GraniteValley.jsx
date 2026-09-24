@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
+import { useGLTF } from "@react-three/drei";
 import {
   buildDeck,
   buildGraniteForm,
@@ -17,6 +18,53 @@ import { renderedSurfaceHeight } from "../../lib/terrain-geometry.mjs";
 import { applyTriplanar } from "../../lib/triplanar.mjs";
 import usePbrSet from "./usePbrSet";
 
+// Blender-sculpted formations (scripts/blender): fractured faces, sheeting
+// and ledges baked to normal maps; every vertex stays inside the same
+// exclusion envelope as the procedural forms, so trail clearance holds.
+const sculpted = {
+  wall: "/models/granite-wall.glb",
+  dome: "/models/granite-dome.glb",
+  ridge: "/models/granite-ridge.glb",
+};
+function SculptedForm({ form, granite, heightAt }) {
+  const { scene } = useGLTF(sculpted[form.kind]);
+  const object = useMemo(() => {
+    const clone = scene.clone(true);
+    clone.traverse((node) => {
+      if (!node.isMesh) return;
+      node.castShadow = node.receiveShadow = true;
+      // Keep the baked sculpt normals; take colour/roughness from the scan.
+      node.material = applyTriplanar(node.material.clone(), {
+        albedo: granite.albedo,
+        roughness: granite.roughness,
+        scale: 0.16,
+        strength: 0.85,
+      });
+    });
+    return clone;
+  }, [scene, granite]);
+  // Seat the base on the lowest ground under the footprint so no edge floats.
+  const y = useMemo(() => {
+    let low = Infinity;
+    for (const sx of [-1, 0, 1])
+      for (const sz of [-1, 0, 1])
+        low = Math.min(low, heightAt(form.x + sx * form.hx * 0.7, form.z + sz * form.hz * 0.7));
+    return low;
+  }, [form, heightAt]);
+  return (
+    <primitive
+      object={object}
+      position={[form.x, y, form.z]}
+      rotation={[0, -form.turn, 0]}
+    />
+  );
+}
+function SculptedForms({ granite, heightAt }) {
+  return graniteForms.map((form) => (
+    <SculptedForm key={form.kind} {...{ form, granite, heightAt }} />
+  ));
+}
+
 export default function GraniteValley() {
   const talusRef = useRef(null);
   const granite = usePbrSet("granite");
@@ -24,6 +72,7 @@ export default function GraniteValley() {
     const heightAt = (x, z) =>
       renderedSurfaceHeight("trail", x, z) - outdoorsLift;
     return {
+      heightAt,
       // Photographed granite over the procedural weathering: the scan gives
       // crystal grain and fractures, the procedural pass keeps streaks.
       material: applyTriplanar(createGraniteMaterial(), {
@@ -67,15 +116,7 @@ export default function GraniteValley() {
   );
   return (
     <group>
-      {assets.forms.map((geometry, index) => (
-        <mesh
-          key={graniteForms[index].seed}
-          geometry={geometry}
-          material={assets.material}
-          castShadow
-          receiveShadow
-        />
-      ))}
+      <SculptedForms granite={granite} heightAt={assets.heightAt} />
       <mesh
         geometry={assets.deck}
         material={assets.material}
