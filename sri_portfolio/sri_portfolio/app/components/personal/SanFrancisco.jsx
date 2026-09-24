@@ -1,5 +1,8 @@
 "use client";
-import { useEffect, useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
+import * as THREE from "three";
+import { applyTriplanar } from "../../lib/triplanar.mjs";
+import usePbrSet from "./usePbrSet";
 import {
   sfNeighborhoodBatches,
   apartmentBaseBatches,
@@ -55,19 +58,68 @@ const landmarkFinish = {
   ink: { color: "#243038", roughness: 0.5 },
 };
 
-function CityMaterialBatch({ items, tone, night }) {
-  const geometry = useMemo(() => cityBatchGeometry(items), [items]);
-  useEffect(() => () => geometry.dispose(), [geometry]);
+// Photographed finishes by tone: stucco facades and trim, metal roofs,
+// asphalt streets and concrete pavers. "detail" keeps each tone's palette
+// colour and adds the scan's structure; glass, rails and glow stay smooth.
+const cityFinish = {
+  ivory: ["plaster", 0.9, 1.1],
+  sage: ["plaster", 0.9, 1.1],
+  clay: ["plaster", 0.9, 1.1],
+  trim: ["plaster", 1.4, 0.7],
+  stone: ["concrete", 0.7, 1],
+  door: ["plaster", 1.4, 0.6],
+  roof: ["roof-metal", 0.6, 1],
+  paving: ["pavers", 0.55, 1],
+  asphalt: ["asphalt", 0.35, 1],
+};
+function TexturedCityBatch({ geometry, tone, night }) {
+  const [set, scale, strength] = cityFinish[tone];
+  const maps = usePbrSet(set);
+  const material = useMemo(
+    () =>
+      applyTriplanar(
+        new THREE.MeshStandardMaterial({
+          color: sfPalette[tone],
+          roughness: 0.86,
+        }),
+        {
+          ...maps,
+          mode: "detail",
+          scale,
+          strength: 0.8 * strength,
+          normalStrength: strength,
+          meanLuminance: 0.45,
+        },
+      ),
+    [maps, tone, scale, strength],
+  );
+  useEffect(() => () => material.dispose(), [material]);
+  return (
+    <mesh geometry={geometry} material={material} castShadow receiveShadow />
+  );
+}
+function PlainCityBatch({ geometry, tone, night }) {
   return (
     <mesh geometry={geometry} castShadow receiveShadow>
       <meshStandardMaterial
         color={sfPalette[tone]}
-        roughness={tone === "glass" ? 0.3 : 0.86}
-        metalness={tone === "rail" ? 0.6 : 0}
+        roughness={tone === "glass" ? 0.08 : 0.86}
+        metalness={tone === "rail" ? 0.6 : tone === "glass" ? 0.2 : 0}
         emissive={tone === "glow" ? "#ffc883" : "#000"}
         emissiveIntensity={night ? 0.2 : 0}
       />
     </mesh>
+  );
+}
+function CityMaterialBatch({ items, tone, night }) {
+  const geometry = useMemo(() => cityBatchGeometry(items), [items]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  const plain = <PlainCityBatch {...{ geometry, tone, night }} />;
+  if (!cityFinish[tone]) return plain;
+  return (
+    <Suspense fallback={plain}>
+      <TexturedCityBatch {...{ geometry, tone, night }} />
+    </Suspense>
   );
 }
 function Batches({ data, night }) {
