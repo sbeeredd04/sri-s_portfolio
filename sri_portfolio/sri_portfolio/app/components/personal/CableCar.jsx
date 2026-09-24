@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { Boxes } from "./ScenePrimitives";
 import { surfaceHeight } from "../../lib/world-layout.mjs";
 import { cableLine } from "../../lib/sf-plan.mjs";
+import { discover } from "../../lib/discoveries.mjs";
 
 const ground = (x, z) => surfaceHeight("studio", x, z);
 
@@ -152,7 +153,13 @@ export default function CableCar({ animate }) {
           roughness={0.35}
         />
       </mesh>
-      <group ref={car}>
+      <group
+        ref={car}
+        onClick={(event) => {
+          event.stopPropagation();
+          discover("ding-ding");
+        }}
+      >
         <Boxes items={parts.maroon} color="#6e1f23" roughness={0.45} />
         <Boxes items={parts.cream} color="#e8dcc0" roughness={0.6} />
         <Boxes

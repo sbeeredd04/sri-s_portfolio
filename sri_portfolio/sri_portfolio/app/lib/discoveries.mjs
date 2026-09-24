@@ -29,6 +29,24 @@ export const discoveries = [
     hint: "Try those three words in the little terminal.",
     note: "Make the details worth noticing. Then keep going.",
   },
+  {
+    id: "ding-ding",
+    title: "Ding ding.",
+    hint: "Something near home runs on a cable.",
+    note: "Hold on. The hill is steeper than it looks.",
+  },
+  {
+    id: "paper-plane",
+    title: "Caught one.",
+    hint: "Some notes are still up in the air.",
+    note: "Every note starts as a loose idea. This one landed.",
+  },
+  {
+    id: "sudo",
+    title: "Permission denied, kindly.",
+    hint: "The command line respects authority. Mostly.",
+    note: "Nice try. Everything here is already yours to explore.",
+  },
 ];
 const key = "sri-little-discoveries-v1";
 let memory = [];

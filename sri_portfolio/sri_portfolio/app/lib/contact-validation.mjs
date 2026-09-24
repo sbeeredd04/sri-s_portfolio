@@ -4,6 +4,9 @@ export const discoveryIds = [
   "hello-world",
   "curiosity",
   "three-screens",
+  "ding-ding",
+  "paper-plane",
+  "sudo",
 ];
 export function validateMessage(value) {
   if (!value || typeof value !== "object") return null;

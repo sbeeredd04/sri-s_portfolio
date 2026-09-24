@@ -136,6 +136,11 @@ export function runCommand(
     };
   const [verb, ...rest] = command.split(" ");
   const arg = rest.join(" ");
+  if (verb === "sudo")
+    return {
+      text: discoveries.find((d) => d.id === "sudo").note,
+      discovery: "sudo",
+    };
   if ((verb === "cd" || verb === "go" || verb === "goto") && arg) {
     if (arg === "..") return travel(places[0]);
     // cd prefers places, go prefers views ("go valley" is the view).

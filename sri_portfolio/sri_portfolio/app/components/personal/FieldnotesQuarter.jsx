@@ -22,6 +22,7 @@ import {
   fieldnoteShelves,
   publishedFieldnotes,
 } from "../../lib/fieldnotes.mjs";
+import { discover } from "../../lib/discoveries.mjs";
 
 const ground = (x, z) => renderedSurfaceHeight("future", x, z);
 
@@ -379,6 +380,10 @@ function PaperPlanes({ animate }) {
       ref={ref}
       args={[geometry, undefined, planes.length]}
       castShadow
+      onClick={(event) => {
+        event.stopPropagation();
+        discover("paper-plane");
+      }}
     >
       <meshStandardMaterial
         color="#f6f2e8"

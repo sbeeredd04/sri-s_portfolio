@@ -24,6 +24,15 @@ const CURIOS = {
   "nine-nine": (
     <path d="M32 6l22 8v14c0 14-10 24-22 30C20 52 10 42 10 28V14Zm0 12l3 7h8l-6 5 2 8-7-5-7 5 2-8-6-5h8Z" />
   ),
+  "ding-ding": (
+    <path d="M14 22h36l-3 20H17ZM20 42v6m24-6v6M18 48h28M24 22v-6h16v6M32 16V8m-6 0h12M22 30h20" />
+  ),
+  "paper-plane": (
+    <path d="M6 30 58 10 44 54 32 38Zm26 8L58 10M32 38l-4 12 8-8" />
+  ),
+  sudo: (
+    <path d="M14 18h36v28H14zM20 26l6 5-6 5M30 38h12M24 18v-6a8 8 0 0 1 16 0v6" />
+  ),
   "one-more-thing": (
     <path d="M32 8v10M32 46v10M8 32h10M46 32h10M15 15l7 7M42 42l7 7M49 15l-7 7M22 42l-7 7M32 26a6 6 0 1 1 0 12a6 6 0 1 1 0-12" />
   ),
