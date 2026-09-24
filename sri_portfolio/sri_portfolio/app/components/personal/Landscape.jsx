@@ -7,13 +7,12 @@ import {
 } from "../../lib/trail-layout.mjs";
 import { discover } from "../../lib/discoveries.mjs";
 import { courtTrees } from "../../lib/court-layout.mjs";
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";
-import { createPineGeometry } from "../../lib/forest-geometry.mjs";
 import * as THREE from "three";
 
 import GraniteValley from "./GraniteValley";
+import ModelInstances from "./ModelInstances";
 import ValleyCourse from "./ValleyCourse";
 import { inGraniteFootprint } from "../../lib/valley-layout.mjs";
 import { localTrailPaving } from "../../lib/trail-surface.mjs";
@@ -80,26 +79,6 @@ function TexturedGrove({
   biome = park ? "court" : "trail",
   detailed = true,
 }) {
-  const trunks = useRef(),
-    crowns = useRef();
-  const geometry = useMemo(() => createPineGeometry(detailed), [detailed]);
-  const [needles, bark] = useTexture([
-    "/materials/pine/needles.webp",
-    "/materials/pine/bark.webp",
-  ]);
-  useLayoutEffect(() => {
-    needles.colorSpace = bark.colorSpace = THREE.SRGBColorSpace;
-    bark.wrapS = bark.wrapT = THREE.RepeatWrapping;
-    needles.anisotropy = bark.anisotropy = 4;
-    needles.needsUpdate = bark.needsUpdate = true;
-  }, [needles, bark]);
-  useEffect(
-    () => () => {
-      geometry.bark.dispose();
-      geometry.needles.dispose();
-    },
-    [geometry],
-  );
   const trees = useMemo(
     () =>
       biome === "trail"
@@ -149,67 +128,28 @@ function TexturedGrove({
             ),
     [park, biome],
   );
-  useLayoutEffect(() => {
-    const o = new THREE.Object3D(),
-      color = new THREE.Color();
-    trees.forEach((t, i) => {
-      const y = renderedSurfaceHeight(biome, t.x, t.z);
-      o.position.set(t.x, y, t.z);
-      o.rotation.set(0, i, 0);
-      o.scale.set(t.s * (0.82 + (i % 4) * 0.065), t.s, t.s);
-      o.updateMatrix();
-      trunks.current.setMatrixAt(i, o.matrix);
-      {
-        o.position.set(t.x, y, t.z);
-        o.rotation.set(0, i, 0);
-        o.scale.set(t.s * (0.82 + (i % 4) * 0.065), t.s, t.s);
-        o.updateMatrix();
-        crowns.current.setMatrixAt(i, o.matrix);
-        color.set(
-          (biome === "studio"
-            ? ["#b0b9a0", "#c5cbb3", "#a4b798", "#bdc9ae"]
-            : ["#c1c4a3", "#d9d7b9", "#b6c29d", "#cacfb3"])[i % 4],
-        );
-        crowns.current.setColorAt(i, color);
-        return;
-      }
-    });
-    trunks.current.instanceMatrix.needsUpdate = true;
-    crowns.current.instanceMatrix.needsUpdate = true;
-    crowns.current.instanceColor.needsUpdate = true;
-    trunks.current.computeBoundingSphere();
-    crowns.current.computeBoundingSphere();
-  }, [trees, park, biome]);
+  // Scanned CC0 fir (Poly Haven), scaled so each crown stays inside the
+  // clearance envelope the path/court footprint tests reserve for trees.
+  const items = useMemo(
+    () =>
+      trees.map((t, i) => ({
+        position: [t.x, renderedSurfaceHeight(biome, t.x, t.z) - 0.05, t.z],
+        rotation: i * 2.1,
+        scale: 0.36 * t.s * (0.9 + (i % 4) * 0.05),
+      })),
+    [trees, biome],
+  );
   return (
-    <group>
-      <instancedMesh
-        ref={trunks}
-        args={[undefined, undefined, trees.length]}
-        castShadow
-        receiveShadow
-      >
-        <primitive object={geometry.bark} attach="geometry" />
-        <meshStandardMaterial map={bark} color="#a39780" roughness={0.96} />
-      </instancedMesh>
-      <instancedMesh
-        ref={crowns}
-        args={[undefined, undefined, trees.length]}
-        castShadow
-        receiveShadow
-      >
-        <primitive object={geometry.needles} attach="geometry" />
-        <meshStandardMaterial
-          map={needles}
-          alphaTest={0.2}
-          emissiveMap={needles}
-          emissive="#d5d8c2"
-          emissiveIntensity={0.08}
-          alphaToCoverage
-          roughness={0.94}
-          side={THREE.DoubleSide}
-        />
-      </instancedMesh>
-    </group>
+    <ModelInstances
+      src={biome === "studio" ? "/models/tree-small-broadleaf.glb" : "/models/tree-fir.glb"}
+      items={
+        biome === "studio"
+          ? items.map((item) => ({ ...item, scale: item.scale * 2 }))
+          : items
+      }
+      lod={detailed ? 0 : 1}
+      envMapIntensity={0.7}
+    />
   );
 }
 export function Lake({
