@@ -442,3 +442,24 @@ test("the keynote hall murmurs and applauds, and only there", () => {
     engine.destroy(true);
   }
 });
+
+test("the camp fire crackles only at the camp", () => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "camp",
+    preferences: sensoryDefaults,
+    weather: { kind: "clear", rain: 0, fog: 0 },
+  });
+  try {
+    engine.mix();
+    assert.ok(engine.fire.gain.value > 0, "fire audible");
+    assert.ok(engine.roar, "roar started");
+    const before = ctx.sources.length;
+    engine.cityCues();
+    assert.ok(ctx.sources.length > before, "crackles scheduled");
+    engine.update({ place: "trail" });
+    assert.equal(engine.fire.gain.value, 0, "fire stays at the camp");
+  } finally {
+    engine.destroy(true);
+  }
+});

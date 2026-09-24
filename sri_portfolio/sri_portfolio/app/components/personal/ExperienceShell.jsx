@@ -179,7 +179,9 @@ export default function ExperienceShell() {
         ? "bay"
         : biome === "projects" && stop === "keynote"
           ? "keynote"
-          : biome,
+          : biome === "trail" && stop === "camp"
+            ? "camp"
+            : biome,
       sheet,
       roomDetail,
       weather,

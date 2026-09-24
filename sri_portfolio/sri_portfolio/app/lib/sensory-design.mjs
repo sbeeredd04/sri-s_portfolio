@@ -51,6 +51,16 @@ export const soundPlaces = {
     score: 0.36,
     hall: true,
   },
+  camp: {
+    track: "shoreline",
+    label: "Round the fire",
+    description:
+      "A small fire breathing and popping, and the valley going quiet.",
+    bed: "lakeside",
+    level: 0.36,
+    score: 0.3,
+    fire: true,
+  },
   entertainment: {
     label: "After hours",
     description: "Warm room tone and soft chords. Settle in for a while.",

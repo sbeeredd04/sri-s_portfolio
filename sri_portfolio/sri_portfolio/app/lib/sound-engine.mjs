@@ -66,6 +66,10 @@ export class SoundEngine {
     this.hall = context.createGain();
     this.hall.gain.value = 0;
     this.hall.connect(this.master);
+    // A campfire on the trail: a low roar and scattered crackles.
+    this.fire = context.createGain();
+    this.fire.gain.value = 0;
+    this.fire.connect(this.master);
     // A small diffused tail softens cues without making navigation echo.
     const room = context.createConvolver(),
       wet = context.createGain();
@@ -104,6 +108,7 @@ export class SoundEngine {
       this.weather,
       this.city,
       this.hall,
+      this.fire,
       room,
       wet,
     ];
@@ -206,6 +211,9 @@ export class SoundEngine {
     const hallLevel = profile.hall ? levels.environment / profile.level : 0;
     soften(this.hall.gain, hallLevel, now);
     if (hallLevel && !this.murmur) this.startMurmur();
+    const fireLevel = profile.fire ? levels.environment / profile.level : 0;
+    soften(this.fire.gain, fireLevel, now);
+    if (fireLevel && !this.roar) this.startRoar();
     const rain = this.rainLevel();
     for (const [name, { gain }] of this.loops)
       soften(
@@ -304,6 +312,52 @@ export class SoundEngine {
     this.murmur = sources;
   }
 
+  // The steady breath of a small fire under its crackles.
+  startRoar() {
+    const { context } = this;
+    const source = context.createBufferSource(),
+      low = context.createBiquadFilter(),
+      gain = context.createGain();
+    source.buffer = this.noise;
+    source.loop = true;
+    source.playbackRate.value = 0.7;
+    low.type = "lowpass";
+    low.frequency.value = 380;
+    gain.gain.value = 0.045;
+    source.connect(low).connect(gain).connect(this.fire);
+    source.start();
+    this.roar = source;
+    this.track(source, [source, low, gain]);
+  }
+
+  // A second's worth of pops and ticks, some bright, some woody.
+  crackle(at) {
+    const { context } = this;
+    const count = 2 + Math.floor(Math.random() * 6);
+    for (let i = 0; i < count; i++) {
+      const start = at + Math.random() * 0.95;
+      const source = context.createBufferSource(),
+        band = context.createBiquadFilter(),
+        gain = context.createGain();
+      source.buffer = this.noise;
+      band.type = "bandpass";
+      band.frequency.value = 1400 + Math.random() * 3800;
+      band.Q.value = 2.4;
+      const level =
+        0.012 + Math.random() * (Math.random() < 0.15 ? 0.05 : 0.018);
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(level, start + 0.002);
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        start + 0.02 + Math.random() * 0.05,
+      );
+      source.connect(band).connect(gain).connect(this.fire);
+      source.start(start, Math.random() * 0.9);
+      source.stop(start + 0.09);
+      this.track(source, [source, band, gain]);
+    }
+  }
+
   // Applause: a few seconds of scattered claps that rise and fall.
   applause(at) {
     const { context } = this;
@@ -384,7 +438,7 @@ export class SoundEngine {
     const { context } = this;
     const profile = soundPlaces[this.place] || soundPlaces.planet;
     if (
-      !(profile.city || profile.hall) ||
+      !(profile.city || profile.hall || profile.fire) ||
       this.hidden ||
       this.disposed ||
       context.state !== "running" ||
@@ -393,6 +447,8 @@ export class SoundEngine {
     )
       return;
     const now = context.currentTime;
+    // The fire crackles every second; the other places cue now and then.
+    if (profile.fire) return this.crackle(now + 0.05);
     if (now < this.nextCityCue) return;
     if (profile.hall) {
       this.applause(now + 0.05);
