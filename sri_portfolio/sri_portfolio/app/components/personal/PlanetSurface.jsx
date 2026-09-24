@@ -44,7 +44,7 @@ export default function PlanetSurface({ surfaceRef }) {
           "#223e36",
           "#3a4930",
           "#424b36",
-          "#302039",
+          "#29331f",
           "#484e3b",
         ].map((c) => new THREE.Color(c)),
       };

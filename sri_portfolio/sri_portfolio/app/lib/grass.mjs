@@ -31,6 +31,16 @@ export const grassProfile = {
     dry: "#b0a462",
     fade: 100,
   },
+  // Evening lawn around the listening room and cinema: soft, cool-toned.
+  entertainment: {
+    extent: 20,
+    height: 0.26,
+    width: 0.036,
+    base: "#2b3d25",
+    tip: "#67884a",
+    dry: "#8f9661",
+    fade: 90,
+  },
   // Garden meadow with some height and seed heads.
   future: {
     extent: 20,
