@@ -14,6 +14,7 @@ import * as THREE from "three";
 import GraniteValley from "./GraniteValley";
 import ModelInstances from "./ModelInstances";
 import { useQuality } from "./Quality";
+import ValleyDressing from "./ValleyDressing";
 import { foundryGroveTrees } from "../../lib/foundry-grove.mjs";
 import ValleyCourse from "./ValleyCourse";
 import { inGraniteFootprint } from "../../lib/valley-layout.mjs";
@@ -313,6 +314,7 @@ export default function Landscape({ animate, detailed = true, onCue }) {
     <group>
       <mesh geometry={path} material={pathMaterial} receiveShadow />
       <Grove detailed={detailed} />
+      <ValleyDressing detailed={detailed} />
       <ValleyCourse animate={animate} />
       <Lake animate={animate} onCue={onCue} />
       <Suspense fallback={null}>
