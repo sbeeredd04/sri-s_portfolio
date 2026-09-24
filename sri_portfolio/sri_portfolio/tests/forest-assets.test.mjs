@@ -11,7 +11,9 @@ test("scanned and sculpted tree payloads stay inside their browser budgets", () 
     "tree-small-broadleaf.glb": 1300000,
   };
   for (const [file, limit] of Object.entries(limits)) {
-    const bytes = statSync(new URL("../public/models/" + file, import.meta.url)).size;
+    const bytes = statSync(
+      new URL("../public/models/" + file, import.meta.url),
+    ).size;
     assert.ok(bytes < limit, `${file} is ${bytes} bytes`);
   }
 });
@@ -43,4 +45,33 @@ test("every rendered court-tree bounding footprint clears the playing aprons", a
         `tree footprint ${i} enters ${id}`,
       );
   });
+});
+
+// picnic-table.glb 2.24 x 3.02 m and trash-can.glb 0.78 x 0.56 m (CATALOG).
+test("park furniture stays off the courts and the promenade", async () => {
+  const { courtPicnicTables, courtBins, courts, overlapsCourt, courtPaths } =
+    await import("../app/lib/court-layout.mjs");
+  const pieces = [
+    ...courtPicnicTables.map((p) => ({ ...p, half: 1.51 })),
+    ...courtBins.map((p) => ({ ...p, half: 0.39 })),
+  ];
+  for (const {
+    position: [x, , z],
+    half,
+  } of pieces) {
+    for (const id of Object.keys(courts))
+      assert.ok(
+        !overlapsCourt(x, z, half, half, id, courts[id].apron),
+        `on ${id}`,
+      );
+    for (const [[ax, az], [bx, bz], width] of courtPaths) {
+      const inX =
+        x + half > Math.min(ax, bx) - width / 2 &&
+        x - half < Math.max(ax, bx) + width / 2;
+      const inZ =
+        z + half > Math.min(az, bz) - width / 2 &&
+        z - half < Math.max(az, bz) + width / 2;
+      assert.ok(!(inX && inZ), `piece at ${x},${z} on a path`);
+    }
+  }
 });

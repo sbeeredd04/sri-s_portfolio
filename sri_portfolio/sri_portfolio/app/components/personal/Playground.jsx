@@ -5,11 +5,15 @@ import {
   BasketballCourt,
 } from "./SportsCourts";
 import { PavedWalks, Bench, Sign } from "./StreetFurniture";
+import { Suspense } from "react";
 import { Grove } from "./Landscape";
+import ModelInstances from "./ModelInstances";
 import { Box, Rods } from "./ScenePrimitives";
 import {
   courtPaths,
   courtBenches,
+  courtPicnicTables,
+  courtBins,
   courts,
   courtLamps,
 } from "../../lib/court-layout.mjs";
@@ -49,6 +53,13 @@ export default function Playground({
         audible={activeCourt === "basketball"}
       />
       <Grove park detailed={detailed} />
+      <Suspense fallback={null}>
+        <ModelInstances
+          src="/models/picnic-table.glb"
+          items={courtPicnicTables}
+        />
+        <ModelInstances src="/models/trash-can.glb" items={courtBins} />
+      </Suspense>
       {courtBenches.map((bench, i) => (
         <Bench key={i} {...bench} />
       ))}

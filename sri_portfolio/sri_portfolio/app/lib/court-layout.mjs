@@ -29,6 +29,17 @@ export const courtBenches = [
   { position: [-5.6, 0, 3.5], rotation: [0, Math.PI / 2, 0] },
   { position: [24, 0, 2], rotation: [0, -Math.PI / 2, 0] },
 ];
+// Scanned CC0 park furniture on the far side of the promenade (z = 13):
+// picnic tables turned long-side to the courts, bins by each court path.
+export const courtPicnicTables = [
+  { position: [-6, 0, 17.2], rotation: Math.PI / 2 },
+  { position: [7.5, 0, 17.4], rotation: Math.PI / 2 + 0.12 },
+];
+export const courtBins = [
+  { position: [-10.3, 0, 15.3], rotation: 0.3 },
+  { position: [1.7, 0, 15.3], rotation: -0.2 },
+  { position: [15.7, 0, 15.3], rotation: 0.1 },
+];
 export const courtTrees = Array.from({ length: 22 }, (_, i) => ({
   x: -23 + i * 2.25,
   z: -13.8 - (i % 3) * 1.3,
