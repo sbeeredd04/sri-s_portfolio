@@ -35,7 +35,7 @@ const trimColor = {
   office: "#d7d2c8",
 };
 
-class Batch {
+export class Batch {
   constructor() {
     this.p = [];
     this.n = [];
@@ -110,7 +110,7 @@ const FACES = [
 
 // A builder in one lot's frame: origin at the lot centre on its ground,
 // local +z toward the street, rotated by the lot's yaw.
-function frame(batches, x, y, z, yaw) {
+export function frame(batches, x, y, z, yaw) {
   const c = Math.cos(yaw),
     s = Math.sin(yaw);
   const world = (lx, ly, lz) => [
@@ -161,7 +161,7 @@ function frame(batches, x, y, z, yaw) {
 }
 
 const colorCache = new Map();
-const rgb = (hex) => {
+export const rgb = (hex) => {
   if (!colorCache.has(hex)) colorCache.set(hex, new Color(hex));
   return colorCache.get(hex);
 };
