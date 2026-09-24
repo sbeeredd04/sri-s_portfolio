@@ -86,7 +86,8 @@ export const soundPlaces = {
   future: {
     track: "paper-light",
     label: "Good things ahead",
-    description: "A little air and an unfinished thought.",
+    description: "A little air, a wind chime, and an unfinished thought.",
+    chimes: true,
     bed: "open-air",
     level: 0.18,
     score: 0.62,

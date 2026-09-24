@@ -463,3 +463,25 @@ test("the camp fire crackles only at the camp", () => {
     engine.destroy(true);
   }
 });
+
+test("Fieldnotes chimes without the street hum following", () => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "studio",
+    preferences: sensoryDefaults,
+    weather: { kind: "clear", rain: 0, fog: 0 },
+  });
+  try {
+    engine.mix();
+    assert.ok(engine.humGain.gain.value > 0, "hum at home");
+    engine.update({ place: "future" });
+    assert.ok(engine.city.gain.value > 0, "garden bus open");
+    assert.equal(engine.humGain.gain.value, 0, "no street hum in the garden");
+    const before = ctx.oscillators.length;
+    engine.nextCityCue = 0;
+    engine.cityCues();
+    assert.ok(ctx.oscillators.length > before, "chimes rang");
+  } finally {
+    engine.destroy(true);
+  }
+});

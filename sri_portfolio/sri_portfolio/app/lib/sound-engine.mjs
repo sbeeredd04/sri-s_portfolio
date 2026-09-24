@@ -205,9 +205,12 @@ export class SoundEngine {
         : 0,
       now,
     );
-    const cityLevel = profile.city ? levels.environment / profile.level : 0;
+    const cityLevel =
+      profile.city || profile.chimes ? levels.environment / profile.level : 0;
     soften(this.city.gain, cityLevel, now);
-    if (cityLevel && !this.hum) this.startHum();
+    if (profile.city && cityLevel && !this.hum) this.startHum();
+    // The street hum belongs to the city; the bus also carries garden chimes.
+    if (this.humGain) soften(this.humGain.gain, profile.city ? 0.05 : 0, now);
     const hallLevel = profile.hall ? levels.environment / profile.level : 0;
     soften(this.hall.gain, hallLevel, now);
     if (hallLevel && !this.murmur) this.startMurmur();
@@ -277,6 +280,7 @@ export class SoundEngine {
     source.connect(low).connect(gain).connect(this.city);
     source.start();
     this.hum = source;
+    this.humGain = gain;
     this.track(source, [source, low, gain]);
   }
 
@@ -408,6 +412,33 @@ export class SoundEngine {
       }
   }
 
+  // A garden wind chime: a few pentatonic tubes knocked by the breeze.
+  chimes(at) {
+    const { context } = this;
+    const scale = [880, 987.8, 1174.7, 1318.5, 1568, 1760];
+    const knocks = 2 + Math.floor(Math.random() * 4);
+    for (let k = 0; k < knocks; k++) {
+      const hz = scale[Math.floor(Math.random() * scale.length)];
+      const start = at + k * (0.18 + Math.random() * 0.35);
+      for (const [ratio, level] of [
+        [1, 0.012],
+        [2.76, 0.004],
+      ]) {
+        const tone = context.createOscillator(),
+          gain = context.createGain();
+        tone.type = "sine";
+        tone.frequency.setValueAtTime(hz * ratio, start);
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(level, start + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 2.6);
+        tone.connect(gain).connect(this.city);
+        tone.start(start);
+        tone.stop(start + 2.7);
+        this.track(tone, [tone, gain]);
+      }
+    }
+  }
+
   // The two-tone "bee-oh" of a bay foghorn, far off and low-passed.
   foghorn(at) {
     const { context } = this;
@@ -438,7 +469,7 @@ export class SoundEngine {
     const { context } = this;
     const profile = soundPlaces[this.place] || soundPlaces.planet;
     if (
-      !(profile.city || profile.hall || profile.fire) ||
+      !(profile.city || profile.hall || profile.fire || profile.chimes) ||
       this.hidden ||
       this.disposed ||
       context.state !== "running" ||
@@ -450,6 +481,11 @@ export class SoundEngine {
     // The fire crackles every second; the other places cue now and then.
     if (profile.fire) return this.crackle(now + 0.05);
     if (now < this.nextCityCue) return;
+    if (profile.chimes) {
+      this.chimes(now + 0.05);
+      this.nextCityCue = now + 9 + Math.random() * 16;
+      return;
+    }
     if (profile.hall) {
       this.applause(now + 0.05);
       this.nextCityCue = now + 34 + Math.random() * 36;
