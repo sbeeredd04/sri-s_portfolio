@@ -13,7 +13,7 @@ import { useRoomTexture } from "./RoomMaterials";
 import ProjectDistricts from "./ProjectDistricts";
 import FoundryCampus from "./FoundryCampus";
 import Workbench from "./Workbench";
-import { FinishBox, useFinish } from "./FoundryFinishes";
+import { FinishBox, useFinish } from "./Finishes";
 import { Grove } from "./Landscape";
 import InteractiveProjectExhibit from "./InteractiveProjectExhibit";
 import {

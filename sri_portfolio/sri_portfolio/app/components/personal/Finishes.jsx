@@ -5,9 +5,9 @@ import usePbrSet from "./usePbrSet";
 import { applyTriplanar } from "../../lib/triplanar.mjs";
 import { roundedBox } from "../../lib/model-geometry.mjs";
 
-// Photographed CC0 finishes laid on in world space, keeping each workshop's
-// palette colour and adding real grain: poured-concrete slabs, standing-seam
-// metal roofs and timber back walls. Callers sit inside a local Suspense.
+// Photographed CC0 finishes laid on in world space, keeping each surface's
+// palette colour and adding real grain (concrete, metal roofs, timber,
+// plaster, pavers). Callers sit inside a local Suspense.
 export function useFinish(set, color, { scale = 0.5, strength = 0.8 } = {}) {
   const maps = usePbrSet(set);
   const material = useMemo(
