@@ -6,6 +6,7 @@ import {
   sensoryPreferences,
   soundMix,
   hapticPulse,
+  soundPlaces,
 } from "../app/lib/sensory-design.mjs";
 import { SoundEngine } from "../app/lib/sound-engine.mjs";
 
@@ -204,19 +205,21 @@ test("late asset loads cannot restore the sound of a place the visitor already l
     "assets should not fetch in the constructor",
   );
   const loading = engine.prepare();
-  engine.update({ place: "studio" });
-  pending.get("/audio/rain-window.mp3")();
+  engine.update({ place: "trail" });
+  pending.get("/audio/lakeside.mp3")();
+  pending.get("/audio/shoreline.mp3")();
   pending.get("/audio/somewhere-soft.mp3")();
   await flush();
   pending.get("/audio/open-air.mp3")();
   await loading;
   await flush();
   assert.equal(engine.loops.get("open-air").gain.gain.value, 0);
-  assert.ok(engine.loops.get("rain-window").gain.gain.value > 0);
+  assert.ok(engine.loops.get("lakeside").gain.gain.value > 0);
   assert.equal(engine.weather.gain.value, 1);
   engine.update({ reading: true });
   assert.ok(engine.weather.gain.value < 0.5);
   engine.update({ place: "planet", weather: { kind: "clear", rain: 0 } });
+  assert.equal(engine.loops.get("lakeside").gain.gain.value, 0);
   assert.equal(
     engine.weather.gain.value,
     0,
@@ -403,4 +406,19 @@ test("room arrangements are small, loopable assets with headroom", () => {
     bytes += track.bytes;
   }
   assert.ok(bytes < 450000);
+});
+
+test("home plays the city, not a permanent storm", () => {
+  assert.equal(soundPlaces.studio.bed, "open-air");
+  const engine = new SoundEngine(context(), {
+    place: "studio",
+    preferences: sensoryDefaults,
+    weather: { kind: "clear", rain: 0, fog: 0 },
+  });
+  engine.mix();
+  assert.ok(engine.city.gain.value > 0, "street layer audible at home");
+  assert.equal(engine.weather.gain.value, 0, "no thunder on a clear day");
+  engine.update({ place: "trail" });
+  assert.equal(engine.city.gain.value, 0, "street layer stays home");
+  engine.destroy(true);
 });

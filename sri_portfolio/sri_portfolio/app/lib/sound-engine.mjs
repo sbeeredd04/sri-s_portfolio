@@ -57,6 +57,11 @@ export class SoundEngine {
     this.weather = context.createGain();
     this.weather.gain.value = 0;
     this.weather.connect(this.master);
+    // The city at home: a filtered street hum plus occasional bells and,
+    // in fog, a foghorn. Synthesised, so it costs no download.
+    this.city = context.createGain();
+    this.city.gain.value = 0;
+    this.city.connect(this.master);
     // A small diffused tail softens cues without making navigation echo.
     const room = context.createConvolver(),
       wet = context.createGain();
@@ -88,7 +93,17 @@ export class SoundEngine {
       seed = (seed * 16807) % 2147483647;
       noise[i] = (seed / 2147483647) * 2 - 1;
     }
-    this.owned = [this.master, limiter, this.effects, this.weather, room, wet];
+    this.owned = [
+      this.master,
+      limiter,
+      this.effects,
+      this.weather,
+      this.city,
+      room,
+      wet,
+    ];
+    this.nextCityCue = context.currentTime + 6;
+    this.cityClock = setInterval(() => this.cityCues(), 1000);
     this.thunder = setInterval(() => {
       // Thunder only when SF actually has a storm overhead.
       if (
@@ -180,6 +195,9 @@ export class SoundEngine {
         : 0,
       now,
     );
+    const cityLevel = profile.city ? levels.environment / profile.level : 0;
+    soften(this.city.gain, cityLevel, now);
+    if (cityLevel && !this.hum) this.startHum();
     const rain = this.rainLevel();
     for (const [name, { gain }] of this.loops)
       soften(
@@ -227,6 +245,94 @@ export class SoundEngine {
     source.start();
     source.stop(now + duration + 0.02);
     this.track(source, [source, filter, gain]);
+  }
+
+  startHum() {
+    const { context } = this;
+    const source = context.createBufferSource(),
+      low = context.createBiquadFilter(),
+      gain = context.createGain();
+    source.buffer = this.noise;
+    source.loop = true;
+    low.type = "lowpass";
+    low.frequency.value = 170;
+    low.Q.value = 0.4;
+    gain.gain.value = 0.05;
+    source.connect(low).connect(gain).connect(this.city);
+    source.start();
+    this.hum = source;
+    this.track(source, [source, low, gain]);
+  }
+
+  // A cable-car bell: bright partials, struck two or three times.
+  bell(at) {
+    const { context } = this;
+    const strikes = 2 + Math.round(Math.random());
+    for (let k = 0; k < strikes; k++)
+      for (const [hz, level] of [
+        [1180, 0.022],
+        [2950, 0.01],
+        [5310, 0.004],
+      ]) {
+        const tone = context.createOscillator(),
+          gain = context.createGain();
+        const start = at + k * 0.32;
+        tone.type = "sine";
+        tone.frequency.setValueAtTime(hz, start);
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(level, start + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 1.1);
+        tone.connect(gain).connect(this.city);
+        tone.start(start);
+        tone.stop(start + 1.15);
+        this.track(tone, [tone, gain]);
+      }
+  }
+
+  // The two-tone "bee-oh" of a bay foghorn, far off and low-passed.
+  foghorn(at) {
+    const { context } = this;
+    for (const [hz, offset] of [
+      [98, 0],
+      [82, 1.5],
+    ]) {
+      const tone = context.createOscillator(),
+        low = context.createBiquadFilter(),
+        gain = context.createGain();
+      const start = at + offset;
+      tone.type = "sawtooth";
+      tone.frequency.setValueAtTime(hz, start);
+      low.type = "lowpass";
+      low.frequency.value = 260;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.03, start + 0.25);
+      gain.gain.setValueAtTime(0.03, start + 1.1);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 1.9);
+      tone.connect(low).connect(gain).connect(this.city);
+      tone.start(start);
+      tone.stop(start + 2);
+      this.track(tone, [tone, low, gain]);
+    }
+  }
+
+  cityCues() {
+    const { context } = this;
+    const profile = soundPlaces[this.place] || soundPlaces.planet;
+    if (
+      !profile.city ||
+      this.hidden ||
+      this.disposed ||
+      context.state !== "running" ||
+      this.focus.music ||
+      !this.preferences.effects
+    )
+      return;
+    const now = context.currentTime;
+    if (now < this.nextCityCue) return;
+    const foggy = (this.weatherState?.fog ?? 0) > 0.3;
+    if (foggy && Math.random() < 0.45) this.foghorn(now + 0.05);
+    else this.bell(now + 0.05);
+    this.nextCityCue = now + 24 + Math.random() * 30;
   }
 
   cue(kind) {
@@ -296,6 +402,7 @@ export class SoundEngine {
     if (this.disposed) return;
     this.disposed = true;
     clearInterval(this.thunder);
+    clearInterval(this.cityClock);
     clearTimeout(this.suspendTimer);
     this.abort.abort();
     const dispose = () => {

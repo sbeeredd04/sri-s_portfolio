@@ -18,12 +18,13 @@ export const soundPlaces = {
     score: 0.65,
   },
   studio: {
-    label: "Drizzle at home",
+    label: "The city outside",
     description:
-      "Fine drizzle on the glass, soft room air, and something taking shape.",
-    bed: "rain-window",
-    level: 0.65,
+      "Streets humming below, a cable-car bell, a foghorn when the fog is in.",
+    bed: "open-air",
+    level: 0.4,
     score: 0.48,
+    city: true,
   },
   bay: {
     track: "shoreline",
