@@ -316,6 +316,21 @@ export default function ExperienceShell() {
     setStop(id);
     setReset((n) => n + 1);
   }
+  // On a phone, a room left open for a few seconds releases the world: the
+  // scene unmounts (freeing GPU memory) and returns when the room closes.
+  const [worldResting, setWorldResting] = useState(false);
+  useEffect(() => {
+    if (!sheet) {
+      setWorldResting(false);
+      return;
+    }
+    const small = window.matchMedia(
+      "(max-width: 700px), (pointer: coarse)",
+    ).matches;
+    if (!small) return;
+    const timer = setTimeout(() => setWorldResting(true), 4000);
+    return () => clearTimeout(timer);
+  }, [sheet]);
   // Terminals (the "/" bar, the Discoveries console) act through one event.
   const commandAction = useRef(null);
   commandAction.current = (action) => {
@@ -427,7 +442,7 @@ export default function ExperienceShell() {
       </header>
       <main className="immersive-main" aria-label="Explore Sri’s world">
         <div className="immersive-canvas">
-          {!still && tierCeiling ? (
+          {!still && tierCeiling && !worldResting ? (
             <WorldBoundary onFailure={graphicsUnavailable}>
               <WorldScene
                 tier={tierCeiling}
