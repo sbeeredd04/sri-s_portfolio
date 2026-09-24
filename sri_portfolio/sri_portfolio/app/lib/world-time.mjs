@@ -98,8 +98,9 @@ export const biomeMoods = {
   },
   studio: {
     label: "Rain at the windows",
-    sky: "#91b5db",
-    sun: "#dce8f4",
+    // Overcast light is neutral grey; a blue sun turned the whole city blue.
+    sky: "#a3b0bf",
+    sun: "#ebe8e2",
     exposure: 0.7,
   },
   projects: {

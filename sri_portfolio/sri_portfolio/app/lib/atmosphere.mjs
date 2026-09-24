@@ -42,6 +42,14 @@ const nightTint = {
   trail: new THREE.Color(0.025, 0.045, 0.06),
 };
 
+// Share of the day sky replaced by marine-layer grey: the city is overcast.
+export const overcast = { studio: 0.62 };
+const cloudDeck = {
+  zenith: new THREE.Color(0.34, 0.37, 0.41),
+  horizon: new THREE.Color(0.58, 0.6, 0.62),
+  glow: new THREE.Color(0.7, 0.68, 0.64),
+};
+
 // The sky fades in as the camera descends toward the surface; from orbit the
 // planet is seen against space, near the ground it has an atmosphere.
 export const SKY_FADE = [70, 150];
@@ -66,7 +74,10 @@ export function skyState({
     1,
   );
   const lit = (key) =>
-    day[key].clone().lerp(dusk[key], sunset * (key === "zenith" ? 0.5 : 0.8));
+    day[key]
+      .clone()
+      .lerp(dusk[key], sunset * (key === "zenith" ? 0.5 : 0.8))
+      .lerp(cloudDeck[key], overcast[world] || 0);
   const nightColor = (key) =>
     key === "horizon" && nightTint[world]
       ? nightTint[world].clone()
