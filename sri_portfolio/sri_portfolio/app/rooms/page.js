@@ -1,10 +1,11 @@
 import { readingSections } from "../lib/world-story.mjs";
-export const metadata = {
+import { pageMetadata } from "../lib/page-metadata.mjs";
+export const metadata = pageMetadata({
   title: "All places — Sri Ujjwal Reddy",
   description:
     "Open the work, music, stories and conversations in Sri’s world, each in its own place.",
-  alternates: { canonical: "/rooms" },
-};
+  path: "/rooms",
+});
 const groups = [
   { name: "Things I make", ids: ["work", "journey", "skills"] },
   { name: "The life around them", ids: ["about", "music", "notes"] },

@@ -54,6 +54,7 @@ export default function StandaloneRoom({ id, initialCollection = "all" }) {
             id={id}
             collection={initialCollection}
             onProjectLocationChange={setProjectLocation}
+            projectPage={roomPageHref("work")}
             channel={channel}
             onChannelChange={setChannel}
             onSoundRoomChange={setDetail}

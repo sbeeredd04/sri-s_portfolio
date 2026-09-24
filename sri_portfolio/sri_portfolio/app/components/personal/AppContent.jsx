@@ -16,6 +16,7 @@ export default function AppContent({
   onChannelChange,
   onSoundRoomChange,
   onProjectLocationChange,
+  projectPage,
 }) {
   if (id === "about") return <AboutJournal expanded={expanded} />;
   if (id === "work")
@@ -25,7 +26,8 @@ export default function AppContent({
         onLocationChange={onProjectLocationChange}
       />
     );
-  if (id === "journey") return <ExperienceStory expanded={expanded} />;
+  if (id === "journey")
+    return <ExperienceStory expanded={expanded} projectPage={projectPage} />;
   if (id === "skills")
     return (
       <div>

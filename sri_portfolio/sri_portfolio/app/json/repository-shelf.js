@@ -45,15 +45,6 @@ export const earlyDrafts = [
     url: "https://github.com/sbeeredd04/GunShotAnalysis",
     status: "Early repository",
   },
-  {
-    id: "draft-cse-360-project",
-    name: "CSE_360_Project",
-    category: "EARLY DRAFT",
-    description:
-      "An early repository with little public documentation so far. A place reserved for an idea, rather than a finished project.",
-    url: "https://github.com/sbeeredd04/CSE_360_Project",
-    status: "Early repository",
-  },
 ];
 export const referenceForks = [
   {

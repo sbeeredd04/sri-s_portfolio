@@ -186,10 +186,6 @@ export function watercoursePoints() {
   return course;
 }
 
-export function groundWaterPoints() {
-  return watercoursePoints().filter((p) => p.ground && p.bank > 0);
-}
-
 function nearestGround(x, z) {
   const points = watercoursePoints().filter((p) => p.ground);
   let best = null,

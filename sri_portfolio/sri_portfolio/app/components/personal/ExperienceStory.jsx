@@ -3,7 +3,12 @@ import { useState } from "react";
 import Image from "next/image";
 import { history, beginnings } from "../../json/personal";
 import { workStories } from "../../json/work-stories";
-export default function ExperienceStory({ expanded = false }) {
+// Project links are in-page anchors; a page without the project library
+// passes the room that holds it as projectPage.
+export default function ExperienceStory({
+  expanded = false,
+  projectPage = "",
+}) {
   const [selected, setSelected] = useState(0),
     item = history[selected];
   return (
@@ -82,7 +87,10 @@ export default function ExperienceStory({ expanded = false }) {
                   </figure>
                 )}
                 {story.link && (
-                  <a className="work-project-link" href={story.link.href}>
+                  <a
+                    className="work-project-link"
+                    href={`${projectPage}${story.link.href}`}
+                  >
                     {story.link.label}
                     <span aria-hidden="true">↗</span>
                   </a>

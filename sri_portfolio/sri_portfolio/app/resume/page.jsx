@@ -1,11 +1,14 @@
 import { history, projects, toolkit } from "../json/personal";
 import { hackathonProjects } from "../json/more-work";
 import PrintResume from "./PrintResume";
+import { pageMetadata } from "../lib/page-metadata.mjs";
 import "./resume.css";
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Résumé — Sri Ujjwal Reddy",
-  alternates: { canonical: "/resume" },
-};
+  description:
+    "Founding Engineer at Offseason. Experience, projects, hackathons and the toolkit behind them.",
+  path: "/resume",
+});
 export default function ResumePage() {
   return (
     <div className="resume-page">

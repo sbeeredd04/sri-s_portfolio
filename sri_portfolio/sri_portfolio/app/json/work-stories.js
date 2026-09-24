@@ -15,7 +15,7 @@ export const workStories = {
     ],
     link: {
       label: "Explore the hackathon projects",
-      href: "/#project-safeside",
+      href: "#project-safeside",
     },
   },
   "Geometric Media Lab": {
@@ -48,7 +48,7 @@ export const workStories = {
       alt: "Sri and a fellow presenter at a SoDA student event",
       caption: "From the original site’s photo collection: a moment at SoDA.",
     },
-    link: { label: "Explore the SoDA platform", href: "/#project-soda" },
+    link: { label: "Explore the SoDA platform", href: "#project-soda" },
   },
   "Mesa Historical Museum": {
     setting: "EPICS · a collaborative museum exhibit",
@@ -62,7 +62,7 @@ export const workStories = {
         "The delivery included automated deployments on Vercel and a locked-down browser for the kiosk hardware. The site used JSON content rather than a separate CMS, keeping the setup simpler to maintain.",
       ],
     ],
-    link: { label: "Look inside the museum project", href: "/#project-mesa" },
+    link: { label: "Look inside the museum project", href: "#project-mesa" },
   },
   "ASU Biodesign Institute": {
     setting: "Tempe · software for microscopy research",
@@ -78,7 +78,7 @@ export const workStories = {
     ],
     link: {
       label: "Explore the csDNA analysis project",
-      href: "/#project-csdna",
+      href: "#project-csdna",
     },
   },
 };

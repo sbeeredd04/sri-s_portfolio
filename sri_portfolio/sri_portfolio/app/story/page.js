@@ -1,8 +1,11 @@
 import AppContent from "../components/personal/AppContent";
-export const metadata = {
+import { pageMetadata } from "../lib/page-metadata.mjs";
+export const metadata = pageMetadata({
   title: "The story — Sri Ujjwal Reddy",
-  alternates: { canonical: "/story" },
-};
+  description:
+    "Sri’s projects, experience, music, outdoor journal, writing and ways to connect, on one page.",
+  path: "/story",
+});
 const sections = [
   ["work", "Work"],
   ["journey", "Experience"],
@@ -13,6 +16,7 @@ const sections = [
   ["writing", "Writing"],
   ["socials", "Socials"],
   ["contact", "Contact"],
+  ["discoveries", "Little discoveries"],
 ];
 export default function StoryPage() {
   return (

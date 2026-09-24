@@ -5,6 +5,7 @@ import {
   publishedFieldnotes,
   fieldnotePreview,
 } from "../../lib/fieldnotes.mjs";
+import { pageMetadata } from "../../lib/page-metadata.mjs";
 
 export function generateStaticParams() {
   return [
@@ -18,19 +19,18 @@ export async function generateMetadata({ params }) {
   if (!note) return {};
   const title = `${note.title.replace(/\n/g, " ")} — Fieldnotes by Sri`;
   return {
-    title,
-    description: note.summary,
-    alternates: { canonical: `/fieldnotes/${slug}` },
-    ...(note.preview ? { robots: { index: false, follow: true } } : {}),
-    openGraph: {
+    ...pageMetadata({
       title,
       description: note.summary,
-      url: `/fieldnotes/${slug}`,
-      type: note.preview ? "website" : "article",
-      ...(note.publishedAt
-        ? { publishedTime: note.publishedAt, authors: ["Sri Ujjwal Reddy"] }
-        : {}),
-    },
+      path: `/fieldnotes/${slug}`,
+      openGraph: {
+        type: note.preview ? "website" : "article",
+        ...(note.publishedAt
+          ? { publishedTime: note.publishedAt, authors: ["Sri Ujjwal Reddy"] }
+          : {}),
+      },
+    }),
+    ...(note.preview ? { robots: { index: false, follow: true } } : {}),
   };
 }
 export default async function FieldnotePage({ params }) {
