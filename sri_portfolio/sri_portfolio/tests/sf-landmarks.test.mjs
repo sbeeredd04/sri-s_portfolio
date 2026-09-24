@@ -44,7 +44,7 @@ function homes() {
 }
 
 test("the enlarged SF plateau stays flat under the tower, hall and overlook", () => {
-  assert.equal(WORLD_RADIUS, 190);
+  assert.equal(WORLD_RADIUS, 450);
   const studio = regions.find((region) => region.id === "studio");
   assert.ok(
     studio.landCenter,

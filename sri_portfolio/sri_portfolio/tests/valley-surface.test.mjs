@@ -128,8 +128,10 @@ test("the stream clears the actual refined terrain across its full wet channel",
   }
   water.dispose();
   const terrain = createTerrainGeometry();
-  assert.ok(terrain.userData.refinedTriangleCount <= 27000);
-  assert.ok(terrain.index.count / 3 < 110000);
+  // 320x200 globe; relief cells in every biome are refined, so the budget
+  // covers all biomes rather than the valley alone. One draw call.
+  assert.ok(terrain.userData.refinedTriangleCount <= 190000);
+  assert.ok(terrain.index.count / 3 < 320000);
   terrain.dispose();
 });
 

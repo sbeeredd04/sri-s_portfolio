@@ -42,13 +42,13 @@ test("camera collision correction stays outside terrain even at the planet cente
     new Vector3(),
     new Vector3(0, 20, 0),
     new Vector3(18, 22, 10),
-    new Vector3(0, 200, 0),
+    new Vector3(0, WORLD_RADIUS + 30, 0),
   ]) {
     const safe = safeCameraPoint(point.clone());
     assert.ok(
       safe.length() >= planetRadiusAt(safe.clone().normalize()) + 1.1999,
     );
-    if (point.length() > 100) assert.ok(safe.distanceTo(point) < 1e-8);
+    if (point.length() > WORLD_RADIUS) assert.ok(safe.distanceTo(point) < 1e-8);
   }
 });
 test("the lake basin lies below the water while its shore stays above it", () => {
@@ -74,11 +74,9 @@ test("the listening house stays dry while its lake sits in the shared terrain", 
 });
 
 test("the After Hours headland rejoins the globe before open water", () => {
-  const point = worldPoint("entertainment", [
-    0,
-    surfaceHeight("entertainment", 0, 62),
-    62,
-  ]);
+  const region = regions.find((r) => r.id === "entertainment");
+  const z = region.shoreOuter + 6;
+  const point = worldPoint("entertainment", [0, surfaceHeight("entertainment", 0, z), z]);
   assert.ok(
     Math.abs(planetRadiusAt(point.clone().normalize()) - WORLD_RADIUS) < 0.02,
     "open water must not inherit an invisible raised terrain shoulder",

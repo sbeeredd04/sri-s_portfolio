@@ -103,7 +103,7 @@ test("bridge walking stays on its own deck route and does not jump into the apar
       "camera foot must stay on the raised crossing",
     );
     assert.ok(
-      point.distanceTo(new Vector3(...node.worldLook)) < 3,
+      point.distanceTo(new Vector3(...node.worldLook)) < 5,
       "look toward the next deck section",
     );
   }

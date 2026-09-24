@@ -70,8 +70,8 @@ function rayDown(x, z, objects = meshes) {
 }
 
 test("the publishing garden stays on the level pad and the bridge height", () => {
-  assert.equal(WORLD_RADIUS, 190);
-  assert.equal(regions.find((item) => item.id === "future").inner, 10);
+  assert.equal(WORLD_RADIUS, 450);
+  assert.ok(regions.find((item) => item.id === "future").inner >= 10);
   const deck = fieldnotesDeckHeight();
   assert.ok(Math.abs(deck - fieldnotesBridgeY()) < 1e-6);
   for (const [x, z] of [

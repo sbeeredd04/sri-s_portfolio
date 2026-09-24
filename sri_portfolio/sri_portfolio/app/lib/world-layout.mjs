@@ -1,7 +1,14 @@
 import { Vector3, Quaternion, MathUtils } from "three";
 import { carvedTrailHeight, valleyFloorWeight } from "./valley-layout.mjs";
 
-export const WORLD_RADIUS = 190;
+// Props stay at true metres (a 1.3 m character, 7-10 m row houses). The
+// radius sets how large the world feels at eye level: at 450 m the horizon
+// sits about 34 m away from a walker instead of 22 m, and each biome's level
+// floor is large enough for a district rather than a vignette.
+export const WORLD_RADIUS = 450;
+// Plateaus, land centres and offsets grew with the radius from their 190 m
+// originals; authored content inside each biome is unchanged.
+const GROW = WORLD_RADIUS / 190;
 const up = new Vector3(0, 1, 0);
 export const regions = [
   {
@@ -10,55 +17,55 @@ export const regions = [
     normal: [0, 1, 0],
     // Expand toward the skyline and market, leaving the western Bay open.
     // This moves the land envelope, not the apartment or district coordinates.
-    landCenter: [12, -10],
-    inner: 40,
-    outer: 72,
+    landCenter: [12 * GROW, -10 * GROW],
+    inner: 40 * GROW,
+    outer: 72 * GROW,
   },
   {
     id: "court",
     label: "After hours",
     normal: [0.56, 0.8, 0.12],
-    inner: 29,
-    outer: 46,
+    inner: 29 * GROW,
+    outer: 46 * GROW,
   },
   {
     id: "trail",
     label: "The outdoors",
     normal: [-0.66, 0.7, 0.27],
-    // A modestly wider level floor. The world radius stays 190.
-    inner: 23,
-    outer: 42,
-    landCenter: [-2, -5],
+    inner: 23 * GROW,
+    outer: 42 * GROW,
+    landCenter: [-2 * GROW, -5 * GROW],
   },
   {
     id: "projects",
     label: "The Foundry",
     normal: [-0.15, 0.55, 0.82],
     // Shift the level pad north so the ring campus sits behind the workshops.
-    // The world radius stays 190.
-    landCenter: [-7, -10],
-    inner: 35,
+    landCenter: [-7 * GROW, -10 * GROW],
+    inner: 35 * GROW,
     // A wider coastal shoulder keeps the incoming bridge below an 18° grade.
-    outer: 68,
+    outer: 68 * GROW,
   },
   {
     id: "entertainment",
     label: "After hours",
     normal: [0.56, 0.8, 0.12],
+    // Shares the courts' tangent plane: one island, so the offset stays in
+    // authored metres while the island itself grows.
     offset: [0, 0, 43],
-    inner: 26,
-    outer: 78,
-    shoreInner: 26,
+    inner: 26 * GROW,
+    outer: 78 * GROW,
+    shoreInner: 26 * GROW,
     // A broad, visible headland gives the shared tangent plane enough room to
     // ease back to the globe without turning the coast into a steep berm.
-    shoreOuter: 56,
+    shoreOuter: 56 * GROW,
   },
   {
     id: "future",
     label: "Fieldnotes",
     normal: [-0.65, 0.35, 0.67],
-    inner: 10,
-    outer: 22,
+    inner: 10 * GROW,
+    outer: 22 * GROW,
   },
 ].map((region) => {
   const normal = new Vector3(...region.normal).normalize();

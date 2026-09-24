@@ -3,13 +3,32 @@ import {
   WORLD_RADIUS,
   planetRadiusAt,
   regions,
+  regionDistance,
   surfaceHeight,
   worldPoint,
 } from "./world-layout.mjs";
 
-export const terrainSegments = { width: 256, height: 160 };
-// Refine the outdoor watercourse/lake only. Boundary edges stay on the
-// adjacent coarse triangle, avoiding cracks without raising the whole globe LOD.
+export const terrainSegments = { width: 320, height: 200 };
+// A coarse cell whose midpoint misses the true surface by more than this is
+// subdivided REFINE_LEVELS times (each level quarters the triangles).
+// Props, paving and colliders stand inside the footprints and need
+// centimetre agreement; distant shoulders only need to read as smooth.
+const RELIEF_ERROR = 0.01;
+const SHOULDER_ERROR = 0.1;
+const REFINE_LEVELS = 3;
+const FOOTPRINT_MARGIN = 6;
+
+function inBiomeFootprint(normal) {
+  return regions.some((r) => {
+    const d = normal.dot(r.normal);
+    if (d < 0.6) return false;
+    const x = (normal.dot(r.east) * WORLD_RADIUS) / d - (r.offset?.[0] || 0);
+    const z = (normal.dot(r.north) * WORLD_RADIUS) / d - (r.offset?.[2] || 0);
+    return regionDistance(r, x, z) < r.inner + FOOTPRINT_MARGIN;
+  });
+}
+// Relief cells are refined; boundary edges stay on the adjacent coarse
+// triangle, avoiding cracks without raising the whole globe LOD.
 export function createTerrainGeometry() {
   const { width, height } = terrainSegments;
   const sphere = new SphereGeometry(WORLD_RADIUS, width, height);
@@ -22,20 +41,31 @@ export function createTerrainGeometry() {
     n.fromBufferAttribute(p, i).normalize().multiplyScalar(planetRadiusAt(n));
     positions.push(n.x, n.y, n.z);
   }
-  const trail = regions.find((r) => r.id === "trail"),
-    cells = new Set();
+  // Refine wherever the true surface bends away from the flat coarse
+  // triangle: hills, basins, shoulders and the valley. Level plateaus are
+  // planar and open ocean is the plain sphere, so both stay coarse.
+  const cells = new Set(),
+    corner = [new Vector3(), new Vector3(), new Vector3(), new Vector3()],
+    mid = new Vector3();
   for (let j = 0; j < height; j++)
     for (let i = 0; i < width; i++) {
-      n.fromArray(positions, (j * (width + 1) + i) * 3);
-      const x = n.dot(trail.east),
-        z = n.dot(trail.north);
-      if (
-        n.dot(trail.normal) > WORLD_RADIUS * 0.96 &&
-        x > -20 &&
-        x < 3 &&
-        z > -20 &&
-        z < 8
-      )
+      const ids = [
+        j * (width + 1) + i,
+        j * (width + 1) + i + 1,
+        (j + 1) * (width + 1) + i,
+        (j + 1) * (width + 1) + i + 1,
+      ];
+      mid.set(0, 0, 0);
+      ids.forEach((id, k) => mid.add(corner[k].fromArray(positions, id * 3)));
+      mid.multiplyScalar(0.25);
+      const chord = mid.length();
+      const surface = planetRadiusAt(n.copy(mid).normalize());
+      // Open ocean is the plain sphere: its chord sag is not relief.
+      const ocean =
+        Math.abs(surface - WORLD_RADIUS) < 1e-3 &&
+        corner.every((c) => Math.abs(c.length() - WORLD_RADIUS) < 1e-3);
+      const tolerance = inBiomeFootprint(n) ? RELIEF_ERROR : SHOULDER_ERROR;
+      if (!ocean && Math.abs(surface - chord) > tolerance)
         cells.add(j * width + i);
     }
   const roots = [],
@@ -104,7 +134,7 @@ export function createTerrainGeometry() {
     }
     const out = refined.get(cell) || [];
     const start = out.length;
-    split(...tri, 4, out);
+    split(...tri, REFINE_LEVELS, out);
     result.push(...out.slice(start));
     refined.set(cell, out);
   }

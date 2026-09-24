@@ -3,6 +3,7 @@ import {
   dome,
   graniteForms,
   meadowTufts,
+  outdoorsLift,
   overlookDeck,
   overlookElevation,
   ridge,
@@ -12,6 +13,7 @@ import {
   wallPoint,
   watercoursePoints,
 } from "./valley-layout.mjs";
+import { renderedSurfaceHeight } from "./terrain-geometry.mjs";
 
 function geometryFrom(positions, indices, colors) {
   const geometry = new THREE.BufferGeometry();
@@ -346,6 +348,7 @@ function perpendiculars(points) {
     return { x: -dz / len, z: dx / len };
   });
 }
+const WATER_SKIN = 0.025;
 export function buildWaterRibbon() {
   const points = watercoursePoints();
   const ground = points.filter((point) => point.ground);
@@ -363,13 +366,24 @@ export function buildWaterRibbon() {
     const across = point.ground
       ? groundSides[groundIndex++]
       : { x: -Math.sin(wall.turn), z: Math.cos(wall.turn) };
-    for (const sign of [-1, 1]) {
-      positions.push(
-        point.x + across.x * sign * point.half,
-        point.y,
-        point.z + across.z * sign * point.half,
-      );
-      uvs.push(sign < 0 ? 0 : 1, index / (points.length - 1));
+    const edges = [-1, 1].map((sign) => [
+      point.x + across.x * sign * point.half,
+      point.z + across.z * sign * point.half,
+    ]);
+    // Ground water rides the drawn terrain, whatever its triangle size. Its
+    // surface is level across the channel, so both banks share the higher.
+    const level = point.ground
+      ? Math.max(
+          point.y,
+          ...[...edges, [point.x, point.z]].map(
+            ([x, z]) =>
+              renderedSurfaceHeight("trail", x, z) - outdoorsLift + WATER_SKIN,
+          ),
+        )
+      : point.y;
+    for (const [side, [x, z]] of edges.entries()) {
+      positions.push(x, level, z);
+      uvs.push(side === 0 ? 0 : 1, index / (points.length - 1));
       kinds.push(point.ground ? 0 : 1);
       // 0 at the lip, 1 where the fall meets the pool (foam, mist).
       fallT.push(Math.min(index / Math.max(1, fallCount), 1));

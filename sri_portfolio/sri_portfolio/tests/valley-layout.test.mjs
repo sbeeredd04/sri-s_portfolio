@@ -76,7 +76,7 @@ function project(cameraPosition, cameraTarget, fov, aspect, point) {
 }
 
 test("the world radius stays at the completed SF size", () => {
-  assert.equal(WORLD_RADIUS, 190);
+  assert.equal(WORLD_RADIUS, 450);
 });
 
 test("granite, water and the deck clear the full rendered trail width", () => {

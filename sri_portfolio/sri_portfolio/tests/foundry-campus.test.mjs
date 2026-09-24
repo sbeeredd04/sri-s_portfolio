@@ -79,7 +79,7 @@ function steer(state, dx, dz) {
 }
 
 test("the Foundry pad stays level under the workshops and the new ring", () => {
-  assert.equal(WORLD_RADIUS, 190);
+  assert.equal(WORLD_RADIUS, 450);
   const far = campusPoint(entryAngle + Math.PI, campusRadii.eaveOuter);
   for (const [x, z] of [
     [0, 0],
