@@ -11,6 +11,8 @@ import {
   sfLots,
   coastDistance,
   avenueDistance,
+  coitSteps,
+  landmarkSites,
 } from "./sf-plan.mjs";
 import { streetAt } from "./sf-streets.mjs";
 import { sfSlope } from "./sf-terrain.mjs";
@@ -112,6 +114,12 @@ function parkTrees(seed) {
       if (out.some((o) => Math.hypot(o.x - x, o.z - z) < 4.5)) continue;
       // Keep the postcard sightline across Alamo Square to the Ladies open.
       if (park.id === "alamo" && Math.abs(z - park.z) < 5.5) continue;
+      // Nothing on the Coit steps or the path around the tower.
+      const [sx, sz] = coitSteps.from;
+      if (Math.abs(z - sz) < 3 && x > sx - 1 && x < coitSteps.to[0] + 1)
+        continue;
+      if (Math.hypot(x - landmarkSites.coit.x, z - landmarkSites.coit.z) < 6)
+        continue;
       out.push({
         x,
         z,

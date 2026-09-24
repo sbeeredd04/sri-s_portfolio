@@ -36,6 +36,10 @@ export const landmarkSites = {
   coit: { x: 58, z: 34, radius: 3.7 },
 };
 
+// Stone steps up Telegraph Hill from the end of the street to Coit's lawn,
+// like the Filbert Steps, where the grade is too steep for a road.
+export const coitSteps = { from: [43, 36], to: [54, 36], width: 2.4 };
+
 export const parks = [
   { id: "alamo", x: -34, z: -29, half: [12, 9], lawn: true },
   { id: "washington", x: 42, z: 20, half: [9, 7], lawn: true },

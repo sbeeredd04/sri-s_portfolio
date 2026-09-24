@@ -10,6 +10,8 @@ import {
   marketSide,
   parks,
   coastDistance,
+  coitSteps,
+  landmarkSites,
 } from "./sf-plan.mjs";
 import { sfSlope } from "./sf-terrain.mjs";
 
@@ -131,5 +133,20 @@ export function cityWalkRuns(step = 2) {
     }
     flush(run);
   }
+  // Up the steps, then once around the tower on Pioneer Park's lawn.
+  const [ax, az] = coitSteps.from,
+    [bx, bz] = coitSteps.to;
+  const { coit } = landmarkSites;
+  const climb = [];
+  for (let i = 0; i <= 12; i++)
+    climb.push([ax + ((bx - ax) * i) / 12, az + ((bz - az) * i) / 12]);
+  climb.push([coit.x - 3, coit.z]);
+  flush(climb);
+  const ring = [];
+  for (let i = 0; i <= 24; i++) {
+    const a = Math.PI + (i / 24) * Math.PI * 2;
+    ring.push([coit.x + Math.cos(a) * 3, coit.z + Math.sin(a) * 3]);
+  }
+  flush(ring);
   return runs;
 }

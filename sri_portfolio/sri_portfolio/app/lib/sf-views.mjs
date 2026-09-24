@@ -35,16 +35,16 @@ export const cityViews = [
   {
     id: "telegraph",
     label: "Up to Coit",
-    position: at(coit.x - 24, 7, coit.z - 20),
-    target: at(coit.x, 7, coit.z),
+    position: at(coit.x - 21, 3.2, coit.z + 1),
+    target: at(coit.x, 6, coit.z),
     portrait: {
-      position: at(coit.x - 28, 9, coit.z - 26),
+      position: at(coit.x - 25, 3.6, coit.z + 1),
       target: at(coit.x, 7, coit.z),
       fov: 62,
     },
     content: "about",
     prompt: "A hill worth the climb",
-    hint: "Telegraph Hill, with a white tower on top. The view is the reward.",
+    hint: "Stone steps up Telegraph Hill to the white tower on top.",
   },
   {
     id: "ladies",

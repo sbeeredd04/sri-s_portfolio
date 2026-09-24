@@ -4,7 +4,7 @@
 // brick SoMa warehouses and banded Financial District offices.
 import { BufferGeometry, Color, Float32BufferAttribute } from "three";
 import { surfaceHeight } from "./world-layout.mjs";
-import { landmarkSites, sfLots } from "./sf-plan.mjs";
+import { coitSteps, landmarkSites, sfLots } from "./sf-plan.mjs";
 
 export const FLOOR = 3.1;
 export const SETBACK = 1.2;
@@ -502,6 +502,54 @@ function pyramid(box, ground) {
   );
 }
 
+// Treads follow the hill, never dropping below the one before, each block
+// reaching down into the slope so no riser shows a gap.
+export function stepTreads() {
+  const [ax, az] = coitSteps.from,
+    [bx, bz] = coitSteps.to;
+  const length = Math.hypot(bx - ax, bz - az);
+  const count = Math.round(length / 0.46);
+  const treads = [];
+  let last = -Infinity;
+  for (let i = 0; i < count; i++) {
+    const t = (i + 0.5) / count;
+    const x = ax + (bx - ax) * t,
+      z = az + (bz - az) * t;
+    const top = Math.max(last + 0.04, surfaceHeight("studio", x, z) + 0.06);
+    treads.push({ x, z, top, run: length / count });
+    last = top;
+  }
+  return treads;
+}
+
+function steps(box) {
+  const yaw = Math.atan2(
+    coitSteps.to[0] - coitSteps.from[0],
+    coitSteps.to[1] - coitSteps.from[1],
+  );
+  for (const t of stepTreads()) {
+    const b = frame({ stone: box.stone }, t.x, 0, t.z, yaw);
+    const depth = t.top - surfaceHeight("studio", t.x, t.z) + 0.5;
+    b(
+      "stone",
+      rgb("#a39d91"),
+      [0, t.top - depth / 2, 0],
+      [coitSteps.width, depth, t.run + 0.02],
+    );
+    for (const side of [-1, 1])
+      b(
+        "stone",
+        rgb("#8a857c"),
+        [
+          side * (coitSteps.width / 2 + 0.15),
+          t.top + 0.2 - (depth + 0.4) / 2 + 0.2,
+          0,
+        ],
+        [0.3, depth + 0.4, t.run + 0.02],
+      );
+  }
+}
+
 export const cityTones = [
   "paint",
   "stone",
@@ -523,6 +571,7 @@ export function buildCity({ detail = true } = {}) {
     else rowHouse(box, lot, ground, detail);
     lots++;
   }
+  steps({ stone: batches.stone });
   const t = landmarkSites.transamerica;
   pyramid(frame(batches, t.x, 0, t.z, 0), surfaceHeight("studio", t.x, t.z));
   const geometries = Object.fromEntries(
