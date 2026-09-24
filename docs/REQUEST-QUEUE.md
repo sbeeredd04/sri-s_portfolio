@@ -373,3 +373,37 @@ Public checks: world, Fieldnotes gallery/redirect/article preview, /story, résu
 Inspected actual public desktop and phone screenshots for the cover gallery, article and 3D world. Next-notebook selection works, the article returns to the writing room, Escape restores the writing stop, and whole-world return settles into the intended framing at both sizes. Real SF time is displayed. Default sound unlocks on the first permitted gesture; the mute control was exercised and its preference retained across article/world navigation. No captured production warnings/errors after 09:16Z during final journeys. Earlier Google sign-in warnings came from the protected preview's Vercel login page, not the portfolio.
 
 The requested publication/release unit is complete. This does not close Q33–Q36 art backlogs or establish physical-device performance. Remaining atlas/art work includes Hyderabad, richer model/material/shoreline details, distant night readability and character realism. Future posts need real authored content; the source-based publishing guide is ready. The recurring portfolio automation stays paused.
+
+## Q38 — Photographic materials, Blender assets, device tiers and themed rooms (September 24, active · branch `feat/photoreal-world`)
+
+Request: use Blender headless for proper textures, shaders and models; audit every part and link; make each reading room its own themed site; aim for views that read as filmed, with a loader and device-aware budgets so phones are not overloaded. No push, merge or deployment was requested for this unit; all work is on `feat/photoreal-world` (32 commits after `564b8f43`).
+
+Rendering pipeline: device tiers (low / medium / high) chosen from the WebGL renderer, cores, memory, pointer and Save-Data, then stepped down by a frame-rate monitor with a cooldown; `?quality=` forces a tier. A loader page shows progress and has a Skip control. Post-processing (AgX, bloom, N8AO on high, SMAA or MSAA), a camera-centred scattering sky that also feeds image-based lighting, and shot-scaled fog. The high tier renders at up to 2x device pixels. On mid-tier devices, shadows refresh on alternate frames.
+
+Assets (all CC0 Poly Haven / ambientCG or original Blender output; no Mixamo or non-redistributable files): scanned trees, sofa, plants, lamps, benches, boulders, shrubs, saplings, stones, picnic tables and bins; Blender-sculpted granite wall, dome and ridge with baked normals; a Blender task chair; photographed triplanar finishes for granite, ground, stucco, roofs, asphalt, pavers, court acrylic, concrete and timber. The original rigged character (`public/models/characters/sri.glb`) is being built and is not wired in yet.
+
+Verified in the browser (Playwright, Chrome, 1440×900 and 390×844, forced high/medium/low):
+- Foundry: textured workshops and a jacaranda grove, clear of every walk (tested).
+- Valley: aerated waterfall with mist; misbaked granite normals relaxed; boulders and understory kept off the trail and water (tested).
+- Courts: acrylic surfaces; park furniture kept off courts and paths (tested).
+- City: concrete slab floor and a neutral overcast light, replacing the blue cast; the sea reflects the sky.
+- Home desk: Blender chair seated on the existing collider. Fixed a light hotspot and a NaN-bloom blob from the hair material.
+- Grass moire from orbit removed.
+- Rooms: all ten rooms, the /rooms directory, /story and /resume redesigned with their own palettes and self-hosted fonts. No sideways scroll at 390, and no console errors.
+
+Final local validation: 163 tests pass, the TypeScript check passes, and every room route returns 200.
+
+Measured per-frame cost at the Foundry (phone viewport; these are rendering counts, not device measurements):
+- low: 381 draw calls, 0.85M triangles
+- medium: 670 draw calls, about 534 average with the shadow cadence, 2.0M triangles
+- high: 762 draw calls, 4.5M triangles
+
+Frames stayed at the display cap in headless Chrome on an Apple GPU. That does not establish phone performance.
+
+Open defects and next work:
+- The character is still the procedural chibi until `sri.glb` is integrated. Court players need a matching style.
+- Draw calls in the Foundry and home are high for older phones. The workshops are many small unbatched meshes.
+- City buildings remain simple boxes with photographed finishes.
+- The small scanned rocks are warm sandstone in a granite valley.
+- Unused downloaded assets in `public/` (listed by `git status`) are not committed. Remove them or put them to use before any deploy.
+- No physical-phone, haptic, audio or AAA-quality claim.
