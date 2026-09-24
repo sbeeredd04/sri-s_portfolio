@@ -184,7 +184,10 @@ export default function WorldLighting({
       : 1.2 + daylight;
     key.current.intensity = THREE.MathUtils.lerp(
       key.current.intensity,
-      keyIntensity * (interior ? 0.45 + daylight * 0.4 : 1),
+      keyIntensity *
+        (interior ? 0.45 + daylight * 0.4 : 1) *
+        // Cloud cover dims direct sun; the sky light carries the scene.
+        (1 - (solar.weather?.cloud ?? 0) * daylight * 0.55),
       blend,
     );
     scratch.color.set(daylight > 0.05 ? mood.sun : "#b4c8ee");

@@ -1,5 +1,12 @@
 "use client";
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -34,6 +41,7 @@ import AfterHours from "./AfterHours";
 import FutureStudio from "./FutureStudio";
 import PreparedGroup from "./PreparedGroup";
 import PostEffects from "./PostEffects";
+import WeatherRain from "./WeatherRain";
 import AtmosphereSky from "./AtmosphereSky";
 import GrassField from "./GrassField";
 import { QualityProvider } from "./Quality";
@@ -62,16 +70,23 @@ function AnimationDriver({ animate }) {
   }, [animate, invalidate]);
   return null;
 }
-function Atmosphere({ animate }) {
+function Atmosphere({ animate, weather }) {
   const clouds = useRef(),
     time = useRef(0);
   const uniforms = useMemo(
-    () => ({ uTime: { value: 0 }, uOpacity: { value: 1 } }),
+    () => ({
+      uTime: { value: 0 },
+      uOpacity: { value: 1 },
+      uCover: { value: 0.3 },
+    }),
     [],
   );
   useFrame(({ camera }, dt) => {
     if (animate) time.current += Math.min(dt, 0.05);
     uniforms.uTime.value = time.current;
+    uniforms.uCover.value +=
+      ((weather?.cloud ?? 0.3) - uniforms.uCover.value) *
+      (1 - Math.exp(-Math.min(dt, 0.1) * 2));
     uniforms.uOpacity.value = THREE.MathUtils.smoothstep(
       camera.position.length(),
       WORLD_RADIUS + 6,
@@ -99,10 +114,10 @@ function Atmosphere({ animate }) {
           depthWrite={false}
           uniforms={uniforms}
           vertexShader={vertex}
-          fragmentShader={`varying vec3 vP;uniform float uTime;uniform float uOpacity;
+          fragmentShader={`varying vec3 vP;uniform float uTime;uniform float uOpacity;uniform float uCover;
       float h(vec3 p){p=fract(p*.3183099+vec3(.1,.2,.3));p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
       float n(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z);}
-      void main(){vec3 p=normalize(vP)*5.+vec3(uTime*.0015,0,0);float a=n(p)*.57+n(p*2.1)*.28+n(p*4.2)*.15;float cloud=smoothstep(.56,.76,a);gl_FragColor=vec4(.78,.85,.96,cloud*.075*uOpacity);}`}
+      void main(){vec3 p=normalize(vP)*5.+vec3(uTime*.0015,0,0);float a=n(p)*.57+n(p*2.1)*.28+n(p*4.2)*.15;float lo=.66-uCover*.22;float cloud=smoothstep(lo,lo+.2,a);gl_FragColor=vec4(.78,.85,.96,cloud*(.05+uCover*.1)*uOpacity);}`}
         />
       </mesh>
     </>
@@ -200,16 +215,17 @@ function ConnectedWorld({
         <StarSphere daylight={solar.daylight} />
       </Suspense>
       <AtmosphereSky world={world} solar={solar} />
+      <WeatherRain weather={solar.weather} animate={animate} />
       <Stars daylight={solar.daylight} />
       <Suspense fallback={null}>
-        <PlanetSurface surfaceRef={planet} />
+        <PlanetSurface surfaceRef={planet} weather={solar.weather} />
       </Suspense>
       <Walkways daylight={solar.daylight} />
       <WorldResidents
         {...{ animate, visitorColor, onHover, onCue }}
         clock={residentClock}
       />
-      <Atmosphere animate={animate} />
+      <Atmosphere animate={animate} weather={solar.weather} />
       <PostEffects world={world} daylight={solar.daylight} />
       {regions.map((region) => (
         <group
@@ -225,6 +241,7 @@ function ConnectedWorld({
             active={world === region.id}
             surfaceRef={planet}
             animate={animate}
+            wind={solar.weather?.wind}
             sun={new THREE.Vector3(...solar.direction).applyQuaternion(
               region.rotation,
             )}
@@ -431,7 +448,12 @@ export default function WorldScene(props) {
           near: 0.22,
           far: 1200,
         }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance", stencil: false }}
+        gl={{
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance",
+          stencil: false,
+        }}
         fallback={
           <p className="scene-fallback-message">
             The index and reading view work without 3D.

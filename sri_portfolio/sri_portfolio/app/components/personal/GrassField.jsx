@@ -210,6 +210,7 @@ function grassMaterial(profile, maps, biome, near) {
     });
     const uniforms = {
       uTime: { value: 0 },
+      uGust: { value: 1 },
       uExtent: { value: profile.extent },
       // Near layer: a dense square of tufts that recycles around the point
       // the camera is looking at, so close shots are full, not ribbons.
@@ -243,7 +244,7 @@ function grassMaterial(profile, maps, biome, near) {
           `#include <common>
           attribute vec4 seed;
           attribute vec4 tuft;
-          uniform float uTime, uExtent, uPlace, uNear, uHeight, uWidth, uReady, uClear, uFade, uR, uInner;
+          uniform float uTime, uGust, uExtent, uPlace, uNear, uHeight, uWidth, uReady, uClear, uFade, uR, uInner;
           uniform sampler2D uSoil, uTop;
           uniform vec3 uCam; uniform vec2 uCenter;
           varying float vT; varying float vShade; varying float vDry;
@@ -286,7 +287,7 @@ function grassMaterial(profile, maps, biome, near) {
           vec3 transformed=vec3(position.x*uWidth*(.7+seed.w*.6),position.y*h,0.);
           // Natural lean plus travelling gusts; tips move most.
           float gust=gn(local*.05+vec2(uTime*.35,uTime*.12));
-          float sway=sin(uTime*1.9+local.x*.4+local.y*.3+seed.w*6.)*.12+gust*.55;
+          float sway=(sin(uTime*1.9+local.x*.4+local.y*.3+seed.w*6.)*.12+gust*.55)*uGust;
           float tip=tuft.w;
           float bend=(tip*tip)*(.25+sway+tuft.x*2.)*h;
           transformed.z+=bend;
@@ -319,7 +320,14 @@ function grassMaterial(profile, maps, biome, near) {
     return m;
 }
 
-export default function GrassField({ biome, active, surfaceRef, animate, sun }) {
+export default function GrassField({
+  biome,
+  active,
+  surfaceRef,
+  animate,
+  sun,
+  wind = 4,
+}) {
   const quality = useQuality();
   const profile = grassProfile[biome];
   const count = grassCount(biome, quality.tier);
@@ -373,6 +381,8 @@ export default function GrassField({ biome, active, surfaceRef, animate, sun }) 
       if (!m) continue;
       const u = m.userData.uniforms;
       u.uTime.value = time.current;
+      // Live wind: calm air barely stirs, a 12 m/s blow bends hard.
+      u.uGust.value = 0.35 + Math.min(wind, 14) * 0.13;
       u.uCam.value.copy(camera.position);
       u.uCenter.value.set(ray.hit.x, ray.hit.z);
       if (sun) u.uSun.value.copy(sun);

@@ -15,6 +15,7 @@ export default function SolarSky({ world, solar }) {
       .multiplyScalar(440)
       .add(worldPoint(world, [0, 0, 0]));
   }, [world, ...solar.direction]);
+  const cloud = solar.weather?.cloud ?? 0;
   const color = new THREE.Color("#fff6db").lerp(
     new THREE.Color("#ffc28b"),
     solar.warmth,
@@ -22,21 +23,27 @@ export default function SolarSky({ world, solar }) {
   return (
     <group
       position={position}
-      visible={solar.daylight > 0.05}
+      visible={solar.daylight > 0.05 && cloud < 0.9}
       userData={{ sky: true }}
     >
       <mesh>
         <sphereGeometry args={[3.2, 32, 24]} />
-        <meshBasicMaterial color={color} toneMapped={false} />
+        <meshBasicMaterial
+          color={color}
+          toneMapped={false}
+          transparent
+          opacity={1 - cloud * 0.9}
+        />
       </mesh>
-      <sprite scale={[34, 34, 1]}>
+      <sprite scale={[48, 48, 1]}>
         <shaderMaterial
           transparent
           depthWrite={false}
           blending={THREE.AdditiveBlending}
           uniforms={{
             tint: { value: color },
-            opacity: { value: solar.daylight * 0.28 },
+            // Clear air gives a wide glare; haze keeps only a soft halo.
+            opacity: { value: solar.daylight * (0.42 - cloud * 0.3) },
           }}
           vertexShader={`varying vec2 vUv; void main(){vUv=uv;vec4 p=modelViewMatrix*vec4(0.,0.,0.,1.);p.xy+=position.xy*vec2(length(modelMatrix[0].xyz),length(modelMatrix[1].xyz));gl_Position=projectionMatrix*p;}`}
           fragmentShader={`varying vec2 vUv; uniform vec3 tint; uniform float opacity; void main(){float d=length(vUv-.5)*2.;gl_FragColor=vec4(tint,pow(max(0.,1.-d),3.)*opacity);}`}

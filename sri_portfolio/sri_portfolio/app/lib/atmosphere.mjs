@@ -61,7 +61,14 @@ export function skyState({
   daylight,
   warmth,
   sunHeight,
+  weather,
 }) {
+  const cloud = weather?.cloud ?? 0;
+  const rain = weather?.rain ?? 0;
+  const mist = weather?.fog ?? 0;
+  // The city keeps some marine layer even on a clear day; live cover adds
+  // to it everywhere.
+  const deck = Math.max((overcast[world] || 0) * 0.6, cloud * cloud * 0.9);
   const opacity =
     world === "planet"
       ? 0
@@ -77,7 +84,8 @@ export function skyState({
     day[key]
       .clone()
       .lerp(dusk[key], sunset * (key === "zenith" ? 0.5 : 0.8))
-      .lerp(cloudDeck[key], overcast[world] || 0);
+      .lerp(cloudDeck[key], deck)
+      .multiplyScalar(key === "glow" ? 1 - cloud * 0.7 : 1 - rain * 0.35);
   const nightColor = (key) =>
     key === "horizon" && nightTint[world]
       ? nightTint[world].clone()
@@ -89,6 +97,10 @@ export function skyState({
     glow: pick("glow"),
     day: dayAmount,
     opacity,
-    fog: fogDensity(world, focusDistance) * opacity * (0.75 + dayAmount * 0.25),
+    fog:
+      fogDensity(world, focusDistance) *
+      opacity *
+      (0.75 + dayAmount * 0.25) *
+      (1 + mist * 3.2 + rain * 1.1),
   };
 }

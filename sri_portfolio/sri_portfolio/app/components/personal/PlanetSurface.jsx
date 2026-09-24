@@ -15,12 +15,21 @@ import { applyTriplanar } from "../../lib/triplanar.mjs";
 import usePbrSet from "./usePbrSet";
 
 // One designed landscape, with the same material scale from orbit to the garden.
-export default function PlanetSurface({ surfaceRef }) {
+export default function PlanetSurface({ surfaceRef, weather }) {
   const geometry = useMemo(createTerrainGeometry, []);
   const ground = usePbrSet("grass");
   const seaTime = useMemo(() => ({ value: 0 }), []);
+  const seaState = useMemo(() => ({ value: 0.3 }), []);
+  const wet = useMemo(() => ({ value: 0 }), []);
   useFrame((_, dt) => {
-    seaTime.value += Math.min(dt, 0.05);
+    const step = Math.min(dt, 0.05);
+    // Live wind drives sea state (0 calm .. 1 at ~15 m/s); rain wets land.
+    const blend = 1 - Math.exp(-step * 0.8);
+    seaState.value +=
+      (Math.min(1, (weather?.wind ?? 4) / 15) - seaState.value) * blend;
+    wet.value += (((weather?.rain ?? 0) > 0.05 ? 1 : 0) - wet.value) * blend;
+    wet.value = Math.min(1, Math.max(0, wet.value));
+    seaTime.value += step * (0.7 + seaState.value * 0.9);
   });
   const material = useMemo(() => {
     const m = new THREE.MeshStandardMaterial({
@@ -30,6 +39,8 @@ export default function PlanetSurface({ surfaceRef }) {
     });
     m.onBeforeCompile = (shader) => {
       shader.uniforms.uSeaTime = seaTime;
+      shader.uniforms.uSeaState = seaState;
+      shader.uniforms.uWet = wet;
       shader.uniforms.uRegionCenter = { value: regions.map((r) => r.center) };
       shader.uniforms.uLandCenter = {
         value: regions.map(
@@ -85,7 +96,7 @@ export default function PlanetSurface({ surfaceRef }) {
       shader.fragmentShader =
         `
         varying vec3 vSurface;
-        uniform float uSeaTime;
+        uniform float uSeaTime, uSeaState, uWet;
         uniform vec3 uRegions[${regions.length}];
         uniform vec3 uRegionCenter[${regions.length}];
         uniform vec2 uLandCenter[${regions.length}];
@@ -167,6 +178,17 @@ export default function PlanetSurface({ surfaceRef }) {
         float grain=(worldNoise(vSurface*16.)-.5)*.018*(1.-smoothstep(.035,.11,footprint));
         diffuseColor.rgb=ground+grain*land;
         {
+          // Breaking surf: crests march shoreward through the shallows and
+          // fade before they alias from orbit. Rougher seas break harder.
+          float surf=shallows*(1.-land);
+          float crest=pow(.5+.5*sin(coast*190.-uSeaTime*1.7+worldNoise(vSurface*.35)*7.),5.);
+          float froth=smoothstep(.42,.49,coast)*(1.-land)*(.6+worldNoise(vSurface*3.+uSeaTime*.4)*.8);
+          float surfMask=max(surf*crest,froth)*(.25+uSeaState*.5)*(1.-smoothstep(.05,.35,footprint));
+          diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.5,.55,.57),clamp(surfMask,0.,.85));
+          // Rain-darkened ground.
+          diffuseColor.rgb*=1.-uWet*land*.22;
+        }
+        {
           // City floor: poured concrete in 1.6 m slabs with sawn joints and
           // per-slab tone, instead of bare paint. Joints fade before they
           // become sub-pixel so orbit views do not shimmer.
@@ -182,7 +204,7 @@ export default function PlanetSurface({ surfaceRef }) {
           )
           .replace(
             "#include <roughnessmap_fragment>",
-            "#include <roughnessmap_fragment>\n// Distant water: sub-pixel waves average into a rougher, dimmer glint.\nroughnessFactor=mix(mix(.07,.42,smoothstep(.03,.4,footprint)),.94,land);",
+            "#include <roughnessmap_fragment>\n// Distant water: sub-pixel waves average into a rougher, dimmer glint.\nroughnessFactor=mix(mix(.07,.42,smoothstep(.03,.4,footprint)),.94-uWet*.38,land);",
           )
           .replace(
             "#include <lights_fragment_maps>",
@@ -201,7 +223,7 @@ export default function PlanetSurface({ surfaceRef }) {
               vec3 wp=vSurface*.55;
               float waves=(worldNoise(wp+vec3(uSeaTime*.35,0.,uSeaTime*.2))
                 +worldNoise(wp*2.3-vec3(0.,uSeaTime*.5,uSeaTime*.3))*.5
-                +worldNoise(wp*6.1+vec3(uSeaTime*.9,uSeaTime*.4,0.))*.2)*.09*sea;
+                +worldNoise(wp*6.1+vec3(uSeaTime*.9,uSeaTime*.4,0.))*.2)*(.05+uSeaState*.1)*sea;
               vec3 sx=dFdx(-vViewPosition), sy=dFdy(-vViewPosition);
               vec3 ay=cross(sy,normal), ax=cross(normal,sx);
               float det=dot(sx,ay)*faceDirection;
@@ -219,7 +241,7 @@ export default function PlanetSurface({ surfaceRef }) {
       normalStrength: 0.9,
       meanLuminance: 0.18,
     });
-  }, [ground, seaTime]);
+  }, [ground, seaTime, seaState, wet]);
   useEffect(
     () => () => {
       geometry.dispose();
