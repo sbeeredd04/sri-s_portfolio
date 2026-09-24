@@ -1,6 +1,10 @@
 "use client";
-import { useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
+import * as THREE from "three";
 import { Box, Boxes, Rods } from "./ScenePrimitives";
+import usePbrSet from "./usePbrSet";
+import { applyTriplanar } from "../../lib/triplanar.mjs";
+import { roundedBox } from "../../lib/model-geometry.mjs";
 import CourtPlay from "./CourtPlay";
 import BadmintonRally from "./BadmintonRally";
 import { useRoomTexture } from "./RoomMaterials";
@@ -16,18 +20,53 @@ function line(x1, z1, x2, z2, thickness = 0.04) {
     ],
   };
 }
-function Surface({ id, lines }) {
-  const court = courts[id],
-    texture = useRoomTexture("stone", 14);
+const courtColor = {
+  badminton: "#577893",
+  volleyball: "#88807a",
+  basketball: "#567572",
+};
+// Photographed acrylic court and concrete apron (CC0) laid on in world space,
+// keeping each court's palette colour and adding real grain and wear.
+function TexturedSlab({ position, size, color, set, scale, strength }) {
+  const maps = usePbrSet(set);
+  const geometry = useMemo(() => roundedBox(size, 0.008), [size]);
+  const material = useMemo(
+    () =>
+      applyTriplanar(
+        new THREE.MeshStandardMaterial({ color, roughness: 0.9 }),
+        {
+          ...maps,
+          mode: "detail",
+          scale,
+          strength,
+          normalStrength: 0.8,
+          meanLuminance: 0.45,
+        },
+      ),
+    [maps, color, scale, strength],
+  );
+  useEffect(
+    () => () => {
+      geometry.dispose();
+      material.dispose();
+    },
+    [geometry, material],
+  );
+  return (
+    <mesh
+      geometry={geometry}
+      material={material}
+      position={position}
+      receiveShadow
+    />
+  );
+}
+function PlainSurface({ id, apron, play }) {
+  const texture = useRoomTexture("stone", 14);
   return (
     <>
       <Box
-        position={[0, 0.008, 0]}
-        size={[
-          court.width + court.apron * 2,
-          0.03,
-          court.depth + court.apron * 2,
-        ]}
+        {...apron}
         radius={0.01}
         color="#3d4d5d"
         roughness={0.98}
@@ -36,21 +75,55 @@ function Surface({ id, lines }) {
         bumpScale={0.0015}
       />
       <Box
-        position={[0, 0.034, 0]}
-        size={[court.width, 0.018, court.depth]}
+        {...play}
         radius={0.005}
-        color={
-          id === "badminton"
-            ? "#577893"
-            : id === "volleyball"
-              ? "#88807a"
-              : "#567572"
-        }
+        color={courtColor[id]}
         roughness={0.94}
         map={texture}
         bumpMap={texture}
         bumpScale={0.001}
       />
+    </>
+  );
+}
+function Surface({ id, lines }) {
+  const court = courts[id];
+  const apron = useMemo(
+    () => ({
+      position: [0, 0.008, 0],
+      size: [
+        court.width + court.apron * 2,
+        0.03,
+        court.depth + court.apron * 2,
+      ],
+    }),
+    [court],
+  );
+  const play = useMemo(
+    () => ({
+      position: [0, 0.034, 0],
+      size: [court.width, 0.018, court.depth],
+    }),
+    [court],
+  );
+  return (
+    <>
+      <Suspense fallback={<PlainSurface {...{ id, apron, play }} />}>
+        <TexturedSlab
+          {...apron}
+          color="#48515a"
+          set="concrete"
+          scale={0.35}
+          strength={0.9}
+        />
+        <TexturedSlab
+          {...play}
+          color={courtColor[id]}
+          set="court-painted"
+          scale={0.6}
+          strength={0.7}
+        />
+      </Suspense>
       <Boxes items={lines} color="#e4e5de" />
     </>
   );
