@@ -85,14 +85,14 @@ test("the publishing garden stays on the level pad and the bridge height", () =>
     assert.ok(Math.abs(surfaceHeight("future", x, z)) < 0.02, `${x},${z}`);
 });
 
-test("future keeps the three rooms and coming-soon copy", () => {
+test("future keeps the three rooms, the garden stops and coming-soon copy", () => {
   assert.deepEqual(
     placeStops.future.map((stop) => stop.id),
-    ["socials", "writing", "collaborate"],
+    ["socials", "writing", "newsstand", "lookout", "collaborate"],
   );
   assert.deepEqual(
     placeStops.future.map((stop) => stop.content),
-    ["socials", "writing", "contact"],
+    ["socials", "writing", "writing", "writing", "contact"],
   );
   const writing = placeStops.future.find((stop) => stop.id === "writing");
   assert.match(writing.hint, /Coming soon/);

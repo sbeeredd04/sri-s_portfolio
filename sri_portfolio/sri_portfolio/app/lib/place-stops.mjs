@@ -6,6 +6,7 @@ import { cityViews } from "./sf-views.mjs";
 import { techViews } from "./tech-plan.mjs";
 import { trailView } from "./valley-layout.mjs";
 import { fieldnotesCameras } from "./fieldnotes-layout.mjs";
+import { quarterViews } from "./fieldnotes-quarter.mjs";
 // Content and camera positions share the same coordinates as the visible objects.
 export const placeStops = {
   studio: [
@@ -289,6 +290,7 @@ export const placeStops = {
       prompt: "What I want to share",
       hint: "Coming soon: stories about building, design, and learning.",
     },
+    ...quarterViews,
     {
       id: "collaborate",
       label: "Pull up a chair",

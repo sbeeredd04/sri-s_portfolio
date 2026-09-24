@@ -1,5 +1,9 @@
 import { ExtrudeGeometry, Path, Shape } from "three";
-import { fieldnotesDeckHeight, fieldnotesRoute } from "./fieldnotes-layout.mjs";
+import {
+  fieldnotesDeckHeight,
+  fieldnotesLookoutZ,
+  fieldnotesRoute,
+} from "./fieldnotes-layout.mjs";
 
 export function fieldnotesPavingContours() {
   const r = fieldnotesRoute;
@@ -11,6 +15,11 @@ export function fieldnotesPavingContours() {
     [h, r.south - h],
     [r.east + h, r.south - h],
     [r.east + h, r.north + h],
+    // The lookout walk runs north from the loop to the bench.
+    [0.75, r.north + h],
+    [0.75, fieldnotesLookoutZ - 1.3],
+    [-0.75, fieldnotesLookoutZ - 1.3],
+    [-0.75, r.north + h],
     [r.west - h, r.north + h],
     [r.west - h, r.south - h],
     [-h, r.south - h],

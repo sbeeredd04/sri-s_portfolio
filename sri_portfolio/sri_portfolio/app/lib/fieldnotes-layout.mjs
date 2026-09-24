@@ -16,6 +16,8 @@ export const fieldnotesRoute = {
 };
 
 export const fieldnotesSpawn = [0, -7.2];
+// The lookout wall stands here; its bench sits just inside.
+export const fieldnotesLookoutZ = 17.2;
 
 export const fieldnotesCanopy = {
   x0: -4.18,
@@ -123,6 +125,8 @@ export const fieldnotesPaths = [
   [[route.east, route.north], [route.east, route.south], route.loopWidth],
   [[route.east, route.south], [0, route.south], route.loopWidth],
   [[route.west, route.spurZ], [route.spurEnd, route.spurZ], route.spurWidth],
+  // Out to the lookout bench at the sea edge.
+  [[0, route.north], [0, fieldnotesLookoutZ - 1.6], 1.5],
 ];
 
 let bridgeY;

@@ -7,6 +7,7 @@ import { LoungeChair } from "./ListeningFurniture";
 import { useRoomTexture } from "./RoomMaterials";
 import { useFinish } from "./Finishes";
 import ModelInstances from "./ModelInstances";
+import FieldnotesQuarter from "./FieldnotesQuarter";
 import {
   fieldnotesLounge,
   fieldnotesLoungeScale,
@@ -156,6 +157,16 @@ export default function FutureStudio({
       <Suspense fallback={null}>
         <GardenPlanting />
       </Suspense>
+      <FieldnotesQuarter
+        detailed={detailed}
+        night={night}
+        animate={animate}
+        onOpenWriting={() => {
+          onCue?.("open");
+          if (stop === "writing") onContentOpen("writing");
+          else onStopSelect("writing");
+        }}
+      />
       {shell(built.timber, materials.charcoal)}
       {shell(built.charcoal, materials.charcoal)}
       {shell(built.copper, materials.copper)}
