@@ -18,6 +18,7 @@ import { surfaceHeight } from "../../lib/world-layout.mjs";
 import { shows } from "../../json/personal";
 import CinemaSeat from "./CinemaSeat";
 import CinemaScreen from "./CinemaScreen";
+import CinemaGarden from "./CinemaGarden";
 import {
   cinemaOrigin,
   cinemaScreen,
@@ -474,7 +475,7 @@ function ListeningHouse({ detailed, animate, night, onOpen, onHover, onCue }) {
     </group>
   );
 }
-function Cinema({ channel, onChannelChange, onHover }) {
+function Cinema({ channel, onChannelChange, onHover, night }) {
   return (
     <group position={cinemaOrigin}>
       <Box
@@ -526,6 +527,7 @@ function Cinema({ channel, onChannelChange, onHover }) {
       {cinemaSeats.map((seat, i) => (
         <CinemaSeat key={i} {...seat} />
       ))}
+      <CinemaGarden night={night} />
     </group>
   );
 }
@@ -585,6 +587,7 @@ export default function AfterHours({
         channel={channel}
         onChannelChange={onChannelChange}
         onHover={onHover}
+        night={night}
       />
       {[
         [-5.5, 0, 5.5],
