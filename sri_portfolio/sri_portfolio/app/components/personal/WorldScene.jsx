@@ -276,7 +276,11 @@ function ConnectedWorld({
                   )}
                 </House>
               </group>
-              <SanFrancisco night={night} clockIso={solar.iso} />
+              <SanFrancisco
+                night={night}
+                clockIso={solar.iso}
+                animate={animate && near.studio}
+              />
             </>
           ) : region.id === "court" ? (
             <Court

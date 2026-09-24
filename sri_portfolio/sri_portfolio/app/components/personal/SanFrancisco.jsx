@@ -12,6 +12,8 @@ import { buildCity } from "../../lib/sf-buildings.mjs";
 import { landmarkSites } from "../../lib/sf-plan.mjs";
 import { useQuality } from "./Quality";
 import SFDressing from "./SFDressing";
+import Crowd from "./Crowd";
+import { sfCrowd } from "../../lib/sf-crowd.mjs";
 import {
   buildLandmarks,
   clockHandRadians,
@@ -354,9 +356,25 @@ export function ApartmentBase({ night }) {
   const data = useMemo(apartmentBaseBatches, []);
   return <Batches data={data} night={night} />;
 }
-export default function SanFrancisco({ night, clockIso }) {
+const cityGround = (x, z) => surfaceHeight("studio", x, z);
+function CityCrowd({ animate }) {
+  const { tier } = useQuality();
+  const agents = useMemo(() => sfCrowd(tier), [tier]);
+  return (
+    <Suspense fallback={null}>
+      <Crowd
+        src="/models/characters/sri.glb"
+        agents={agents}
+        ground={cityGround}
+        animate={animate}
+      />
+    </Suspense>
+  );
+}
+export default function SanFrancisco({ night, clockIso, animate }) {
   return (
     <group>
+      <CityCrowd animate={animate} />
       <City night={night} />
       <SFDressing night={night} />
       <CoitTower />
