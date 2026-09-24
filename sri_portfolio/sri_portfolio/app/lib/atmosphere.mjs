@@ -24,7 +24,7 @@ const night = {
 // haziest so its granite walls fall back; the city keeps the clearest air.
 export const biomeHaze = {
   planet: 0,
-  studio: 0.22,
+  studio: 0.17,
   projects: 0.17,
   court: 0.22,
   entertainment: 0.24,

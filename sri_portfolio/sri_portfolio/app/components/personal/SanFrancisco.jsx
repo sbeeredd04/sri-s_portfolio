@@ -11,6 +11,7 @@ import {
 import { buildCity } from "../../lib/sf-buildings.mjs";
 import { landmarkSites } from "../../lib/sf-plan.mjs";
 import { useQuality } from "./Quality";
+import SFDressing from "./SFDressing";
 import {
   buildLandmarks,
   clockHandRadians,
@@ -357,6 +358,7 @@ export default function SanFrancisco({ night, clockIso }) {
   return (
     <group>
       <City night={night} />
+      <SFDressing night={night} />
       <CoitTower />
       <Landmarks night={night} clockIso={clockIso} />
     </group>

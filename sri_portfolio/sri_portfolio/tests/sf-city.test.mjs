@@ -124,3 +124,17 @@ test("the whole city stays a few merged batches under its triangle budget", () =
     assert.ok(triangles < (detail ? 70000 : 45000), `${triangles} triangles`);
   }
 });
+
+test("street dressing stands on sidewalks, clear of roadways and doorsteps", async () => {
+  const { sfDressing, dressingBudget } =
+    await import("../app/lib/sf-dressing.mjs");
+  for (const tier of ["low", "medium", "high"]) {
+    const d = sfDressing(tier);
+    for (const key of ["trees", "lamps", "hydrants"]) {
+      assert.ok(d[key].length <= dressingBudget[tier][key]);
+      for (const p of d[key])
+        assert.equal(streetAt(p.x, p.z), "walk", `${key} at ${p.x},${p.z}`);
+    }
+    for (const t of d.forest) assert.ok(avenueDistance(t.x, t.z) >= 5);
+  }
+});
