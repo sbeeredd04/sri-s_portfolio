@@ -13,6 +13,8 @@ import * as THREE from "three";
 
 import GraniteValley from "./GraniteValley";
 import ModelInstances from "./ModelInstances";
+import { useQuality } from "./Quality";
+import { foundryGroveTrees } from "../../lib/foundry-grove.mjs";
 import ValleyCourse from "./ValleyCourse";
 import { inGraniteFootprint } from "../../lib/valley-layout.mjs";
 import { localTrailPaving } from "../../lib/trail-surface.mjs";
@@ -79,53 +81,56 @@ function TexturedGrove({
   biome = park ? "court" : "trail",
   detailed = true,
 }) {
+  const { tier } = useQuality();
   const trees = useMemo(
     () =>
       biome === "trail"
         ? trailTrees
-        : biome === "court"
-          ? courtTrees
-          : Array.from(
-              {
-                length:
-                  biome === "studio"
-                    ? 18
-                    : biome === "entertainment"
-                      ? 16
-                      : park
-                        ? 22
-                        : 42,
-              },
-              (_, i) => {
-                const angle = i * 2.39996,
-                  radius =
+        : biome === "projects"
+          ? foundryGroveTrees()
+          : biome === "court"
+            ? courtTrees
+            : Array.from(
+                {
+                  length:
                     biome === "studio"
-                      ? 13 + (i % 5)
-                      : park
-                        ? 7 + (i % 9) * 0.7
-                        : 12 + (i % 10) * 0.8;
-                const x = Math.sin(angle) * radius;
-                let z = Math.cos(angle) * radius - 5;
-                // Preserve the continuous approach from orbit through the front garden.
-                if (biome === "studio" && z > -7 && Math.abs(x) < 12)
-                  z = -12 - (i % 5);
-                // Keep the arrival lawn open; the grove frames the game from behind.
-                if (biome === "court" && z > -6) z = -Math.abs(z) - 9;
-                if (biome === "trail" && z > 1 && x > -12 && x < 12)
-                  z = -z - 10;
-                if (biome === "entertainment") z = -18 - (i % 4) * 1.1;
-                const inLake = !park && x < -3 && x > -15 && z > -12 && z < 5;
-                const onPath = Math.abs(x - Math.sin(z * 0.14) * 2.2) < 1.8;
-                return {
-                  x: inLake ? -15.5 : onPath ? (x < 0 ? -2.8 : 2.8) : x,
-                  z,
-                  s: (biome === "trail" ? 0.95 : 1.1) + (i % 7) * 0.12,
-                };
-              },
-            ).filter(
-              (tree) =>
-                biome !== "trail" || !inGraniteFootprint(tree.x, tree.z, 1),
-            ),
+                      ? 18
+                      : biome === "entertainment"
+                        ? 16
+                        : park
+                          ? 22
+                          : 42,
+                },
+                (_, i) => {
+                  const angle = i * 2.39996,
+                    radius =
+                      biome === "studio"
+                        ? 13 + (i % 5)
+                        : park
+                          ? 7 + (i % 9) * 0.7
+                          : 12 + (i % 10) * 0.8;
+                  const x = Math.sin(angle) * radius;
+                  let z = Math.cos(angle) * radius - 5;
+                  // Preserve the continuous approach from orbit through the front garden.
+                  if (biome === "studio" && z > -7 && Math.abs(x) < 12)
+                    z = -12 - (i % 5);
+                  // Keep the arrival lawn open; the grove frames the game from behind.
+                  if (biome === "court" && z > -6) z = -Math.abs(z) - 9;
+                  if (biome === "trail" && z > 1 && x > -12 && x < 12)
+                    z = -z - 10;
+                  if (biome === "entertainment") z = -18 - (i % 4) * 1.1;
+                  const inLake = !park && x < -3 && x > -15 && z > -12 && z < 5;
+                  const onPath = Math.abs(x - Math.sin(z * 0.14) * 2.2) < 1.8;
+                  return {
+                    x: inLake ? -15.5 : onPath ? (x < 0 ? -2.8 : 2.8) : x,
+                    z,
+                    s: (biome === "trail" ? 0.95 : 1.1) + (i % 7) * 0.12,
+                  };
+                },
+              ).filter(
+                (tree) =>
+                  biome !== "trail" || !inGraniteFootprint(tree.x, tree.z, 1),
+              ),
     [park, biome],
   );
   // Scanned CC0 fir (Poly Haven), scaled so each crown stays inside the
@@ -135,8 +140,7 @@ function TexturedGrove({
       trees.map((t, i) => ({
         position: [t.x, renderedSurfaceHeight(biome, t.x, t.z) - 0.05, t.z],
         rotation: i * 2.1,
-        scale:
-          (biome === "trail" ? 0.85 : 0.36) * t.s * (0.9 + (i % 4) * 0.05),
+        scale: (biome === "trail" ? 0.85 : 0.36) * t.s * (0.9 + (i % 4) * 0.05),
       })),
     [trees, biome],
   );
@@ -145,16 +149,27 @@ function TexturedGrove({
       src={
         biome === "studio"
           ? "/models/tree-small-broadleaf.glb"
-          : biome === "trail"
-            ? "/models/tree-pine-dense.glb"
-            : "/models/tree-fir.glb"
+          : biome === "projects"
+            ? "/models/tree-broadleaf.glb"
+            : biome === "trail"
+              ? "/models/tree-pine-dense.glb"
+              : "/models/tree-fir.glb"
       }
       items={
         biome === "studio"
           ? items.map((item) => ({ ...item, scale: item.scale * 2 }))
-          : items
+          : biome === "projects"
+            ? // Jacaranda crowns are ~24 m wide at scale 1; ~6 m here.
+              items.map((item) => ({ ...item, scale: item.scale * 0.72 }))
+            : items
       }
-      lod={detailed ? 0 : 1}
+      // Full-detail crowns only where the device tier can afford them; the
+      // jacaranda's LOD0 is ~15k triangles per tree.
+      lod={
+        detailed && tier !== "low" && (biome !== "projects" || tier === "high")
+          ? 0
+          : 1
+      }
       envMapIntensity={0.7}
     />
   );

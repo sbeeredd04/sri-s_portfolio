@@ -14,6 +14,7 @@ import ProjectDistricts from "./ProjectDistricts";
 import FoundryCampus from "./FoundryCampus";
 import Workbench from "./Workbench";
 import { FinishBox, useFinish } from "./FoundryFinishes";
+import { Grove } from "./Landscape";
 import InteractiveProjectExhibit from "./InteractiveProjectExhibit";
 import {
   workshops,
@@ -268,6 +269,7 @@ export default function ProjectTown({
   return (
     <group>
       <PavedWalks biome="projects" paths={walks} />
+      <Grove biome="projects" detailed={detailed} />
       <Workbench
         detailed={detailed}
         night={night}
