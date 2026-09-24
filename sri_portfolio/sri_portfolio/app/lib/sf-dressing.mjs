@@ -110,6 +110,8 @@ function parkTrees(seed) {
       )
         continue;
       if (out.some((o) => Math.hypot(o.x - x, o.z - z) < 4.5)) continue;
+      // Keep the postcard sightline across Alamo Square to the Ladies open.
+      if (park.id === "alamo" && Math.abs(z - park.z) < 5.5) continue;
       out.push({
         x,
         z,

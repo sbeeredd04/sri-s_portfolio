@@ -2,6 +2,7 @@ import { projectGallerySites } from "./project-town-layout.mjs";
 import { campusView } from "./campus-layout.mjs";
 import { courtViews } from "./court-layout.mjs";
 import { bridgeView } from "./bay-bridge.mjs";
+import { cityViews } from "./sf-views.mjs";
 import { trailView } from "./valley-layout.mjs";
 import { fieldnotesCameras } from "./fieldnotes-layout.mjs";
 // Content and camera positions share the same coordinates as the visible objects.
@@ -42,6 +43,7 @@ export const placeStops = {
       prompt: "The life around the work",
       hint: "Following your little wanderer, between home and play. Choose another view to leave the path.",
     },
+    ...cityViews,
     {
       id: "bay",
       label: "Across the bay",

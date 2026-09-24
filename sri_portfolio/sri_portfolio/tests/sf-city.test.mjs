@@ -85,7 +85,7 @@ test("building fronts leave the sidewalk clear for stoops inside the setback", (
     const x = lot.x + (lot.depth / 2 + 0.3) * s,
       z = lot.z + (lot.depth / 2 + 0.3) * c;
     assert.ok(
-      streetAt(x, z) !== null || inPark(x, z) || lot.ladies,
+      streetAt(x, z) !== null || inPark(x, z) || lot.ladies || lot.infill,
       `lot at ${lot.x},${lot.z} does not front a street`,
     );
   }

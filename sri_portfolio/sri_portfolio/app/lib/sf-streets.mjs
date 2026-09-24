@@ -13,7 +13,8 @@ import {
 } from "./sf-plan.mjs";
 import { sfSlope } from "./sf-terrain.mjs";
 
-const band = STREET.road / 2 + STREET.walk;
+// Read lazily: sf-plan and this module import each other.
+const kerbBand = () => STREET.road / 2 + STREET.walk;
 const lineDistance = (c, pitch) =>
   Math.abs(((((c / pitch + 0.5) % 1) + 1) % 1) - 0.5) * pitch;
 
@@ -46,7 +47,7 @@ export function streetAt(x, z) {
   const dm = Math.hypot(x - fx - dx * t, z - fz - dz * t);
   if (d < STREET.road / 2 || dm < marketStreet.width / 2 - STREET.walk)
     return "road";
-  if (d < band || dm < marketStreet.width / 2) return "walk";
+  if (d < kerbBand() || dm < marketStreet.width / 2) return "walk";
   return null;
 }
 
@@ -65,7 +66,7 @@ export function streetsGlsl() {
     .filter((p) => !p.forest)
     .map(
       (p) =>
-        `if(abs(p.x-${f(p.x)})<${f(p.half[0])}&&abs(p.y-${f(p.z)})<${f(p.half[1])})return vec4(0.,0.,0.,${p.plaza ? "-2." : "-1."});`,
+        `if(abs(p.x-${f(p.x)})<${f(p.half[0])}&&abs(p.y-${f(p.z)})<${f(p.half[1])})return vec4(0.,0.,0.,${p.plaza ? "-2." : p.closed ? "-3." : "-1."});`,
     )
     .join("\n");
   return `
@@ -80,7 +81,7 @@ export function streetsGlsl() {
     float du=sfLine(q.x,pitch.x),dv=sfLine(q.y,pitch.y),d=min(du,dv);
     float t=clamp(dot(p-F,MD),0.,${f(marketStreet.length)});
     float dm=length(p-F-MD*t);
-    float R=${f(STREET.road / 2)},B=${f(band)};
+    float R=${f(STREET.road / 2)},B=${f(kerbBand())};
     float road=max(step(d,R),step(dm,${f(marketStreet.width / 2 - STREET.walk)}));
     float walk=max(step(d,B),step(dm,${f(marketStreet.width / 2)}))*(1.-road);
     // Zebra crossings where one road meets the other's corner, and a

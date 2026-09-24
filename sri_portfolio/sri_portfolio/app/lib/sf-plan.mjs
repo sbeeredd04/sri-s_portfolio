@@ -7,6 +7,7 @@
 import { regions, regionDistance, WORLD_RADIUS } from "./world-layout.mjs";
 import { walkingRoutes, pathSample } from "./world-paths.mjs";
 import { sfSlope, sfHills } from "./sf-terrain.mjs";
+import { streetAt } from "./sf-streets.mjs";
 
 const studio = regions.find((r) => r.id === "studio");
 
@@ -45,9 +46,11 @@ export const parks = [
   { id: "twin-peaks", x: -14, z: -84, half: [22, 18], lawn: true },
   // Paved forecourts: the Ferry Building's plaza, Salesforce's park and the
   // pyramid's redwood grove; no street crosses them.
-  { id: "ferry-plaza", x: 104, z: -4, half: [11, 16], plaza: true },
-  { id: "transbay", x: 70, z: -46, half: [9, 9], plaza: true },
-  { id: "redwood", x: 84, z: -1, half: [9, 9], plaza: true },
+  { id: "ferry-plaza", x: 105, z: -4, half: [7.5, 14.5], plaza: true },
+  { id: "transbay", x: 70, z: -46, half: [7, 7], plaza: true },
+  // Steiner closes for one block so the Ladies read as one long row.
+  { id: "steiner-close", x: -8.4, z: -16, half: [5.3, 4], closed: true },
+  { id: "redwood", x: 84, z: -1, half: [7, 7], plaza: true },
 ];
 
 // The world causeways, sampled across the plateau as avenue centrelines.
@@ -95,6 +98,7 @@ export function marketDistance(x, z) {
 export function inPark(x, z, pad = 0) {
   return parks.find(
     (p) =>
+      !p.closed &&
       Math.abs(x - p.x) < p.half[0] + pad &&
       Math.abs(z - p.z) < p.half[1] + pad,
   );
@@ -133,7 +137,7 @@ export function gridFrame(grid) {
 export function district(x, z) {
   const north = marketSide(x, z) > 0;
   // Towers crowd both sides of Market near the waterfront, as in Transbay.
-  if (x > 68 && z < 24 && marketDistance(x, z) < 40) return "fidi";
+  if (x > 58 && z < 18 && marketDistance(x, z) < 46) return "fidi";
   if (!north) return x > 36 ? "soma" : "mission";
   if (z > 22 && x > 36) return "northbeach";
   if (z > 22) return "russian";
@@ -177,7 +181,7 @@ const lotSpec = {
   northbeach: { width: [5.6, 7.2], floors: [2, 3], style: "edwardian" },
   mission: { width: [5.8, 7.8], floors: [2, 3], style: "victorian" },
   soma: { width: [10, 14], floors: [3, 5], style: "warehouse" },
-  fidi: { width: [11, 16], floors: [7, 14], style: "office" },
+  fidi: { width: [9, 13], floors: [8, 16], style: "office" },
 };
 
 // Every lot fronts a street: a north row and a south row per block, with a
@@ -259,8 +263,64 @@ export function sfLots() {
       }
   }
   lots.push(...paintedLadies());
+  lots.push(...downtownInfill(lots, random));
   cachedLots = lots;
   return lots;
+}
+
+// Downtown towers fill the odd corners that Market's diagonal cuts from
+// the grid blocks, each squared to Market and clear of every street.
+function downtownInfill(existing, random) {
+  const out = [];
+  const size = 8;
+  const yaw = -Math.atan2(mdz, mdx) + Math.PI / 2;
+  const c = Math.cos(yaw),
+    s = Math.sin(yaw);
+  const footprint = (x, z, grow = 0) =>
+    [
+      [-1, -1],
+      [1, -1],
+      [-1, 1],
+      [1, 1],
+      [0, 0],
+    ].map(([a, b]) => {
+      const lx = (a * (size + grow)) / 2,
+        lz = (b * (size + grow)) / 2;
+      return [x + lx * c + lz * s, z - lx * s + lz * c];
+    });
+  const taken = [...existing];
+  for (let x = 56; x <= 118; x += 2.5)
+    for (let z = -70; z <= 18; z += 2.5) {
+      if (district(x, z) !== "fidi") continue;
+      const corners = footprint(x, z);
+      if (corners.some(([px, pz]) => blocked(px, pz, 0))) continue;
+      if (corners.some(([px, pz]) => streetAt(px, pz) !== null)) continue;
+      if (
+        taken.some(
+          (lot) =>
+            Math.hypot(lot.x - x, lot.z - z) <
+            (Math.max(lot.width, lot.depth) + size) / 2 + 0.6,
+        )
+      )
+        continue;
+      const lot = {
+        x,
+        z,
+        width: size,
+        depth: size,
+        facing: yaw,
+        floors: 9 + Math.floor(random() * 9),
+        style: "office",
+        district: "fidi",
+        // Entered from a forecourt rather than a kerb.
+        infill: true,
+        paint: random(),
+        detail: random(),
+      };
+      out.push(lot);
+      taken.push(lot);
+    }
+  return out;
 }
 
 // Pastel Victorians across Steiner Street from Alamo Square, facing the
@@ -272,7 +332,8 @@ const ladiesRow = (() => {
   return {
     x,
     z0: park.z - park.half[1] + 0.2,
-    z1: park.z + park.half[1] - 0.2,
+    // Runs north past the closed block, stopping short of home.
+    z1: -8,
   };
 })();
 function inLadiesRow(x, z, pad) {

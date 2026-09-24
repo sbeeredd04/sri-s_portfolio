@@ -115,6 +115,8 @@ function frame(batches, x, y, z, yaw) {
     z - lx * s + lz * c,
   ];
   const turn = (nx, nz) => [nx * c + nz * s, -nx * s + nz * c];
+  // spin turns about the vertical, roll about the box's own front axis
+  // (used for gable slopes); both happen in the lot's frame.
   return function box(
     tone,
     color,
@@ -122,28 +124,32 @@ function frame(batches, x, y, z, yaw) {
     [sx, sy, sz],
     spin = 0,
     bottom = false,
+    roll = 0,
   ) {
     const b = batches[tone];
     const cs = Math.cos(spin),
-      ss = Math.sin(spin);
+      ss = Math.sin(spin),
+      cr = Math.cos(roll),
+      sr = Math.sin(roll);
     const col = color;
     for (const [[nx, ny, nz], quad] of FACES) {
-      if (ny < 0 && !bottom) continue;
-      const lnx = nx * cs + nz * ss,
-        lnz = -nx * ss + nz * cs;
+      if (ny < 0 && !bottom && !roll) continue;
+      const rnx = nx * cr - ny * sr,
+        rny = nx * sr + ny * cr;
+      const lnx = rnx * cs + nz * ss,
+        lnz = -rnx * ss + nz * cs;
       const [wnx, wnz] = turn(lnx, lnz);
       const pts = quad.map(([a, bb, d]) => {
-        const px = (a * sx) / 2,
+        const qx = (a * sx) / 2,
+          qy = (bb * sy) / 2,
           pz = (d * sz) / 2;
-        return world(
-          cx + px * cs + pz * ss,
-          cy + (bb * sy) / 2,
-          cz - px * ss + pz * cs,
-        );
+        const px = qx * cr - qy * sr,
+          py = qx * sr + qy * cr;
+        return world(cx + px * cs + pz * ss, cy + py, cz - px * ss + pz * cs);
       });
       for (const i of [0, 1, 2, 0, 2, 3]) {
         b.p.push(...pts[i]);
-        b.n.push(wnx, ny, wnz);
+        b.n.push(wnx, rny, wnz);
         b.c.push(col.r, col.g, col.b);
       }
     }
@@ -297,7 +303,56 @@ function rowHouse(box, lot, ground, detail) {
     [0, top + 0.36 + parapet / 2, front - 0.06],
     [w, parapet, 0.18],
   );
-  if (style === "victorian" && detail)
+  if (lot.ladies) {
+    // The postcard gable: two steep roof slopes over a trimmed pediment.
+    const pitch = 0.95,
+      half = w / 2 + 0.15;
+    const slope = half / Math.cos(pitch);
+    for (const side of [-1, 1]) {
+      box(
+        "roof",
+        rgb("#4a4744"),
+        [
+          (side * half) / 2,
+          top + 0.4 + (half * Math.tan(pitch)) / 2,
+          front - 1.4,
+        ],
+        [slope, 0.16, 3.2],
+        0,
+        true,
+        -side * pitch,
+      );
+      box(
+        "paint",
+        trim,
+        [
+          (side * half) / 2,
+          top + 0.42 + (half * Math.tan(pitch)) / 2,
+          front + 0.2,
+        ],
+        [slope, 0.18, 0.2],
+        0,
+        true,
+        -side * pitch,
+      );
+    }
+    for (let k = 0; k < 5; k++) {
+      const t = k / 5;
+      const hw = half * (1 - t) - 0.05;
+      box(
+        "paint",
+        paint,
+        [0, top + 0.4 + half * Math.tan(pitch) * (t + 0.1), front - 0.06],
+        [hw * 2, (half * Math.tan(pitch)) / 5 + 0.02, 0.16],
+      );
+    }
+    box(
+      windowTone(lot, 9, 1),
+      rgb("#30414d"),
+      [0, top + 0.4 + half * Math.tan(pitch) * 0.35, front + 0.03],
+      [0.7, 1.1, 0.04],
+    );
+  } else if (style === "victorian" && detail)
     box(
       "paint",
       trim,
@@ -422,11 +477,13 @@ function pyramid(box, ground) {
     const size = base * (1 - t0 * 0.9);
     const y = ground + t0 * height;
     const h = height / bands;
+    // Pale precast floors, each with a narrow recessed window strip.
+    box("paint", rgb("#e7e3da"), [0, y + h * 0.36, 0], [size, h * 0.72, size]);
     box(
-      i % 2 ? "paint" : "glass",
-      i % 2 ? rgb("#e7e3da") : rgb("#56646c"),
-      [0, y + h / 2, 0],
-      [size, h, size],
+      "glass",
+      rgb("#7d8d97"),
+      [0, y + h * 0.86, 0],
+      [size - 0.12, h * 0.28, size - 0.12],
     );
   }
   for (const side of [-1, 1])
