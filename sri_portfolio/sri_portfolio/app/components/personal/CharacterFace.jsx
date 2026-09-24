@@ -166,8 +166,8 @@ export default function CharacterFace({ leftEye, rightEye }) {
           map={hair}
           bumpMap={hair}
           bumpScale={0.004}
-          roughness={0.42}
-          anisotropy={0.85}
+          roughness={0.6}
+          anisotropy={0.5}
           anisotropyRotation={Math.PI / 2}
           sheen={0.35}
           sheenColor="#9c7a5e"
