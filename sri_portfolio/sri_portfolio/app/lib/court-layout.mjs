@@ -63,9 +63,9 @@ export function overlapsCourt(x, z, halfX, halfZ, id, padding = 0) {
 }
 export const courtViews = {
   arrival: {
-    position: [26, 25, 39],
+    position: [15.6, 19.5, 24.2],
     target: [1, 0.8, 1],
-    portrait: { position: [20, 37, 58], target: [1, 0.8, 1], fov: 70 },
+    portrait: { position: [14.3, 26.1, 40.9], target: [1, 0.8, 1], fov: 70 },
   },
   badminton: {
     position: [7.1, 5.8, 12.2],

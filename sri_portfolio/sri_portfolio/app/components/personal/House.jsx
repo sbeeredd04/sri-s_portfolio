@@ -65,18 +65,23 @@ export default function House({ children, animate, night, rain }) {
     roof = useRef();
   const wood = useRoomTexture("walnut", 2);
   const charredTimber = useRoomTexture("charred", 2);
-  const center = useMemo(() => new THREE.Vector3(), []);
+  const local = useMemo(() => new THREE.Vector3(), []);
+  const shown = useRef(-1);
+  // A dollhouse cutaway: the roof lifts away whenever the camera is close
+  // enough to look down into the room, and stays whole from the street.
   useFrame(({ camera }) => {
     if (!shell.current || !roof.current) return;
-    shell.current.getWorldPosition(center);
-    const opacity = THREE.MathUtils.smoothstep(
-      center.distanceTo(camera.position),
-      9,
-      14,
-    );
+    shell.current.worldToLocal(local.copy(camera.position));
+    const distance = local.length();
+    const inside = THREE.MathUtils.smoothstep(distance, 9, 14);
+    const above = THREE.MathUtils.smoothstep(local.y, h.eave + 0.6, h.ridge + 2.5);
+    const near = 1 - THREE.MathUtils.smoothstep(distance, 48, 72);
+    const opacity = Math.min(inside, 1 - above * near);
+    if (Math.abs(opacity - shown.current) < 0.004) return;
+    shown.current = opacity;
     roof.current.traverse((object) => {
       if (!object.isMesh) return;
-      object.material.transparent = true;
+      object.material.transparent = opacity < 0.995;
       object.material.opacity = opacity;
       object.material.depthWrite = opacity > 0.98;
       object.castShadow = opacity > 0.5;

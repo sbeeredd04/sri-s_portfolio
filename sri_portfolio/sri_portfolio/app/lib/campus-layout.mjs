@@ -261,9 +261,9 @@ export function exhibitFacing(exhibit) {
   return { x: Math.sin(yaw), z: Math.cos(yaw) };
 }
 export const campusArrival = {
-  position: [28, 29, 37],
+  position: [17.5, 20.5, 22.6],
   target: [-7, 0.8, -11],
-  portrait: { position: [20, 44, 57], target: [-8, 0, -11], fov: 76 },
+  portrait: { position: [13, 33, 40], target: [-8, 0, -11], fov: 76 },
 };
 export const campusTree = {
   x: campusCenter.x - 0.5,

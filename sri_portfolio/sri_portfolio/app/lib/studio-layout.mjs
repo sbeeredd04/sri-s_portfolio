@@ -66,9 +66,10 @@ export const houseSection = {
 };
 
 export const studioArrival = {
-  position: [20, 13, 30],
-  target: [0, -3, 0.5],
-  portrait: { position: [23, 18, 44], target: [0, -6, -3], fov: 63 },
+  // Close enough to look down into the room once the roof lifts away.
+  position: [12.4, 9.4, 18.8],
+  target: [0, -0.5, 0.5],
+  portrait: { position: [16.1, 14.8, 31.9], target: [0, -2, -1], fov: 63 },
 };
 
 // Desk joinery and its collision shapes share these metre-scale dimensions.
