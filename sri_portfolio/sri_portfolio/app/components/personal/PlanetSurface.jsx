@@ -169,7 +169,7 @@ export default function PlanetSurface({ surfaceRef }) {
           )
           .replace(
             "#include <roughnessmap_fragment>",
-            "#include <roughnessmap_fragment>\nroughnessFactor=mix(.07,.94,land);",
+            "#include <roughnessmap_fragment>\n// Distant water: sub-pixel waves average into a rougher, dimmer glint.\nroughnessFactor=mix(mix(.07,.42,smoothstep(.03,.4,footprint)),.94,land);",
           )
           .replace(
             "#include <normal_fragment_maps>",

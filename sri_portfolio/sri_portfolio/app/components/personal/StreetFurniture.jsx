@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Model } from "./ModelInstances";
 import * as THREE from "three";
-import { Box, Boxes, Rod, Rods } from "./ScenePrimitives";
-import { useRoomTexture } from "./RoomMaterials";
 import { pavingPlacements, pavingSize } from "../../lib/paving-layout.mjs";
 
 export function Sign({
@@ -56,78 +55,32 @@ export function Sign({
     </mesh>
   );
 }
+const lampGlow = /bulb|glass/i;
+// Scanned CC0 cast-iron street lamp (Poly Haven), 2.7m at this scale. The
+// bulb glows at night; the call sites keep their shared layout positions.
 export function StreetLamp({ position, night, scale = 1 }) {
+  const glow = useMemo(
+    () => ({ match: lampGlow, color: "#ffc98f", intensity: night ? 3.2 : 0.05 }),
+    [night],
+  );
   return (
-    <group position={position} scale={scale}>
-      <mesh position={[0, 0.1, 0]} castShadow>
-        <cylinderGeometry args={[0.13, 0.19, 0.2, 20]} />
-        <meshStandardMaterial
-          color="#344251"
-          metalness={0.72}
-          roughness={0.4}
-        />
-      </mesh>
-      <Rod
-        from={[0, 0.12, 0]}
-        to={[0, 2.65, 0]}
-        radius={0.038}
-        color="#52616d"
+    <Suspense fallback={null}>
+      <Model
+        src="/models/street-lamp.glb"
+        position={position}
+        scale={0.7 * scale}
+        glow={glow}
       />
-      <Rod
-        from={[0, 2.63, 0]}
-        to={[0.38, 2.63, 0]}
-        radius={0.035}
-        color="#52616d"
-      />
-      <mesh position={[0.38, 2.6, 0]}>
-        <coneGeometry args={[0.26, 0.12, 32]} />
-        <meshStandardMaterial
-          color="#354451"
-          metalness={0.65}
-          roughness={0.35}
-        />
-      </mesh>
-      <mesh position={[0.38, 2.5, 0]}>
-        <sphereGeometry args={[0.16, 24, 16]} />
-        <meshStandardMaterial
-          color="#f3dab8"
-          emissive="#ffd1a1"
-          emissiveIntensity={night ? 1.6 : 0.15}
-          roughness={0.35}
-        />
-      </mesh>
-      <mesh position={[0.38, 2.36, 0]}>
-        <cylinderGeometry args={[0.13, 0.09, 0.045, 24]} />
-        <meshStandardMaterial color="#51616c" metalness={0.6} />
-      </mesh>
-    </group>
+    </Suspense>
   );
 }
-const benchSlats = [
-  ...[0, 1, 2, 3].map((i) => ({
-    position: [0, 0.48, -0.25 + i * 0.16],
-    size: [1.8, 0.055, 0.14],
-    radius: 0.015,
-  })),
-  ...[0, 1, 2].map((i) => ({
-    position: [0, 0.75 + i * 0.14, -0.3],
-    size: [1.8, 0.1, 0.05],
-    radius: 0.015,
-  })),
-];
+// Scanned CC0 wooden bench, stretched to the 1.8m seat the layouts reserve.
 export function Bench({ position, rotation = [0, 0, 0] }) {
-  const wood = useRoomTexture("wood", 2);
   return (
     <group position={position} rotation={rotation}>
-      <Boxes items={benchSlats} map={wood} color="#8e7969" roughness={0.7} />
-      <Rods
-        color="#3d4b55"
-        segments={[-0.65, 0.65].flatMap((x) => [
-          { from: [x, 0.04, -0.22], to: [x, 1.05, -0.3], radius: 0.028 },
-          { from: [x, 0.03, 0.28], to: [x, 0.5, 0.2], radius: 0.03 },
-          { from: [x, 0.48, -0.28], to: [x, 0.48, 0.35], radius: 0.035 },
-        ])}
-      />
+      <Suspense fallback={null}>
+        <Model src="/models/bench-wooden.glb" scale={[1.5, 1, 1.1]} />
+      </Suspense>
     </group>
   );
 }

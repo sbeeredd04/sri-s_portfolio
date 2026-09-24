@@ -13,9 +13,15 @@ function lodRoots(scene, lod) {
   return wanted.length ? wanted : [tagged[0]];
 }
 
-function prepareMaterial(material, { envMapIntensity }) {
+function prepareMaterial(material, { envMapIntensity, glow }) {
   const m = material.clone();
   m.envMapIntensity = envMapIntensity;
+  // Lamp bulbs and lit glass: emissive driven by the caller (e.g. night).
+  if (glow && glow.match.test(m.name)) {
+    m.emissive = new THREE.Color(glow.color);
+    m.emissiveIntensity = glow.intensity;
+    m.toneMapped = true;
+  }
   if (m.alphaTest > 0 || m.transparent || /foliage|leaf|leaves|card|needle/i.test(m.name)) {
     // Foliage cards: cutout instead of blending keeps sorting and shadows exact.
     m.transparent = false;
@@ -37,6 +43,7 @@ export default function ModelInstances({
   receiveShadow = true,
   envMapIntensity = 1,
   tint,
+  glow,
 }) {
   const { scene } = useGLTF(src);
   const parts = useMemo(() => {
@@ -56,7 +63,7 @@ export default function ModelInstances({
           ? node.material
           : [node.material];
         const prepared = materials.map((m) => {
-          const p = prepareMaterial(m, { envMapIntensity });
+          const p = prepareMaterial(m, { envMapIntensity, glow });
           if (tint) p.color.multiply(new THREE.Color(tint));
           return p;
         });
@@ -68,7 +75,7 @@ export default function ModelInstances({
       });
     }
     return out;
-  }, [scene, lod, envMapIntensity, tint]);
+  }, [scene, lod, envMapIntensity, tint, glow?.intensity, glow?.color]);
   const meshes = useMemo(() => {
     const object = new THREE.Object3D();
     const matrix = new THREE.Matrix4();
@@ -116,10 +123,10 @@ export default function ModelInstances({
 }
 
 // A single placed copy (furniture). Clones so materials can be tuned per use.
-export function Model({ src, position, rotation = 0, scale = 1, envMapIntensity = 1, castShadow = true, receiveShadow = true, lod = 0, ...props }) {
+export function Model({ src, position, rotation = 0, scale = 1, envMapIntensity = 1, castShadow = true, receiveShadow = true, lod = 0, glow, ...props }) {
   const items = useMemo(
     () => [{ position: position || [0, 0, 0], rotation, scale }],
-    [position?.[0], position?.[1], position?.[2], rotation, scale],
+    [position?.[0], position?.[1], position?.[2], rotation, String(scale)],
   );
   return (
     <group {...props}>
@@ -130,6 +137,7 @@ export function Model({ src, position, rotation = 0, scale = 1, envMapIntensity 
         castShadow={castShadow}
         receiveShadow={receiveShadow}
         envMapIntensity={envMapIntensity}
+        glow={glow}
       />
     </group>
   );
