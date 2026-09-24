@@ -33,7 +33,25 @@ import ProjectTown from "./ProjectTown";
 import AfterHours from "./AfterHours";
 import FutureStudio from "./FutureStudio";
 import PreparedGroup from "./PreparedGroup";
+import PostEffects from "./PostEffects";
+import AtmosphereSky from "./AtmosphereSky";
+import GrassField from "./GrassField";
+import { QualityProvider, useQuality } from "./Quality";
 
+// Reports once the scene has actually drawn, after Suspense content resolves.
+function FirstFrame({ onReady }) {
+  const frames = useRef(0);
+  const state = useThree();
+  useEffect(() => {
+    // Development-only handle for scripted rendering review.
+    if (process.env.NODE_ENV === "development") window.__sriScene = state;
+  }, [state]);
+  useFrame(() => {
+    frames.current += 1;
+    if (frames.current === 3) onReady?.();
+  });
+  return null;
+}
 function AnimationDriver({ animate }) {
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
@@ -62,7 +80,7 @@ function Atmosphere({ animate }) {
   const vertex = `varying vec3 vP;varying vec3 vN;varying vec3 vView;void main(){vP=position;vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vView=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}`;
   return (
     <>
-      <mesh>
+      <mesh userData={{ sky: true }}>
         <sphereGeometry args={[WORLD_RADIUS + 1.1, 96, 64]} />
         <shaderMaterial
           transparent
@@ -73,7 +91,7 @@ function Atmosphere({ animate }) {
           fragmentShader={`varying vec3 vN;varying vec3 vView;void main(){float rim=pow(1.-abs(dot(normalize(vN),normalize(vView))),3.);gl_FragColor=vec4(.46,.66,1.,rim*.14);}`}
         />
       </mesh>
-      <mesh ref={clouds}>
+      <mesh ref={clouds} userData={{ sky: true }}>
         <sphereGeometry args={[WORLD_RADIUS + 2.3, 96, 64]} />
         <shaderMaterial
           transparent
@@ -180,6 +198,7 @@ function ConnectedWorld({
       <Suspense fallback={null}>
         <StarSphere daylight={solar.daylight} />
       </Suspense>
+      <AtmosphereSky world={world} solar={solar} />
       <Stars daylight={solar.daylight} />
       <PlanetSurface surfaceRef={planet} />
       <Walkways daylight={solar.daylight} />
@@ -188,6 +207,7 @@ function ConnectedWorld({
         clock={residentClock}
       />
       <Atmosphere animate={animate} />
+      <PostEffects world={world} daylight={solar.daylight} />
       {regions.map((region) => (
         <group
           key={region.id}
@@ -197,6 +217,15 @@ function ConnectedWorld({
           position={region.center}
           quaternion={region.rotation}
         >
+          <GrassField
+            biome={region.id}
+            active={world === region.id}
+            surfaceRef={planet}
+            animate={animate}
+            sun={new THREE.Vector3(...solar.direction).applyQuaternion(
+              region.rotation,
+            )}
+          />
           {["court", "trail", "projects"].includes(region.id) && (
             <TerrainPlanting
               biome={region.id}
@@ -381,8 +410,8 @@ export default function WorldScene(props) {
   return (
     <GraphicsGate onUnavailable={props.onUnavailable}>
       <Canvas
-        shadows
-        dpr={[1, 1.5]}
+        shadows={props.tier !== "low"}
+        dpr={1}
         frameloop="demand"
         camera={{
           position: [0, WORLD_RADIUS * 2.1, WORLD_RADIUS * 0.9],
@@ -390,7 +419,7 @@ export default function WorldScene(props) {
           near: 0.22,
           far: 1200,
         }}
-        gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
+        gl={{ antialias: true, alpha: true, powerPreference: "high-performance", stencil: false }}
         fallback={
           <p className="scene-fallback-message">
             The index and reading view work without 3D.
@@ -398,9 +427,12 @@ export default function WorldScene(props) {
         }
       >
         <GraphicsHealth onUnavailable={props.onUnavailable} />
-        <RoomMaterialProvider>
-          <ConnectedWorld {...props} />
-        </RoomMaterialProvider>
+        <QualityProvider ceiling={props.tier} onTier={props.onTier}>
+          <FirstFrame onReady={props.onReady} />
+          <RoomMaterialProvider>
+            <ConnectedWorld {...props} />
+          </RoomMaterialProvider>
+        </QualityProvider>
       </Canvas>
     </GraphicsGate>
   );

@@ -227,12 +227,17 @@ export function Lake({
     [],
   );
   const material = useMemo(() => {
-    const water = new THREE.MeshStandardMaterial({
+    // Still mountain water: a near-mirror surface whose colour comes from the
+    // sky reflection at grazing angles and from its depth when seen from above.
+    const water = new THREE.MeshPhysicalMaterial({
       color: "#8eafbf",
-      roughness: 0.34,
-      envMapIntensity: 0.18,
+      roughness: 0.035,
+      metalness: 0,
+      ior: 1.333,
+      specularIntensity: 1,
+      envMapIntensity: 1.15,
       transparent: true,
-      opacity: 0.97,
+      opacity: 0.96,
       depthWrite: false,
     });
     water.onBeforeCompile = (shader) => {
@@ -259,10 +264,13 @@ export function Lake({
         float distanceFromTap=distance(vLakeUv,uRipple.xy);
         float ring=sin(distanceFromTap*170.-age*12.)
           *exp(-abs(distanceFromTap-age*.09)*55.)*exp(-age*.7);
-        float waves=sin(lakeP.x*95.+uTime*.8+sin(lakeP.y*30.))
-          *.0004+sin(lakeP.y*80.-uTime*.6)*.0003;
+        float waves=sin(lakeP.x*95.+uTime*.8+sin(lakeP.y*30.))*.0004
+          +sin(lakeP.y*80.-uTime*.6)*.0003
+          +sin((lakeP.x+lakeP.y)*210.+uTime*1.7)*.00012
+          +sin((lakeP.x-lakeP.y*.7)*330.-uTime*2.3)*.00007;
         float lakeHeight=waves+ring*.008;
-        diffuseColor.rgb=mix(vec3(.06,.14,.16),vec3(.12,.22,.24),smoothstep(.31,.5,lakeR));
+        // Deep centre, silty green shallows toward the bank.
+        diffuseColor.rgb=mix(vec3(.012,.035,.04),vec3(.07,.11,.08),smoothstep(.3,.5,lakeR));
         diffuseColor.rgb+=ring*.016;
         diffuseColor.a*=1.-smoothstep(.47,.5,lakeR);
       `,

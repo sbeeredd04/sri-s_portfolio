@@ -23,7 +23,7 @@ export function Stars({ daylight }) {
   }, []);
   useEffect(() => () => geometry.dispose(), [geometry]);
   return (
-    <points geometry={geometry} renderOrder={-10}>
+    <points geometry={geometry} renderOrder={-10} userData={{ sky: true }}>
       <pointsMaterial
         vertexColors
         size={1.25}

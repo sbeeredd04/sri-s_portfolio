@@ -2,6 +2,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { useQuality } from "./Quality";
 import { biomeMoods } from "../../lib/world-time.mjs";
 import { worldPoint, WORLD_RADIUS } from "../../lib/world-layout.mjs";
 import {
@@ -77,6 +78,7 @@ export default function WorldLighting({
   solar,
   residentClock,
 }) {
+  const quality = useQuality();
   const mood = biomeMoods[world];
   const daylight = solar.daylight;
   const valley = world === "trail";
@@ -163,8 +165,8 @@ export default function WorldLighting({
     key.current.position.lerp(scratch.position, blend);
     target.position.lerp(scratch.target, blend);
     const keyIntensity = close
-      ? (valley ? 0.52 : foundry || fieldnotes ? 0.42 : 0.28) +
-        daylight * 1.6 * mood.exposure
+      ? (valley ? 1.1 : foundry || fieldnotes ? 0.95 : 0.8) +
+        daylight * 2.7 * mood.exposure
       : 1.2 + daylight;
     key.current.intensity = THREE.MathUtils.lerp(
       key.current.intensity,
@@ -233,14 +235,14 @@ export default function WorldLighting({
     <>
       <ambientLight
         intensity={
-          (valley || foundry || fieldnotes ? 0.13 : 0.08) + daylight * 0.2
+          (valley || foundry || fieldnotes ? 0.16 : 0.12) + daylight * 0.2
         }
       />
       <hemisphereLight
         args={[
           mood.sky,
-          "#49424b",
-          (valley || foundry || fieldnotes ? 0.34 : 0.2) + daylight * 0.55,
+          "#3b3a44",
+          (valley || foundry || fieldnotes ? 0.5 : 0.42) + daylight * 0.55,
         ]}
       />
       <primitive object={target} />
@@ -250,8 +252,8 @@ export default function WorldLighting({
         position={[-80, 120, 85]}
         intensity={night ? 1.4 : 2.2}
         color="#cadcf4"
-        castShadow
-        shadow-mapSize={[2048, 2048]}
+        castShadow={quality.shadows}
+        shadow-mapSize={[quality.shadowMap, quality.shadowMap]}
         shadow-normalBias={0.025}
         shadow-bias={-0.00025}
       />

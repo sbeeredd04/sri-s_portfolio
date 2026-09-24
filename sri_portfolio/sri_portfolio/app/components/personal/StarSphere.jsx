@@ -24,6 +24,7 @@ export default function StarSphere({ daylight }) {
   return (
     <mesh
       ref={sky}
+      userData={{ sky: true }}
       renderOrder={-100}
       frustumCulled={false}
       raycast={() => null}

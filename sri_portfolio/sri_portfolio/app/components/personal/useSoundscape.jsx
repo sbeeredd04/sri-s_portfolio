@@ -9,6 +9,12 @@ import {
   soundDestination,
 } from "../../lib/sensory-design.mjs";
 
+// Browsers log an intervention when vibrate() runs before the first gesture.
+function cancelVibration() {
+  if (navigator.userActivation?.hasBeenActive === false) return;
+  navigator.vibrate?.(0);
+}
+
 const storageKey = "sri-sensory-preferences-v1";
 export default function useSoundscape(biome, section = null, detail = null) {
   const reading = Boolean(section);
@@ -53,7 +59,8 @@ export default function useSoundscape(biome, section = null, detail = null) {
     if (!duration) return;
     tactile.current.last = now;
     try {
-      navigator.vibrate(duration);
+      if (navigator.userActivation?.hasBeenActive !== false)
+        navigator.vibrate(duration);
     } catch {
       /* Sound and press motion remain available. */
     }
@@ -78,7 +85,7 @@ export default function useSoundscape(biome, section = null, detail = null) {
         if (next.haptics) pulse("press");
         else {
           try {
-            navigator.vibrate?.(0);
+            cancelVibration();
           } catch {}
         }
       }
@@ -182,7 +189,7 @@ export default function useSoundscape(biome, section = null, detail = null) {
       setReducedMotion(motion.matches);
       if (motion.matches) {
         try {
-          navigator.vibrate?.(0);
+          cancelVibration();
         } catch {}
       }
     };
@@ -192,7 +199,7 @@ export default function useSoundscape(biome, section = null, detail = null) {
     const visibility = () => {
       if (document.hidden) {
         try {
-          navigator.vibrate?.(0);
+          cancelVibration();
         } catch {}
       }
       const current = engine.current;
@@ -225,7 +232,7 @@ export default function useSoundscape(biome, section = null, detail = null) {
       window.removeEventListener("sri:music", music);
       window.removeEventListener("pagehide", pagehide);
       try {
-        navigator.vibrate?.(0);
+        cancelVibration();
       } catch {}
       stop(true);
     };

@@ -30,6 +30,8 @@ import {
 import { placeStops } from "../../lib/place-stops.mjs";
 import { roomWorldDestination } from "../../lib/reading-rooms.mjs";
 import { allProjects, shows } from "../../json/personal";
+import WorldLoader from "./WorldLoader";
+import { initialTier } from "./Quality";
 function footEntry(biome, stop) {
   if (
     biome === "future" &&
@@ -43,12 +45,7 @@ function footEntry(biome, stop) {
 }
 const WorldScene = dynamic(() => import("./WorldScene"), {
   ssr: false,
-  loading: () => (
-    <div className="planet-loading">
-      <span />
-      <p>Making room for a little curiosity…</p>
-    </div>
-  ),
+  loading: () => null,
 });
 function clearProjectLink() {
   if (linkedProjectId(window.location.hash))
@@ -91,7 +88,16 @@ export default function ExperienceShell() {
     [still, setStill] = useState(false),
     [graphicsError, setGraphicsError] = useState(false),
     [hint, setHint] = useState(""),
-    [introBottom, setIntroBottom] = useState(0);
+    [introBottom, setIntroBottom] = useState(0),
+    [tierCeiling, setTierCeiling] = useState(null),
+    [activeTier, setActiveTier] = useState(null),
+    [sceneReady, setSceneReady] = useState(false);
+  useEffect(() => {
+    setTierCeiling(initialTier());
+    const light = new URLSearchParams(location.search).get("light");
+    if (light === "day" || light === "night") setLightMode(light);
+  }, []);
+  const markReady = useCallback(() => setSceneReady(true), []);
   const visitedScreens = useRef(new Set());
   const [walkerStatus, setWalkerStatus] = useState({
     distance: 0,
@@ -392,9 +398,12 @@ export default function ExperienceShell() {
       </header>
       <main className="immersive-main" aria-label="Explore Sri’s world">
         <div className="immersive-canvas">
-          {!still ? (
+          {!still && tierCeiling ? (
             <WorldBoundary onFailure={graphicsUnavailable}>
               <WorldScene
+                tier={tierCeiling}
+                onTier={setActiveTier}
+                onReady={markReady}
                 introBottom={introBottom}
                 world={biome}
                 stop={stop}
@@ -443,14 +452,17 @@ export default function ExperienceShell() {
                 onChannelChange={changeChannel}
               />
             </WorldBoundary>
-          ) : (
+          ) : still ? (
             <div className="still-planet" aria-hidden="true">
               <i />
               <b />
               <span>✳</span>
             </div>
-          )}
+          ) : null}
         </div>
+        {!still && !graphicsError && (
+          <WorldLoader ready={sceneReady} tier={activeTier || tierCeiling} />
+        )}
         {graphicsError && (
           <div className="graphics-notice" role="status">
             <p>

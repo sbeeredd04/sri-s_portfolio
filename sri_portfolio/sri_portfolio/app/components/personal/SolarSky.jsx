@@ -20,7 +20,11 @@ export default function SolarSky({ world, solar }) {
     solar.warmth,
   );
   return (
-    <group position={position} visible={solar.daylight > 0.05}>
+    <group
+      position={position}
+      visible={solar.daylight > 0.05}
+      userData={{ sky: true }}
+    >
       <mesh>
         <sphereGeometry args={[3.2, 32, 24]} />
         <meshBasicMaterial color={color} toneMapped={false} />
