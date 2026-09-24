@@ -376,16 +376,17 @@ The requested publication/release unit is complete. This does not close Q33–Q3
 
 ## Q38 — Photographic materials, Blender assets, device tiers and themed rooms (September 24, active · branch `feat/photoreal-world`)
 
-Request: use Blender headless for proper textures, shaders and models; audit every part and link; make each reading room its own themed site; aim for views that read as filmed, with a loader and device-aware budgets so phones are not overloaded. No push, merge or deployment was requested for this unit; all work is on `feat/photoreal-world` (32 commits after `564b8f43`).
+Request: use Blender headless for proper textures, shaders and models; audit every part and link; make each reading room its own themed site; aim for views that read as filmed, with a loader and device-aware budgets so phones are not overloaded. No push, merge or deployment was requested for this unit; all work is on `feat/photoreal-world` (commits after `564b8f43`).
 
 Rendering pipeline: device tiers (low / medium / high) chosen from the WebGL renderer, cores, memory, pointer and Save-Data, then stepped down by a frame-rate monitor with a cooldown; `?quality=` forces a tier. A loader page shows progress and has a Skip control. Post-processing (AgX, bloom, N8AO on high, SMAA or MSAA), a camera-centred scattering sky that also feeds image-based lighting, and shot-scaled fog. The high tier renders at up to 2x device pixels. On mid-tier devices, shadows refresh on alternate frames.
 
-Assets (all CC0 Poly Haven / ambientCG or original Blender output; no Mixamo or non-redistributable files): scanned trees, sofa, plants, lamps, benches, boulders, shrubs, saplings, stones, picnic tables and bins; Blender-sculpted granite wall, dome and ridge with baked normals; a Blender task chair; photographed triplanar finishes for granite, ground, stucco, roofs, asphalt, pavers, court acrylic, concrete and timber. The original rigged character (`public/models/characters/sri.glb`) is being built and is not wired in yet.
+Assets (all CC0 Poly Haven / ambientCG or original Blender output; no Mixamo or non-redistributable files): scanned trees, sofa, plants, lamps, benches, boulders, shrubs, saplings, stones, picnic tables and bins; Blender-sculpted granite wall, dome and ridge with baked normals; a Blender task chair; photographed triplanar finishes for granite, ground, stucco, roofs, asphalt, pavers, court acrylic, concrete and timber. The original rigged character (`public/models/characters/sri.glb`, 21k triangles, 53 joints, idle/walk/typing/wave/sit) now types at the desk and waves at the trailhead when tapped.
 
 Verified in the browser (Playwright, Chrome, 1440×900 and 390×844, forced high/medium/low):
 - Foundry: textured workshops and a jacaranda grove, clear of every walk (tested).
 - Valley: aerated waterfall with mist; misbaked granite normals relaxed; boulders and understory kept off the trail and water (tested).
 - Courts: acrylic surfaces; park furniture kept off courts and paths (tested).
+- Fieldnotes: plaster, pavers and scanned bed planting. After hours: an evening lawn in place of bare purple ground.
 - City: concrete slab floor and a neutral overcast light, replacing the blue cast; the sea reflects the sky.
 - Home desk: Blender chair seated on the existing collider. Fixed a light hotspot and a NaN-bloom blob from the hair material.
 - Grass moire from orbit removed.
@@ -393,15 +394,14 @@ Verified in the browser (Playwright, Chrome, 1440×900 and 390×844, forced high
 
 Final local validation: 163 tests pass, the TypeScript check passes, and every room route returns 200.
 
-Measured per-frame cost at the Foundry (phone viewport; these are rendering counts, not device measurements):
-- low: 381 draw calls, 0.85M triangles
-- medium: 670 draw calls, about 534 average with the shadow cadence, 2.0M triangles
-- high: 762 draw calls, 4.5M triangles
+Measured per-frame cost in headless Chrome on an Apple GPU, each tier run in its own browser (these are rendering counts, not device measurements):
+- Foundry, phone viewport: low 381 draw calls and 0.85M triangles; medium 670 draw calls (about 534 on average with the shadow cadence).
+- High tier, 1440×900 at 2x: Home 481 draw calls and 1.06M triangles; valley 162 draw calls and 3.66M triangles, most of it grass. Both held about 16.7 ms frames.
 
-Frames stayed at the display cap in headless Chrome on an Apple GPU. That does not establish phone performance.
+Running tiers back to back in one browser produced falsely slow readings. That does not establish phone performance.
 
 Open defects and next work:
-- The character is still the procedural chibi until `sri.glb` is integrated. Court players need a matching style.
+- Court players and the visitor walker still use the procedural rig; sports play is pose-driven and needs matching clips or IK before they can switch.
 - Draw calls in the Foundry and home are high for older phones. The workshops are many small unbatched meshes.
 - City buildings remain simple boxes with photographed finishes.
 - The small scanned rocks are warm sandstone in a granite valley.
