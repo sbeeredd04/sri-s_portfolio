@@ -395,7 +395,7 @@ export function fieldnotesBlocks(x, z, pad = 0.03) {
 }
 
 export const fieldnotesArrival = {
-  position: [6.4, 4.8, -9.2],
+  position: [-4.4, 5, -9.6],
   target: [-0.5, 1.3, 1.0],
   portrait: { position: [4.6, 10.7, -20], target: [-0.3, 1.1, 0.6] },
 };
