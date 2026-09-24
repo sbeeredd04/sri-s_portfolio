@@ -134,12 +134,14 @@ export const quarterViews = [
   {
     id: "lookout",
     label: "The lookout",
-    position: [-0.9, 2.6, lookout.bench - 5],
-    target: [0.2, 0.4, lookout.z + 22],
+    // Three-quarters from behind the bench, looking down over the wall so
+    // the bench, wall and shore sit in frame with the water beyond.
+    position: [4.6, 2.5, lookout.bench - 3.6],
+    target: [-0.8, 0.7, lookout.z + 7],
     portrait: {
-      position: [-0.6, 2.9, lookout.bench - 5.6],
-      target: [0.2, 0.4, lookout.z + 22],
-      fov: 72,
+      position: [2.2, 3.2, lookout.bench - 4.8],
+      target: [-0.2, 0.4, lookout.z + 6],
+      fov: 70,
     },
     content: "writing",
     prompt: "Somewhere to think it through",

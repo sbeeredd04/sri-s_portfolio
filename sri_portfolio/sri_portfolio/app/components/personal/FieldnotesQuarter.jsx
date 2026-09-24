@@ -300,7 +300,7 @@ function Lookout({ night }) {
   const lamp = useMemo(
     () => [
       {
-        position: [2.4, ground(2.4, lookout.bench), lookout.bench],
+        position: [-2.4, ground(-2.4, lookout.bench), lookout.bench],
         rotation: 0,
         scale: 0.85,
       },
