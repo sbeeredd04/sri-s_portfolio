@@ -96,3 +96,7 @@ In both seated clips the origin stays on the floor directly under the hip joints
 ## Previews
 
 The previews are in the build scratchpad, rendered in Cycles from the re-imported GLB: front, three-quarter, back, face, hands, mid-walk, typing, sit, wave and blink.
+
+## Crowd figure
+
+`crowd.glb` is derived from `sri.glb` by `scripts/blender/character/crowd.py`: a collapse decimate to 16% of the faces (3,443 triangles) with the facial shape keys dropped. Only the `walk` and `idle` clips are kept, and the material names stay the same so the vertex-animation crowd can tint each part per person. Rebuild it whenever `sri.glb` changes.
