@@ -60,8 +60,24 @@ export default function Walkways({ daylight }) {
   // Cut stone has square joints. A 12-triangle slab keeps the hundreds of
   // repeating pavers inexpensive; bevels belong on the close-up furnishings.
   const geometry = useMemo(() => new THREE.BoxGeometry(1, 1, 1), []);
+  // Bollards are turned, not sawn: unit cylinders keep the placement sizes
+  // (width = diameter) while reading as cast posts with round lenses.
+  const round = useMemo(
+    () => ({
+      post: new THREE.CylinderGeometry(0.44, 0.5, 1, 14),
+      lens: new THREE.CylinderGeometry(0.5, 0.5, 1, 18),
+    }),
+    [],
+  );
   const batches = useMemo(walkwayPlacements, []);
-  useEffect(() => () => geometry.dispose(), [geometry]);
+  useEffect(
+    () => () => {
+      geometry.dispose();
+      round.post.dispose();
+      round.lens.dispose();
+    },
+    [geometry, round],
+  );
   return (
     <group>
       <BayBridge daylight={daylight} />
@@ -79,17 +95,17 @@ export default function Walkways({ daylight }) {
       />
       <Instances
         placements={batches.footings}
-        geometry={geometry}
+        geometry={round.post}
         color="#565953"
       />
       <Instances
         placements={batches.posts}
-        geometry={geometry}
+        geometry={round.post}
         color="#394552"
       />
       <Instances
         placements={batches.lamps}
-        geometry={geometry}
+        geometry={round.lens}
         color="#e9dac2"
         emissive="#ffd6a0"
         intensity={1.8 - daylight * 1.5}
