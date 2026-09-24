@@ -42,6 +42,15 @@ export const soundPlaces = {
     level: 0.24,
     score: 0.55,
   },
+  keynote: {
+    track: "workbench",
+    label: "A full house",
+    description: "A room of people between talks, and applause now and then.",
+    bed: "quiet-room",
+    level: 0.34,
+    score: 0.36,
+    hall: true,
+  },
   entertainment: {
     label: "After hours",
     description: "Warm room tone and soft chords. Settle in for a while.",

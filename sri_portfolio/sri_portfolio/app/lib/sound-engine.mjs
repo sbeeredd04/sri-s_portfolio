@@ -62,6 +62,10 @@ export class SoundEngine {
     this.city = context.createGain();
     this.city.gain.value = 0;
     this.city.connect(this.master);
+    // The keynote hall: a room of people murmuring, and now and then applause.
+    this.hall = context.createGain();
+    this.hall.gain.value = 0;
+    this.hall.connect(this.master);
     // A small diffused tail softens cues without making navigation echo.
     const room = context.createConvolver(),
       wet = context.createGain();
@@ -99,6 +103,7 @@ export class SoundEngine {
       this.effects,
       this.weather,
       this.city,
+      this.hall,
       room,
       wet,
     ];
@@ -198,6 +203,9 @@ export class SoundEngine {
     const cityLevel = profile.city ? levels.environment / profile.level : 0;
     soften(this.city.gain, cityLevel, now);
     if (cityLevel && !this.hum) this.startHum();
+    const hallLevel = profile.hall ? levels.environment / profile.level : 0;
+    soften(this.hall.gain, hallLevel, now);
+    if (hallLevel && !this.murmur) this.startMurmur();
     const rain = this.rainLevel();
     for (const [name, { gain }] of this.loops)
       soften(
@@ -264,6 +272,63 @@ export class SoundEngine {
     this.track(source, [source, low, gain]);
   }
 
+  // Voices in a big room: two bands of noise that swell and settle slowly.
+  startMurmur() {
+    const { context } = this;
+    const sources = [];
+    for (const [hz, q, level, rate] of [
+      [380, 0.9, 0.05, 0.11],
+      [1150, 1.3, 0.022, 0.17],
+    ]) {
+      const source = context.createBufferSource(),
+        band = context.createBiquadFilter(),
+        gain = context.createGain(),
+        swell = context.createOscillator(),
+        depth = context.createGain();
+      source.buffer = this.noise;
+      source.loop = true;
+      source.playbackRate.value = 0.93 + sources.length * 0.11;
+      band.type = "bandpass";
+      band.frequency.value = hz;
+      band.Q.value = q;
+      gain.gain.value = level;
+      swell.frequency.value = rate;
+      depth.gain.value = level * 0.35;
+      swell.connect(depth).connect(gain.gain);
+      source.connect(band).connect(gain).connect(this.hall);
+      source.start();
+      swell.start();
+      this.track(source, [source, band, gain, swell, depth]);
+      sources.push(source);
+    }
+    this.murmur = sources;
+  }
+
+  // Applause: a few seconds of scattered claps that rise and fall.
+  applause(at) {
+    const { context } = this;
+    const length = 2.6 + Math.random() * 1.6;
+    for (let i = 0; i < 70; i++) {
+      const t = Math.random() * length,
+        swell = Math.sin((t / length) * Math.PI);
+      const source = context.createBufferSource(),
+        band = context.createBiquadFilter(),
+        gain = context.createGain();
+      const start = at + t;
+      source.buffer = this.noise;
+      band.type = "bandpass";
+      band.frequency.value = 1500 + Math.random() * 1800;
+      band.Q.value = 1.1;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.02 * swell + 0.003, start + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.07);
+      source.connect(band).connect(gain).connect(this.hall);
+      source.start(start, Math.random() * 0.9);
+      source.stop(start + 0.08);
+      this.track(source, [source, band, gain]);
+    }
+  }
+
   // A cable-car bell: bright partials, struck two or three times.
   bell(at) {
     const { context } = this;
@@ -319,7 +384,7 @@ export class SoundEngine {
     const { context } = this;
     const profile = soundPlaces[this.place] || soundPlaces.planet;
     if (
-      !profile.city ||
+      !(profile.city || profile.hall) ||
       this.hidden ||
       this.disposed ||
       context.state !== "running" ||
@@ -329,6 +394,11 @@ export class SoundEngine {
       return;
     const now = context.currentTime;
     if (now < this.nextCityCue) return;
+    if (profile.hall) {
+      this.applause(now + 0.05);
+      this.nextCityCue = now + 34 + Math.random() * 36;
+      return;
+    }
     const foggy = (this.weatherState?.fog ?? 0) > 0.3;
     if (foggy && Math.random() < 0.45) this.foghorn(now + 0.05);
     else this.bell(now + 0.05);

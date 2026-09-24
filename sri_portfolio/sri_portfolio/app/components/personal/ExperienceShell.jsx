@@ -175,7 +175,9 @@ export default function ExperienceShell() {
       biome === "studio" &&
         (stop === "bay" || streetStop(biome, stop)?.group === "bay")
         ? "bay"
-        : biome,
+        : biome === "projects" && stop === "keynote"
+          ? "keynote"
+          : biome,
       sheet,
       roomDetail,
       weather,
@@ -554,7 +556,12 @@ export default function ExperienceShell() {
                 paused={!playing}
                 onExit={exitWalking}
                 onOutside={() => explore("roam")}
-                onRead={() => show(placeStops[biome]?.find((s) => s.id === stop.slice(5))?.content || chapter.content)}
+                onRead={() =>
+                  show(
+                    placeStops[biome]?.find((s) => s.id === stop.slice(5))
+                      ?.content || chapter.content,
+                  )
+                }
               />
             ) : street ? (
               <div className="street-controls">

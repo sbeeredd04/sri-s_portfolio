@@ -111,6 +111,7 @@ class Node {
   gain = new Param();
   frequency = new Param();
   Q = new Param();
+  playbackRate = new Param();
   connect(destination) {
     return destination;
   }
@@ -421,4 +422,23 @@ test("home plays the city, not a permanent storm", () => {
   engine.update({ place: "trail" });
   assert.equal(engine.city.gain.value, 0, "street layer stays home");
   engine.destroy(true);
+});
+
+test("the keynote hall murmurs and applauds, and only there", () => {
+  const engine = new SoundEngine(context(), {
+    place: "keynote",
+    preferences: sensoryDefaults,
+    weather: { kind: "clear", rain: 0, fog: 0 },
+  });
+  try {
+    engine.mix();
+    assert.ok(engine.hall.gain.value > 0, "room of people audible");
+    assert.ok(engine.murmur?.length, "murmur started");
+    assert.equal(engine.city.gain.value, 0, "no street layer indoors");
+    engine.applause(0);
+    engine.update({ place: "projects" });
+    assert.equal(engine.hall.gain.value, 0, "the hall stays in the hall");
+  } finally {
+    engine.destroy(true);
+  }
 });
