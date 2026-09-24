@@ -84,6 +84,9 @@ export default function WorldLighting({
   const valley = world === "trail";
   const foundry = world === "projects";
   const fieldnotes = world === "future";
+  // Inside the apartment the room should be lit by its lamps and screens;
+  // sky fill through the glass is kept low so night reads warm, not blue.
+  const interior = world === "studio" && (stop === "desk" || stop === "bookshelf");
   const key = useRef(),
     points = useRef([]),
     time = useRef(0);
@@ -170,7 +173,7 @@ export default function WorldLighting({
       : 1.2 + daylight;
     key.current.intensity = THREE.MathUtils.lerp(
       key.current.intensity,
-      keyIntensity,
+      keyIntensity * (interior ? 0.45 + daylight * 0.4 : 1),
       blend,
     );
     scratch.color.set(daylight > 0.05 ? mood.sun : "#b4c8ee");
@@ -224,7 +227,7 @@ export default function WorldLighting({
         lamp.color.lerp(scratch.color, blend);
         lamp.intensity = THREE.MathUtils.lerp(
           lamp.intensity,
-          item[2] * (1 - daylight * 0.72),
+          item[2] * (1 - daylight * 0.72) * (interior ? 1.8 : 1),
           blend,
         );
         lamp.distance = item[3];
@@ -235,14 +238,16 @@ export default function WorldLighting({
     <>
       <ambientLight
         intensity={
-          (valley || foundry || fieldnotes ? 0.16 : 0.12) + daylight * 0.2
+          ((valley || foundry || fieldnotes ? 0.16 : 0.12) + daylight * 0.2) *
+          (interior ? 0.5 : 1)
         }
       />
       <hemisphereLight
         args={[
           mood.sky,
           "#3b3a44",
-          (valley || foundry || fieldnotes ? 0.5 : 0.42) + daylight * 0.55,
+          ((valley || foundry || fieldnotes ? 0.5 : 0.42) + daylight * 0.55) *
+            (interior ? 0.4 + daylight * 0.4 : 1),
         ]}
       />
       <primitive object={target} />

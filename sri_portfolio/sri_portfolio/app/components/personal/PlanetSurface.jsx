@@ -34,7 +34,7 @@ export default function PlanetSurface({ surfaceRef }) {
       shader.uniforms.uRegionNorth = { value: regions.map((r) => r.north) };
       shader.uniforms.uRegionColor = {
         value: [
-          "#40556e",
+          "#5e5b57",
           "#223e36",
           "#3a4930",
           "#424b36",
@@ -100,6 +100,7 @@ export default function PlanetSurface({ surfaceRef }) {
         float places=0.;
         vec3 meadow=vec3(.11,.14,.15);
         float best=0.;
+        float city=0.;
         float shoreVariation=(worldFbm(vSurface*.17)-.5)*7.;
         for(int i=0;i<${regions.length};i++) {
           vec3 delta=p*(${WORLD_RADIUS.toFixed(1)}/max(.2,dot(p,uRegions[i])))-uRegionCenter[i];
@@ -110,6 +111,7 @@ export default function PlanetSurface({ surfaceRef }) {
           float facing=step(.76,dot(p,uRegions[i]));
           float region=facing*(1.-smoothstep(uRegionEdges[i].x,uRegionEdges[i].y,distance+shoreVariation));
           places=max(places,region);
+          if(i==0) city=region;
           if(region>best){
             best=region;meadow=uRegionColor[i]*(.88+terrain*.23);
             if(i==2){
@@ -167,7 +169,7 @@ export default function PlanetSurface({ surfaceRef }) {
     return applyTriplanar(m, {
       ...ground,
       mode: "detail",
-      mask: "land*(1.-cliff*.6)",
+      mask: "land*(1.-cliff*.6)*(1.-city)",
       scale: 0.42,
       strength: 0.85,
       normalStrength: 0.9,

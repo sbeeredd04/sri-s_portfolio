@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { houseSection as h } from "../../lib/studio-layout.mjs";
 import { surfaceHeight } from "../../lib/world-layout.mjs";
 import { Box, Boxes, Rod } from "./ScenePrimitives";
-import { BotanicalPlant as Plant } from "./BotanicalPlant";
+import { Model } from "./ModelInstances";
 import { useRoomTexture } from "./RoomMaterials";
 import RainWindow from "./RainWindow";
 import { WoodFloor } from "./ListeningFurniture";
@@ -261,8 +261,10 @@ export default function House({ children, animate, night }) {
         color="#92999f"
         radius={0.02}
       />
-      <Plant animate={animate} position={[-6.02, 0.15, 5.65]} scale={0.75} />
-      <Plant animate={animate} position={[5.9, 0.15, 5.55]} scale={1} />
+      <Suspense fallback={null}>
+        <Model src="/models/plant-leafy.glb" position={[-6.02, 0.15, 5.65]} rotation={1.1} />
+        <Model src="/models/plant-tall.glb" position={[5.9, 0.15, 5.55]} rotation={-0.8} />
+      </Suspense>
       {[-6.24, 6.24].map((x) => (
         <group key={x}>
           <Box

@@ -11,6 +11,7 @@ import StudioDesk from "./StudioDesk";
 import StudioChair from "./StudioChair";
 import StudioLamp from "./StudioLamp";
 import StudioSofa from "./StudioSofa";
+import { Model } from "./ModelInstances";
 import PaperPendant from "./PaperPendant";
 import { useArtworkTexture } from "./ArtworkTexture";
 import { StaticStudioProps } from "./StudioProps";
@@ -107,8 +108,10 @@ export function Workspace({
         />
       </Suspense>
       <StudioChair animate={animate} />
-      <Plant animate={animate} position={[-2.8, 0, 1.82]} scale={1.18} />
-      <Plant animate={animate} position={[2.62, 0, -1.9]} scale={0.9} />
+      <Suspense fallback={null}>
+        <Model src="/models/plant-tall.glb" position={[-2.8, 0, 1.82]} rotation={0.6} />
+        <Model src="/models/plant-leafy.glb" position={[2.62, 0, -1.9]} rotation={-0.4} />
+      </Suspense>
       <StudioSofa />
       <Box
         {...studioSurfaces.coffeeTable}

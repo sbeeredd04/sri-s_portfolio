@@ -3,9 +3,10 @@ export const studioSurfaces = {
   floor: { position: [0, -0.2, 0.5], size: [13, 0.38, 9] },
   rug: { position: [-0.25, 0.0175, 0.35], size: [4.7, 0.035, 3.7] },
   desk: { position: [-0.4, 0.745, -1], size: [3, 0.07, 1.15] },
-  sofa: { position: [2.48, 0.35, 1.14], size: [1.18, 0.65, 2] },
-  sofaBack: { position: [2.94, 0.78, 1.14], size: [0.28, 0.8, 2.02] },
-  sofaSeat: { position: [2.42, 0.69, 1.14], size: [0.9, 0.16, 1.85] },
+  // Matches the scanned leather sofa (1.12x scale): seat top 0.46m, back 0.8m.
+  sofa: { position: [2.62, 0.2, 1.14], size: [0.915, 0.4, 2.02] },
+  sofaBack: { position: [2.95, 0.6, 1.14], size: [0.26, 0.4, 2.02] },
+  sofaSeat: { position: [2.52, 0.41, 1.14], size: [0.7, 0.1, 1.85] },
   coffeeTable: { position: [1.15, 0.55, 1.35], size: [0.68, 0.075, 1.1] },
   keyboard: { position: [-0.5, 0.795, -0.57], size: [0.4725, 0.02475, 0.1665] },
   chairSeat: { position: [-0.5, 0.5, -0.07], size: [0.72, 0.15, 0.65] },
@@ -34,7 +35,7 @@ export const studioProps = {
     scale: 0.52,
   },
   cushion: {
-    position: [2.54, 1.04, 0.5],
+    position: [2.5, 0.72, 0.5],
     rotation: [0, 0.2, 0.1],
     mass: 0.25,
     halfSize: [0.23, 0.23, 0.095],
