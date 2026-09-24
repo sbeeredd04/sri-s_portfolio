@@ -57,9 +57,12 @@ export default function PostEffects({ world, daylight }) {
         radius={0.72}
       />
       )}
+      <ToneMapping mode={ToneMappingMode.AGX} />
+      {/* Grade after tone mapping: in scene-linear light a saturation or
+          contrast push drives saturated and near-black channels negative,
+          which AgX turns into black holes (bright yellow title art did). */}
       <HueSaturation saturation={night ? -0.04 : 0.14} />
       <BrightnessContrast brightness={night ? 0.02 : 0} contrast={night ? 0.06 : 0.1} />
-      <ToneMapping mode={ToneMappingMode.AGX} />
       <Vignette offset={0.32} darkness={0.46} eskil={false} />
       {quality.smaa && <SMAA />}
     </EffectComposer>
