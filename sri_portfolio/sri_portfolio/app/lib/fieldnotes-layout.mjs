@@ -99,11 +99,19 @@ export const fieldnotesBeds = [
   { x: 2.05, z: 3.2, w: 2.9, d: 1.35 },
 ];
 
+// Scanned CC0 planting inside the two beds (model name, metres, scale).
+// Footprints stay inside each bed's stone kerb.
 export const fieldnotesPlants = [
-  { x: -4.35, z: -2.4, r: 0.38, kind: "clump" },
-  { x: -3.55, z: -1.15, r: 0.28, kind: "grass" },
-  { x: 1.35, z: 3.2, r: 0.4, kind: "shrub" },
-  { x: 2.8, z: 3.25, r: 0.3, kind: "grass" },
+  { kind: "shrub-sapling", x: -4.3, z: -2.6, s: 0.62, turn: 0.4 },
+  { kind: "tropical-bush", x: -3.45, z: -2.2, s: 1.25, turn: 2.2 },
+  { kind: "fern", x: -3.5, z: -0.95, s: 1.35, turn: 1.9 },
+  { kind: "fern", x: -4.4, z: -1.05, s: 1.1, turn: 3.1 },
+  { kind: "shrub-small", x: -4.05, z: -1.7, s: 2.2, turn: 0.9 },
+  { kind: "shrub-sapling", x: 3.05, z: 3.25, s: 0.55, turn: 2.6 },
+  { kind: "tropical-bush", x: 1.3, z: 3.2, s: 1.2, turn: 2.6 },
+  { kind: "fern", x: 2.2, z: 3.3, s: 1.3, turn: 0.2 },
+  { kind: "shrub-small", x: 2.25, z: 2.85, s: 2.1, turn: 1.4 },
+  { kind: "fern", x: 1.05, z: 2.85, s: 0.95, turn: 2.8 },
 ];
 
 const route = fieldnotesRoute;

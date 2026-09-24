@@ -9,7 +9,6 @@ import {
   fieldnotesDesk,
   fieldnotesDisplayFrame,
   fieldnotesMaterialNames,
-  fieldnotesPlants,
   fieldnotesReturn,
   fieldnotesTable,
   fieldnotesTerraces,
@@ -18,8 +17,6 @@ import {
 import { buildFieldnotesPaving } from "./fieldnotes-surface.mjs";
 
 const SOIL = [0.09, 0.055, 0.026];
-const LEAF = [0.08, 0.14, 0.065];
-const GRASS = [0.12, 0.18, 0.055];
 
 function bucket(colored = false) {
   return { positions: [], normals: [], colors: colored ? [] : null };
@@ -432,44 +429,6 @@ function addGarden(garden, stone) {
     addBox(stone, bed.x, 0.045, bed.z + hz, hx, 0.03, 0.035);
     addBox(stone, bed.x - hx, 0.045, bed.z, 0.035, 0.03, hz);
     addBox(stone, bed.x + hx, 0.045, bed.z, 0.035, 0.03, hz);
-  }
-  for (const plant of fieldnotesPlants) addFoliage(garden, plant);
-}
-function addFoliage(target, plant) {
-  const blades = plant.kind === "grass" ? 13 : 18;
-  for (let i = 0; i < blades; i++) {
-    const angle = i * 2.39996;
-    const length = plant.r * (0.62 + (Math.sin(i * 13.7) * 0.5 + 0.5) * 0.36);
-    const height = plant.kind === "grass" ? 0.38 : 0.48 + (i % 4) * 0.075;
-    const width = plant.kind === "grass" ? 0.025 : 0.11;
-    const color = (plant.kind === "grass" ? GRASS : LEAF).map(
-      (c) => c * (0.78 + (i % 5) * 0.08),
-    );
-    const at = (t, side) => {
-      const radius = length * Math.sin((t * Math.PI) / 2);
-      const half = width * Math.sin(t * Math.PI) * side;
-      return [
-        plant.x + Math.cos(angle) * radius - Math.sin(angle) * half,
-        0.055 + height * Math.sin(t * Math.PI * 0.72),
-        plant.z + Math.sin(angle) * radius + Math.cos(angle) * half,
-      ];
-    };
-    for (let j = 0; j < 7; j++) {
-      const a = at(j / 7, -1),
-        b = at(j / 7, 1),
-        c = at((j + 1) / 7, 1),
-        d = at((j + 1) / 7, -1);
-      addQuad(target, a, b, c, d, [0, 1, 0], color);
-      addQuad(
-        target,
-        d,
-        c,
-        b,
-        a,
-        [0, -1, 0],
-        color.map((v) => v * 0.85),
-      );
-    }
   }
 }
 

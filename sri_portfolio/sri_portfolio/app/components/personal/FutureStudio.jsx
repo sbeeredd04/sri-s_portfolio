@@ -1,21 +1,70 @@
 "use client";
-import { useEffect, useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { MeshStandardMaterial } from "three";
 import { Sign, StreetLamp } from "./StreetFurniture";
 import { Box, Rod } from "./ScenePrimitives";
 import { LoungeChair } from "./ListeningFurniture";
 import { useRoomTexture } from "./RoomMaterials";
+import { useFinish } from "./Finishes";
+import ModelInstances from "./ModelInstances";
 import {
   fieldnotesLounge,
   fieldnotesLoungeScale,
   fieldnotesLamp,
   fieldnotesDeskLamp,
   fieldnotesSignPoses,
+  fieldnotesPlants,
 } from "../../lib/fieldnotes-layout.mjs";
 import {
   buildFieldnotesGeometry,
   disposeFieldnotes,
 } from "../../lib/fieldnotes-geometry.mjs";
+
+// Limewashed plaster walls and laid pavers; plain materials until maps load.
+function GardenMasonry({ built }) {
+  const plaster = useFinish("plaster", "#d6cab4", {
+    scale: 0.7,
+    strength: 0.7,
+  });
+  const pavers = useFinish("pavers", "#8d8373", {
+    scale: 0.55,
+    strength: 0.85,
+  });
+  return (
+    <>
+      <mesh geometry={built.paving} material={pavers} receiveShadow />
+      <mesh
+        geometry={built.terraces}
+        material={pavers}
+        castShadow
+        receiveShadow
+      />
+      <mesh
+        geometry={built.stone}
+        material={plaster}
+        castShadow
+        receiveShadow
+      />
+    </>
+  );
+}
+const plantKinds = [...new Set(fieldnotesPlants.map((p) => p.kind))];
+function GardenPlanting() {
+  return plantKinds.map((kind) => (
+    <ModelInstances
+      key={kind}
+      src={`/models/${kind}.glb`}
+      items={fieldnotesPlants
+        .filter((p) => p.kind === kind)
+        .map((p) => ({
+          position: [p.x, 0.055, p.z],
+          rotation: p.turn,
+          scale: p.s,
+        }))}
+      envMapIntensity={0.7}
+    />
+  ));
+}
 
 export default function FutureStudio({
   detailed,
@@ -93,9 +142,20 @@ export default function FutureStudio({
   }
   return (
     <group>
-      {shell(built.paving, materials.paving)}
-      {shell(built.terraces, materials.paving)}
-      {shell(built.stone, materials.stone)}
+      <Suspense
+        fallback={
+          <>
+            {shell(built.paving, materials.paving)}
+            {shell(built.terraces, materials.paving)}
+            {shell(built.stone, materials.stone)}
+          </>
+        }
+      >
+        <GardenMasonry built={built} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <GardenPlanting />
+      </Suspense>
       {shell(built.timber, materials.charcoal)}
       {shell(built.charcoal, materials.charcoal)}
       {shell(built.copper, materials.copper)}
