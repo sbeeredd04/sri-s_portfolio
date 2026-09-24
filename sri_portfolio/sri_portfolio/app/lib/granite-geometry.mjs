@@ -354,7 +354,9 @@ export function buildWaterRibbon() {
   const positions = [],
     uvs = [],
     kinds = [],
+    fallT = [],
     indices = [];
+  const fallCount = points.filter((point) => !point.ground).length;
   points.forEach((point, index) => {
     // A vertical fall has zero horizontal tangent. Its width follows the
     // cliff's ledge, instead of collapsing to zero on straight falling spans.
@@ -369,6 +371,8 @@ export function buildWaterRibbon() {
       );
       uvs.push(sign < 0 ? 0 : 1, index / (points.length - 1));
       kinds.push(point.ground ? 0 : 1);
+      // 0 at the lip, 1 where the fall meets the pool (foam, mist).
+      fallT.push(Math.min(index / Math.max(1, fallCount), 1));
     }
     if (index < points.length - 1) {
       const a = index * 2;
@@ -382,6 +386,7 @@ export function buildWaterRibbon() {
   );
   geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
   geometry.setAttribute("flowKind", new THREE.Float32BufferAttribute(kinds, 1));
+  geometry.setAttribute("fallT", new THREE.Float32BufferAttribute(fallT, 1));
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
   return geometry;

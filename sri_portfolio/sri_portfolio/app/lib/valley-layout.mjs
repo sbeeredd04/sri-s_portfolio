@@ -104,7 +104,7 @@ function fallColumn() {
       x: p.x,
       y: p.y,
       z: p.z,
-      half: lerp(0.095, 0.19, i / steps),
+      half: lerp(0.2, 0.46, (i / steps) ** 1.4),
       bank: 0,
       ground: false,
     });
