@@ -21,7 +21,6 @@ import {
   distanceToOverlook,
   overlookPolyline,
 } from "../app/lib/valley-layout.mjs";
-import { createPineGeometry } from "../app/lib/forest-geometry.mjs";
 import { pavingCells, pavingSize } from "../app/lib/paving-layout.mjs";
 import { workshops, projectWalks } from "../app/lib/project-town-layout.mjs";
 const network = makeWalkNetwork();
@@ -84,31 +83,29 @@ test("apartment walking stays on its own floor; ground routes do not teleport th
     outside.position.distanceTo(walkStart("studio", true).position) > 9,
   );
 });
+// Rendered trail trees are tree-pine-dense.glb (CATALOG: 4.14 x 4.29 m
+// footprint at scale 1) at 0.85 * t.s * (0.9 + (i % 4) * 0.05), as in Landscape.
+const PINE_CROWN_RADIUS = 4.29 / 2;
 test("trail viewpoints share the actual winding center and full rendered crowns clear the path", () => {
   for (const s of trailStops) assert.equal(s.point[0], trailCenter(s.point[1]));
-  const model = createPineGeometry(true);
-  for (const [index, t] of trailTrees.entries())
-    for (const g of Object.values(model)) {
-      const positions = g.attributes.position;
-      for (let i = 0; i < positions.count; i++) {
-        const v = new Vector3()
-          .fromBufferAttribute(positions, i)
-          .multiply(new Vector3(t.s * (0.82 + (index % 4) * 0.065), t.s, t.s))
-          .applyAxisAngle(new Vector3(0, 1, 0), index)
-          .add(new Vector3(t.x, 0, t.z));
-        if (v.z >= -18.6 && v.z <= 12)
-          assert.ok(
-            Math.abs(v.x - trailCenter(v.z)) > 1.05,
-            "crown intrudes into trail/camera corridor",
-          );
-        if (distanceToOverlook(v.x, v.z) < 4)
-          assert.ok(
-            distanceToOverlook(v.x, v.z) > 1.05,
-            "crown intrudes into the overlook spur",
-          );
-      }
+  for (const [index, t] of trailTrees.entries()) {
+    const radius = PINE_CROWN_RADIUS * 0.85 * t.s * (0.9 + (index % 4) * 0.05);
+    for (let k = 0; k < 32; k++) {
+      const a = (k / 32) * Math.PI * 2;
+      const x = t.x + Math.cos(a) * radius,
+        z = t.z + Math.sin(a) * radius;
+      if (z >= -18.6 && z <= 12)
+        assert.ok(
+          Math.abs(x - trailCenter(z)) > 1.05,
+          `crown of tree ${index} intrudes into trail/camera corridor`,
+        );
+      if (distanceToOverlook(x, z) < 4)
+        assert.ok(
+          distanceToOverlook(x, z) > 1.05,
+          `crown of tree ${index} intrudes into the overlook spur`,
+        );
     }
-  Object.values(model).forEach((g) => g.dispose());
+  }
 });
 test("all Foundry paving including new connection clears workshop footprints", () => {
   for (const stone of pavingCells([...projectWalks, ...walkingJoins.projects]))
