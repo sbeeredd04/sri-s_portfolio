@@ -195,6 +195,7 @@ test("late asset loads cannot restore the sound of a place the visitor already l
     engine = new SoundEngine(ctx, {
       place: "planet",
       preferences: sensoryDefaults,
+      weather: { kind: "storm", rain: 0 },
     });
   t.after(() => engine.destroy(true));
   assert.equal(
@@ -215,11 +216,11 @@ test("late asset loads cannot restore the sound of a place the visitor already l
   assert.equal(engine.weather.gain.value, 1);
   engine.update({ reading: true });
   assert.ok(engine.weather.gain.value < 0.5);
-  engine.update({ place: "planet" });
+  engine.update({ place: "planet", weather: { kind: "clear", rain: 0 } });
   assert.equal(
     engine.weather.gain.value,
     0,
-    "thunder must fade after departure",
+    "thunder must fade once the storm passes",
   );
   await engine.prepare();
   assert.equal(

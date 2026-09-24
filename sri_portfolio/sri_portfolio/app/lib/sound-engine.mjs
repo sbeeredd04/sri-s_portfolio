@@ -14,17 +14,27 @@ function soften(parameter, value, now, time = 0.65) {
   parameter.setTargetAtTime(value, now, time);
 }
 
+const RAIN_BED = "rain-window";
+
 // One audio graph, with independently mixed atmosphere, score, and touch cues.
 // Audible playback starts from an eligible gesture; a remembered mute wins.
 export class SoundEngine {
   constructor(
     context,
-    { place, preferences, reading = false, music = false, onError = () => {} },
+    {
+      place,
+      preferences,
+      reading = false,
+      music = false,
+      weather = null,
+      onError = () => {},
+    },
   ) {
     this.context = context;
     this.place = place;
     this.preferences = sensoryPreferences(preferences);
     this.focus = { reading, music };
+    this.weatherState = weather;
     this.onError = onError;
     this.disposed = false;
     this.hidden = false;
@@ -80,8 +90,9 @@ export class SoundEngine {
     }
     this.owned = [this.master, limiter, this.effects, this.weather, room, wet];
     this.thunder = setInterval(() => {
+      // Thunder only when SF actually has a storm overhead.
       if (
-        this.place === "studio" &&
+        this.weatherState?.kind === "storm" &&
         !this.hidden &&
         !this.disposed &&
         context.state === "running" &&
@@ -116,10 +127,17 @@ export class SoundEngine {
     return pending;
   }
 
+  // Live rain layers the rain bed over any outdoor place.
+  rainLevel() {
+    const rain = this.weatherState?.rain ?? 0;
+    return rain > 0.05 ? Math.min(1, 0.35 + rain) : 0;
+  }
+
   async prepare() {
     const profile = soundPlaces[this.place] || soundPlaces.planet;
     await Promise.all([
       this.loop(profile.bed),
+      this.rainLevel() ? this.loop(RAIN_BED) : Promise.resolve(),
       this.preferences.music
         ? this.loop(profile.track || "somewhere-soft")
         : Promise.resolve(),
@@ -132,9 +150,11 @@ export class SoundEngine {
     preferences = this.preferences,
     reading = this.focus.reading,
     music = this.focus.music,
+    weather = this.weatherState,
   } = {}) {
     if (this.disposed) return;
     this.place = place;
+    this.weatherState = weather;
     this.preferences = sensoryPreferences(preferences);
     this.focus = { reading, music };
     this.mix();
@@ -155,15 +175,22 @@ export class SoundEngine {
     // Even an already-rumbling storm follows departure and reading/music focus.
     soften(
       this.weather.gain,
-      this.place === "studio"
-        ? levels.environment / soundPlaces.studio.level
+      this.weatherState?.kind === "storm"
+        ? levels.environment / (profile.level || 0.3)
         : 0,
       now,
     );
+    const rain = this.rainLevel();
     for (const [name, { gain }] of this.loops)
       soften(
         gain.gain,
-        name === score ? levels.score : name === bed ? levels.environment : 0,
+        name === score
+          ? levels.score
+          : name === bed
+            ? Math.max(levels.environment, name === RAIN_BED ? rain * 0.5 : 0)
+            : name === RAIN_BED
+              ? (levels.environment / (profile.level || 0.3)) * rain * 0.45
+              : 0,
         now,
       );
   }

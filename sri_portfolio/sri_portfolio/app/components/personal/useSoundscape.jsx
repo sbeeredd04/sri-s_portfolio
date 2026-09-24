@@ -16,7 +16,12 @@ function cancelVibration() {
 }
 
 const storageKey = "sri-sensory-preferences-v1";
-export default function useSoundscape(biome, section = null, detail = null) {
+export default function useSoundscape(
+  biome,
+  section = null,
+  detail = null,
+  weather = null,
+) {
   const reading = Boolean(section);
   const destination = soundDestination(biome, section, detail);
   const engine = useRef(null),
@@ -34,6 +39,8 @@ export default function useSoundscape(biome, section = null, detail = null) {
     last: -Infinity,
   });
   const focus = useRef({ reading, music: false });
+  const weatherRef = useRef(weather);
+  weatherRef.current = weather;
   const place = useRef(destination);
   place.current = destination;
   focus.current.reading = reading;
@@ -103,6 +110,7 @@ export default function useSoundscape(biome, section = null, detail = null) {
       current = new SoundEngine(context, {
         place: place.current,
         preferences: settings.current,
+        weather: weatherRef.current,
         ...focus.current,
         onError: () => {
           if (engine.current !== current) return;
@@ -240,6 +248,9 @@ export default function useSoundscape(biome, section = null, detail = null) {
   useEffect(() => {
     engine.current?.update({ place: destination, ...focus.current });
   }, [destination, reading]);
+  useEffect(() => {
+    engine.current?.update({ weather: weatherRef.current });
+  }, [weather?.kind, weather?.rain]);
 
   const press = useCallback(
     (event) => {
