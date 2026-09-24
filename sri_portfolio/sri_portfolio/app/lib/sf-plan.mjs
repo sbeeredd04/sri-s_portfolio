@@ -39,6 +39,9 @@ export const landmarkSites = {
 // Stone steps up Telegraph Hill from the end of the street to Coit's lawn,
 // like the Filbert Steps, where the grade is too steep for a road.
 export const coitSteps = { from: [43, 36], to: [54, 36], width: 2.4 };
+// A Powell-Hyde style line up the x=13 street over Russian Hill to the
+// north shore. Real cars run at 9.5 mph, about 4.2 m/s.
+export const cableLine = { x: 13, from: -40, to: 60, speed: 4.2 };
 
 export const parks = [
   { id: "alamo", x: -34, z: -29, half: [12, 9], lawn: true },

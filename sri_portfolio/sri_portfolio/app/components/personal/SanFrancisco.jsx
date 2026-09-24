@@ -13,6 +13,7 @@ import { landmarkSites } from "../../lib/sf-plan.mjs";
 import { useQuality } from "./Quality";
 import SFDressing from "./SFDressing";
 import Crowd from "./Crowd";
+import CableCar from "./CableCar";
 import { sfCrowd } from "../../lib/sf-crowd.mjs";
 import {
   buildLandmarks,
@@ -375,6 +376,7 @@ export default function SanFrancisco({ night, clockIso, animate }) {
   return (
     <group>
       <CityCrowd animate={animate} />
+      <CableCar animate={animate} />
       <City night={night} />
       <SFDressing night={night} />
       <CoitTower />

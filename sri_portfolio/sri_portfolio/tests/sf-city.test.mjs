@@ -153,3 +153,10 @@ test("the crowd walks sidewalks and stays inside its tier budget", async () => {
         );
   }
 });
+
+test("the cable car line runs down the middle of a street, gauge and all", async () => {
+  const { cableLine } = await import("../app/lib/sf-plan.mjs");
+  for (let z = cableLine.from; z <= cableLine.to; z += 1)
+    for (const dx of [-1.3, 0, 1.3])
+      assert.equal(streetAt(cableLine.x + dx, z), "road", `off road at ${dx}, ${z}`);
+});
