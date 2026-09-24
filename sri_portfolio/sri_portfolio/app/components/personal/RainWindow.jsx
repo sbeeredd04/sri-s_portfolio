@@ -4,8 +4,9 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { Box } from "./ScenePrimitives";
 
-export default function RainWindow({ animate, night }) {
-  const rain = useRef();
+// Streaks beyond the glass follow the live weather: none on a dry day.
+export default function RainWindow({ animate, night, rain = 0 }) {
+  const streaks = useRef();
   const positions = useMemo(() => {
     const data = new Float32Array(220 * 6);
     for (let i = 0; i < 220; i++) {
@@ -17,9 +18,9 @@ export default function RainWindow({ animate, night }) {
     return data;
   }, []);
   useFrame((_, delta) => {
-    if (!animate) return;
+    if (!animate || rain < 0.03) return;
     const dt = Math.min(delta, 0.05);
-    const a = rain.current.geometry.attributes.position;
+    const a = streaks.current.geometry.attributes.position;
     for (let i = 0; i < 220; i++) {
       let y = a.array[i * 6 + 1] - dt * (2.5 + (i % 5) * 0.23);
       if (y < -0.8) y = 8;
@@ -61,14 +62,14 @@ export default function RainWindow({ animate, night }) {
           side={THREE.DoubleSide}
         />
       </mesh>
-      <lineSegments ref={rain} frustumCulled={false}>
+      <lineSegments ref={streaks} frustumCulled={false} visible={rain >= 0.03}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         </bufferGeometry>
         <lineBasicMaterial
           color="#c8e3ff"
           transparent
-          opacity={night ? 0.3 : 0.16}
+          opacity={(night ? 0.3 : 0.16) * Math.min(1, 0.4 + rain)}
           depthWrite={false}
         />
       </lineSegments>

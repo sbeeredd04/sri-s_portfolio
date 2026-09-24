@@ -60,7 +60,7 @@ function Gable({ z }) {
     </mesh>
   );
 }
-export default function House({ children, animate, night }) {
+export default function House({ children, animate, night, rain }) {
   const shell = useRef(),
     roof = useRef();
   const wood = useRoomTexture("walnut", 2);
@@ -199,7 +199,7 @@ export default function House({ children, animate, night }) {
       />
       <Gable z={5} />
       <Gable z={-4} />
-      <RainWindow animate={animate} night={night} />
+      <RainWindow animate={animate} night={night} rain={rain} />
       {/* Front glass is split around a real doorway. The open leaf clears the approach. */}
       {[
         [1.2, 10.2],
@@ -262,8 +262,16 @@ export default function House({ children, animate, night }) {
         radius={0.02}
       />
       <Suspense fallback={null}>
-        <Model src="/models/plant-leafy.glb" position={[-6.02, 0.15, 5.65]} rotation={1.1} />
-        <Model src="/models/plant-tall.glb" position={[5.9, 0.15, 5.55]} rotation={-0.8} />
+        <Model
+          src="/models/plant-leafy.glb"
+          position={[-6.02, 0.15, 5.65]}
+          rotation={1.1}
+        />
+        <Model
+          src="/models/plant-tall.glb"
+          position={[5.9, 0.15, 5.55]}
+          rotation={-0.8}
+        />
       </Suspense>
       {[-6.24, 6.24].map((x) => (
         <group key={x}>

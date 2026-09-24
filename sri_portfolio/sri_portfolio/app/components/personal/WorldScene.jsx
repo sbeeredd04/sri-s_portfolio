@@ -257,7 +257,11 @@ function ConnectedWorld({
             <>
               <ApartmentBase night={night} />
               <group position={[0, APARTMENT_LEVEL, 0]}>
-                <House animate={animate && near.studio} night={night}>
+                <House
+                  animate={animate && near.studio}
+                  night={night}
+                  rain={solar.weather?.rain}
+                >
                   {visitedHouse && (
                     <PreparedGroup visible={near.studio}>
                       <Workspace
