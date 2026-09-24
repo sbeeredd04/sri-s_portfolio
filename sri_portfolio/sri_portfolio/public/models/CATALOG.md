@@ -54,7 +54,7 @@ Built by scripts in scripts/blender/ (sculpt_granite.py, build_pine.py, build_pr
 | models/granite-ridge.glb | 9000 (high 191992) | 585 | min [-6.715, -0.5, -1.773] / max [6.568, 3.755, 1.836] | Broken granite ridgeline behind the valley |
 | models/granite-wall.glb | 8998 (high 566646) | 600 | min [-4.587, -0.5, -5.78] / max [2.761, 10.227, 5.78] | El Capitan-inspired sheer wall: face +X, waterfall chute at lz=+0.78, 2.5 m talus apron |
 | models/monitor-27.glb | 594 | 14 | 0.609 x 0.48 x 0.19 | 27-inch thin-bezel monitor; material 'screen' is the display quad (UV 0..1) |
-| models/office-chair.glb | 4360 | 141 | 0.642 x 1.125 x 0.647 | Task chair for the home desk; faces +Z, seat top 0.515 m |
+| models/office-chair.glb | 4360 | 141 | 0.642 x 1.125 x 0.647 | Task chair for the home desk; faces +Z, cushion top 0.44 m |
 | models/tree-pine-dense.glb | 5896 / 1048 | 488 | 4.143 x 5.65 x 4.287 | Dense Sierra-style conifer, 5.5 m, crown radius 1.8 m; LOD0/LOD1 nodes for <Detailed> |
 
 ## Material texture sets

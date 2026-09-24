@@ -66,7 +66,7 @@ SCULPT_USE = {
     "granite-dome": "Half Dome-inspired dome: exfoliation plates on the back, sheared face toward -Z",
     "granite-ridge": "Broken granite ridgeline behind the valley",
     "tree-pine-dense": "Dense Sierra-style conifer, 5.5 m, crown radius 1.8 m; LOD0/LOD1 nodes for <Detailed>",
-    "office-chair": "Task chair for the home desk; faces +Z, seat top 0.515 m",
+    "office-chair": "Task chair for the home desk; faces +Z, cushion top 0.44 m",
     "monitor-27": "27-inch thin-bezel monitor; material 'screen' is the display quad (UV 0..1)",
 }
 
