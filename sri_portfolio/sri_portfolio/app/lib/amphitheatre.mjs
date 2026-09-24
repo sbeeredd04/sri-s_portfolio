@@ -92,6 +92,28 @@ export function seats() {
   return out;
 }
 
+// A lawn bank from the back row down to the grass, so the bowl reads as
+// dug into a slope rather than a wall standing on the lawn.
+// The bank shortens toward the ends of the bowl to keep the demo row clear.
+export const bermRun = (phi) =>
+  4.4 * (1 - 0.75 * Math.abs(phi / bowl.span) ** 3);
+function berm(frameAt, x, z, phi, step, outer, top) {
+  const radial = Math.atan2(x - stage.x, z - stage.z);
+  const box = frameAt(x, z, radial - Math.PI / 2);
+  const run = bermRun(phi);
+  const slope = Math.atan2(top, run);
+  const width = step * (outer + run) + 0.1;
+  box(
+    "paint",
+    rgb("#5f7440"),
+    [outer - Math.hypot(x - stage.x, z - stage.z) + run / 2, top / 2 - 0.12, 0],
+    [Math.hypot(run, top) + 0.2, 0.3, width],
+    0,
+    false,
+    -slope,
+  );
+}
+
 // Seats and stage as merged boxes; `frameAt(x, z, yaw)` returns a box
 // builder in that local frame (local +z along the yaw direction).
 export function buildAmphitheatre(frameAt) {
@@ -120,6 +142,7 @@ export function buildAmphitheatre(frameAt) {
       box("stone", tierEdge, [0, top - 0.03, -bowl.row / 2 + 0.04], [length, 0.06, 0.08]);
       box("paint", seat, [0, top + 0.22, 0.12], [length * 0.94, 0.44, 0.5]);
       box("paint", seat, [0, top + 0.52, 0.4], [length * 0.94, 0.5, 0.08]);
+      if (k === bowl.rows - 1) berm(frameAt, x, z, phi, step, r0 + bowl.row, top);
     }
   }
   // The stage, a black apron step and the lectern.

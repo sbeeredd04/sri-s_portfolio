@@ -15,6 +15,7 @@ import {
 import {
   bowl,
   bowlOuter,
+  bermRun,
   canopyHeight,
   canopySurface,
   screen,
@@ -130,7 +131,8 @@ test("booths stand clear of the bowl without blocking the demo walk", () => {
       [b.x, b.z + b.depth / 2],
     ])
       assert.ok(
-        Math.hypot(x - stage.x, z - stage.z) > bowlOuter + 0.3 ||
+        Math.hypot(x - stage.x, z - stage.z) >
+          bowlOuter + bermRun(Math.atan2(z - stage.z, stage.x - x)) + 0.2 ||
           Math.abs(Math.atan2(z - stage.z, stage.x - x)) > bowl.span,
         `booth inside the bowl at ${x},${z}`,
       );
