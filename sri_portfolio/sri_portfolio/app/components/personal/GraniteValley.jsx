@@ -14,14 +14,24 @@ import {
 } from "../../lib/valley-layout.mjs";
 import { createGraniteMaterial } from "../../lib/valley-materials.mjs";
 import { renderedSurfaceHeight } from "../../lib/terrain-geometry.mjs";
+import { applyTriplanar } from "../../lib/triplanar.mjs";
+import usePbrSet from "./usePbrSet";
 
 export default function GraniteValley() {
   const talusRef = useRef(null);
+  const granite = usePbrSet("granite");
   const assets = useMemo(() => {
     const heightAt = (x, z) =>
       renderedSurfaceHeight("trail", x, z) - outdoorsLift;
     return {
-      material: createGraniteMaterial(),
+      // Photographed granite over the procedural weathering: the scan gives
+      // crystal grain and fractures, the procedural pass keeps streaks.
+      material: applyTriplanar(createGraniteMaterial(), {
+        ...granite,
+        scale: 0.16,
+        strength: 0.9,
+        normalStrength: 1.4,
+      }),
       forms: graniteForms.map((form) =>
         embedBase(buildGraniteForm(form), heightAt),
       ),
@@ -32,7 +42,7 @@ export default function GraniteValley() {
         y: heightAt(spot.x, spot.z) - 0.06,
       })),
     };
-  }, []);
+  }, [granite]);
   useLayoutEffect(() => {
     if (!talusRef.current) return;
     const object = new THREE.Object3D();

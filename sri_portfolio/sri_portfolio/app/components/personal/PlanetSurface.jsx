@@ -10,10 +10,13 @@ import {
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
 
 import { createTerrainGeometry } from "../../lib/terrain-geometry.mjs";
+import { applyTriplanar } from "../../lib/triplanar.mjs";
+import usePbrSet from "./usePbrSet";
 
 // One designed landscape, with the same material scale from orbit to the garden.
 export default function PlanetSurface({ surfaceRef }) {
   const geometry = useMemo(createTerrainGeometry, []);
+  const ground = usePbrSet("grass");
   const material = useMemo(() => {
     const m = new THREE.MeshStandardMaterial({
       color: "#96abbf",
@@ -160,8 +163,17 @@ export default function PlanetSurface({ surfaceRef }) {
             "#include <roughnessmap_fragment>\nroughnessFactor=mix(.48,.94,land);",
           );
     };
-    return m;
-  }, []);
+    // Photographed ground structure on land only; the sea keeps its colour.
+    return applyTriplanar(m, {
+      ...ground,
+      mode: "detail",
+      mask: "land*(1.-cliff*.6)",
+      scale: 0.42,
+      strength: 0.85,
+      normalStrength: 0.9,
+      meanLuminance: 0.18,
+    });
+  }, [ground]);
   useEffect(
     () => () => {
       geometry.dispose();

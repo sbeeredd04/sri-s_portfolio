@@ -200,7 +200,9 @@ function ConnectedWorld({
       </Suspense>
       <AtmosphereSky world={world} solar={solar} />
       <Stars daylight={solar.daylight} />
-      <PlanetSurface surfaceRef={planet} />
+      <Suspense fallback={null}>
+        <PlanetSurface surfaceRef={planet} />
+      </Suspense>
       <Walkways daylight={solar.daylight} />
       <WorldResidents
         {...{ animate, visitorColor, onHover, onCue }}
@@ -322,7 +324,7 @@ function ConnectedWorld({
                   0,
                 ]}
                 center
-                occlude={[planet]}
+                occlude={planet.current ? [planet] : undefined}
                 zIndexRange={[5, 1]}
               >
                 <button

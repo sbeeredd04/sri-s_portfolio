@@ -353,7 +353,9 @@ export default function Landscape({ animate, detailed = true, onCue }) {
       <Grove detailed={detailed} />
       <ValleyCourse animate={animate} />
       <Lake animate={animate} onCue={onCue} />
-      <GraniteValley />
+      <Suspense fallback={null}>
+        <GraniteValley />
+      </Suspense>
     </group>
   );
 }

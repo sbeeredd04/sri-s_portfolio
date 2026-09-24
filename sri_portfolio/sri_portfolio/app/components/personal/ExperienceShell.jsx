@@ -61,7 +61,9 @@ class WorldBoundary extends Component {
   static getDerivedStateFromError() {
     return { failed: true };
   }
-  componentDidCatch() {
+  componentDidCatch(error) {
+    if (process.env.NODE_ENV === "development")
+      console.error("World rendering failed", error);
     this.props.onFailure?.();
   }
   render() {
