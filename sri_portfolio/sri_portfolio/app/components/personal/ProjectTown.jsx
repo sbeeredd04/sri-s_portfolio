@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useEffect } from "react";
+import { Suspense, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { Box, Boxes, Rods } from "./ScenePrimitives";
 import {
@@ -13,6 +13,7 @@ import { useRoomTexture } from "./RoomMaterials";
 import ProjectDistricts from "./ProjectDistricts";
 import FoundryCampus from "./FoundryCampus";
 import Workbench from "./Workbench";
+import { FinishBox, useFinish } from "./FoundryFinishes";
 import InteractiveProjectExhibit from "./InteractiveProjectExhibit";
 import {
   workshops,
@@ -27,7 +28,17 @@ const facadeSlats = [-1, 1].flatMap((side) =>
     radius: 0.005,
   })),
 );
-function WorkshopRoof({ type, wood }) {
+const roofColor = [
+  "#667f98",
+  "#6c8298",
+  "#6c8298",
+  "#877463",
+  "#698c91",
+  "#81738c",
+];
+function WorkshopRoof({ type }) {
+  const metal = useFinish("roof-metal", roofColor[type], { scale: 0.9 });
+  const timber = useFinish("wood-floor", roofColor[type], { scale: 0.6 });
   const arch = useMemo(() => {
     const shape = new THREE.Shape();
     for (let i = 0; i <= 40; i++) {
@@ -51,40 +62,76 @@ function WorkshopRoof({ type, wood }) {
   useEffect(() => () => arch.dispose(), [arch]);
   if (type === 0 || type === 4)
     return (
-      <mesh geometry={arch} position={[0, 0, -1.7]} castShadow receiveShadow>
-        <meshStandardMaterial
-          color={type === 0 ? "#667f98" : "#698c91"}
-          roughness={0.46}
-          metalness={0.4}
-        />
-      </mesh>
+      <mesh
+        geometry={arch}
+        material={metal}
+        position={[0, 0, -1.7]}
+        castShadow
+        receiveShadow
+      />
     );
   if (type === 3)
     return (
       <group>
         {[-1, 1].map((side) => (
-          <Box
+          <FinishBox
             key={side}
             position={[side * 0.96, 3.5, 0.1]}
             rotation={[0, 0, -side * 0.3]}
             size={[2.08, 0.13, 3.65]}
-            color="#877463"
-            map={wood}
+            material={timber}
             radius={0.018}
           />
         ))}
       </group>
     );
   return (
-    <Box
+    <FinishBox
       position={[0, 3.28, 0.1]}
       rotation={[0, 0, type === 1 ? -0.11 : 0]}
       size={[3.8, 0.14, 3.65]}
-      color={type === 5 ? "#81738c" : "#6c8298"}
-      roughness={0.5}
-      metalness={0.25}
+      material={metal}
       radius={0.025}
     />
+  );
+}
+// Slab, timber back wall and roof: textured shell, plain until maps load.
+function WorkshopShell({ type }) {
+  const slab = useFinish("concrete", "#7d858d", { scale: 0.45 });
+  const cladding = useFinish("wood-floor", "#7c6f63", { scale: 0.55 });
+  return (
+    <>
+      <FinishBox
+        position={[0, 0.08, 0]}
+        size={[3.45, 0.13, 3.2]}
+        material={slab}
+        radius={0.025}
+      />
+      <FinishBox
+        position={[0, 1.65, -1.4]}
+        size={[3.4, 3.1, 0.16]}
+        material={cladding}
+      />
+      <WorkshopRoof type={type} />
+    </>
+  );
+}
+function PlainShell() {
+  return (
+    <>
+      <Box
+        position={[0, 0.08, 0]}
+        size={[3.45, 0.13, 3.2]}
+        color="#667280"
+        radius={0.025}
+      />
+      <Box
+        position={[0, 1.65, -1.4]}
+        size={[3.4, 3.1, 0.16]}
+        color="#667283"
+        radius={0.02}
+      />
+    </>
   );
 }
 function Workshop({
@@ -118,29 +165,20 @@ function Workshop({
       }}
       onPointerOut={() => onHover("")}
     >
-      <Box
-        position={[0, 0.08, 0]}
-        size={[3.45, 0.13, 3.2]}
-        color="#667280"
-        radius={0.025}
-      />
-      <Box
-        position={[0, 1.65, -1.4]}
-        size={[3.4, 3.1, 0.16]}
-        color="#667283"
-        map={wood}
-        radius={0.02}
-      />
+      <Suspense fallback={<PlainShell />}>
+        <WorkshopShell type={type} />
+      </Suspense>
       {[-1, 1].map((s) => (
         <group key={s}>
           <mesh position={[s * 1.65, 1.65, 0]} raycast={() => null}>
             <boxGeometry args={[0.07, 3.1, 2.8]} />
             <meshPhysicalMaterial
-              color="#93b8d3"
+              color="#a9c6db"
               transparent
-              opacity={0.16}
-              roughness={0.18}
-              metalness={0.2}
+              opacity={0.2}
+              roughness={0.04}
+              metalness={0.1}
+              envMapIntensity={1.6}
               depthWrite={false}
             />
           </mesh>
@@ -163,7 +201,6 @@ function Workshop({
         </group>
       ))}
       <Boxes items={facadeSlats} color="#8a7e70" map={wood} />
-      <WorkshopRoof type={type} wood={wood} />
       <mesh position={[0, 3.145, 0.3]} rotation={[Math.PI / 2, 0, 0]}>
         <planeGeometry args={[3.1, 2.8]} />
         <meshStandardMaterial
