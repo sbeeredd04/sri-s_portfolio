@@ -249,9 +249,11 @@ export const placeStops = {
     {
       id: "trailhead",
       label: "At the trailhead",
-      position: [0.6, 1.7, 5.2],
-      target: [2.7, 1.03, 1.25],
-      portrait: { position: [0.6, 1.8, 6], target: [2.7, 0.95, 1.25] },
+      // Beside the trail, not on it, so hikers pass the lens instead of
+      // walking into it.
+      position: [3.5, 1.7, 5.4],
+      target: [2.4, 1.03, 1.25],
+      portrait: { position: [3.6, 1.8, 6.2], target: [2.4, 0.95, 1.25] },
       content: "about",
       prompt: "Life beyond the screen",
       hint: "Badminton, dance, hiking, new cities. A few other sides of me.",
