@@ -10,7 +10,9 @@ import {
   localWandererIndex,
 } from "../../lib/resident-motion.mjs";
 
-import { apartmentPoint } from "../../lib/studio-layout.mjs";
+import { apartmentPoint, studioDeskLight } from "../../lib/studio-layout.mjs";
+import { renderedSurfaceHeight } from "../../lib/terrain-geometry.mjs";
+import { campFire } from "../../lib/trail-life.mjs";
 import { courtLamps } from "../../lib/court-layout.mjs";
 import { projectGallerySites } from "../../lib/project-town-layout.mjs";
 import { campusCenter } from "../../lib/campus-layout.mjs";
@@ -23,6 +25,18 @@ const practicals = {
   studio: [
     [[1.98, 2.78, -2.2], "#ffd19b", 8, 7],
     [[-0.48, 1.32, -0.98], "#b5d1f6", 1.4, 3],
+    // The clamp lamp over the keyboard, brighter once the room is dark.
+    [
+      [
+        studioDeskLight.position[0],
+        studioDeskLight.position[1] - 0.06,
+        studioDeskLight.position[2] + 0.2,
+      ],
+      "#ffdeb0",
+      1.2,
+      1.9,
+      "lamp",
+    ],
     [[-4.7, 3.34, -1.35], "#ffd6a6", 17, 9],
     [[-6.24, 2.4, 5.3], "#ffd6a6", 3, 5],
   ],
@@ -33,7 +47,20 @@ const practicals = {
     [[9, 2, -0.5], "#b5bddd", 5, 7],
   ],
   court: courtLamps.map((position) => [position, "#dce7ff", 110, 24]),
-  trail: [],
+  // The campfire only burns at night, and flickers.
+  trail: [
+    [
+      [
+        campFire.x,
+        renderedSurfaceHeight("trail", campFire.x, campFire.z) + 0.7,
+        campFire.z,
+      ],
+      "#ffa04a",
+      5,
+      9,
+      "fire",
+    ],
+  ],
   future: [
     [
       [
@@ -68,8 +95,12 @@ const exhibits = {
   campus: [campusCenter.x, campusCenter.z - 6],
 };
 
-// One key and five practical lights remain mounted for the whole journey.
-// Moving or dimming a light changes uniforms, not each material's shader variant.
+// One key and six practical lights remain mounted for the whole journey, and
+// no component mounts a light of its own. three.js compiles the light count
+// into every lit shader, so a light appearing or being culled with its biome
+// recompiled every material in the world (a multi-second freeze). Moving or
+// dimming a pooled light only changes uniforms.
+const POOL = 6;
 export default function WorldLighting({
   world,
   stop,
@@ -215,10 +246,10 @@ export default function WorldLighting({
       shadow.far = close ? 110 : WORLD_RADIUS * 4;
       shadow.updateProjectionMatrix();
     }
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < POOL; i++) {
       const lamp = points.current[i];
       const item =
-        i === 4 && world === "studio"
+        i === POOL - 1 && world === "studio"
           ? [
               [0, 4, -5],
               "#dae9ff",
@@ -239,9 +270,18 @@ export default function WorldLighting({
         );
         scratch.color.set(item[1]);
         lamp.color.lerp(scratch.color, blend);
+        const kind = item[4];
+        const level =
+          kind === "fire"
+            ? (night ? 1 : 0) * (0.85 + Math.sin(time.current * 17) * 0.1)
+            : kind === "lamp"
+              ? night
+                ? 1
+                : 0.4
+              : (1 - daylight * 0.72) * (interior ? 1.8 : 1);
         lamp.intensity = THREE.MathUtils.lerp(
           lamp.intensity,
-          item[2] * (1 - daylight * 0.72) * (interior ? 1.8 : 1),
+          item[2] * level,
           blend,
         );
         lamp.distance = item[3];
@@ -276,7 +316,7 @@ export default function WorldLighting({
         shadow-normalBias={0.025}
         shadow-bias={-0.00025}
       />
-      {Array.from({ length: 5 }, (_, i) => (
+      {Array.from({ length: POOL }, (_, i) => (
         <pointLight
           key={i}
           ref={(node) => {

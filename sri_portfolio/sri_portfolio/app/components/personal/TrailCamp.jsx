@@ -83,7 +83,6 @@ function Fire({ night, animate }) {
     [],
   );
   const flames = [useRef(), useRef(), useRef()];
-  const light = useRef();
   useFrame(({ clock }) => {
     if (!animate) return;
     const t = clock.elapsedTime;
@@ -96,9 +95,6 @@ function Fire({ night, animate }) {
       f.current.scale.set(1, k, 1);
       f.current.rotation.y = t * (0.6 + i * 0.2);
     });
-    if (light.current)
-      light.current.intensity =
-        (night ? 5 : 0) * (0.85 + Math.sin(t * 17) * 0.1);
   });
   return (
     <group position={[x, groundHeight(x, z), z]}>
@@ -120,16 +116,6 @@ function Fire({ night, animate }) {
           />
         </mesh>
       ))}
-      {night && (
-        <pointLight
-          ref={light}
-          position={[0, 0.7, 0]}
-          color="#ffa04a"
-          distance={9}
-          decay={2}
-          intensity={5}
-        />
-      )}
     </group>
   );
 }

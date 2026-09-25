@@ -1,6 +1,4 @@
 "use client";
-import { useMemo } from "react";
-import * as THREE from "three";
 import { Box, Boxes } from "./ScenePrimitives";
 import { useRoomTexture } from "./RoomMaterials";
 import {
@@ -11,11 +9,6 @@ import {
 
 export default function StudioDesk({ night }) {
   const walnut = useRoomTexture("walnut");
-  const target = useMemo(() => {
-    const object = new THREE.Object3D();
-    object.position.set(...studioDeskLight.target);
-    return object;
-  }, []);
   return (
     <group>
       <Box
@@ -67,21 +60,6 @@ export default function StudioDesk({ night }) {
           />
         </mesh>
       </group>
-      <primitive object={target} />
-      <spotLight
-        position={[
-          studioDeskLight.position[0],
-          studioDeskLight.position[1] - 0.025,
-          studioDeskLight.position[2] + 0.035,
-        ]}
-        target={target}
-        color="#ffdeb0"
-        intensity={night ? 1.4 : 0.5}
-        distance={1.7}
-        angle={0.72}
-        penumbra={0.85}
-        decay={2}
-      />
     </group>
   );
 }
