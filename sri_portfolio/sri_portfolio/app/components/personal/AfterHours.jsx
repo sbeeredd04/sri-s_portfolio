@@ -19,6 +19,7 @@ import { shows } from "../../json/personal";
 import CinemaSeat from "./CinemaSeat";
 import CinemaScreen from "./CinemaScreen";
 import CinemaGarden from "./CinemaGarden";
+import Signpost from "./Signpost";
 import {
   cinemaOrigin,
   cinemaScreen,
@@ -597,6 +598,10 @@ export default function AfterHours({
         <StreetLamp key={i} position={p} night={night} />
       ))}
       <Bench position={[5.5, 0, 5.5]} />
+      <Signpost
+        biome="entertainment"
+        ground={(x, z) => surfaceHeight("entertainment", x, z)}
+      />
     </group>
   );
 }

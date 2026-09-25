@@ -23,6 +23,7 @@ import {
   publishedFieldnotes,
 } from "../../lib/fieldnotes.mjs";
 import { discover } from "../../lib/discoveries.mjs";
+import Signpost from "./Signpost";
 
 const ground = (x, z) => renderedSurfaceHeight("future", x, z);
 
@@ -413,6 +414,7 @@ export default function FieldnotesQuarter({
   return (
     <group>
       <Newsstand onOpen={onOpenWriting} />
+      <Signpost biome="future" ground={ground} />
       <Lanterns night={night} />
       <Hedges />
       <Lookout night={night} />

@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import CityMesh from "./CityMesh";
 import Crowd from "./Crowd";
+import Signpost from "./Signpost";
 import KeynoteAmphitheatre, { canvasTexture } from "./KeynoteAmphitheatre";
 import { useQuality } from "./Quality";
 import { buildTechDistrict } from "../../lib/tech-buildings.mjs";
@@ -329,6 +330,10 @@ export default function TechDistrict({
         />
       ))}
       <Palms />
+      <Signpost
+        biome="projects"
+        ground={(x, z) => surfaceHeight("projects", x, z)}
+      />
       {detailed && (
         <Suspense fallback={null}>
           <DistrictCrowd animate={animate} />

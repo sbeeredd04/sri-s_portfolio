@@ -3,6 +3,7 @@ import { Suspense, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Boxes } from "./ScenePrimitives";
 import Crowd from "./Crowd";
+import Signpost from "./Signpost";
 import { useQuality } from "./Quality";
 import { groundHeight } from "./Landscape";
 import { campFire, campTent, trailLife } from "../../lib/trail-life.mjs";
@@ -161,6 +162,7 @@ export default function TrailCamp({ night, animate, detailed }) {
   return (
     <group>
       <Clearing />
+      <Signpost biome="trail" ground={groundHeight} />
       <Tent />
       <Fire night={night} animate={animate} />
       {detailed && (
