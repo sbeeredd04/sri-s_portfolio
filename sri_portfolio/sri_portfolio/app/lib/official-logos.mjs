@@ -31,5 +31,17 @@ export const pylonLogos = {
   claude: { src: `${dir}claude-logo-ivory.svg`, lockup: true },
 };
 
+// Organisation logos as each publishes it: LinkedIn company pages, and the
+// ASU logo from asu.edu itself. Keyed by the names in personal.js history.
+const org = "/official/logos/org/";
+export const companyLogos = {
+  Offseason: { src: `${org}offseason.webp` },
+  "Arizona State University": { src: `${org}asu.webp`, wide: true },
+  "Geometric Media Lab": { src: `${org}geometric-media-lab.webp` },
+  "Software Developers Association": { src: `${org}soda.webp` },
+  "Mesa Historical Museum": { src: `${org}mesa-historical-museum.webp` },
+  "ASU Biodesign Institute": { src: `${org}asu-biodesign.webp` },
+};
+
 export const logoCredit =
   "Logos are trademarks of their owners, shown to name the tools I use. No endorsement is implied. Git logo by Jason Long, CC BY 3.0.";

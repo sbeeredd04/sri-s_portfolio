@@ -196,10 +196,63 @@
     {
       "name": "Three.js white/dark-background variant",
       "reason": "Repo only ships files/icon.svg with black stroke; no official light variant (favicon_white.ico only). Kept the black SVG unmodified."
+    }
+  ],
+  "organisations": [
+    {
+      "file": "public/official/logos/org/offseason.webp",
+      "source_page": "https://www.linkedin.com/company/offseasonwellness/",
+      "source_asset": "https://media.licdn.com/dms/image/v2/D560BAQF7JqBo048FRw/company-logo_200_200/B56Z2J4SR1KQAM-/0/1776134727119/offseasonwellness_logo?e=2147483647&v=beta&t=3sMvBXLxiw9rOXX8mDa-O8WP03QZPp1Op4lxBa7ywQQ",
+      "source_sha256": "d7744bd41372867802cc4e7db3e9f95b48f70f24e135b273c10fece1087c58d7",
+      "bytes": 2216,
+      "sha256": "cda2c1a5b18b6f89965de4c13c4f0226afbac01665e6997492b995941b7e73b3",
+      "variant": "Company logo as published on its LinkedIn page, 200x200; WebP at the same size and aspect."
     },
     {
-      "name": "Offseason, SoDA, Geometric Media Lab, Mesa Historical Museum, ASU units",
-      "reason": "No openly downloadable official mark found; awaiting assets from the owner."
+      "file": "public/official/logos/org/asu-biodesign.webp",
+      "source_page": "https://www.linkedin.com/company/asu-biodesign-institute/",
+      "source_asset": "https://media.licdn.com/dms/image/v2/D4E0BAQFYfWuMXBKbVQ/company-logo_200_200/B4EZbzgforHYAY-/0/1747842104193/asu_biodesign_institute_logo?e=2147483647&v=beta&t=hIje7v2n4yTb4IR35osknSWFWDYfpcMxhXriVb3Rpqw",
+      "source_sha256": "1c9cb0069c9d21771ca4934064ec51102da3bac43cadc1dc6ce2b578eb1b1e5b",
+      "bytes": 15610,
+      "sha256": "0281898cce91099c94a90d58e352a7e4fd18f619ba652ee83e9d8c9332dbdb3b",
+      "variant": "Company logo as published on its LinkedIn page, 200x200; WebP at the same size and aspect."
+    },
+    {
+      "file": "public/official/logos/org/soda.webp",
+      "source_page": "https://www.linkedin.com/company/thesoda/",
+      "source_asset": "https://media.licdn.com/dms/image/v2/D560BAQEtTTkp8wVZ7g/company-logo_200_200/company-logo_200_200/0/1720121357426?e=2147483647&v=beta&t=W2vGgJDv9fVGLHx7HlSLuCwHceBCpBaE0yJEptWaXAE",
+      "source_sha256": "0a99b089a70e9920dd50a90bd4b27257f2ac52ac99e93ac5312ccaee294e3a51",
+      "bytes": 4976,
+      "sha256": "2f12b66153ad6d8677462dc3d1238d60b6aa3ea6fa65160b3f7a02ff45fd4b5e",
+      "variant": "Company logo as published on its LinkedIn page, 200x200; WebP at the same size and aspect."
+    },
+    {
+      "file": "public/official/logos/org/mesa-historical-museum.webp",
+      "source_page": "https://www.linkedin.com/company/mesa-historical-museum/",
+      "source_asset": "https://media.licdn.com/dms/image/v2/D560BAQHpFU8oovLBbg/company-logo_200_200/company-logo_200_200/0/1703803265604/mesa_historical_museum_logo?e=2147483647&v=beta&t=1XuNbpGts7ci9buZDR9jsHS0jRM40ImnY0a2JYR_oP0",
+      "source_sha256": "ee61182d1f25c6863462ca87b155339b4188f55433eed9d6c438d810fc00c2d7",
+      "bytes": 4930,
+      "sha256": "e42da45c187c3555dbf34882110ae516e1112b19be78647de20ec15abaecb88d",
+      "variant": "Company logo as published on its LinkedIn page, 200x200; WebP at the same size and aspect."
+    },
+    {
+      "file": "public/official/logos/org/geometric-media-lab.webp",
+      "source_page": "https://www.linkedin.com/company/geometric-media-lab/",
+      "source_asset": "https://media.licdn.com/dms/image/v2/D4D0BAQGkdPXlBFK6Cg/company-logo_200_200/B4DZXEoi__HkAI-/0/1742760719497/geometric_media_lab_logo?e=2147483647&v=beta&t=GNM4633RpdcJOjc33fpeW9UUDSQ9fKWZ27vSRjpRimU",
+      "source_sha256": "841e52b395eb1c79c873e4c20d75d5301c79530797bc82f19c41e4a653691b2b",
+      "bytes": 6894,
+      "sha256": "d745d2e4c65ca0742eb48509bae972feb0378073136c96e6124923d877e959f0",
+      "variant": "Company logo as published on its LinkedIn page, 200x200; WebP at the same size and aspect."
+    },
+    {
+      "file": "public/official/logos/org/asu.webp",
+      "source_page": "https://www.asu.edu/",
+      "source_asset": "https://www.asu.edu/profiles/contrib/webspark/modules/asu_brand/dist/assets/img/arizona-state-university-logo.png",
+      "source_sha256": "66bd6e10ac4e9395cba5c4fe379da5d247f498a3766c5e458373989a42db0ab7",
+      "bytes": 16804,
+      "sha256": "015c82dcc1d95fc3e1360e134affe18f13805cdb7eba1c464eace482a9c99128",
+      "variant": "ASU horizontal logo from the asu.edu header (not the seal); lossless WebP."
     }
-  ]
+  ],
+  "organisations_policy": "Each organisation's logo as it publishes it on its own LinkedIn company page (owner-uploaded), unmodified apart from WebP encoding at the original size; the ASU logo from asu.edu's own header, not the university seal. Shown beside the organisation's name in the owner's work history."
 }

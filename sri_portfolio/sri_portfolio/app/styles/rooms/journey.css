@@ -474,3 +474,54 @@
     transition: none;
   }
 }
+
+/* Organisation logos beside each name: square tiles as each org publishes
+   them, a wider slot for a horizontal lockup. */
+.window-content .xp-card h3.xp-name {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.xp-logo {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent);
+}
+.xp-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.xp-logo[data-wide] {
+  width: 132px;
+  padding: 6px 10px;
+}
+.xp-logo[data-wide] img {
+  object-fit: contain;
+}
+.xp-logo[data-small] {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  margin-right: 8px;
+  vertical-align: -5px;
+}
+.xp-logo[data-small][data-wide] {
+  width: 56px;
+  padding: 2px 4px;
+}
+@media (max-width: 560px) {
+  .xp-logo:not([data-small]) {
+    width: 40px;
+    height: 40px;
+  }
+  .xp-logo[data-wide]:not([data-small]) {
+    width: 104px;
+  }
+}

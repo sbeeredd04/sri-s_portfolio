@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { history, beginnings } from "../../json/personal";
 import { workStories } from "../../json/work-stories";
+import { companyLogos } from "../../lib/official-logos.mjs";
 
 // A short label for the margin, taken only from the recorded period.
 function marginDate(period) {
@@ -10,6 +11,22 @@ function marginDate(period) {
   if (years?.length > 1) return `${years[0]}–${years.at(-1).slice(2)}`;
   if (years) return years[0];
   return period.split(/[ ·]/)[0];
+}
+
+// The organisation's own logo beside its name; decorative, as the name is
+// right there in text.
+function OrgLogo({ name, small }) {
+  const logo = companyLogos[name];
+  if (!logo) return null;
+  return (
+    <span
+      className="xp-logo"
+      data-small={small || undefined}
+      data-wide={logo.wide || undefined}
+    >
+      <img src={logo.src} alt="" loading="lazy" />
+    </span>
+  );
 }
 
 function IndexCard({ entry, index, projectPage }) {
@@ -22,7 +39,10 @@ function IndexCard({ entry, index, projectPage }) {
           No. {String(index + 1).padStart(2, "0")}
         </span>
       </header>
-      <h3>{entry.name}</h3>
+      <h3 className="xp-name">
+        <OrgLogo name={entry.name} />
+        {entry.name}
+      </h3>
       <p className="xp-role">
         {entry.role}
         {story?.setting && <span> · {story.setting}</span>}
@@ -152,7 +172,10 @@ export default function ExperienceStory({
                 onKeyDown={(e) => move(e, i)}
               >
                 <span className="xp-tab-date">{marginDate(h.period)}</span>
-                <span className="xp-tab-name">{h.name}</span>
+                <span className="xp-tab-name">
+                  <OrgLogo name={h.name} small />
+                  {h.name}
+                </span>
                 <small>{h.role}</small>
               </button>
             ))}
