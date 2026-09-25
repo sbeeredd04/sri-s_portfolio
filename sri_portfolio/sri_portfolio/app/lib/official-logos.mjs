@@ -18,9 +18,32 @@ export const toolkitLogos = {
   PostgreSQL: `${dir}postgresql-logo-3colors.svg`,
   Git: `${dir}git-icon-1788c.svg`,
   Docker: `${dir}docker-mark-ocean-blue.svg`,
+  // HTML and CSS share a tag, so it carries both marks.
+  "HTML & CSS": [`${dir}html5-badge.svg`, `${dir}css-logo.svg`],
+  "Tailwind CSS": `${dir}tailwindcss-mark.svg`,
+  TensorFlow: `${dir}tensorflow-fullcolor-icon.svg`,
+  "scikit-learn": `${dir}scikit-learn-logo-without-subtitle.svg`,
+  OpenCV: `${dir}opencv-logo.webp`,
+  NumPy: `${dir}numpy-logomark.svg`,
+  pandas: `${dir}pandas-mark.svg`,
+  LangChain: `${dir}langchain-lockup-black.svg`,
+  FastAPI: `${dir}fastapi-favicon.webp`,
+  Express: `${dir}express-logo-white.svg`,
+  MongoDB: `${dir}mongodb-horizontal-default-slate-blue.svg`,
+  Redis: `${dir}redis-icon.webp`,
+  "C / C++": `${dir}cpp-logo.svg`,
+  Jupyter: `${dir}jupyter-logomark-orangebody-greyplanets.svg`,
+  Selenium: `${dir}selenium-logo-mark-green.svg`,
 };
-// Django's only mark is its wordmark, so it takes a wider chip.
-export const wideLogos = new Set(["Django"]);
+// Wordmarks and lockups take a wider chip: Django's only mark is its
+// wordmark, LangChain asks for the symbol with its name, and scikit-learn
+// and MongoDB offer no compact mark at a legible size.
+export const wideLogos = new Set([
+  "Django",
+  "LangChain",
+  "scikit-learn",
+  "MongoDB",
+]);
 
 // Pylon faces are dark: each tool uses the variant its owner offers for
 // dark backgrounds. A lockup already carries the name; a mark does not.
@@ -44,4 +67,4 @@ export const companyLogos = {
 };
 
 export const logoCredit =
-  "Logos are trademarks of their owners, shown to name the tools I use. No endorsement is implied. Git logo by Jason Long, CC BY 3.0.";
+  "Logos are trademarks of their owners, shown to name the tools I use. No endorsement is implied. Redis is a registered trademark of Redis Ltd.; any rights therein are reserved to Redis Ltd. Git logo by Jason Long, CC BY 3.0. HTML5 logo by W3C, CC BY 3.0.";

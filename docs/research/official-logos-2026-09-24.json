@@ -177,9 +177,184 @@
       "bytes": 677,
       "sha256": "fe160e715ebdbed862f4a3f3633320cd5081b8de4e95818d429b3d295a71a9e8",
       "variant": "three.js tetrahedron icon SVG, black #000 stroke (only official SVG; will not read on dark without a light backing)"
+    },
+    {
+      "file": "public/official/logos/tailwindcss-mark.svg",
+      "owner": "Tailwind Labs Inc. (Tailwind CSS)",
+      "source_page": "https://tailwindcss.com/brand",
+      "source_asset": "https://tailwindcss.com/_next/static/media/tailwindcss-mark.0~s.iziag2xd..svg",
+      "licence": "Tailwind brand page: name and logos are trademarks of Tailwind Labs Inc.; assets provided for articles/tutorials; must not imply affiliation or endorsement; no merchandise without written consent.",
+      "bytes": 771,
+      "sha256": "7c29d9706e21cb4dec8e2c19f7bcb7814df8c105ce28b684c88a5b3e2e98fb6d",
+      "variant": "mark SVG (sky-blue waves, icon only)"
+    },
+    {
+      "file": "public/official/logos/tensorflow-fullcolor-icon.svg",
+      "owner": "Google (TensorFlow)",
+      "source_page": "https://www.tensorflow.org/extras/tensorflow_brand_guidelines.pdf",
+      "source_asset": "https://www.tensorflow.org/extras/tensorflow-brand-assets.zip#TensorFlow Brand Assets/TensorFlow Logo/Primary/SVG/FullColorPrimary Icon.svg",
+      "licence": "TensorFlow Brand Guidelines (tensorflow.org): follow clearspace, minimum size (20dp height for lockups) and listed don'ts; TensorFlow and the logo are trademarks of Google LLC.",
+      "bytes": 1235,
+      "sha256": "4e79f63108f6baba4fd02b00f1ce58cb9b9939413b6706f240f5caf1b2471b22",
+      "variant": "full-colour orange icon SVG (mark only)"
+    },
+    {
+      "file": "public/official/logos/pandas-mark.svg",
+      "owner": "pandas (NumFOCUS)",
+      "source_page": "https://pandas.pydata.org/about/citing.html",
+      "source_asset": "https://pandas.pydata.org/static/img/pandas_mark.svg",
+      "licence": "pandas brand page: full-colour logo only on white backgrounds; keep margin, do not distort or overlay; write 'pandas' lower case. Code BSD-3; marks via NumFOCUS.",
+      "bytes": 2576,
+      "sha256": "bbd01903b7c409becea0232da46bac9f257cffeb66ffc3eab30ab20162d24b23",
+      "variant": "full-colour logo mark SVG (no text), for white backgrounds"
+    },
+    {
+      "file": "public/official/logos/numpy-logomark.svg",
+      "owner": "NumPy (NumFOCUS)",
+      "source_page": "https://github.com/numpy/numpy/blob/main/branding/logo/logoguidelines.md",
+      "source_asset": "https://raw.githubusercontent.com/numpy/numpy/main/branding/logo/logomark/numpylogoicon.svg",
+      "licence": "NumPy logo guidelines: prefer primary/secondary lockups over logomark alone; logomark min 20px wide; do not recreate or modify; scale proportionally.",
+      "bytes": 1226,
+      "sha256": "b6cfaa3cef2c2629013fdbeec493df2e281b10079c3f5210da60904d89e442f8",
+      "variant": "full-colour logomark SVG (two blues, no text)"
+    },
+    {
+      "file": "public/official/logos/scikit-learn-logo-without-subtitle.svg",
+      "owner": "scikit-learn",
+      "source_page": "https://github.com/scikit-learn/scikit-learn/blob/main/doc/logos/README.md",
+      "source_asset": "https://raw.githubusercontent.com/scikit-learn/scikit-learn/main/doc/logos/scikit-learn-logo-without-subtitle.svg",
+      "licence": "scikit-learn brand guidelines: do not display under 50px wide; no recolouring, typeface change or modification; keep clear space.",
+      "bytes": 7126,
+      "sha256": "437d4920428e77c4d48717ea4e6b024cb0b7cb05b11dcfc56e75123d4edebac6",
+      "variant": "full-colour logo SVG with 'scikit learn' text, no subtitle"
+    },
+    {
+      "file": "public/official/logos/selenium-logo-mark-green.svg",
+      "owner": "Software Freedom Conservancy (Selenium)",
+      "source_page": "https://github.com/SeleniumHQ/selenium/tree/trunk/common/images",
+      "source_asset": "https://raw.githubusercontent.com/SeleniumHQ/selenium/trunk/common/images/selenium_logo_mark_green.svg",
+      "licence": "Selenium is a Software Freedom Conservancy project; repo is Apache-2.0 but the name and logo are trademarks. No published brand guidelines found.",
+      "bytes": 1224,
+      "sha256": "158e57b887be43771306a46dec8b3ab28ee01bdeefb610fb6e701e0cb08ab31c",
+      "variant": "green mark SVG (icon only)"
+    },
+    {
+      "file": "public/official/logos/fastapi-favicon.webp",
+      "owner": "FastAPI (Sebasti\u00e1n Ram\u00edrez)",
+      "source_page": "https://github.com/fastapi/fastapi/tree/master/docs/en/docs/img",
+      "source_asset": "https://raw.githubusercontent.com/fastapi/fastapi/master/docs/en/docs/img/favicon.png",
+      "licence": "Repo MIT-licensed; FastAPI name/logo are the author's marks. No brand guidelines published.",
+      "bytes": 2426,
+      "sha256": "5cb2944efbb618a62d942b9b2a056fc464356a4de3c92e9417979ba45f70bdd3",
+      "variant": "teal icon PNG (mark only; no teal icon SVG is shipped)",
+      "derived": {
+        "from": "fastapi-favicon.png",
+        "sha256": "d16f72cf5a2773eba499cc7f3db1923c6f5f73de990f739e3a05806aafec15b7",
+        "note": "Lossless WebP of the official PNG; same pixels and aspect (Redis icon scaled to 256px)."
+      }
+    },
+    {
+      "file": "public/official/logos/jupyter-logomark-orangebody-greyplanets.svg",
+      "owner": "Project Jupyter (trademark held by LF Charities)",
+      "source_page": "https://github.com/jupyter/design",
+      "source_asset": "https://raw.githubusercontent.com/jupyter/design/main/logos/Logo%20Mark/logomark-orangebody-greyplanets/logomark-orangebody-greyplanets.svg",
+      "licence": "Jupyter trademark policy (jupyter.org/governance/trademarks/): 'Jupyter' and the Jupyter logos are trademarks of LF Charities; use must not confuse or imply endorsement. Brand guide: jupyter/design brandguide/brand_guide.pdf. Do not modify.",
+      "bytes": 4126,
+      "sha256": "95e108062e4f98c78736cf18f3ca7945719bae2a299ef0adc598fb68b8ba8ecc",
+      "variant": "full-colour logomark SVG (orange body, grey planets, no text)"
+    },
+    {
+      "file": "public/official/logos/html5-badge.svg",
+      "owner": "W3C (HTML5 logo)",
+      "source_page": "https://www.w3.org/html/logo/",
+      "source_asset": "https://www.w3.org/html/logo/downloads/HTML5_Badge.svg",
+      "licence": "CC BY 3.0 (per w3.org/html/logo and FAQ); attribute to W3C. Do not use to imply a site is built with HTML5 when it isn't; does not imply validity.",
+      "bytes": 617,
+      "sha256": "c62bf88b08aabe3f04950aa858e45201453c67095df4a1c23fe1166f1249aa38",
+      "variant": "full-colour orange shield badge SVG (no 'HTML' wordmark)"
+    },
+    {
+      "file": "public/official/logos/css-logo.svg",
+      "owner": "CSS-Next Community Group (W3C)",
+      "source_page": "https://github.com/CSS-Next/logo.css",
+      "source_asset": "https://raw.githubusercontent.com/CSS-Next/logo.css/main/css.svg",
+      "licence": "CC0 1.0 (repo LICENSE). Guidelines: use official files; min 40px height digital (icons/favicons excepted); don't distort or add effects.",
+      "bytes": 1971,
+      "sha256": "28dceb38651b6d3d43119bae6f56dc6dd76415cfedd4a718afcd61fc7bec8ba3",
+      "variant": "main rebeccapurple rounded-square SVG with white 'CSS'"
+    },
+    {
+      "file": "public/official/logos/cpp-logo.svg",
+      "owner": "Standard C++ Foundation",
+      "source_page": "https://isocpp.org/home/terms-of-use",
+      "source_asset": "https://raw.githubusercontent.com/isocpp/logos/master/cpp_logo.svg",
+      "licence": "Standard C++ Foundation trademark; permission granted to use the UNALTERED logo with material related to standard C++ (incl. blog posts, educational material) that does not imply endorsement; modified versions normally not approved; place beside other art without overlap.",
+      "bytes": 1919,
+      "sha256": "7a16311bf5df3b6ec7e4f307d8a2ea339fbf8f03b68590a5372e4de72fc587c6",
+      "variant": "full-colour blue hexagon 'C++' logo SVG"
+    },
+    {
+      "file": "public/official/logos/redis-icon.webp",
+      "owner": "Redis Ltd.",
+      "source_page": "https://redis.io/",
+      "source_asset": "https://redis.io/icon.png?icon.3r8p6nysrg-mh.png",
+      "licence": "Redis Trademark Policy (redis.io/legal/trademark-policy): informational use OK; add 'Redis is a registered trademark of Redis Ltd. Any rights therein are reserved to Redis Ltd.' on each page where it appears; use Redis(R); don't imitate visual identity or imply endorsement.",
+      "bytes": 6204,
+      "sha256": "15eea5bf61a5a2066d17296024819651a69c83674892ea99ca326a17f183b3ff",
+      "variant": "red rounded-tile app icon PNG 1028x1028 with white 'R' (site icon from redis.io head; brand kit at brand.redis.io not retrievable)",
+      "derived": {
+        "from": "redis-icon.png",
+        "sha256": "4cb3225f0df2d608be12cde655b32a8081e9360c195509b91e991b883b42f965",
+        "note": "Lossless WebP of the official PNG; same pixels and aspect (Redis icon scaled to 256px)."
+      }
+    },
+    {
+      "file": "public/official/logos/mongodb-horizontal-default-slate-blue.svg",
+      "owner": "MongoDB, Inc.",
+      "source_page": "https://www.mongodb.com/company/newsroom/brand-resources",
+      "source_asset": "https://webimages.mongodb.com/_com_assets/cms/kuyjf3vea2hg34taa-horizontal_default_slate_blue.svg",
+      "licence": "MongoDB Brand Resources: marks protected; any use subject to the MongoDB Trademark Standards for Use; 'don't alter the MongoDB logo in any way'; approval requests to trademark@mongodb.com. Leaf mark alone only where the full logo was already shown or the reference is clear.",
+      "bytes": 11428,
+      "sha256": "9f5435c8be18a834b2c2f8c4c03f117a997646c660fd6f28e3b6869a1bc2fcc1",
+      "variant": "horizontal lockup SVG, green leaf + slate-blue 'MongoDB' text (light backgrounds); the header logo served on the brand-resources page. Leaf-only mark is in the Brandfolder media kit (JS-only, not retrieved)"
+    },
+    {
+      "file": "public/official/logos/express-logo-white.svg",
+      "owner": "OpenJS Foundation (Express)",
+      "source_page": "https://github.com/expressjs/expressjs.com/tree/main/public/images/logos",
+      "source_asset": "https://expressjs.com/images/logos/logo-white.svg",
+      "licence": "Express is an OpenJS Foundation project; marks governed by the OpenJS Foundation Trademark Policy (trademark-policy.openjsf.org). Site repo code MIT. No dedicated Express brand page.",
+      "bytes": 1609,
+      "sha256": "e73c8a8a9c67a7daabb3a851f847ad83b7148e16b2a40a8dd34992f027c9397b",
+      "variant": "black 'ex' mark SVG (named logo-white = for white/light backgrounds; black #000 fill)"
+    },
+    {
+      "file": "public/official/logos/opencv-logo.webp",
+      "owner": "OpenCV (Open Source Vision Foundation)",
+      "source_page": "https://github.com/opencv/opencv/blob/4.x/doc/opencv-logo.md",
+      "source_asset": "https://raw.githubusercontent.com/opencv/opencv/4.x/doc/opencv-logo.png",
+      "licence": "OpenCV repo (Apache-2.0 code). doc/opencv-logo.md: 2020 restyled logo by xperience.ai; SVG/hi-res in the opencv.org Media Kit. OpenCV name/logo are marks of the OpenCV foundation; no usage terms stated in the repo.",
+      "bytes": 17656,
+      "sha256": "b60cf759ca8dda8a9428f15c91384de5edd355ae5bc7a325a6f1ac0c6e491b02",
+      "variant": "full-colour RGB mark PNG 599x556 (no wordmark); SVG only in the Cloudflare-blocked media kit",
+      "derived": {
+        "from": "opencv-logo.png",
+        "sha256": "3985bff1b07c3162c977d9da3f159be92b17efc18928017fb45433c255203db4",
+        "note": "Lossless WebP of the official PNG; same pixels and aspect (Redis icon scaled to 256px)."
+      }
+    },
+    {
+      "file": "public/official/logos/langchain-lockup-black.svg",
+      "owner": "LangChain, Inc.",
+      "source_page": "https://www.langchain.com/brand-assets",
+      "source_asset": "https://cdn.prod.website-files.com/65b8cd72835ceeacd4449a53/6a9998494f7b532d49a38525_langchain-brand-assets.zip#langchain-brand-assets/:logos:langchain/SVG/Black/LangChain_Lockup_Black.svg",
+      "licence": "LangChain brand assets: approved for documentation, presentations, press and community content per guidelines; keep proportions, no recolouring/effects, enough contrast and clear space; guidelines say pair each mark with its own wordmark.",
+      "bytes": 5306,
+      "sha256": "05cfbd24fdfd497b190bed4c4c148a79e2f648e4d5ff7d91800be0c0fdad50e5",
+      "variant": "black horizontal lockup SVG (mark + wordmark, for light backgrounds)"
     }
   ],
-  "total_bytes": 83334,
+  "total_bytes": 150754,
   "not_used": [
     {
       "name": "OpenAI (Codex)",
@@ -196,6 +371,42 @@
     {
       "name": "Three.js white/dark-background variant",
       "reason": "Repo only ships files/icon.svg with black stroke; no official light variant (favicon_white.ico only). Kept the black SVG unmodified."
+    },
+    {
+      "name": "Figma",
+      "reason": "figma.com/using-the-figma-brand states 'By downloading our logos, you agree to use them in accordance with these guidelines.' Downloading is itself acceptance of terms; not accepted on the user's behalf. Asset zip: https://cdn.sanity.io/files/599r6htc/regionalized/9200bce6d92988205ab756696d291c8adcf1ff5b.zip"
+    },
+    {
+      "name": "Linux",
+      "reason": "No openly offered official Linux Foundation logo mark ('Linux' is a word mark administered by the LMI/LF); Tux is Larry Ewing's artwork, not an LF brand asset. Skipped as instructed."
+    },
+    {
+      "name": "OpenCV media kit (SVG)",
+      "reason": "opencv.org/resources/media-kit/ is behind a Cloudflare bot challenge (403 'Just a moment...'); not bypassed. Used the PNG mark from the official opencv/opencv repo instead."
+    },
+    {
+      "name": "Redis brand kit",
+      "reason": "brand.redis.io (Frontify portal linked from redis.io/company/news/#brand-kit) returns HTTP 204 to non-browser clients and no browser was available. Used the official site icon from redis.io instead."
+    },
+    {
+      "name": "MongoDB leaf mark (media kit)",
+      "reason": "Media kit is a JS-only Brandfolder page (brandfolder.com/mongodb/press-kit); not retrievable without a browser. Used the lockup SVG served on the brand-resources page."
+    },
+    {
+      "name": "GNU Bash on gnu.org",
+      "reason": "gnu.org hosts no Bash logo (no /graphics entry). Used the maintainer's page logo (tiswww.case.edu, Chet Ramey) plus an icon from the FSF-commissioned logo repo odb/official-bash-logo, which is not a GNU-hosted source; flagged."
+    },
+    {
+      "name": "VS Code",
+      "reason": "Microsoft's brand terms discourage using the icon to promote your own site; shown as type."
+    },
+    {
+      "name": "GNU Bash",
+      "reason": "No logo hosted by GNU; the available mark is not owner-hosted. Shown as type."
+    },
+    {
+      "name": "Java",
+      "reason": "Oracle offers no openly downloadable mark."
     }
   ],
   "organisations": [

@@ -12,11 +12,15 @@ import {
 function Mark({ name }) {
   const src = toolkitLogos[name];
   if (!src) return null;
-  return (
-    <span className="peg-mark" data-wide={wideLogos.has(name) || undefined}>
-      <img src={src} alt="" width="18" height="18" loading="lazy" />
+  return [src].flat().map((one) => (
+    <span
+      key={one}
+      className="peg-mark"
+      data-wide={wideLogos.has(name) || undefined}
+    >
+      <img src={one} alt="" width="20" height="20" loading="lazy" />
     </span>
-  );
+  ));
 }
 
 // A toolkit name can cover several stack labels, or a kind of work named in
