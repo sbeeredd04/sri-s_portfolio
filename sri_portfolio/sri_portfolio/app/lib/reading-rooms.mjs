@@ -27,7 +27,7 @@ export const continuations = {
   writing: {
     id: "contact",
     label: "Start a conversation",
-    note: "The first post is still ahead. A conversation can start now.",
+    note: "Notes on building with AI. A conversation can take the idea further.",
   },
   socials: {
     id: "writing",
@@ -92,3 +92,76 @@ export function roomWorldDestination(id, collection = "all") {
     }[id] || { world: "planet", stop: "arrival" }
   );
 }
+
+// One directory powers the biome shelf and Spotlight. Visual previews use
+// captured page thumbnails; this metadata remains useful for search.
+export const biomeRooms = {
+  studio: ["journey", "about"],
+  projects: ["work", "skills"],
+  court: ["music", "about"],
+  entertainment: ["music", "about"],
+  trail: ["notes"],
+  future: ["writing", "socials", "contact"],
+};
+export const roomCovers = {
+  work: {
+    kicker: "Selected work",
+    title: "Curiosity, put to work.",
+    detail: "Apps · Research · Experiments",
+    mark: "↗",
+  },
+  journey: {
+    kicker: "People & places",
+    title: "Building. Learning. Still becoming.",
+    detail: "Offseason · ASU · Research",
+    mark: "01—06",
+  },
+  about: {
+    kicker: "A little about me",
+    title: "Always a little curious.",
+    detail: "Curiosity, friends & a good game",
+    mark: "sri.",
+  },
+  skills: {
+    kicker: "The toolkit",
+    title: "Whatever the idea needs.",
+    detail: "Languages · Systems · Craft",
+    mark: "{ }",
+  },
+  music: {
+    kicker: "After hours",
+    title: "Leave something good on.",
+    detail: "Side A: music · Side B: comfort shows",
+    mark: "◉",
+  },
+  notes: {
+    kicker: "The outdoor journal",
+    title: "A different angle.",
+    detail: "On foot, through my lens",
+    mark: "↟",
+  },
+  writing: {
+    kicker: "Fieldnotes",
+    title: "Notes from the in-between.",
+    detail: "AI engineering · Ideas · Observations",
+    mark: "✳",
+  },
+  socials: {
+    kicker: "Around the internet",
+    title: "Find me around the internet.",
+    detail: "GitHub · LinkedIn · Email",
+    mark: "@",
+  },
+  contact: {
+    kicker: "Correspondence",
+    title: "Pull up a chair.",
+    detail: "A private note to Sri",
+    mark: "Dear Sri,",
+  },
+  discoveries: {
+    kicker: "Little discoveries",
+    title: "Little things, left to find.",
+    detail: "Hidden corners of this world",
+    mark: "*",
+  },
+};

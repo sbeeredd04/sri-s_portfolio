@@ -1,0 +1,131 @@
+{
+  "date": "2026-09-14",
+  "environment": "Local production server; not a public deployment",
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "type": "text/html; charset=utf-8",
+      "bytes": 17345,
+      "title": "Sri Ujjwal Reddy — A little world of my own.",
+      "canonical": "https://www.sriujjwalreddy.com"
+    },
+    {
+      "path": "/story",
+      "status": 200,
+      "type": "text/html; charset=utf-8",
+      "bytes": 43453,
+      "title": "The story — Sri Ujjwal Reddy",
+      "canonical": "https://www.sriujjwalreddy.com/story"
+    },
+    {
+      "path": "/icon.svg",
+      "status": 200,
+      "type": "image/svg+xml",
+      "bytes": 328
+    },
+    {
+      "path": "/opengraph-image",
+      "status": 200,
+      "type": "image/png",
+      "bytes": 69689,
+      "dimensions": [
+        1200,
+        630
+      ]
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "type": "application/xml",
+      "bytes": 340
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200,
+      "type": "text/plain",
+      "bytes": 76
+    },
+    {
+      "path": "/missing-page",
+      "status": 404,
+      "type": "text/html; charset=utf-8",
+      "bytes": 12349,
+      "title": "Sri Ujjwal Reddy — A little world of my own.",
+      "canonical": "https://www.sriujjwalreddy.com"
+    }
+  ],
+  "assets": [
+    {
+      "path": "/_next/static/media/GeistVF-s.p.0e569l9b0bre8.woff",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/3m4iblp70s48b.css",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/3s6nzrbk-8mnv.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/1dc0vhog6zuo4.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/3ewp08ebnb49j.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/34wvn5zw0a69w.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/0y-dctk-kmqss.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/turbopack-153j4_353yz2c.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/3fntmmi971322.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/3axzb7u3exrko.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/1cnpdc2pgd12s.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/3ww8c1_qhz59a.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/chunks/0cz1d0mv5g_q7.js",
+      "status": 200
+    },
+    {
+      "path": "/_next/image?url=%2Fpfp.png&w=256&q=75",
+      "status": 200
+    },
+    {
+      "path": "/_next/image?url=%2FaboutMe%2FDSC00409.JPG&w=3840&q=75",
+      "status": 200
+    },
+    {
+      "path": "/_next/image?url=%2Fexperiences%2Fexperience-screenshot-1.png&w=3840&q=75",
+      "status": 200
+    }
+  ],
+  "audio": {
+    "status": 206,
+    "range": "bytes 0-1023/3394935",
+    "type": "audio/mpeg",
+    "bytes": 1024
+  },
+  "readingContentPresent": true
+}

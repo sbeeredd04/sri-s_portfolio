@@ -24,6 +24,7 @@ import {
 } from "../../lib/fieldnotes.mjs";
 import { discover } from "../../lib/discoveries.mjs";
 import Signpost from "./Signpost";
+import LookoutVista from "./LookoutVista";
 
 const ground = (x, z) => renderedSurfaceHeight("future", x, z);
 
@@ -418,6 +419,9 @@ export default function FieldnotesQuarter({
       <Lanterns night={night} />
       <Hedges />
       <Lookout night={night} />
+      <Suspense fallback={null}>
+        <LookoutVista night={night} />
+      </Suspense>
       <Suspense fallback={null}>
         <ModelInstances src="/models/tree-broadleaf.glb" items={treeItems} />
       </Suspense>

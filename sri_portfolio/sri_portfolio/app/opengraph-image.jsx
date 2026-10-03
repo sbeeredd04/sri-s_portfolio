@@ -46,7 +46,7 @@ export default function Image() {
           color: "#b4c7e4",
         }}
       >
-        Founding Engineer at Offseason · San Francisco
+        AI Engineering · Founding Engineer at Offseason
       </div>
       <div
         style={{

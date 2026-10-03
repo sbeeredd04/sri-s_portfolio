@@ -1,0 +1,46 @@
+{
+  "date": "2026-09-15",
+  "scope": "Cumulative physical-layout review, demonstrations, resume, and connection courtyard",
+  "reviewPolicy": "Persisted in root AGENTS.md: render and critique desktop and phone after every major unit.",
+  "defectsObserved": [
+    "Cinema chairs faced away from the screen; side approach ended in the seating.",
+    "Cinema/read-panel show selections were independent; music and shows shared an undifferentiated reading entry.",
+    "Sports areas lacked credible proportions and clear approaches to each court.",
+    "After enlarging the courts, browser close-up caught old flowers growing through both volleyball and basketball. Shared planting coordinates and apron tests now prevent this.",
+    "Night sports lighting did not cover the new footprint. Four practical lights now match their pole positions.",
+    "The first connection-courtyard canopy hid the discovery stations. Front canopy opened and arrival lowered.",
+    "Phone conversation close-up cropped both chair backs. Portrait camera pulled back.",
+    "Closing a lazy video removed its focused button. Focus now returns to the launch control.",
+    "A project hash opened after cinema content inherited the shows filter and displayed no projects. Hash navigation now resets the collection and the library normalizes unknown collection IDs."
+  ],
+  "reviewed": [
+    "Cinema at 1280x800 and 390x844: seat direction, side aisle, screen, native next-show, reading-view synchronization.",
+    "Playground at 1280x800 and 390x844: arrival, basketball, volleyball, ball controls, field markings, apron/paving/planting separation.",
+    "Resume at 1280x800 and 390x844: current content, typography, direct access and archive labeling.",
+    "Agentex restored recording in local reading dialog: original title/thumbnail, external fallback, close control and responsive layout.",
+    "Connection courtyard: arrival, social station, writing desk, facing conversation chairs, physical table click, social links panel, Escape focus restoration.",
+    "Clean production overview: enlarged invented sphere and all six regional labels.",
+    "Production listening-room chair faces the turntable; physical cinema screen advances the shared show selection, verified in the reading collection.",
+    "Cinema \u2192 shows \u2192 close \u2192 Mine Alliance project hash re-tested after reset fix: all 61 entries and the target project restored.",
+    "Mine Alliance recording rendered its original AZ Spark title/thumbnail on a 390x844 phone viewport; closing returned focus to the launch button."
+  ],
+  "checks": {
+    "tests": 42,
+    "build": "pass",
+    "typeConfiguration": "pass",
+    "whitespace": "pass",
+    "SSRProjectAnchors": 61,
+    "SSRDemonstrations": 9,
+    "SSRMusicAndFiveShows": true,
+    "originalResumePDFUnchanged": true,
+    "productionConsole": "No 3110-scoped errors or warnings during reviewed world/cinema/connection routes. Old development errors in the retained tab log predate the corrected implementation."
+  },
+  "limits": [
+    "Not AAA/reference-quality assets. Vegetation, geographic transitions and environmental depth remain unfinished art work.",
+    "Ball simulations have bounded court/net interaction, not a complete sports-game physics system.",
+    "Resume print CSS exists; physical paper pagination has not been visually validated.",
+    "External project pages responded, but their complete backends/features were not tested.",
+    "Hardware validation on an old M1 and physical phone, first-trip stalls and genuine online presence remain open.",
+    "No production publication, DNS change, commit or push."
+  ]
+}

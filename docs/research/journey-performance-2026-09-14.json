@@ -1,0 +1,178 @@
+{
+  "date": "2026-09-14",
+  "scope": "First-entry journey preparation, static geometry batching, and complete project-town arrival",
+  "environment": {
+    "hardware": "Apple M4 Pro",
+    "browser": "Codex in-app browser",
+    "timingBuild": "Next.js development",
+    "viewport": [
+      1280,
+      800
+    ],
+    "dpr": 1,
+    "windowSeconds": 8
+  },
+  "method": "Visible development diagnostics collect render-start to after-render CPU time, frame-start gaps, peak draw calls and PerformanceObserver long tasks during an eight-second page sample. These are uncontrolled local samples, not GPU timings, an old-M1 benchmark, or a comprehensive full-world profile. The home repeat used a freshly reloaded page; driver and browser caches can remain warm. No build or source edits ran during active captures.",
+  "baseline": {
+    "viewport": [
+      1280,
+      800
+    ],
+    "hardware": "Apple M4 Pro",
+    "build": "development",
+    "home": {
+      "frames": 437,
+      "cpuPeak": 342,
+      "gap": 346,
+      "calls": 816,
+      "tasks": 4,
+      "longestTask": 342,
+      "blocking": 548
+    },
+    "projectsArrival": {
+      "frames": 486,
+      "cpuPeak": 6,
+      "gap": 117,
+      "calls": 832,
+      "tasks": 1,
+      "longestTask": 113,
+      "blocking": 63
+    },
+    "hackathons": {
+      "frames": 441,
+      "cpuPeak": 10,
+      "gap": 82,
+      "calls": 823,
+      "tasks": 1,
+      "longestTask": 78,
+      "blocking": 28
+    },
+    "orbit": {
+      "calls": 816,
+      "triangles": 551000,
+      "geometries": 461,
+      "textures": 28,
+      "programs": 46
+    }
+  },
+  "afterInitial": {
+    "orbit": {
+      "calls": 672,
+      "triangles": 551000,
+      "geometries": 389,
+      "textures": 28,
+      "programs": 46
+    },
+    "home": {
+      "frames": 607,
+      "cpuPeak": 57,
+      "gap": 114,
+      "calls": 672,
+      "tasks": 2,
+      "longestTask": 107,
+      "blocking": 64
+    },
+    "projectsArrival": {
+      "frames": 488,
+      "cpuPeak": 6,
+      "gap": 102,
+      "calls": 700,
+      "tasks": 1,
+      "longestTask": 98,
+      "blocking": 48
+    }
+  },
+  "afterFinal": {
+    "home": {
+      "frames": 604,
+      "cpuPeak": 60,
+      "gap": 104,
+      "calls": 672,
+      "tasks": 2,
+      "longestTask": 96,
+      "blocking": 56
+    },
+    "projectsArrival": {
+      "frames": 420,
+      "cpuPeak": 17,
+      "gap": 104,
+      "calls": 700,
+      "tasks": 1,
+      "longestTask": 98,
+      "blocking": 48,
+      "steady": {
+        "calls": 613,
+        "triangles": 694000,
+        "geometries": 707,
+        "textures": 42,
+        "programs": 52
+      }
+    },
+    "hackathons": {
+      "frames": 421,
+      "cpuPeak": 17,
+      "gap": 56,
+      "calls": 691,
+      "tasks": 1,
+      "longestTask": 51,
+      "blocking": 1
+    }
+  },
+  "changes": [
+    "Selected home starts mounting before proximity is reached. PreparedGroup calls the renderer's compileAsync against the persistent world scene and reveals its existing group after preparation; it invalidates the demand renderer even when motion is paused.",
+    "Workshop facade slats and bench slats are merged per material with the same rounded geometry, UVs and normals. No triangle-detail reduction. Orbit sample draw calls fell from 816 to 672 and uploaded geometry count from 461 to 389; triangle count remained 551k.",
+    "Project exhibits remain enabled whenever Project Town is selected. Previous desktop arrival stopped just outside the distance threshold and showed empty plinths. The corrected populated arrival costs more than the old incomplete one: steady 613 calls/694k triangles versus 342 calls/320k in the first post-batching sample."
+  ],
+  "verification": {
+    "automated": {
+      "testsPassed": 26,
+      "productionBuild": "passed",
+      "typecheck": "passed (configuration/generated types, not full JavaScript lint)",
+      "diffWhitespace": "passed"
+    },
+    "development": {
+      "interruptedHomeApproach": "Home selected immediately followed by Test graphics recovery. Fallback appeared; retry remounted one canvas. Home re-entry showed the walnut desk, furniture and all monitor textures.",
+      "applicationErrors": 0,
+      "warnings": [
+        "Existing Rapier initialization deprecation",
+        "Existing WEBGL_lose_context warning during renderer teardown"
+      ],
+      "limit": "This UI test exercises context loss during approach; it does not prove every possible compilation/teardown interleaving."
+    },
+    "production": {
+      "viewports": [
+        [
+          1280,
+          720
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "motionDisabled": "First home visit completed and revealed workspace; Project Town and Aether navigation worked with motion disabled.",
+      "visual": "Reviewed populated town, merged workshop slats and bench, detailed home at both sizes.",
+      "physicalProjectLink": "Clicked Aether exhibit; hash became #project-aether and the corresponding project story expanded.",
+      "phone": {
+        "documentWidth": 390,
+        "scrollWidth": 390,
+        "canvasCount": 1
+      },
+      "diagnostics": "No visible diagnostic controls with ?diagnostics=1; neither capture nor recovery-control strings found in production static chunks.",
+      "applicationErrors": 0,
+      "warnings": [
+        "Existing Rapier initialization deprecation"
+      ]
+    }
+  },
+  "source": {
+    "renderer": "https://threejs.org/docs/pages/WebGLRenderer.html",
+    "installedImplementation": "three 0.180.0 WebGLRenderer.compileAsync; target scene lighting/environment already configured"
+  },
+  "remaining": [
+    "First-entry long tasks remain (about 96–107 ms on sampled home visits).",
+    "Project Town's fuller arrival retains increased detail cost; other biome first-entry paths still need profiling.",
+    "Reference-level art, further object interactions, actual old-M1 testing and publication remain open.",
+    "Chalant purpose/repository and outstanding personal dates await Sri's input."
+  ]
+}

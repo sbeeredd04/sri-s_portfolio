@@ -85,7 +85,7 @@ test("the publishing garden stays on the level pad and the bridge height", () =>
     assert.ok(Math.abs(surfaceHeight("future", x, z)) < 0.02, `${x},${z}`);
 });
 
-test("future keeps the three rooms, the garden stops and coming-soon copy", () => {
+test("future keeps the three rooms, the garden stops and writing access", () => {
   assert.deepEqual(
     placeStops.future.map((stop) => stop.id),
     ["socials", "writing", "newsstand", "lookout", "collaborate"],
@@ -95,7 +95,7 @@ test("future keeps the three rooms, the garden stops and coming-soon copy", () =
     ["socials", "writing", "writing", "writing", "contact"],
   );
   const writing = placeStops.future.find((stop) => stop.id === "writing");
-  assert.match(writing.hint, /Coming soon/);
+  assert.equal(writing.content, "writing");
   assert.equal(writing.position[0], fieldnotesCameras.writing.position[0]);
   const copy = [
     writing.hint,
@@ -350,12 +350,13 @@ test("canopy normals follow its slope and textured side walls have two-dimension
   }
 });
 
-
 test("each destination starts with useful forward travel instead of facing a path edge", () => {
-  const network=makeWalkNetwork();
-  for(const id of Object.keys(fieldnotesWalkEntries)) {
-    const state=walkStart("future",false,id), direction=state.forward.clone();
-    for(let i=0;i<45;i++) advanceWalker(state,direction,1/60,network);
-    assert.ok(state.distance>1.8, `${id}: ${state.distance} metres`);
+  const network = makeWalkNetwork();
+  for (const id of Object.keys(fieldnotesWalkEntries)) {
+    const state = walkStart("future", false, id),
+      direction = state.forward.clone();
+    for (let i = 0; i < 45; i++)
+      advanceWalker(state, direction, 1 / 60, network);
+    assert.ok(state.distance > 1.8, `${id}: ${state.distance} metres`);
   }
 });

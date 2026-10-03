@@ -1,0 +1,936 @@
+/* Place skins share one set of controls. Only small UI surfaces repaint during
+   a journey; the WebGL canvas is never captured, blurred or duplicated. */
+.experience-shell {
+  --skin-duration: 960ms;
+  --skin-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --skin-transition:
+    background-color var(--skin-duration) var(--skin-ease),
+    color var(--skin-duration) var(--skin-ease),
+    border-color var(--skin-duration) var(--skin-ease),
+    border-width var(--skin-duration) var(--skin-ease),
+    border-radius var(--skin-duration) var(--skin-ease),
+    box-shadow var(--skin-duration) var(--skin-ease);
+  --place-accent: var(--skin-accent);
+}
+
+/* Material: warm mineral / graphite / hi-fi casing / field paper / letter stock. */
+.experience-shell
+  :is(
+    .place-heading,
+    .biome-page,
+    .biome-pages-toggle,
+    .journey-footer,
+    .world-clock,
+    .walking-controls,
+    .exhibit-steps,
+    .settings-options,
+    .keynote-controls,
+    .spotlight
+  ) {
+  color: var(--skin-ink);
+  background: var(--skin-surface);
+  color-scheme: var(--skin-scheme);
+  border: 1px solid var(--skin-line);
+  border-radius: var(--skin-radius);
+  box-shadow: var(--skin-shadow);
+  font-family: var(--skin-ui);
+  transition: var(--skin-transition);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.experience-shell :is(.place-heading, .journey-footer) {
+  background-image: var(--skin-grain);
+}
+.experience-shell .place-heading {
+  animation: none;
+  padding: 22px;
+  overflow: hidden;
+}
+.experience-shell .place-heading.has-stop {
+  padding: 16px 20px;
+}
+.experience-shell :is(.biome-page, .biome-pages-list) {
+  border-radius: var(--skin-card-radius);
+}
+.experience-shell :is(.biome-pages-toggle, .world-clock) {
+  border-radius: var(--skin-control-radius);
+}
+.experience-shell .biome-pages-toggle {
+  font: var(--skin-control-size)/1.3 var(--skin-ui);
+}
+.experience-shell .biome-page-actions {
+  color: var(--skin-ink);
+}
+.experience-shell .biome-page-actions a {
+  color: var(--skin-muted);
+  font-family: var(--skin-label);
+}
+.experience-shell .biome-pages-list {
+  grid-auto-rows: max-content;
+}
+.experience-shell .biome-pages-count {
+  font-family: var(--skin-label);
+}
+.experience-shell .biome-page-actions :is(a, button):hover {
+  color: var(--skin-ink);
+  text-decoration: underline;
+}
+.experience-shell
+  :is(.biome-pages-count, .biome-pages-toggle-icon, .world-clock > span) {
+  color: var(--skin-muted);
+}
+.experience-shell .world-clock {
+  font-family: var(--skin-label);
+  box-shadow: none;
+}
+.experience-shell .world-clock > span {
+  font-size: 9px;
+  letter-spacing: 0.015em;
+}
+.experience-shell .world-clock time {
+  font-size: 11px;
+}
+
+/* Letter positions travel between the two layouts while a small decode front
+   resolves the new type. Only the final, plainly named h1 is accessible. */
+/* Keep the real heading plain for route announcements as well as screen readers. */
+.experience-shell .place-heading h1.biome-heading-accessible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.biome-heading-stage {
+  position: relative;
+}
+.biome-heading-copy {
+  color: var(--skin-ink);
+  display: flow-root;
+}
+.biome-heading-ghost {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.biome-heading-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+.biome-heading-glyph {
+  position: relative;
+  display: inline-block;
+}
+.biome-glyph-measure {
+  visibility: hidden;
+}
+.biome-glyph-ink {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+}
+.experience-shell .place-heading .biome-title {
+  color: var(--skin-ink);
+  font: var(--skin-italic) var(--skin-weight) var(--skin-heading-size)/1.08
+    var(--skin-display);
+  letter-spacing: var(--skin-tracking);
+  margin: 16px 0;
+  text-wrap: pretty;
+}
+.experience-shell .place-heading .biome-title > span {
+  color: inherit;
+}
+.experience-shell .place-heading .eyebrow {
+  color: var(--skin-muted);
+  font: 10px/1.5 var(--skin-label);
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.experience-shell .place-heading .narrative-copy {
+  font: var(--skin-body-size)/1.75 var(--skin-body);
+  color: var(--skin-muted);
+  margin: 0;
+}
+.experience-shell .place-heading.has-stop .biome-title {
+  font-size: var(--skin-close-heading-size);
+  margin: 10px 0 0;
+}
+
+/* Every selection is visibly pressed. Hit areas and keyboard targets don't move
+   when a theme changes; corners, color and the chapter marker do the morphing. */
+.experience-shell
+  :is(
+    .place-stops button,
+    .stop-story,
+    .walk-here,
+    .header-links .index-button,
+    .keynote-actions button,
+    .street-controls button,
+    .exhibit-steps button,
+    .walking-controls button
+  ) {
+  color: var(--skin-ink);
+  background: var(--skin-surface);
+  border: 1px solid var(--skin-line);
+  border-radius: var(--skin-control-radius);
+  font-family: var(--skin-ui);
+  transition:
+    var(--skin-transition),
+    transform 160ms ease;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.experience-shell .place-exploration .place-stops button {
+  font: var(--skin-control-size)/1.3 var(--skin-ui);
+  letter-spacing: 0.01em;
+  min-height: 44px;
+}
+.experience-shell
+  :is(
+    .place-stops button,
+    .keynote-actions button,
+    .exhibit-steps button
+  ):hover {
+  background-color: var(--skin-tint);
+}
+.experience-shell
+  :is(.place-stops button, .exhibit-steps button)[aria-pressed="true"] {
+  background: var(--skin-accent);
+  border-color: var(--skin-accent);
+  color: var(--skin-on-accent);
+}
+.experience-shell :is(.stop-story, .walk-here) {
+  font-size: var(--skin-control-size);
+}
+.experience-shell .explore-mode > .eyebrow {
+  font-family: var(--skin-label);
+  letter-spacing: 0.1em;
+}
+.experience-shell .header-links {
+  font-family: var(--skin-ui);
+}
+.experience-shell .header-links > :not(.index-button) {
+  color: #f0f3ee;
+  text-shadow: 0 1px 8px #07131e;
+}
+.experience-shell .header-links .index-button {
+  color: var(--skin-ink);
+}
+.experience-shell :is(.sound-toggle, .world-settings > button) {
+  background: var(--skin-surface);
+  color: var(--skin-ink);
+  border: 1px solid var(--skin-line);
+  border-radius: var(--skin-control-radius);
+  min-height: 36px;
+  padding: 6px 11px;
+  font-family: var(--skin-ui);
+  font-size: var(--skin-control-size);
+  transition: var(--skin-transition);
+}
+.experience-shell .world-settings > button {
+  gap: 10px;
+}
+.experience-shell .journey-footer {
+  color: var(--skin-ink);
+}
+.experience-shell :is(.map-button, .command-toggle, .next-place) {
+  color: var(--skin-muted);
+  border-color: var(--skin-line);
+  font-family: var(--skin-ui);
+  transition: var(--skin-transition);
+}
+.experience-shell .map-button.is-current {
+  color: var(--skin-ink);
+}
+.experience-shell
+  :is(.map-button > span, .command-toggle > span, .next-place > span) {
+  font-family: var(--skin-label);
+}
+.experience-shell .next-place > span {
+  color: var(--skin-muted);
+}
+.experience-shell .chapter-route {
+  position: relative;
+  isolation: isolate;
+}
+.experience-shell .chapter-route::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--route-width, 64px);
+  height: var(--route-height, 54px);
+  transform: translate(var(--route-x, 0px), var(--route-y, 0px));
+  border-radius: var(--skin-control-radius);
+  background: var(--skin-accent);
+  clip-path: inset(0);
+  transition:
+    var(--skin-transition),
+    transform var(--skin-duration) var(--skin-ease),
+    width var(--skin-duration) var(--skin-ease),
+    height var(--skin-duration) var(--skin-ease),
+    clip-path var(--skin-duration) var(--skin-ease),
+    opacity 160ms;
+  pointer-events: none;
+}
+.experience-shell[data-biome="planet"] .chapter-route::before {
+  opacity: 0;
+}
+.experience-shell .chapter-route button {
+  position: relative;
+  z-index: 1;
+  color: var(--skin-muted);
+  font-family: var(--skin-ui);
+  border-radius: var(--skin-control-radius);
+  transition: var(--skin-transition);
+}
+.experience-shell .chapter-route button:hover {
+  background: var(--skin-tint);
+  color: var(--skin-ink);
+}
+.experience-shell .chapter-route button > span {
+  font-size: var(--skin-nav-size);
+}
+.experience-shell .chapter-route button > small {
+  color: inherit;
+  font-family: var(--skin-label);
+  opacity: 0.85;
+}
+.experience-shell .chapter-route button[aria-current] {
+  background: transparent;
+  color: var(--skin-on-accent);
+  box-shadow: none;
+}
+.experience-shell .chapter-route button[aria-current] > small {
+  color: inherit;
+}
+.skin-nav-label {
+  animation: skin-nav-type 440ms ease both;
+}
+@keyframes skin-nav-type {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Secondary controls carry the same material, including the search palette. */
+.experience-shell .settings-options {
+  color-scheme: var(--skin-scheme);
+  scrollbar-color: var(--skin-line) transparent;
+}
+.experience-shell
+  .settings-options
+  :is(
+    .sensory-heading .eyebrow,
+    .sensory-heading > p:last-child,
+    .sensory-power > small,
+    .sensory-volume output,
+    .sensory-option small,
+    .sensory-availability small,
+    .light-mode-control small,
+    .wanderer-choice small
+  ) {
+  color: var(--skin-muted);
+}
+.experience-shell :is(.sensory-heading h2, .keynote-controls h2) {
+  font-family: var(--skin-display);
+}
+.experience-shell
+  .settings-options
+  :is(.sensory-power, .light-mode-control > div) {
+  background: var(--skin-tint);
+  color: var(--skin-ink);
+  border-color: var(--skin-line);
+  border-radius: var(--skin-control-radius);
+}
+.experience-shell .settings-options :is(button, summary) {
+  color: var(--skin-ink);
+}
+.experience-shell .settings-options .view-preferences {
+  border-color: var(--skin-line);
+}
+.experience-shell
+  .settings-options
+  .light-mode-control
+  button[aria-pressed="true"] {
+  background: var(--skin-accent);
+  color: var(--skin-on-accent);
+}
+.experience-shell .settings-options .sensory-switch {
+  border-color: var(--skin-line);
+  background: var(--skin-tint);
+}
+.experience-shell .settings-options .sensory-switch::after {
+  background: var(--skin-muted);
+}
+.experience-shell .settings-options [aria-pressed="true"] .sensory-switch {
+  background: var(--skin-accent);
+}
+.experience-shell
+  .settings-options
+  [aria-pressed="true"]
+  .sensory-switch::after {
+  background: var(--skin-on-accent);
+}
+.experience-shell .settings-options input::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    var(--skin-accent) var(--volume),
+    var(--skin-line) var(--volume)
+  );
+}
+.experience-shell .settings-options input::-webkit-slider-thumb {
+  background: var(--skin-ink);
+  border-color: var(--skin-surface);
+}
+.experience-shell .settings-options input::-moz-range-track {
+  background: var(--skin-line);
+}
+.experience-shell .settings-options input::-moz-range-progress {
+  background: var(--skin-accent);
+}
+.experience-shell .settings-options input::-moz-range-thumb {
+  background: var(--skin-ink);
+  border-color: var(--skin-surface);
+}
+.experience-shell
+  .keynote-controls
+  :is(.keynote-eyebrow, p:not(.keynote-eyebrow)) {
+  color: var(--skin-muted);
+}
+.experience-shell
+  .spotlight
+  :is(.spotlight-search, .spotlight-preview, footer) {
+  border-color: var(--skin-line);
+}
+.experience-shell
+  .spotlight
+  :is(
+    .spotlight-search > span,
+    .spotlight-list > p,
+    .spotlight-list small,
+    .spotlight-list [role="option"] > span:last-child,
+    .spotlight-preview > p,
+    .spotlight-preview .spotlight-kind,
+    footer
+  ) {
+  color: var(--skin-muted);
+}
+.experience-shell .spotlight-search input::placeholder {
+  color: var(--skin-muted);
+}
+.experience-shell .spotlight-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--skin-line) var(--skin-surface);
+}
+.experience-shell
+  .spotlight
+  :is([role="option"], .spotlight-actions a, footer a) {
+  color: var(--skin-ink);
+}
+.experience-shell
+  .spotlight
+  :is(
+    [aria-selected="true"],
+    .spotlight-result-icon,
+    .spotlight-search > button
+  ) {
+  background: var(--skin-tint);
+  color: var(--skin-ink);
+}
+.experience-shell .spotlight .spotlight-actions button {
+  background: var(--skin-accent);
+  color: var(--skin-on-accent);
+  border-radius: var(--skin-control-radius);
+}
+.experience-shell .spotlight .spotlight-preview h2 {
+  font-family: var(--skin-display);
+}
+
+.experience-shell
+  .walking-controls
+  :is(.walking-heading > span, .walking-help, .walking-status) {
+  color: var(--skin-muted);
+}
+.experience-shell .walking-controls .eyebrow {
+  font-family: var(--skin-label);
+  color: var(--skin-muted);
+}
+.experience-shell .walking-controls button:hover {
+  background: var(--skin-tint);
+}
+.experience-shell .walking-controls button[aria-pressed="true"] {
+  background: var(--skin-accent);
+  color: var(--skin-on-accent);
+}
+.experience-shell .exhibit-steps button {
+  font-family: var(--skin-label);
+}
+.experience-shell .spotlight .spotlight-place-mark {
+  color: var(--skin-ink);
+  background: var(--skin-tint);
+}
+
+/* Each place has its own component language, not just a different palette. */
+/* 02: editor chrome, monospaced labels, blue tabs and inset screen edges. */
+.experience-shell[data-biome="projects"] .place-heading {
+  border: 1px solid var(--skin-line);
+  border-top: 3px solid var(--skin-accent);
+}
+.experience-shell[data-biome="projects"] .place-heading .eyebrow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: -22px -22px 0;
+  padding: 12px 22px;
+  color: var(--skin-accent);
+  background: var(--skin-tint);
+  border-bottom: 1px solid var(--skin-line);
+}
+.experience-shell[data-biome="projects"] .place-heading.has-stop .eyebrow {
+  margin: -16px -20px 0;
+  padding: 10px 20px;
+}
+.experience-shell[data-biome="projects"] .place-heading .biome-title {
+  line-height: 1.2;
+}
+.experience-shell[data-biome="projects"] .place-heading .narrative-copy {
+  border-top: 1px solid var(--skin-line);
+  padding-top: 16px;
+}
+.experience-shell[data-biome="projects"] .biome-page {
+  border-top: 2px solid var(--skin-accent);
+}
+.experience-shell[data-biome="projects"] .biome-page-actions {
+  border-top: 1px solid var(--skin-line);
+}
+.experience-shell[data-biome="projects"] .journey-footer {
+  border-top: 2px solid var(--skin-accent);
+}
+.experience-shell[data-biome="projects"] .chapter-route button {
+  border: 1px solid var(--skin-line);
+  border-radius: 2px;
+}
+
+/* 03: a record sleeve and a tactile transport, with substantial serif controls. */
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  .place-heading {
+  text-align: center;
+  padding: 28px 24px;
+}
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  .place-heading
+  .eyebrow {
+  letter-spacing: 0.15em;
+  font-size: 9px;
+}
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  .place-heading
+  .biome-title {
+  line-height: 1.02;
+  margin: 20px 0;
+}
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  .place-heading
+  .narrative-copy {
+  line-height: 1.8;
+}
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  .biome-page {
+  padding: 10px 10px 0;
+}
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  .biome-page-actions {
+  padding: 5px 0;
+}
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  .biome-page-actions
+  button {
+  font-size: 16px;
+  font-style: italic;
+}
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  :is(
+    .place-stops button,
+    .walk-here,
+    .stop-story,
+    .sound-toggle,
+    .world-settings > button
+  ) {
+  box-shadow:
+    inset 0 1px #f5e8d238,
+    0 3px 0 #17130f;
+  border-bottom-width: 3px;
+}
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  .chapter-route
+  button {
+  border: 1px solid var(--skin-line);
+  margin-inline: 2px;
+}
+.experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+  .chapter-route
+  button[aria-current] {
+  box-shadow: inset 0 2px 4px #35241940;
+}
+
+/* 04: a ruled notebook, photo mounts and handwritten wayfinding. */
+.experience-shell[data-biome="trail"] .place-heading {
+  padding-left: 34px;
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 22px,
+      #3c563c44 22px 23px,
+      transparent 23px
+    ),
+    var(--skin-grain);
+}
+.experience-shell[data-biome="trail"] .place-heading .eyebrow {
+  font-size: 9px;
+}
+.experience-shell[data-biome="trail"] .place-heading .biome-title {
+  font-weight: 600;
+}
+.experience-shell[data-biome="trail"] .place-heading .narrative-copy {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.experience-shell[data-biome="trail"] .biome-page {
+  padding: 8px 8px 0;
+  border: 1px solid var(--skin-line);
+}
+.experience-shell[data-biome="trail"] .biome-page-actions {
+  padding: 3px 0;
+}
+.experience-shell[data-biome="trail"] .biome-page-actions button {
+  font-size: 21px;
+}
+.experience-shell[data-biome="trail"]
+  :is(.place-stops button, .walk-here, .stop-story) {
+  border-style: dashed;
+}
+.experience-shell[data-biome="trail"] .journey-footer {
+  border-left: 6px solid var(--skin-accent);
+}
+.experience-shell[data-biome="trail"] .chapter-route button > span {
+  line-height: 1;
+}
+.experience-shell[data-biome="trail"] .header-links :is(button, a) {
+  font-size: 21px;
+}
+.experience-shell[data-biome="trail"] .biome-page-actions a {
+  font-size: 10px;
+}
+.experience-shell[data-biome="trail"] .chapter-route button[aria-current] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* 05: a newspaper masthead and quiet ink rules, not another rounded card set. */
+.experience-shell[data-biome="future"] :is(.place-heading, .journey-footer) {
+  border-top: 5px double var(--skin-ink);
+  border-radius: 0;
+}
+.experience-shell[data-biome="future"] .place-heading .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--skin-ink);
+  letter-spacing: 0.16em;
+}
+.experience-shell[data-biome="future"] .biome-heading-number {
+  font: 42px/0.9 var(--skin-display);
+  letter-spacing: -0.05em;
+}
+.experience-shell[data-biome="future"] .biome-heading-slash {
+  display: none;
+}
+.experience-shell[data-biome="future"] .place-heading .narrative-copy {
+  line-height: 1.55;
+}
+.experience-shell[data-biome="future"] .biome-page {
+  border: 0;
+  border-bottom: 1px solid var(--skin-ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+.experience-shell[data-biome="future"] .biome-page-actions {
+  border-top: 1px solid var(--skin-line);
+}
+.experience-shell[data-biome="future"] .biome-page-actions button {
+  font-size: 17px;
+}
+.experience-shell[data-biome="future"] .biome-page-actions a {
+  font-family: var(--skin-label);
+  font-size: 10px;
+}
+.experience-shell[data-biome="future"] .place-stops {
+  gap: 0;
+  padding: 4px;
+  background: var(--skin-surface);
+  border-block: 1px solid var(--skin-ink);
+}
+.experience-shell[data-biome="future"] .place-exploration .place-stops button {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--skin-ink);
+  padding-inline: 14px;
+}
+.experience-shell[data-biome="future"]
+  .place-exploration
+  .place-stops
+  button[aria-pressed="true"] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.experience-shell[data-biome="future"] .chapter-route::before {
+  clip-path: inset(calc(100% - 3px) 0 0);
+}
+.experience-shell[data-biome="future"] .chapter-route button[aria-current] {
+  color: var(--skin-ink);
+}
+.experience-shell[data-biome="future"] .chapter-route button {
+  border-radius: 0;
+}
+.experience-shell[data-biome="future"]
+  :is(
+    .biome-pages-toggle,
+    .walk-here,
+    .stop-story,
+    .sound-toggle,
+    .world-settings > button
+  ) {
+  border-radius: 0;
+  border-width: 0 0 1px;
+  border-color: var(--skin-ink);
+  box-shadow: none;
+}
+
+.experience-shell
+  :is(
+    .place-story,
+    .place-exploration,
+    .journey-footer,
+    .settings-options,
+    .world-clock,
+    .header-links,
+    .spotlight
+  )
+  :focus-visible {
+  outline: 2px solid var(--skin-accent);
+  outline-offset: 3px;
+}
+.experience-shell .spotlight input:focus-visible {
+  outline: none;
+}
+.experience-shell .biome-page :focus-visible {
+  outline-offset: -3px;
+}
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+    .place-heading:not(.has-stop)
+    .biome-title {
+    font-size: 42px;
+  }
+  .experience-shell[data-biome="future"]
+    .place-heading:not(.has-stop)
+    .biome-title {
+    font-size: 36px;
+  }
+  .experience-shell .biome-pages-toggle {
+    font-size: var(--skin-small-control-size);
+    column-gap: 8px;
+    padding-inline: 8px;
+  }
+}
+@media (max-width: 700px) {
+  .experience-shell[data-biome="trail"] .biome-page {
+    flex-basis: 220px;
+    min-width: 220px;
+  }
+  .experience-shell .biome-page-actions button > span[aria-hidden] {
+    display: none;
+  }
+  .experience-shell .biome-page-actions a::after {
+    font-size: 16px;
+  }
+  .experience-shell :is(.sound-toggle, .world-settings > button) {
+    min-height: 44px;
+  }
+  .experience-shell .chapter-route button {
+    flex: 0 0 auto;
+    min-width: 61px;
+    padding-inline: 10px;
+  }
+  .experience-shell .place-story .place-heading {
+    padding: 13px 16px;
+  }
+  .experience-shell[data-biome="projects"]
+    .place-story
+    .place-heading
+    .eyebrow {
+    margin: -13px -16px 0;
+    padding: 9px 16px;
+  }
+  .experience-shell[data-biome="trail"] .place-story .place-heading {
+    padding-left: 33px;
+  }
+  .experience-shell[data-biome="future"] .biome-heading-number {
+    font-size: 30px;
+  }
+  .experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+    .place-story
+    .place-heading {
+    padding: 16px 20px;
+  }
+  .experience-shell:is([data-biome="court"], [data-biome="entertainment"])
+    .biome-page {
+    padding: 7px 7px 0;
+  }
+  .experience-shell .place-story .place-heading .biome-title {
+    font-size: var(--skin-small-heading-size);
+    margin: 9px 0;
+  }
+  .experience-shell .place-story .place-heading.has-stop .biome-title {
+    margin-bottom: 0;
+  }
+  .experience-shell .place-story .place-heading .eyebrow {
+    font-size: 9px;
+  }
+  .experience-shell .place-story .place-heading .narrative-copy {
+    font-size: 12px;
+    line-height: 1.65;
+  }
+  .experience-shell[data-biome="future"]
+    .place-story
+    .place-heading
+    .narrative-copy {
+    font-size: 14px;
+  }
+  .experience-shell[data-biome="future"] .place-heading .eyebrow {
+    padding-bottom: 8px;
+  }
+  .experience-shell[data-biome="projects"] .place-heading .narrative-copy {
+    padding-top: 9px;
+  }
+  .experience-shell .biome-pages-toggle {
+    min-width: 220px;
+  }
+  .experience-shell .biome-page-actions a,
+  .experience-shell[data-biome="trail"] .biome-page-actions a,
+  .experience-shell[data-biome="future"] .biome-page-actions a {
+    font-size: 0;
+  }
+  .experience-shell .biome-page-actions button,
+  .experience-shell:is(
+      [data-biome="court"],
+      [data-biome="entertainment"],
+      [data-biome="trail"],
+      [data-biome="future"]
+    )
+    .biome-page-actions
+    button,
+  .experience-shell .place-exploration .place-stops button,
+  .experience-shell :is(.walk-here, .stop-story, .biome-pages-toggle) {
+    font-size: var(--skin-small-control-size);
+  }
+  .experience-shell .sound-toggle {
+    font-size: var(--skin-small-control-size);
+    padding: 5px 9px;
+  }
+  .experience-shell .world-settings > button {
+    font-size: var(--skin-small-control-size);
+    padding: 5px 9px;
+  }
+  .experience-shell .place-exploration {
+    bottom: 174px;
+  }
+  .experience-shell .world-caption {
+    bottom: 136px;
+    font-size: 10px;
+    line-height: 1.3;
+    max-height: 26px;
+  }
+}
+/* Compact phones keep the clock, previews and exploration in separate bands. */
+@media (max-width: 700px) and (max-height: 730px) {
+  .experience-shell .place-story {
+    top: 100px;
+  }
+  .experience-shell .place-story .place-heading {
+    padding: 10px 14px;
+  }
+  .experience-shell .place-story .place-heading .biome-title {
+    font-size: min(var(--skin-small-heading-size), 28px);
+    margin: 4px 0;
+  }
+  .experience-shell[data-biome="projects"]
+    .place-story
+    .place-heading
+    .eyebrow {
+    margin: -10px -14px 0;
+    padding: 7px 14px;
+  }
+  .experience-shell[data-biome="future"]
+    .place-story
+    .place-heading
+    .biome-title {
+    font-size: 26px;
+  }
+  .experience-shell[data-biome="future"] .biome-heading-number {
+    font: inherit;
+    letter-spacing: inherit;
+  }
+  .experience-shell[data-biome="future"] .place-heading .eyebrow {
+    padding-bottom: 6px;
+  }
+  .experience-shell[data-biome="trail"] .place-story .place-heading {
+    padding-left: 33px;
+  }
+  .experience-shell[data-biome="trail"] .biome-page {
+    flex-basis: 200px;
+    min-width: 200px;
+  }
+  .experience-shell .place-exploration {
+    bottom: 150px;
+  }
+}
+@media (max-height: 560px) and (min-width: 701px) {
+  .experience-shell .place-heading {
+    padding: 10px 14px;
+  }
+  .experience-shell .place-heading .biome-title {
+    font-size: 23px;
+  }
+  .experience-shell .place-heading .narrative-copy {
+    display: none;
+  }
+}
+.experience-shell.is-paused {
+  --skin-duration: 0ms;
+}
+.experience-shell.is-paused :is(.biome-heading-copy, .skin-nav-label) {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .experience-shell {
+    --skin-duration: 0ms;
+  }
+  .biome-heading-copy,
+  .skin-nav-label {
+    animation: none !important;
+  }
+}

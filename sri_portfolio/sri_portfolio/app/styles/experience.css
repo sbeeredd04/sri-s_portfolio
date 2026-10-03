@@ -717,100 +717,260 @@
   font-size: 9px;
   color: #91a8c7;
 }
+/* One finite SVG signature reveal. No autoplay audio or animation dependency. */
 .world-loader {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 24px;
+  border: 0;
+  color: #e8eef8;
+  overflow: auto;
+  background: radial-gradient(
+    ellipse at 50% 36%,
+    #1a2838 0%,
+    #0a1019 48%,
+    #05080f 85%
+  );
+}
+.world-loader[open] {
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(120% 80% at 50% 110%, #1b2a44 0%, transparent 60%),
-    radial-gradient(60% 50% at 50% 40%, #0f1a2c 0%, #05080f 100%);
-  color: #e8eef8;
-  transition:
-    opacity 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
-    visibility 0.85s;
 }
-.world-loader-leaving {
-  opacity: 0;
-  visibility: hidden;
+.world-loader::backdrop {
+  background: #05080f;
+}
+.world-loader[data-leaving="true"] {
+  animation: entrance-depart 360ms cubic-bezier(0.4, 0, 0.8, 0.5) forwards;
+  pointer-events: none;
+}
+.world-loader[data-leaving="true"]::backdrop {
+  animation: sheet-backdrop-depart 360ms ease forwards;
 }
 .world-loader-inner {
-  width: min(320px, calc(100vw - 48px));
-  display: grid;
-  gap: 14px;
+  width: min(440px, 100%);
+  text-align: center;
+  padding: 24px 0;
 }
-.world-loader-mark {
-  font-family: var(--font-bricolage), var(--font-manrope), sans-serif;
-  font-size: 44px;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1;
+.entrance-signature {
+  width: clamp(180px, 26vw, 270px);
+  margin: 0 auto 32px;
 }
-.world-loader-mark i {
-  font-style: normal;
-  color: #9fc2ff;
-  animation: loader-pulse 1.6s ease-in-out infinite;
+.entrance-signature .personal-signature {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
 }
-.world-loader-line {
+.entrance-signature .signature-stroke {
+  stroke-dasharray: 1;
+  animation: signature-write 1050ms cubic-bezier(0.3, 0, 0.15, 1) both;
+}
+.entrance-signature .signature-i-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: signature-dot 450ms 650ms cubic-bezier(0.2, 0.7, 0.2, 1.25) both;
+}
+.entrance-signature .signature-period {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: signature-period 650ms 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.entrance-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: #99adc5;
+  margin: 0 0 18px;
+}
+.world-loader h2 {
+  font-size: clamp(32px, 5vw, 42px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.12;
   margin: 0;
-  font-size: 14px;
-  color: #b8c7dc;
+}
+.world-loader h2 span {
+  color: #9cadc1;
+}
+.entrance-description {
+  color: #aabacd;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 20px auto 30px;
+  max-width: 290px;
+}
+.entrance-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.entrance-actions button {
+  min-height: 48px;
+  border-radius: 999px;
+  padding: 0 24px;
+  font-size: 13px;
+}
+.entrance-audio {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #101a27;
+  background: #e4edf9;
+  min-width: 224px;
+  justify-content: center;
+  transition:
+    background 150ms,
+    transform 150ms;
+}
+.entrance-audio:hover {
+  background: #fff;
+  transform: translateY(-2px);
+}
+.entrance-audio svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.entrance-audio > span {
+  margin-left: 10px;
+}
+.entrance-quiet {
+  color: #b9c8db;
+  background: transparent;
+}
+.entrance-quiet:hover {
+  background: #ffffff0a;
+  color: #fff;
+}
+.entrance-actions button:focus-visible,
+.entrance-story:focus-visible {
+  outline: 2px solid #a9cefa;
+  outline-offset: 5px;
+}
+.entrance-eyebrow,
+.world-loader h2,
+.entrance-description {
+  animation: entrance-copy 650ms 350ms both;
+}
+.entrance-actions {
+  animation: entrance-copy 650ms 750ms both;
+}
+.entrance-readiness {
+  min-height: 30px;
+  margin: 20px auto 12px;
+  max-width: 224px;
+  font-size: 10px;
+  color: #8da0b9;
 }
 .world-loader-bar {
-  height: 2px;
+  display: block;
+  height: 1px;
+  margin-top: 10px;
   background: #ffffff1c;
-  border-radius: 2px;
   overflow: hidden;
 }
 .world-loader-bar span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #7fa8ff, #e6efff);
+  background: #a6c4e8;
   transform-origin: left;
-  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: transform 300ms;
 }
-.world-loader-meta {
-  margin: 0;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-  color: #8ea3c0;
-}
-.world-loader-skip {
-  justify-self: start;
+.entrance-story {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   min-height: 44px;
-  margin-top: 6px;
-  padding: 0 16px;
-  border: 1px solid #ffffff26;
-  border-radius: 999px;
-  background: transparent;
-  color: #d6e2f4;
-  font: inherit;
-  font-size: 13px;
-  cursor: pointer;
+  font-size: 11px;
+  color: #91a5bd;
 }
-.world-loader-skip:hover {
-  background: #ffffff10;
+.entrance-story:hover {
+  color: #e8eef8;
 }
-.world-loader-skip:focus-visible {
-  outline: 2px solid #9fc2ff;
-  outline-offset: 3px;
+@keyframes signature-write {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
-@keyframes loader-pulse {
-  50% {
-    opacity: 0.35;
+@keyframes signature-dot {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes signature-period {
+  0% {
+    opacity: 0;
+    transform: translate(-16px, -12px) scale(0.2);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(1px) scale(1.18, 0.84);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes entrance-copy {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes entrance-depart {
+  to {
+    opacity: 0;
+    transform: scale(1.035);
+  }
+}
+@media (max-height: 650px) {
+  .world-loader-inner {
+    padding: 8px 0;
+  }
+  .entrance-signature {
+    width: 150px;
+    margin-bottom: 16px;
+  }
+  .world-loader h2 {
+    font-size: 30px;
+  }
+  .entrance-description {
+    margin: 12px auto 16px;
+  }
+  .entrance-readiness {
+    margin: 12px auto 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .world-loader *,
   .world-loader,
-  .world-loader-bar span {
-    transition: none;
+  .world-loader::backdrop {
+    animation: none !important;
+    transition: none !important;
   }
-  .world-loader-mark i {
-    animation: none;
+  .entrance-audio:hover {
+    transform: none;
   }
 }
 .still-planet {
@@ -1242,71 +1402,6 @@
     font-size: 48px;
   }
 }
-.physics-cursor {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 0;
-  height: 0;
-  z-index: 10000;
-  pointer-events: none;
-  opacity: 0;
-  will-change: transform;
-}
-.physics-cursor i {
-  display: block;
-  position: absolute;
-  left: -7px;
-  top: -7px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 30% 25%,
-    #fff 0%,
-    #cee9ffc9 30%,
-    #b7a7ec85 80%
-  );
-  border: 1px solid #f0f7ffdf;
-  box-shadow:
-    inset -2px -2px 4px #a2a6cf66,
-    0 1px 8px #040b1a90;
-  transition:
-    width 0.18s,
-    height 0.18s,
-    left 0.18s,
-    top 0.18s,
-    background 0.18s;
-}
-.physics-cursor[data-interactive="true"] i {
-  width: 18px;
-  height: 18px;
-  left: -9px;
-  top: -9px;
-  background: radial-gradient(
-    circle at 30% 25%,
-    #fff8,
-    #cce5ff35 42%,
-    #b7a7ec33
-  );
-}
-.physics-cursor[data-pressed="true"] i {
-  width: 12px;
-  height: 12px;
-  left: -6px;
-  top: -6px;
-  background: #e8f2ff;
-}
-.glass-cursor-active,
-.glass-cursor-active * {
-  cursor: none !important;
-}
-@media (prefers-reduced-motion: reduce), (pointer: coarse) {
-  .physics-cursor {
-    display: none;
-  }
-}
-
 .world-clock {
   padding: 7px 11px;
   border-radius: 13px;
@@ -1973,32 +2068,6 @@
   background: #241d1c;
   --accent: #e3b8a3;
 }
-.physics-cursor b {
-  position: absolute;
-  left: 17px;
-  top: 14px;
-  font:
-    500 10px/1.3 var(--font-body),
-    sans-serif;
-  white-space: nowrap;
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #f4f5f8;
-  background: #11161eea;
-  padding: 6px 9px;
-  border: 1px solid #ffffff28;
-  border-radius: 8px;
-  opacity: 0;
-}
-.physics-cursor[data-interactive="true"] b {
-  opacity: 1;
-}
-.physics-cursor[data-interactive="true"] i {
-  background: #f1f4fa;
-  box-shadow: 0 0 0 4px #ffffff24;
-}
-
 .explore-mode {
   display: flex;
   align-items: center;
@@ -2332,6 +2401,67 @@
 .street-controls {
   background: #111820;
 }
-.physics-cursor b:empty {
-  display: none;
+
+/* The modal remains mounted, focused and in the top layer throughout exit. */
+.reading-sheet[open][data-closing="true"] {
+  animation: sheet-depart 180ms ease-in forwards;
+  pointer-events: none;
+}
+.reading-sheet[open]::backdrop {
+  animation: sheet-backdrop-arrive 240ms ease-out both;
+}
+.reading-sheet[open][data-closing="true"]::backdrop {
+  animation: sheet-backdrop-depart 180ms ease-in forwards;
+}
+.reading-sheet[open] > .window-content {
+  animation: page-arrive 260ms ease-out both;
+}
+@keyframes sheet-depart {
+  to {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+}
+@keyframes sheet-backdrop-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sheet-backdrop-depart {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reading-sheet[open],
+  .reading-sheet[open]::backdrop,
+  .reading-sheet[open] > .window-content {
+    animation: none;
+  }
+}
+
+.sensory-test {
+  min-height: 44px;
+  padding: 0 14px;
+  margin: 8px 0;
+  border: 1px solid currentColor;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.sensory-test:disabled {
+  opacity: 0.45;
+  cursor: default;
 }

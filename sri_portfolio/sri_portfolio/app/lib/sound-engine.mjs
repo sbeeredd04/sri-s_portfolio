@@ -4,6 +4,7 @@ import {
   soundPlaces,
   sensoryPreferences,
 } from "./sensory-design.mjs";
+import { playMorph } from "./morph-sound.mjs";
 import { voices } from "./sound-voices.mjs";
 
 function soften(parameter, value, now, time = 0.65) {
@@ -42,10 +43,14 @@ export class SoundEngine {
     this.loaded = new Map();
     this.loops = new Map();
     this.nodes = new Set();
+    this.cancelMorph = null;
     this.abort = new AbortController();
     this.lastCue = -Infinity;
+    this.lastMicroCue = -Infinity;
     this.master = context.createGain();
-    this.master.gain.value = 0;
+    // Synthesised interaction feedback must not wait for streamed ambience.
+    const initialMix = soundMix(place, this.preferences, this.focus);
+    this.master.gain.value = initialMix.master;
     const limiter = context.createDynamicsCompressor();
     limiter.threshold.value = -8;
     limiter.knee.value = 6;
@@ -54,6 +59,7 @@ export class SoundEngine {
     limiter.release.value = 0.18;
     this.master.connect(limiter).connect(context.destination);
     this.effects = context.createGain();
+    this.effects.gain.value = initialMix.effects;
     this.effects.connect(this.master);
     this.weather = context.createGain();
     this.weather.gain.value = 0;
@@ -76,7 +82,7 @@ export class SoundEngine {
       wet = context.createGain();
     const impulse = context.createBuffer(
       2,
-      Math.floor(context.sampleRate * 0.65),
+      Math.floor(context.sampleRate * 1.15),
       context.sampleRate,
     );
     let seed = 4561;
@@ -86,11 +92,11 @@ export class SoundEngine {
         seed = (seed * 16807) % 2147483647;
         data[i] =
           ((seed / 2147483647) * 2 - 1) *
-          Math.exp((-i / context.sampleRate) * 10);
+          Math.exp((-i / context.sampleRate) * 6.5);
       }
     }
     room.buffer = impulse;
-    wet.gain.value = 0.12;
+    wet.gain.value = 0.16;
     this.effects.connect(room).connect(wet).connect(this.master);
     this.noise = context.createBuffer(
       1,
@@ -144,7 +150,12 @@ export class SoundEngine {
       source.buffer = buffer;
       source.loop = true;
       gain.gain.value = 0;
-      source.connect(gain).connect(this.master);
+      const warmth = this.context.createBiquadFilter();
+      warmth.type = "lowshelf";
+      warmth.frequency.value = 180;
+      warmth.gain.value = 2.5;
+      source.connect(warmth).connect(gain).connect(this.master);
+      this.owned.push(warmth);
       this.loops.set(name, { source, gain });
       source.start();
       this.mix();
@@ -183,6 +194,8 @@ export class SoundEngine {
     this.weatherState = weather;
     this.preferences = sensoryPreferences(preferences);
     this.focus = { reading, music };
+    if (!this.preferences.enabled || !this.preferences.effects)
+      this.cancelMorph?.();
     this.mix();
     this.prepare().catch((error) => {
       if (!this.disposed) this.onError(error);
@@ -276,6 +289,7 @@ export class SoundEngine {
       this.disposed ||
       context.state !== "running" ||
       this.focus.music ||
+      !this.preferences.enabled ||
       !this.preferences.effects
     )
       return;
@@ -299,18 +313,40 @@ export class SoundEngine {
     this.nextCityCue = now + 24 + Math.random() * 30;
   }
 
-  cue(kind) {
+  cue(kind, { destination } = {}) {
     const { context } = this;
+    if (["morph", "travel", "cancel-morph"].includes(kind))
+      this.cancelMorph?.();
+    if (kind === "cancel-morph") return;
     if (
       this.disposed ||
       this.hidden ||
       context.state !== "running" ||
+      !this.preferences.enabled ||
       !this.preferences.effects
     )
       return;
     const now = context.currentTime;
-    if (now - this.lastCue < 0.065) return;
-    this.lastCue = now;
+    // Micro feedback cannot swallow the next intentional click. A ceiling also
+    // bounds rapid navigation and release tails on slower devices.
+    const micro = kind === "type" || kind === "hover";
+    if (this.nodes.size > 48) return;
+    if (micro) {
+      if (now - this.lastMicroCue < 0.09 || now - this.lastCue < 0.1) return;
+      this.lastMicroCue = now;
+    } else {
+      if (kind !== "morph" && now - this.lastCue < 0.065) return;
+      this.lastCue = now;
+    }
+    if (kind === "morph") {
+      this.cancelMorph = playMorph(this, destination || this.place);
+      return;
+    }
+    if (["welcome", "travel", "open", "close"].includes(kind)) {
+      this.bodyCue(kind, now);
+      this.noiseCue(kind === "close" ? 550 : 1400, 0.28, 0.016, 0.04);
+    }
+    if (kind === "type") this.noiseCue(2100, 0.028, 0.026);
     if (["swish", "volley-hit", "basket-bounce", "ball-catch"].includes(kind)) {
       this.noiseCue(
         kind === "swish" ? 4200 : kind === "basket-bounce" ? 290 : 850,
@@ -325,12 +361,12 @@ export class SoundEngine {
       const source = context.createOscillator(),
         gain = context.createGain();
       const start = now + i * cue.spacing;
-      source.type = "sine";
+      source.type = kind === "press" ? "triangle" : "sine";
       const pitch = (soundPlaces[this.place] || soundPlaces.planet).pitch || 1;
       source.frequency.setValueAtTime(hz * pitch, start);
       if (kind === "press")
         source.frequency.exponentialRampToValueAtTime(
-          130 * pitch,
+          180 * pitch,
           start + cue.duration,
         );
       gain.gain.setValueAtTime(0, start);
@@ -346,11 +382,34 @@ export class SoundEngine {
     });
   }
 
+  bodyCue(kind, now) {
+    const duration = kind === "welcome" ? 1.35 : kind === "travel" ? 0.8 : 0.28;
+    // A mono low fundamental with an audible octave, so phone speakers retain
+    // some body. Both follow the effects mixer and the existing master limiter.
+    [73.42, 146.83].forEach((hz, i) => {
+      const source = this.context.createOscillator();
+      const gain = this.context.createGain();
+      source.type = "sine";
+      source.frequency.setValueAtTime(hz * (kind === "close" ? 0.75 : 1), now);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(
+        (i ? 0.055 : 0.13) * (kind === "open" || kind === "close" ? 0.55 : 1),
+        now + 0.035,
+      );
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      source.connect(gain).connect(this.effects);
+      source.start(now);
+      source.stop(now + duration + 0.03);
+      this.track(source, [source, gain]);
+    });
+  }
+
   async setHidden(hidden) {
     if (this.disposed) return;
     this.hidden = hidden;
     clearTimeout(this.suspendTimer);
     if (hidden) {
+      this.cancelMorph?.();
       soften(this.master.gain, 0, this.context.currentTime, 0.015);
       this.suspendTimer = setTimeout(() => {
         if (this.hidden && !this.disposed)
@@ -365,6 +424,7 @@ export class SoundEngine {
   destroy(immediate = false) {
     if (this.disposed) return;
     this.disposed = true;
+    this.cancelMorph?.();
     clearInterval(this.thunder);
     clearInterval(this.cityClock);
     clearTimeout(this.suspendTimer);

@@ -96,7 +96,10 @@ async function loadLogo(src) {
     aspect = null;
   if (src.endsWith(".svg")) {
     const text = await (await fetch(src)).text();
-    const box = text.match(/viewBox="([^"]+)"/)?.[1].split(/[\s,]+/).map(Number);
+    const box = text
+      .match(/viewBox="([^"]+)"/)?.[1]
+      .split(/[\s,]+/)
+      .map(Number);
     if (box?.length === 4) aspect = box[2] / box[3];
     url = URL.createObjectURL(new Blob([text], { type: "image/svg+xml" }));
   }
@@ -152,7 +155,14 @@ function ToolPylon({ tool, onOpen }) {
       canvasTexture(512, 768, (x, w, h, f) => {
         font.current = f;
         // Until its mark arrives, a tool with a logo waits on a quiet face.
-        drawPylon(x, w, h, f, pylonLogos[tool.id] ? { ...tool, name: "" } : tool, null);
+        drawPylon(
+          x,
+          w,
+          h,
+          f,
+          pylonLogos[tool.id] ? { ...tool, name: "" } : tool,
+          null,
+        );
       }),
     [tool],
   );
@@ -163,7 +173,14 @@ function ToolPylon({ tool, onOpen }) {
     const paint = (logo) => {
       if (!live) return;
       const c = texture.image;
-      drawPylon(c.getContext("2d"), c.width, c.height, font.current, tool, logo);
+      drawPylon(
+        c.getContext("2d"),
+        c.width,
+        c.height,
+        font.current,
+        tool,
+        logo,
+      );
       texture.needsUpdate = true;
       invalidate();
     };
@@ -274,12 +291,7 @@ function Palms() {
 function DistrictCrowd({ animate }) {
   const { tier } = useQuality();
   const agents = useMemo(
-    () => [
-      speaker,
-      ...audience(tier),
-      ...browsers(tier),
-      ...strollers(tier),
-    ],
+    () => [speaker, ...audience(tier), ...browsers(tier), ...strollers(tier)],
     [tier],
   );
   return (
@@ -293,6 +305,9 @@ function DistrictCrowd({ animate }) {
 }
 
 export default function TechDistrict({
+  activeProject,
+  keynoteIndex,
+  onHover,
   detailed,
   night,
   animate,
@@ -311,7 +326,12 @@ export default function TechDistrict({
           <CityMesh key={tone} {...{ tone, geometry, night }} />
         ))}
       </Suspense>
-      <KeynoteAmphitheatre animate={animate} onProjectOpen={onProjectOpen} />
+      <KeynoteAmphitheatre
+        animate={animate && activeProject === "keynote"}
+        index={keynoteIndex}
+        onProjectOpen={onProjectOpen}
+        onHover={onHover}
+      />
       {booths.map((booth, i) =>
         projects[i] ? (
           <Booth

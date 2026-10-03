@@ -54,7 +54,7 @@ export const grassProfile = {
 };
 
 // Tufts (three blades each).
-const budget = { low: 6000, medium: 22000, high: 60000 };
+const budget = { low: 1200, medium: 5000, high: 14000 };
 
 export function grassCount(biome, tier) {
   const profile = grassProfile[biome];
@@ -66,7 +66,7 @@ export function grassCount(biome, tier) {
 
 // Dense near-field layer that follows the view (half-width, metres).
 export const NEAR_EXTENT = 9;
-const nearBudget = { low: 0, medium: 12000, high: 36000 };
+const nearBudget = { low: 0, medium: 2400, high: 6000 };
 export function nearGrassCount(biome, tier) {
-  return grassProfile[biome] ? nearBudget[tier] ?? 0 : 0;
+  return grassProfile[biome] ? (nearBudget[tier] ?? 0) : 0;
 }

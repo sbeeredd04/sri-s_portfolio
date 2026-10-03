@@ -104,7 +104,7 @@ function screenArtwork(index, images = []) {
     ctx.fillText("Founding Engineer · San Francisco", 94, 552);
     ctx.font = `400 29px ${font}`;
     ctx.fillStyle = "#4a5e7b";
-    ctx.fillText("An AI agent for personal wellness.", 94, 612);
+    ctx.fillText("AI agents · Context · Model harnesses", 94, 612);
     panel(87, 740, 498, 75, "rgba(249,252,255,.64)", 38);
     ctx.fillStyle = "#344868";
     ctx.font = `500 26px ${font}`;
@@ -259,7 +259,7 @@ export function DeskMonitor({
           e.stopPropagation();
           onClick(index);
         }}
-        onPointerOver={(e) => {
+        onPointerMove={(e) => {
           e.stopPropagation();
           onHover?.(
             [
@@ -267,9 +267,10 @@ export function DeskMonitor({
               "Building at Offseason. Read the current chapter.",
               "A familiar episode, or something on repeat.",
             ][index],
+            e,
           );
         }}
-        onPointerOut={() => onHover?.("")}
+        onPointerOut={(e) => onHover?.("", e)}
       >
         <meshBasicMaterial map={artwork} toneMapped={false} />
       </mesh>

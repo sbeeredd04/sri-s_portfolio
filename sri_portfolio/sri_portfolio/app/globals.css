@@ -21,3 +21,7 @@
 @import "./styles/rooms/contact.css";
 @import "./styles/rooms/discoveries.css";
 @import "./styles/rooms/story.css";
+
+@import "./styles/room-previews.css";
+@import "./styles/sensory-system.css";
+@import "./styles/biome-skins.css";

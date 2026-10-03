@@ -29,6 +29,7 @@ import StreetViewMarkers from "./StreetViewMarkers";
 import VisitorWalker from "./VisitorWalker";
 import WalkingPaths from "./WalkingPaths";
 import CameraRig from "./CameraRig";
+import ScenePointer from "./ScenePointer";
 import House from "./House";
 import SanFrancisco, { ApartmentBase } from "./SanFrancisco";
 import { APARTMENT_LEVEL } from "../../lib/studio-layout.mjs";
@@ -43,6 +44,7 @@ import PreparedGroup from "./PreparedGroup";
 import PostEffects from "./PostEffects";
 import WeatherRain from "./WeatherRain";
 import AtmosphereSky from "./AtmosphereSky";
+import CloudVolume from "./CloudVolume";
 import GrassField from "./GrassField";
 import { QualityProvider } from "./Quality";
 import { tierSettings } from "../../lib/device-tier.mjs";
@@ -57,6 +59,8 @@ function FirstFrame({ onReady }) {
   }, [state]);
   useFrame(() => {
     frames.current += 1;
+    // Complete the initial readiness sample even behind the paused entrance.
+    if (frames.current < 3) state.invalidate();
     if (frames.current === 3) onReady?.();
   });
   return null;
@@ -65,69 +69,28 @@ function AnimationDriver({ animate }) {
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
     if (!animate) return;
-    const timer = setInterval(invalidate, 1000 / 30);
-    return () => clearInterval(timer);
+    let frame,
+      previous = 0;
+    const tick = (now) => {
+      // Leave GPU headroom on 120 Hz displays instead of rendering twice as
+      // many ambient frames. Camera controls still request frames as needed.
+      if (now - previous >= 1000 / 60 - 0.5) {
+        invalidate();
+        previous = now;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
   }, [animate, invalidate]);
   return null;
-}
-function Atmosphere({ animate, weather }) {
-  const clouds = useRef(),
-    time = useRef(0);
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uOpacity: { value: 1 },
-      uCover: { value: 0.3 },
-    }),
-    [],
-  );
-  useFrame(({ camera }, dt) => {
-    if (animate) time.current += Math.min(dt, 0.05);
-    uniforms.uTime.value = time.current;
-    uniforms.uCover.value +=
-      ((weather?.cloud ?? 0.3) - uniforms.uCover.value) *
-      (1 - Math.exp(-Math.min(dt, 0.1) * 2));
-    uniforms.uOpacity.value = THREE.MathUtils.smoothstep(
-      camera.position.length(),
-      WORLD_RADIUS + 6,
-      WORLD_RADIUS + 30,
-    );
-  });
-  const vertex = `varying vec3 vP;varying vec3 vN;varying vec3 vView;void main(){vP=position;vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vView=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}`;
-  return (
-    <>
-      <mesh userData={{ sky: true }}>
-        <sphereGeometry args={[WORLD_RADIUS + 1.1, 96, 64]} />
-        <shaderMaterial
-          transparent
-          depthWrite={false}
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-          vertexShader={vertex}
-          fragmentShader={`varying vec3 vN;varying vec3 vView;void main(){float rim=pow(1.-abs(dot(normalize(vN),normalize(vView))),3.);gl_FragColor=vec4(.46,.66,1.,rim*.14);}`}
-        />
-      </mesh>
-      <mesh ref={clouds} userData={{ sky: true }}>
-        <sphereGeometry args={[WORLD_RADIUS + 2.3, 96, 64]} />
-        <shaderMaterial
-          transparent
-          depthWrite={false}
-          uniforms={uniforms}
-          vertexShader={vertex}
-          fragmentShader={`varying vec3 vP;uniform float uTime;uniform float uOpacity;uniform float uCover;
-      float h(vec3 p){p=fract(p*.3183099+vec3(.1,.2,.3));p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
-      float n(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z);}
-      void main(){vec3 p=normalize(vP)*5.+vec3(uTime*.0015,0,0);float a=n(p)*.57+n(p*2.1)*.28+n(p*4.2)*.15;float lo=.66-uCover*.22;float cloud=smoothstep(lo,lo+.2,a);gl_FragColor=vec4(.78,.85,.96,cloud*(.05+uCover*.1)*uOpacity);}`}
-        />
-      </mesh>
-    </>
-  );
 }
 
 function ConnectedWorld({
   introBottom,
   world,
   stop,
+  keynoteIndex,
   night,
   solar,
   visitorColor,
@@ -206,7 +169,7 @@ function ConnectedWorld({
   return (
     <>
       <AnimationDriver animate={animate} />
-      <MaterialLighting daylight={solar.daylight} />
+      <MaterialLighting daylight={solar.daylight} world={world} />
       <WorldLighting
         {...{ world, stop, night, animate, solar, residentClock }}
       />
@@ -214,7 +177,7 @@ function ConnectedWorld({
       <Suspense fallback={null}>
         <StarSphere daylight={solar.daylight} />
       </Suspense>
-      <AtmosphereSky world={world} solar={solar} />
+      <AtmosphereSky world={world} solar={solar} animate={animate} />
       <WeatherRain weather={solar.weather} animate={animate} />
       <Stars daylight={solar.daylight} />
       <Suspense fallback={null}>
@@ -225,7 +188,9 @@ function ConnectedWorld({
         {...{ animate, visitorColor, onHover, onCue }}
         clock={residentClock}
       />
-      <Atmosphere animate={animate} weather={solar.weather} />
+      <Suspense fallback={null}>
+        <CloudVolume animate={animate} />
+      </Suspense>
       <PostEffects world={world} daylight={solar.daylight} />
       {regions.map((region) => (
         <group
@@ -303,6 +268,7 @@ function ConnectedWorld({
             />
           ) : region.id === "projects" ? (
             <ProjectTown
+              keynoteIndex={keynoteIndex}
               activeProject={world === "projects" ? stop : null}
               exhibitValues={exhibitValues}
               onExhibitChange={onExhibitChange}
@@ -441,16 +407,10 @@ export default function WorldScene(props) {
     },
     [onTier],
   );
-  useEffect(
-    () => () => {
-      document.body.style.cursor = "";
-    },
-    [],
-  );
   return (
     <GraphicsGate onUnavailable={props.onUnavailable}>
       <Canvas
-        shadows={props.tier !== "low"}
+        shadows={activeTier !== "low"}
         dpr={activeDpr || tierSettings[activeTier]?.dpr || 1}
         frameloop="demand"
         camera={{
@@ -460,6 +420,7 @@ export default function WorldScene(props) {
           far: 1200,
         }}
         gl={{
+          // Native edge AA also covers the low tier, which skips the composer.
           antialias: true,
           alpha: true,
           powerPreference: "high-performance",
@@ -472,7 +433,17 @@ export default function WorldScene(props) {
         }
       >
         <GraphicsHealth onUnavailable={props.onUnavailable} />
-        <QualityProvider ceiling={props.tier} onTier={reportTier}>
+        <ScenePointer
+          enabled={props.pointerEnabled}
+          animate={props.animate}
+          cursor={props.hoverCursor}
+          onHover={props.onHover}
+        />
+        <QualityProvider
+          ceiling={props.tier}
+          onTier={reportTier}
+          active={props.animate}
+        >
           <FirstFrame onReady={props.onReady} />
           <RoomMaterialProvider>
             <ConnectedWorld {...props} />

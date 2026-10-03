@@ -26,8 +26,8 @@ def _smooth(e0, e1, x):
     return t * t * (3 - 2 * t)
 
 
-def eye_texture(size: int = 256) -> np.ndarray:
-    """sRGB eye: warm sclera, big layered brown iris, pupil, two catchlights."""
+def eye_texture(size: int = 256, dark=(0.07, 0.04, 0.025), warm=(0.3, 0.17, 0.09)) -> np.ndarray:
+    """sRGB eye: warm sclera, big layered iris (brown by default), pupil, two catchlights."""
     v, u = np.mgrid[0:size, 0:size].astype(np.float32) / (size - 1)
     x, y = u - 0.5, v - 0.45
     r = np.sqrt(x * x + y * y)
@@ -38,8 +38,8 @@ def eye_texture(size: int = 256) -> np.ndarray:
     iris_r = 0.455
     fibres = 0.5 + 0.5 * np.sin(ang * 23 + np.sin(ang * 7) * 2) * np.sin(ang * 11 + 1.3)
     t = np.clip(r / iris_r, 0, 1)
-    dark = np.array([0.07, 0.04, 0.025], np.float32)
-    warm = np.array([0.3, 0.17, 0.09], np.float32)
+    dark = np.array(dark, np.float32)
+    warm = np.array(warm, np.float32)
     iris = dark + (warm - dark) * (_smooth(0.35, 0.95, t) * (1 - _smooth(0.9, 1.0, t)) * (0.7 + 0.3 * fibres))[..., None]
     iris *= (0.75 + 0.35 * _smooth(0.7, 0.2, v))[..., None]  # lighter toward the bottom
     iris = iris * (1 - 0.55 * _smooth(0.82, 1.0, t))[..., None]  # limbal ring
@@ -56,7 +56,8 @@ def eye_texture(size: int = 256) -> np.ndarray:
     return col
 
 
-def hair_textures(w: int = 256, h: int = 512, seed: int = 3) -> tuple[np.ndarray, np.ndarray]:
+def hair_textures(w: int = 256, h: int = 512, seed: int = 3, base=(0.11, 0.075, 0.055),
+                  tip=(0.23, 0.155, 0.105)) -> tuple[np.ndarray, np.ndarray]:
     """Strand albedo (sRGB) and tangent-space normal map; strands run along V."""
     rng = np.random.default_rng(seed)
     v, u = np.mgrid[0:h, 0:w].astype(np.float32)
@@ -78,8 +79,8 @@ def hair_textures(w: int = 256, h: int = 512, seed: int = 3) -> tuple[np.ndarray
     n = np.stack([nx, ny, nz], -1)
     n /= np.linalg.norm(n, axis=-1, keepdims=True)
     normal = n * 0.5 + 0.5
-    base = np.array([0.11, 0.075, 0.055], np.float32)
-    tip = np.array([0.23, 0.155, 0.105], np.float32)
+    base = np.array(base, np.float32)
+    tip = np.array(tip, np.float32)
     along = _smooth(0.1, 1.0, v)[..., None]
     col = base + (tip - base) * along * 0.6
     col = col * (0.82 + 0.28 * np.clip(shade, -1, 1)[..., None] * 0.5 + 0.12 * height[..., None])

@@ -47,3 +47,9 @@ Supported blocks: `paragraph`, `image`, `diagram` (`kind`: build/notice/wander),
 ## Release check
 
 From the application directory, run `npm test`, `npm run check`, `npm run build`. Inspect the index, article, captions, data table, section links, back links and world return at desktop and phone widths. Check actual images and text before switching a draft to published. Push the verified change to `main`; the existing Vercel project is connected to that branch.
+
+## October 2026 story format and local draft
+
+The shared reader now uses a dark editorial opening, Newsreader reading type, numbered section navigation and subtle one-time section reveals. Existing image, chart and doodle blocks still work. `harness` is a new optional interactive block: it explains context, tools and feedback with pointer/keyboard buttons and respects the shared sound preferences. `sources` on paragraph blocks contains numeric references to the article's `sources` array (`id`, `title`, `publisher`, `href`). Optional `opening`, short section `nav` labels, and `editorialNote` are supported. Read time is calculated at 200 words/minute from visible article text.
+
+The draft in `app/lib/harness-draft.mjs` is available at `/fieldnotes/draft` only when running `npm run dev`. Production returns 404 for that path. It is not in the publication manifest, the writing index or the sitemap. The article draws on the official public contents and subsequent engineering posts; full third-edition text/date remains unverified. Sri should review the interpretation and personal voice before it is added to the published manifest.

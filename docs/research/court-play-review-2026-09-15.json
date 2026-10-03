@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-15",
+  "scope": "Basketball and volleyball animations; preserve badminton",
+  "viewports": [
+    [
+      1280,
+      800
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "browser": "Actual in-app browser; development 3100 and production 3110",
+  "checked": [
+    "All three courts in arrival view",
+    "Basketball close camera and phone framing",
+    "Volleyball rally and phone framing",
+    "Existing badminton shuttle/racket rally",
+    "Physical basketball-player activation",
+    "Native keyboard replay",
+    "Motion pause/resume and explanatory paused caption",
+    "Opt-in sound state and mute",
+    "Return to the whole world"
+  ],
+  "corrected": [
+    "Shooting wrist exceeded arm reach during gather",
+    "Shot release grazed the head",
+    "Rebounder stood in the falling ball path",
+    "Volleyball forearm movement was too small",
+    "Basketball replay needed a persistent idle window",
+    "Native disabled attribute dropped keyboard focus",
+    "Paused court retained an active-play instruction"
+  ],
+  "checks": {
+    "tests": 47,
+    "court_contract_tests": 9,
+    "production_build": "pass",
+    "typecheck": "pass",
+    "diff_whitespace": "pass",
+    "production_browser_errors": 0
+  },
+  "limitations": [
+    "Authored practice sequences, not free-form competitive games",
+    "Ballistic free flight with authored player contacts; no general rigid-body or cloth simulation",
+    "Visual quality remains below requested AAA/reference ambition",
+    "Viewport testing is not a physical-phone or older-M1 performance result",
+    "Synthesized sound routing/toggle verified; no acoustic mastering claim"
+  ]
+}

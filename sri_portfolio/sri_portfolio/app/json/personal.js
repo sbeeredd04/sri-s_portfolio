@@ -285,10 +285,10 @@ export const shows = [
 export const history = [
   {
     name: "Offseason",
-    role: "Founding Engineer",
+    role: "Founding Engineer · AI Engineering",
     period: "Now · San Francisco",
     description:
-      "Building an AI agent for personal wellness. Working at the intersection of useful technology and a deeply personal part of everyday life.",
+      "Building AI agents and the systems around them: model harnesses, context layers, and the product engineering that makes them useful in practice.",
   },
   {
     name: "Arizona State University",

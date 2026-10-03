@@ -1,0 +1,14 @@
+{
+  "created": "2026-09-14",
+  "method": "Built-in image_gen tool",
+  "asset": "sri_portfolio/sri_portfolio/public/materials/walnut-albedo.webp",
+  "source": "/Users/sriujjwal/.codex/generated_images/01a09fb8-0adf-7403-94b3-e24901aa2e04/exec-ab153297-5485-4c36-ab96-f0281de6f0eb.png",
+  "actualDimensions": [
+    1254,
+    1254
+  ],
+  "bytes": 152330,
+  "processing": "Format conversion only: WebP quality 85, same dimensions.",
+  "prompt": "Use case: photorealistic-natural. Asset type: seamless PBR base-color wood texture for actual interactive 3D furniture in a personal website. Create one square 2048 x 2048 material scan, straight-on orthographic, edge-to-edge natural American walnut veneer with elegant close fine grain running vertically. Rich medium warm brown, restrained color variation, no orange saturation. Refined small organic grain, a few subtle elongated cathedral shapes; no broad dark knots. Completely uniform neutral diffuse illumination, no directional light, highlights, shading, ambient occlusion, vignette or perspective. This is a flat albedo material map, not a product photograph, tabletop scene, plank floor, collage or room. No objects, text, borders, seams between planks, logos or watermark. Match top/bottom and left/right edges for seamless tiling. Natural photographed detail, never illustrative lines, no artificial grain exaggeration.",
+  "limitations": "Generated base-color texture, not a scanned or measured PBR material. No captured normal/roughness maps or guaranteed seamlessness claimed."
+}

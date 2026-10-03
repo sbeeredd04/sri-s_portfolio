@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-14",
+  "environment": "Codex in-app browser; Next.js development server; 1280 x 720; DPR 1.5; night lighting",
+  "method": "Development-only renderer diagnostics. Counts include shadow and main passes. The frame timer measures CPU submission time, not GPU completion.",
+  "baseline": {
+    "orbit": {
+      "drawCalls": 351,
+      "trianglesApprox": 1461000,
+      "cpuMsSample": 5.2
+    },
+    "house": {
+      "drawCalls": 1195,
+      "trianglesApprox": 3249000,
+      "cpuMsSample": 6.8
+    }
+  },
+  "after": {
+    "orbit": {
+      "drawCalls": 287,
+      "trianglesApprox": 374000,
+      "cpuMsSample": 2.9
+    },
+    "house": {
+      "drawCalls": 619,
+      "trianglesApprox": 921000,
+      "cpuMsSample": 3.1
+    }
+  },
+  "changes": [
+    "Nearby detail radius reduced from 42 to 28 world units to avoid waking neighboring biomes at the house.",
+    "Distant tree crowns use 12 x 8 segments; nearby crowns retain 28 x 20.",
+    "Rounded box geometry reduced from 716 to 300 triangles per box.",
+    "48 keycaps share an instanced draw; 33 net strands share an instanced draw."
+  ],
+  "limits": [
+    "Triangle counts are rounded to the nearest thousand.",
+    "CPU samples vary with host/browser load; they are not a controlled hardware benchmark.",
+    "Actual old-M1 hardware has not been measured.",
+    "The world animation driver intentionally targets about 30 fps."
+  ]
+}

@@ -21,7 +21,8 @@ BUDGET = {  # triangles
 }
 
 
-def build(budget: bool = True) -> dict[str, bpy.types.Object]:
+def build(budget: bool = True, overrides: dict | None = None) -> dict[str, bpy.types.Object]:
+    """overrides: {part: (sdf_spec, triangles)} replaces a part (the visitor's hoodie)."""
     specs = {
         "head": B.head_skin(),
         "arm_L": B.arm_skin(1),
@@ -31,13 +32,16 @@ def build(budget: bool = True) -> dict[str, bpy.types.Object]:
         "shoe_L": B.shoe(1),
         "shoe_R": B.shoe(-1),
     }
+    tris = dict(BUDGET)
+    for name, (spec, count) in (overrides or {}).items():
+        specs[name], tris[name] = spec, count
     objs = {}
     for name, (fn, lo, hi, h) in specs.items():
         t = time.time()
         obj = mesh_sdf(name, fn, lo, hi, h)
         raw = len(obj.data.polygons)
         if budget:
-            decimate(obj, BUDGET[name])
+            decimate(obj, tris[name])
         print(f"  mesh {name}: {raw} quads -> {len(obj.data.polygons)} faces ({time.time() - t:.1f}s)")
         objs[name] = obj
     return objs

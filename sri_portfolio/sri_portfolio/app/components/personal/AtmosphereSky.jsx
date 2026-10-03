@@ -13,34 +13,8 @@ import { skyState } from "../../lib/atmosphere.mjs";
 // aerial perspective that makes a small scene read as a large landscape.
 export const skyFragment = `
           uniform vec3 uUp, uSun, uZenith, uHorizon, uGlow;
-          uniform float uDay, uOpacity, uCloud, uRain, uTime;
-          uniform vec2 uWind;
+          uniform float uDay, uOpacity;
           varying vec3 vDir;
-          float ch(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-          float cn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
-            return mix(mix(ch(i),ch(i+vec2(1,0)),f.x),mix(ch(i+vec2(0,1)),ch(i+1.),f.x),f.y);}
-          float cfbm(vec2 p){float a=0.,w=.5;for(int i=0;i<5;i++){a+=w*cn(p);p=p*2.03+vec2(1.7,9.2);w*=.5;}return a;}
-          // A cloud deck 1 unit up, seen in perspective: live cover sets how
-          // much of the noise field survives, a second tap toward the sun
-          // gives each cloud a lit crown and a darker belly.
-          vec4 cloudLayer(vec3 d, float h) {
-            vec3 ref = abs(uUp.y) < .9 ? vec3(0., 1., 0.) : vec3(1., 0., 0.);
-            vec3 t = normalize(cross(ref, uUp)), b = cross(uUp, t);
-            vec2 uv = vec2(dot(d, t), dot(d, b)) / (h + .06) * 1.6 + uWind * uTime;
-            float cover = mix(.78, .18, uCloud);
-            float n = cfbm(uv);
-            float density = smoothstep(cover, cover + .28, n);
-            vec2 toSun = vec2(dot(uSun, t), dot(uSun, b));
-            float shade = smoothstep(cover - .1, cover + .45, cfbm(uv + toSun * .09));
-            // Sunlit crowns go near white by day; bellies take the horizon grey.
-            vec3 crown = mix(uHorizon * .6, vec3(.92, .93, .95) + uGlow * .12, uDay);
-            vec3 belly = uHorizon * mix(.55, .78, uDay) + uZenith * .08;
-            vec3 base = mix(crown, belly, shade * (.55 + uCloud * .35));
-            base *= 1. - uRain * .5;
-            float mu = max(dot(d, uSun), 0.);
-            base += uGlow * pow(mu, 12.) * (1. - density) * .6;
-            return vec4(base, density * smoothstep(0., .14, h) * (.55 + uCloud * .45));
-          }
           void main() {
             vec3 d = normalize(vDir);
             float h = dot(d, uUp);
@@ -48,14 +22,10 @@ export const skyFragment = `
             vec3 col = mix(uHorizon, uZenith, pow(above, .42));
             // Thick haze hugging the horizon, then a darker ground-haze below.
             col += uHorizon * exp(-abs(h) * 14.) * .22;
-            col = mix(col, uHorizon * .55, smoothstep(0., -.35, h));
+            col = mix(col, uHorizon * .55, (1. - smoothstep(-.35, 0., h)));
             // Mie forward scattering around the sun, strongest near sunset.
             float mu = max(dot(d, uSun), 0.);
             col += uGlow * (pow(mu, 6.) * .28 + pow(mu, 48.) * .9 + pow(mu, 900.) * 6.);
-            if (h > 0.) {
-              vec4 cloud = cloudLayer(d, h);
-              col = mix(col, cloud.rgb, cloud.a);
-            }
             // Stars stay visible overhead at night; the horizon keeps its glow.
             float nightAlpha = mix(.94, .18, smoothstep(-.05, .55, h));
             float alpha = uOpacity * mix(nightAlpha, 1., uDay);
@@ -75,11 +45,10 @@ export const skyUniforms = {
   uOpacity: { value: 0 },
   uCloud: { value: 0.3 },
   uRain: { value: 0 },
-  uTime: { value: 0 },
   uWind: { value: new THREE.Vector2(0.004, 0.0015) },
 };
 
-export default function AtmosphereSky({ world, solar }) {
+export default function AtmosphereSky({ world, solar, animate = true }) {
   const mesh = useRef();
   const scene = useThree((s) => s.scene);
   const fog = useMemo(() => new THREE.FogExp2("#000000", 0), []);
@@ -112,7 +81,9 @@ export default function AtmosphereSky({ world, solar }) {
       sunHeight: scratch.sun.dot(scratch.up),
       weather: solar.weather,
     });
-    const blend = 1 - Math.exp(-Math.min(dt, 0.1) * 4);
+    // A paused camera jumps to its destination; its old ground fog must not
+    // remain on the distant planet while no further frames are scheduled.
+    const blend = animate ? 1 - Math.exp(-Math.min(dt, 0.1) * 4) : 1;
     uniforms.uUp.value.copy(scratch.up);
     uniforms.uSun.value.copy(scratch.sun);
     uniforms.uZenith.value.lerp(state.zenith, blend);
@@ -134,13 +105,12 @@ export default function AtmosphereSky({ world, solar }) {
       );
       // Wind blows from windDirection (meteorological); clouds drift downwind.
       const heading = ((weather.windDirection + 180) * Math.PI) / 180;
-      const speed = 0.0012 + weather.wind * 0.0005;
+      const speed = weather.wind * 0.0005;
       uniforms.uWind.value.set(
         Math.sin(heading) * speed,
         Math.cos(heading) * speed,
       );
     }
-    uniforms.uTime.value = (uniforms.uTime.value + Math.min(dt, 0.1)) % 20000;
     fog.color.copy(uniforms.uHorizon.value);
     fog.density = THREE.MathUtils.lerp(fog.density, state.fog, blend);
   });

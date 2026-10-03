@@ -525,3 +525,11 @@
     width: 104px;
   }
 }
+
+/* Modal padding differs from full-page shell padding on tablets. Keep the
+   horizontal chapter strip inside its own scroller, not the whole reader. */
+@media (max-width: 800px) {
+  .reading-sheet:not(.standalone-room) .xp-spine {
+    min-width: 0; margin-inline: 0; padding-inline: 0;
+  }
+}

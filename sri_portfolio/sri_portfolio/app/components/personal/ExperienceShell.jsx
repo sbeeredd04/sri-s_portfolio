@@ -1,12 +1,24 @@
 "use client";
 import dynamic from "next/dynamic";
-import { Component, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import MorphHeading from "./MorphHeading";
+import { skinIdentity } from "../../lib/biome-morph.mjs";
+import { biomeSkinStyle } from "../../lib/biome-skins.mjs";
 import WalkingControls from "./WalkingControls";
 import DiscoveryToast from "./DiscoveryToast";
 import { discover } from "../../lib/discoveries.mjs";
 import CommandBar from "./CommandBar";
+import BiomePages from "./BiomePages";
+import KeynoteControls from "./KeynoteControls";
 import { COMMAND_EVENT } from "./command-events";
-import PhysicsCursor from "./PhysicsCursor";
+import { emptyHover, nextHover } from "../../lib/scene-hover.mjs";
 import ReadingSheet from "./ReadingSheet";
 import PersonalSignature from "./PersonalSignature";
 import SettingsPopover from "./SettingsPopover";
@@ -35,6 +47,12 @@ import { placeStops } from "../../lib/place-stops.mjs";
 import { roomWorldDestination } from "../../lib/reading-rooms.mjs";
 import { allProjects, shows } from "../../json/personal";
 import WorldLoader from "./WorldLoader";
+import {
+  worldReturnState,
+  withWorldReturn,
+  hasEnteredWorld,
+  rememberWorldEntry,
+} from "../../lib/world-return.mjs";
 import { initialTier } from "./Quality";
 function footEntry(biome, stop) {
   if (
@@ -43,8 +61,6 @@ function footEntry(biome, stop) {
   )
     return `roam:${stop}`;
   if (biome === "trail" && stop === "overlook") return "roam:overlook";
-  if (biome === "projects" && (stop === "campus" || stop === "ring"))
-    return `roam:${stop}`;
   return biome === "studio" && stop !== "bay" ? "roam:roof" : "roam";
 }
 const WorldScene = dynamic(() => import("./WorldScene"), {
@@ -54,7 +70,7 @@ const WorldScene = dynamic(() => import("./WorldScene"), {
 function clearProjectLink() {
   if (linkedProjectId(window.location.hash))
     window.history.replaceState(
-      null,
+      window.history.state,
       "",
       window.location.pathname + window.location.search,
     );
@@ -90,18 +106,24 @@ export default function ExperienceShell() {
     [reset, setReset] = useState(0),
     [roomReset, setRoomReset] = useState(0),
     [sheet, setSheet] = useState(null),
+    [previewsExpanded, setPreviewsExpanded] = useState(true),
     [collection, setCollection] = useState("all"),
     [still, setStill] = useState(false),
     [graphicsError, setGraphicsError] = useState(false),
-    [hint, setHint] = useState(""),
+    [hover, setHover] = useState(emptyHover),
     [introBottom, setIntroBottom] = useState(0),
     [tierCeiling, setTierCeiling] = useState(null),
-    [activeTier, setActiveTier] = useState(null),
-    [sceneReady, setSceneReady] = useState(false);
+    [sceneReady, setSceneReady] = useState(false),
+    [entered, setEntered] = useState(null),
+    [returning, setReturning] = useState(false);
   useEffect(() => {
     setTierCeiling(initialTier());
     const light = new URLSearchParams(location.search).get("light");
     if (light === "day" || light === "night") setLightMode(light);
+  }, []);
+  const hint = hover.text;
+  const setHint = useCallback((text, event, cursor) => {
+    setHover((current) => nextHover(current, text, event, cursor));
   }, []);
   const markReady = useCallback(() => setSceneReady(true), []);
   const visitedScreens = useRef(new Set());
@@ -119,9 +141,11 @@ export default function ExperienceShell() {
     setReset((n) => n + 1);
   }, [biome, stop]);
   const [exhibitValues, setExhibitValues] = useState({});
+  const [keynoteIndex, setKeynoteIndex] = useState(0);
   const [visitorColor, setVisitorColor] = useState(0);
   const [entertainmentChannel, setEntertainmentChannel] = useState(0);
   const [roomDetail, setRoomDetail] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [ballRequests, setBallRequests] = useState({});
   const [courtActivity, setCourtActivity] = useState({});
   const reportCourtActivity = useCallback((id, busy) => {
@@ -185,11 +209,43 @@ export default function ExperienceShell() {
       sheet,
       roomDetail,
       weather,
+      { autoStart: returning },
     ),
     returnFocus = useRef(null),
     chapterGuide = useRef(null),
     introduction = useRef(null),
     exploration = useRef(null);
+  useEffect(() => {
+    if (!playing || audio.reducedMotion) audio.cue("cancel-morph");
+  }, [playing, audio.reducedMotion, audio.cue]);
+  useLayoutEffect(() => {
+    const guide = chapterGuide.current;
+    const measure = () => {
+      const selected = guide?.querySelector('[aria-current="location"]');
+      if (!selected) return;
+      guide.style.setProperty("--route-x", `${selected.offsetLeft}px`);
+      guide.style.setProperty("--route-y", `${selected.offsetTop}px`);
+      guide.style.setProperty("--route-width", `${selected.offsetWidth}px`);
+      guide.style.setProperty("--route-height", `${selected.offsetHeight}px`);
+      if (guide.scrollWidth > guide.clientWidth) {
+        guide.scrollTo({
+          left:
+            selected.offsetLeft -
+            (guide.clientWidth - selected.offsetWidth) / 2,
+          behavior: "instant",
+        });
+      }
+    };
+    const observer = new ResizeObserver(measure);
+    if (guide) {
+      observer.observe(guide);
+      guide
+        .querySelectorAll("button")
+        .forEach((button) => observer.observe(button));
+    }
+    measure();
+    return () => observer.disconnect();
+  }, [biome]);
   useEffect(() => {
     // A stop selector or its Back control can unmount on navigation. Keep
     // keyboard focus in the local controls when the old target disappears.
@@ -259,6 +315,7 @@ export default function ExperienceShell() {
     const mq = matchMedia("(prefers-reduced-motion: reduce)");
     const update = () =>
       setPlaying(!mq.matches && !navigator.connection?.saveData);
+    // A return restores the visitor's explicit pause choice below.
     update();
     mq.addEventListener("change", update);
     const visibility = () => setVisible(!document.hidden);
@@ -269,6 +326,7 @@ export default function ExperienceShell() {
     };
   }, []);
   const open = useCallback((id) => {
+    setEntered(true);
     if (id !== "work") clearProjectLink();
     setRoomDetail(null);
     setSheet(id);
@@ -285,7 +343,6 @@ export default function ExperienceShell() {
   }
   function close() {
     clearProjectLink();
-    audio.cue("close");
     setSheet(null);
     requestAnimationFrame(() => {
       const previous = returnFocus.current;
@@ -299,12 +356,18 @@ export default function ExperienceShell() {
   }
   const arrive = useCallback(
     (id) => {
-      audio.cue("travel");
+      const morph =
+        biome !== "planet" &&
+        id !== "planet" &&
+        skinIdentity(biome) !== skinIdentity(id) &&
+        playing &&
+        !audio.reducedMotion;
+      audio.cue(morph ? "morph" : "travel", { destination: id });
       setBiome(id);
       setStop("arrival");
       setHint("");
     },
-    [audio.cue],
+    [audio.cue, audio.reducedMotion, biome, playing],
   );
   function travel(id) {
     clearProjectLink();
@@ -318,21 +381,6 @@ export default function ExperienceShell() {
     setStop(id);
     setReset((n) => n + 1);
   }
-  // On a phone, a room left open for a few seconds releases the world: the
-  // scene unmounts (freeing GPU memory) and returns when the room closes.
-  const [worldResting, setWorldResting] = useState(false);
-  useEffect(() => {
-    if (!sheet) {
-      setWorldResting(false);
-      return;
-    }
-    const small = window.matchMedia(
-      "(max-width: 700px), (pointer: coarse)",
-    ).matches;
-    if (!small) return;
-    const timer = setTimeout(() => setWorldResting(true), 4000);
-    return () => clearTimeout(timer);
-  }, [sheet]);
   // Terminals (the "/" bar, the Discoveries console) act through one event.
   const commandAction = useRef(null);
   commandAction.current = (action) => {
@@ -377,6 +425,38 @@ export default function ExperienceShell() {
         open("work");
       }
     };
+    const url =
+      window.location.pathname + window.location.search + window.location.hash;
+    const saved = worldReturnState(window.history.state, url);
+    let previouslyEntered = false;
+    try {
+      previouslyEntered = hasEnteredWorld(window.sessionStorage);
+    } catch {}
+    setEntered(Boolean(saved || previouslyEntered));
+    setReturning(Boolean(saved || previouslyEntered));
+    if (
+      saved &&
+      (saved.biome === "planet" ||
+        allChapters.some((c) => c.id === saved.biome))
+    ) {
+      setBiome(saved.biome);
+      setStop(saved.stop);
+      setSheet(
+        saved.sheet === "index" ||
+          readingSections.some((r) => r.id === saved.sheet)
+          ? saved.sheet
+          : null,
+      );
+      setCollection(saved.collection || "all");
+      setPreviewsExpanded(saved.previewsExpanded !== false);
+      setPlaying(saved.playing === true);
+      setStill(saved.still === true);
+      if (["live", "day", "night"].includes(saved.lightMode))
+        setLightMode(saved.lightMode);
+      // Do not replay an old ?room= link over the restored camera or sheet.
+      window.addEventListener("hashchange", follow);
+      return () => window.removeEventListener("hashchange", follow);
+    }
     const params = new URLSearchParams(window.location.search);
     const requestedRoom = params.get("room");
     if (readingSections.some((s) => s.id === requestedRoom)) {
@@ -394,6 +474,68 @@ export default function ExperienceShell() {
     window.addEventListener("hashchange", follow);
     return () => window.removeEventListener("hashchange", follow);
   }, [open]);
+  const returnSnapshot = useRef(null);
+  returnSnapshot.current = {
+    entered,
+    biome,
+    stop,
+    sheet,
+    collection,
+    previewsExpanded,
+    playing,
+    still,
+    lightMode,
+  };
+  useEffect(() => {
+    if (entered) {
+      try {
+        rememberWorldEntry(window.sessionStorage);
+      } catch {}
+    }
+  }, [entered]);
+  useEffect(() => {
+    const save = () => {
+      const snapshot = returnSnapshot.current;
+      if (!snapshot?.entered) return;
+      try {
+        const url =
+          window.location.pathname +
+          window.location.search +
+          window.location.hash;
+        window.history.replaceState(
+          withWorldReturn(window.history.state, snapshot, url),
+          "",
+          url,
+        );
+      } catch {
+        /* Navigation must work even when the browser denies storage. */
+      }
+    };
+    const leaving = (event) => {
+      const link = event.target.closest?.("a[href]");
+      if (
+        !link ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        link.target === "_blank"
+      )
+        return;
+      if (
+        link.origin === window.location.origin &&
+        link.pathname !== window.location.pathname
+      )
+        save();
+    };
+    document.addEventListener("click", leaving, true);
+    window.addEventListener("pagehide", save);
+    return () => {
+      document.removeEventListener("click", leaving, true);
+      window.removeEventListener("pagehide", save);
+    };
+  }, []);
   const chapter = allChapters.find((c) => c.id === biome),
     chapterId = biome === "entertainment" ? "court" : biome,
     next =
@@ -408,11 +550,11 @@ export default function ExperienceShell() {
   return (
     <div
       data-biome={biome}
+      style={biomeSkinStyle(biome)}
       onClick={audio.press}
       className={`experience-shell ${night ? "shell-night" : ""} ${playing ? "" : "is-paused"}`}
     >
       <DiscoveryToast onOpen={() => show("discoveries")} />
-      <PhysicsCursor enabled={playing && visible && !sheet} hint={hint} />
       <a className="skip-link" href="/story">
         Read the accessible story
       </a>
@@ -444,22 +586,22 @@ export default function ExperienceShell() {
       </header>
       <main className="immersive-main" aria-label="Explore Sri’s world">
         <div className="immersive-canvas">
-          {!still && tierCeiling && !worldResting ? (
+          {!still && tierCeiling ? (
             <WorldBoundary onFailure={graphicsUnavailable}>
               <WorldScene
                 tier={tierCeiling}
-                onTier={setActiveTier}
                 onReady={markReady}
                 introBottom={introBottom}
                 world={biome}
                 stop={stop}
+                keynoteIndex={keynoteIndex}
                 night={night}
                 solar={solar}
                 visitorColor={visitorColor}
                 residentClock={residentClock.current}
                 reset={reset}
                 roomReset={roomReset}
-                animate={playing && visible && !sheet}
+                animate={entered && playing && visible && !sheet && !searchOpen}
                 onScreenClick={(i) => {
                   if (i < 3) visitedScreens.current.add(i);
                   if (visitedScreens.current.size === 3)
@@ -478,6 +620,8 @@ export default function ExperienceShell() {
                   } else show(["work", "journey"][i]);
                 }}
                 onHover={setHint}
+                pointerEnabled={entered && visible && !sheet && !searchOpen}
+                hoverCursor={hover.cursor}
                 onUnavailable={graphicsUnavailable}
                 onBiomeSelect={arrive}
                 onWalkerStatus={reportWalker}
@@ -506,8 +650,21 @@ export default function ExperienceShell() {
             </div>
           ) : null}
         </div>
-        {!still && !graphicsError && (
-          <WorldLoader ready={sceneReady} tier={activeTier || tierCeiling} />
+        {entered === false && (
+          <WorldLoader
+            ready={sceneReady || still || graphicsError}
+            onChooseAudio={(withAudio) =>
+              withAudio ? audio.enable() : audio.disable()
+            }
+            onEnter={() => {
+              setEntered(true);
+              requestAnimationFrame(() =>
+                introduction.current
+                  ?.querySelector("button")
+                  ?.focus({ preventScroll: true }),
+              );
+            }}
+          />
         )}
         {graphicsError && (
           <div className="graphics-notice" role="status">
@@ -527,57 +684,95 @@ export default function ExperienceShell() {
             <a href="/story">Read the story ↗</a>
           </div>
         )}
-        <section
-          ref={introduction}
-          className={`narrative-heading ${biome === "planet" ? "intro-heading" : "place-heading"} ${activeStop || street || roaming ? "has-stop" : ""} ${activeStop?.compact ? "title-only" : ""} ${roaming ? "walking-heading-card" : ""}`}
-          key={biome}
+        <div
+          className={
+            chapter
+              ? `place-story ${activeStop || street || roaming ? "is-close" : ""}`
+              : "world-story"
+          }
         >
-          <p className="eyebrow">
-            {chapter
-              ? `${chapter.number} / ${chapter.label}`
-              : "SRI UJJWAL REDDY · SAN FRANCISCO"}
-          </p>
-          <h1>
-            {(roaming
-              ? stop === "roam:roof"
-                ? "Make yourself at home."
-                : "A little wander."
-              : null) ||
-              street?.label ||
-              activeStop?.label ||
-              chapter?.title || (
-                <>
-                  I build things.
-                  <br />
-                  <span>And a life around them.</span>
-                </>
-              )}
-          </h1>
-          <p className="narrative-copy">
-            {chapter?.description ||
-              "Founding Engineer at Offseason, making an AI agent for personal wellness. Curious about the way things work. Particular about the way they feel."}
-          </p>
-          {chapter ? (
-            <button
-              className="text-action"
-              onClick={() => show(chapter.content)}
-            >
-              {chapter.action} <span>↗</span>
-            </button>
-          ) : (
-            <div className="intro-actions">
-              <button
-                className="primary-action"
-                onClick={() => travel("studio")}
-              >
-                Start at home <span>↗</span>
-              </button>
-              <button className="text-action" onClick={() => show("work")}>
-                See my work
-              </button>
-            </div>
+          <section
+            ref={introduction}
+            className={`narrative-heading ${biome === "planet" ? "intro-heading" : "place-heading"} ${activeStop || street || roaming ? "has-stop" : ""} ${activeStop?.compact ? "title-only" : ""} ${roaming ? "walking-heading-card" : ""}`}
+          >
+            {chapter ? (
+              <MorphHeading
+                biome={biome}
+                stop={stop}
+                motion={playing}
+                eyebrow={`${chapter.number} / ${chapter.label}`}
+                title={
+                  (roaming
+                    ? stop === "roam:roof"
+                      ? "Make yourself at home."
+                      : "A little wander."
+                    : null) ||
+                  street?.label ||
+                  activeStop?.label ||
+                  chapter.title
+                }
+                description={chapter.description}
+                compact={Boolean(activeStop || street || roaming)}
+              />
+            ) : (
+              <>
+                <p className="eyebrow">
+                  {chapter
+                    ? `${chapter.number} / ${chapter.label}`
+                    : "SRI UJJWAL REDDY · SAN FRANCISCO"}
+                </p>
+                <h1>
+                  {(roaming
+                    ? stop === "roam:roof"
+                      ? "Make yourself at home."
+                      : "A little wander."
+                    : null) ||
+                    street?.label ||
+                    activeStop?.label ||
+                    chapter?.title || (
+                      <>
+                        I build things.
+                        <br />
+                        <span>And a life around them.</span>
+                      </>
+                    )}
+                </h1>
+                <p className="narrative-copy">
+                  {chapter?.description ||
+                    "Founding Engineer at Offseason. I build AI agents, the context they work with, and the harnesses that turn model capability into useful products."}
+                </p>
+              </>
+            )}
+            {!chapter && (
+              <div className="intro-actions">
+                <button
+                  className="primary-action"
+                  onClick={() => travel("studio")}
+                >
+                  Start at home <span>↗</span>
+                </button>
+                <button className="text-action" onClick={() => show("work")}>
+                  See my work
+                </button>
+              </div>
+            )}
+          </section>
+          {chapter && !(biome === "projects" && stop === "keynote") && (
+            <BiomePages
+              biome={biome}
+              onOpen={show}
+              expanded={previewsExpanded}
+              onExpandedChange={setPreviewsExpanded}
+            />
           )}
-        </section>
+        </div>
+        {biome === "projects" && stop === "keynote" && (
+          <KeynoteControls
+            index={keynoteIndex}
+            onChange={setKeynoteIndex}
+            onOpen={openProject}
+          />
+        )}
         {chapter && (
           <div
             ref={exploration}
@@ -750,19 +945,20 @@ export default function ExperienceShell() {
                       {biome === "court" ? "Music & cinema ↗" : "The courts ↗"}
                     </button>
                   )}
-                  {placeStops[biome]?.map((s) => (
-                    <button
-                      key={s.id}
-                      aria-pressed={stop === s.id}
-                      onClick={() => explore(s.id)}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
+                  {!(biome === "projects" && stop === "keynote") &&
+                    placeStops[biome]?.map((s) => (
+                      <button
+                        key={s.id}
+                        aria-pressed={stop === s.id}
+                        onClick={() => explore(s.id)}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
                 </div>
               </>
             )}
-            {activeStop && (
+            {activeStop && stop !== "keynote" && (
               <div className="stop-actions">
                 <button
                   className="stop-story"
@@ -931,7 +1127,7 @@ export default function ExperienceShell() {
           </svg>
           <span>World</span>
         </button>
-        <CommandBar biome={biome} />
+        <CommandBar biome={biome} onOpenChange={setSearchOpen} />
         <nav
           ref={chapterGuide}
           className="chapter-route"
@@ -944,7 +1140,9 @@ export default function ExperienceShell() {
               onClick={() => travel(c.id)}
             >
               <small>{c.upcoming ? "◌" : c.number}</small>
-              <span>{c.short}</span>
+              <span className="skin-nav-label" key={`${biome}-${c.id}`}>
+                {c.short}
+              </span>
             </button>
           ))}
         </nav>

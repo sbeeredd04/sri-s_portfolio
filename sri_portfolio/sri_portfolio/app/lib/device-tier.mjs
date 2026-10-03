@@ -6,7 +6,7 @@ export const TIERS = ["low", "medium", "high"];
 
 export const tierSettings = {
   low: {
-    dpr: [0.75, 1],
+    dpr: [1, 1.25],
     ao: false,
     bloom: false,
     shadows: false,
@@ -23,7 +23,7 @@ export const tierSettings = {
     bloom: true,
     shadows: true,
     shadowMap: 1024,
-    shadowEvery: 2,
+    shadowEvery: 4,
     multisampling: 0,
     smaa: true,
     textureScale: 1,
@@ -48,32 +48,20 @@ export const tierSettings = {
 const SOFTWARE = /swiftshader|llvmpipe|softpipe|software|basic render/i;
 const WEAK_GPU =
   /mali-[gt]?[0-7]\d|adreno \(tm\) [2-5]\d\d|powervr|intel\(r\) (hd|uhd) graphics [2-6]\d\d|intel hd graphics|gma/i;
-const STRONG_GPU =
-  /apple m[1-9]|apple gpu|nvidia|geforce|rtx|radeon rx|radeon pro|arc a\d|adreno \(tm\) (7[3-9]\d|8\d\d)/i;
 
 export function chooseTier({
   renderer = "",
-  cores = 4,
   memory, // navigator.deviceMemory (GB, Chromium only; undefined elsewhere)
   coarse = false,
-  width = 1280,
-  height = 800,
   saveData = false,
-  reducedMotion = false,
 } = {}) {
   if (SOFTWARE.test(renderer) || saveData) return "low";
   if (memory !== undefined && memory <= 2) return "low";
   if (WEAK_GPU.test(renderer)) return coarse ? "low" : "medium";
-  const phone = coarse && Math.min(width, height) < 600;
-  if (phone) {
-    // Recent flagship phones handle bloom and 1.5x but not AO at 3x density.
-    if (cores >= 6 && (memory === undefined || memory >= 4)) return "medium";
-    return "low";
-  }
-  if (STRONG_GPU.test(renderer) && cores >= 8) return "high";
-  if (coarse) return "medium"; // tablets
-  if (cores >= 8 && (memory === undefined || memory >= 8))
-    return reducedMotion ? "medium" : "high";
+  // Touch devices include iPads reporting a desktop-sized screen/Apple GPU.
+  // Start with a predictable budget; rich graphics remain explicitly opt-in.
+  if (coarse) return "low";
+
   return "medium";
 }
 
@@ -99,7 +87,7 @@ export function readDevice() {
     );
     gl?.getExtension("WEBGL_lose_context")?.loseContext();
   } catch {
-    /* An unknown renderer falls back to the core/memory heuristics. */
+    /* An unknown renderer falls back to the conservative memory/touch heuristics. */
   }
   return {
     renderer,
@@ -122,4 +110,14 @@ export function dprSteps(tier, deviceRatio = 2) {
   for (let r = top - 0.25; r >= Math.max(min, top - 0.5) - 1e-6; r -= 0.25)
     steps.push(+r.toFixed(2));
   return steps;
+}
+
+// Cap a single stall's weight without excluding sustained multi-second stalls.
+// Ignoring every long frame prevents the weakest devices from ever recovering.
+export function sampleFramePressure(sample, delta) {
+  const dt = Math.min(Math.max(delta, 0), 0.5);
+  return {
+    elapsed: sample.elapsed + dt,
+    slow: sample.slow + (dt > 1 / 45 ? dt : 0),
+  };
 }

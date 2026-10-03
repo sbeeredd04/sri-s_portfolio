@@ -178,8 +178,11 @@ export default function FutureStudio({
       />
       <group
         onClick={open("writing", "writing")}
-        onPointerOver={() => onHover?.("The writing studio · coming soon")}
-        onPointerOut={() => onHover?.("")}
+        onPointerMove={(e) => {
+          e.stopPropagation();
+          onHover?.("Open the writing room", e);
+        }}
+        onPointerOut={(e) => onHover?.("", e)}
       >
         {shell(built.desk, materials.timber)}
         {shell(built.chair, materials.charcoal)}
@@ -232,8 +235,11 @@ export default function FutureStudio({
       </group>
       <group
         onClick={open("socials", "socials")}
-        onPointerOver={() => onHover?.("Find me around the internet")}
-        onPointerOut={() => onHover?.("")}
+        onPointerMove={(e) => {
+          e.stopPropagation();
+          onHover?.("Find me around the internet", e);
+        }}
+        onPointerOut={(e) => onHover?.("", e)}
       >
         {shell(built.plinth, materials.stone)}
         {shell(built.panel, materials.ivory)}
@@ -252,10 +258,11 @@ export default function FutureStudio({
       </group>
       <group
         onClick={open("collaborate", "contact")}
-        onPointerOver={() =>
-          onHover?.("Pull up a chair · start a conversation")
-        }
-        onPointerOut={() => onHover?.("")}
+        onPointerMove={(e) => {
+          e.stopPropagation();
+          onHover?.("Pull up a chair · start a conversation", e);
+        }}
+        onPointerOut={(e) => onHover?.("", e)}
       >
         {fieldnotesLounge.map((seat) => (
           <group

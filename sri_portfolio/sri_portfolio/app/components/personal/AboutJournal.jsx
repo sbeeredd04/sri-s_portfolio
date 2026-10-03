@@ -254,8 +254,8 @@ export default function AboutJournal({ expanded = false }) {
         <div>
           <h3>Building from the beginning.</h3>
           <p>
-            I’m a Founding Engineer at <strong>Offseason</strong>, building an
-            AI agent for personal wellness in downtown San Francisco. I recently
+            I’m a Founding Engineer at <strong>Offseason</strong> in San Francisco,
+            focused on AI engineering: agents, context systems, and model harnesses. I recently
             graduated from ASU with a <strong>4.0 GPA</strong> and an
             entrepreneurship certificate.
           </p>

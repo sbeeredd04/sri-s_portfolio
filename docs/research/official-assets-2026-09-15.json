@@ -1,0 +1,96 @@
+{
+  "date": "2026-09-15",
+  "policy": "Official source assets identifying the actual book, shows, services and profile destinations. No recoloring, cropping, invented logos, added endorsements, connected accounts or autoplay. Raster images optimized to WebP with original aspect ratios; official SVG retained unchanged.",
+  "assets": [
+    {
+      "file": "public/official/steve-jobs.webp",
+      "owner": "Simon & Schuster / Albert Watson",
+      "source_page": "https://www.simonandschuster.com/books/Steve-Jobs/Walter-Isaacson/9781451648539",
+      "source_asset": "https://d28hgpri8am2if.cloudfront.net/book_images/cvr9781451648539_9781451648539_hr.jpg",
+      "usage": "Book cover, existing photo credit retained. Desk object and About Me card; full aspect ratio.",
+      "bytes": 237014,
+      "sha256": "7e88b4935356527de0e0c1f7f6b19f4641fb428bd3b35258d249ff9b511ec94e"
+    },
+    {
+      "file": "public/official/github-white.svg",
+      "owner": "GitHub",
+      "source_page": "https://brand.github.com/foundations/logo",
+      "source_asset": "https://brand.github.com/GitHub_Logos.zip",
+      "usage": "Unmodified GitHub_Invertocat_White.svg; GitHub profile link and project monitor.",
+      "bytes": 1559,
+      "sha256": "ccd84c89b1056345608fc3489357f8acc7397e49a3cdc2d418b6c8016911d47b"
+    },
+    {
+      "file": "public/official/linkedin-white.webp",
+      "owner": "LinkedIn",
+      "source_page": "https://brand.linkedin.com/downloads",
+      "source_asset": "https://content.linkedin.com/content/dam/me/business/en-us/amp/xbu/linkedin-revised-brand-guidelines/logos/in-logo.zip",
+      "usage": "InBug-White.png; personal profile link.",
+      "bytes": 5154,
+      "sha256": "3377565bab2c1ebbde62e1ae84f7fd6c5d8d417c7f1d898f27e43a35a8206e1b"
+    },
+    {
+      "file": "public/official/spotify-white.webp",
+      "owner": "Spotify",
+      "source_page": "https://newsroom.spotify.com/media-kit/logo-and-brand-assets/",
+      "source_asset": "https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Full_Logo_RGB_White.png",
+      "usage": "Full white logo, listening-room link and music identification on desk monitor. No account or API connection is implied.",
+      "bytes": 10014,
+      "sha256": "27b71ac78f68e2c7e29d68cbb5ad277db389281eca402b4220fbcd181e51f13c"
+    },
+    {
+      "file": "public/official/brooklyn.webp",
+      "owner": "NBCUniversal / Peacock",
+      "source_page": "https://www.nbc.com/brooklyn-nine-nine",
+      "source_asset": "https://www.peacocktv.com/dam/growth/assets/Library/Brooklyn99/brooklyn-99-social.jpg",
+      "usage": "Official title artwork with built-in logo, full image preserved.",
+      "bytes": 119152,
+      "sha256": "7eb819bfbef41e2e6db25e69c3a3e84627d1f2a6794d481980a9c0391ef3d10c"
+    },
+    {
+      "file": "public/official/bigbang.webp",
+      "owner": "Warner Bros.",
+      "source_page": "https://www.warnerbros.com/tv/big-bang-theory",
+      "source_asset": "https://irs.www.warnerbros.com/keyart-jpeg/tv/media/browser/BBT_S1-12_2000x3000.jpeg",
+      "usage": "Official key art, full image preserved; original 256x384 resolution.",
+      "bytes": 22280,
+      "sha256": "5480636fc189c2c1ab1c91d5b5872180d6c2be3abd04227e5e2d3a005b035372"
+    },
+    {
+      "file": "public/official/friends.webp",
+      "owner": "Warner Bros.",
+      "source_page": "https://www.warnerbros.com/tv/friends",
+      "source_asset": "https://irs.www.warnerbros.com/keyart-jpeg/tv/media/browser/friendscsr_keyart.jpg",
+      "usage": "Official key art, full image preserved; original 256x384 resolution.",
+      "bytes": 18832,
+      "sha256": "567e543664bc81a62eb4cd7ef109660ff50ed9e22e462ddac773af8ef4fd800b"
+    },
+    {
+      "file": "public/official/freshprince.webp",
+      "owner": "Warner Bros.",
+      "source_page": "https://www.warnerbros.com/tv/fresh-prince-bel-air",
+      "source_asset": "https://irs.www.warnerbros.com/keyart-jpeg/tv/media/browser/the_fresh_prince_of_bel_air_series_key_art.jpg",
+      "usage": "Official key art, full image preserved; original 256x384 resolution.",
+      "bytes": 32660,
+      "sha256": "115a48b63978e4e61fd9df722b64101d60794ac7d5ed88dda04a07ded2f7ccf7"
+    },
+    {
+      "file": "public/official/himym.webp",
+      "owner": "20th Television / Hulu",
+      "source_page": "https://www.hulu.com/series/bc68ac79-3ace-4427-9ec0-5ee6f314d194",
+      "source_asset": "https://img2.hulu.com/user/v3/artwork/bc68ac79-3ace-4427-9ec0-5ee6f314d194?base_image=019d90f7-b9f5-71e2-adde-146accec527a&base_image_bucket_name=image_manager&format=webp&size=458x687",
+      "usage": "Official key art, full image preserved.",
+      "bytes": 34300,
+      "sha256": "dd1809c55e4e78a234d603bee9d13ce694fed95c0c8d0eebd7c337ca477e7e98"
+    }
+  ],
+  "total_bytes": 480965,
+  "personal_photo": {
+    "source": "public/aboutMe/DSC00409.JPG",
+    "derivative": "public/materials/studio-photo.webp",
+    "operation": "EXIF orientation, 768px width, WebP quality 86; no crop or content edits",
+    "original_bytes": 4227072,
+    "bytes": 24064,
+    "sha256": "919cf3e42370b4ef370a48c1ed714bad8bcadae9384bbfdc7cd80c5845741beb"
+  }
+}

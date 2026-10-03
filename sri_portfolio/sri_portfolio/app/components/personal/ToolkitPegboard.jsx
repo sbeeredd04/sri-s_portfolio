@@ -60,7 +60,7 @@ export default function ToolkitPegboard() {
         <p className="eyebrow">THE TOOL WALL</p>
         <h2>Whatever the idea needs.</h2>
         <p className="app-lead">
-          I work across interfaces, AI, and the systems behind them. Pick a tool
+          I build AI agents, context layers, and model harnesses, with product engineering around them. Pick a tool
           to see where it went.
         </p>
       </div>

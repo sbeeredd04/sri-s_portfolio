@@ -1,0 +1,602 @@
+[
+  {
+    "name": "codegraph",
+    "html_url": "https://github.com/sbeeredd04/codegraph",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2026-07-06T08:10:38Z",
+    "language": null,
+    "homepage": null
+  },
+  {
+    "name": "MCP101",
+    "html_url": "https://github.com/sbeeredd04/MCP101",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2026-06-20T21:04:51Z",
+    "language": null,
+    "homepage": null
+  },
+  {
+    "name": "beli_codes",
+    "html_url": "https://github.com/sbeeredd04/beli_codes",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2026-06-16T08:57:56Z",
+    "language": "TypeScript",
+    "homepage": null
+  },
+  {
+    "name": "modelcontextprotocol",
+    "html_url": "https://github.com/sbeeredd04/modelcontextprotocol",
+    "description": "Specification and\u00a0documentation for the Model Context Protocol",
+    "fork": true,
+    "visibility": "public",
+    "pushed_at": "2026-06-04T19:24:38Z",
+    "language": null,
+    "homepage": "https://modelcontextprotocol.io"
+  },
+  {
+    "name": "openai-cookbook",
+    "html_url": "https://github.com/sbeeredd04/openai-cookbook",
+    "description": "Examples and guides for using the OpenAI API",
+    "fork": true,
+    "visibility": "public",
+    "pushed_at": "2026-05-30T15:47:30Z",
+    "language": null,
+    "homepage": "https://cookbook.openai.com"
+  },
+  {
+    "name": "hadoop_multithreading",
+    "html_url": "https://github.com/sbeeredd04/hadoop_multithreading",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2026-04-27T03:17:16Z",
+    "language": "Python",
+    "homepage": null
+  },
+  {
+    "name": "classauto",
+    "html_url": "https://github.com/sbeeredd04/classauto",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2026-03-16T10:46:03Z",
+    "language": "Python",
+    "homepage": null
+  },
+  {
+    "name": "sri-s_portfolio",
+    "html_url": "https://github.com/sbeeredd04/sri-s_portfolio",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2026-03-10T13:20:15Z",
+    "language": "JavaScript",
+    "homepage": "https://sri-portfolio-khaki.vercel.app"
+  },
+  {
+    "name": "Agentex",
+    "html_url": "https://github.com/sbeeredd04/Agentex",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2026-03-05T00:03:38Z",
+    "language": "JavaScript",
+    "homepage": null
+  },
+  {
+    "name": "sandbox",
+    "html_url": "https://github.com/sbeeredd04/sandbox",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2026-03-03T05:19:57Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "Nous",
+    "html_url": "https://github.com/sbeeredd04/Nous",
+    "description": "Experiments",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-12-07T15:26:05Z",
+    "language": "Python",
+    "homepage": null
+  },
+  {
+    "name": "sandbox_private",
+    "html_url": "https://github.com/sbeeredd04/sandbox_private",
+    "description": "Private Sandbox",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-12-11T07:46:33Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "dotfiles",
+    "html_url": "https://github.com/sbeeredd04/dotfiles",
+    "description": "My dotfiles configuration",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-11-27T04:22:10Z",
+    "language": "Shell",
+    "homepage": null
+  },
+  {
+    "name": "binsr_challenge",
+    "html_url": "https://github.com/sbeeredd04/binsr_challenge",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-11-04T02:36:42Z",
+    "language": "TypeScript",
+    "homepage": null
+  },
+  {
+    "name": "ImageFolder",
+    "html_url": "https://github.com/sbeeredd04/ImageFolder",
+    "description": "High-performance Image Tokenizers for VAR and AR",
+    "fork": true,
+    "visibility": "public",
+    "pushed_at": "2025-04-25T04:56:33Z",
+    "language": null,
+    "homepage": ""
+  },
+  {
+    "name": "zsh_plugin",
+    "html_url": "https://github.com/sbeeredd04/zsh_plugin",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-12-15T09:37:39Z",
+    "language": "HTML",
+    "homepage": null
+  },
+  {
+    "name": "auto-git",
+    "html_url": "https://github.com/sbeeredd04/auto-git",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-10-27T10:57:55Z",
+    "language": "TypeScript",
+    "homepage": null
+  },
+  {
+    "name": "Aether",
+    "html_url": "https://github.com/sbeeredd04/Aether",
+    "description": "Aether AI - Chat Multiverse transforms linear AI conversations into explorable, visual trees. It offers infinite branching, support for multiple AI models , web-grounded responses, rich media integration",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-09-19T00:40:49Z",
+    "language": "TypeScript",
+    "homepage": "https://aether.sriujjwalreddy.com"
+  },
+  {
+    "name": "LeetCode",
+    "html_url": "https://github.com/sbeeredd04/LeetCode",
+    "description": "My LeetCode solves and updates ",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2026-01-24T22:21:18Z",
+    "language": "Python",
+    "homepage": null
+  },
+  {
+    "name": "ComputerVision",
+    "html_url": "https://github.com/sbeeredd04/ComputerVision",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-08-20T01:00:05Z",
+    "language": "Python",
+    "homepage": null
+  },
+  {
+    "name": "sbeeredd04",
+    "html_url": "https://github.com/sbeeredd04/sbeeredd04",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-07-25T06:54:27Z",
+    "language": null,
+    "homepage": null
+  },
+  {
+    "name": "VoxelCV",
+    "html_url": "https://github.com/sbeeredd04/VoxelCV",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-07-07T22:41:28Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "CSDNA",
+    "html_url": "https://github.com/sbeeredd04/CSDNA",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-07-07T18:57:44Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "Amano",
+    "html_url": "https://github.com/sbeeredd04/Amano",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-07-07T18:33:28Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "promen",
+    "html_url": "https://github.com/sbeeredd04/promen",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-07-07T18:25:43Z",
+    "language": "JavaScript",
+    "homepage": null
+  },
+  {
+    "name": "psych",
+    "html_url": "https://github.com/sbeeredd04/psych",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-06-12T13:22:27Z",
+    "language": "TypeScript",
+    "homepage": "https://psych-one.vercel.app"
+  },
+  {
+    "name": "anthropic-cookbook",
+    "html_url": "https://github.com/sbeeredd04/anthropic-cookbook",
+    "description": "A collection of notebooks/recipes showcasing some fun and effective ways of using Claude.",
+    "fork": true,
+    "visibility": "public",
+    "pushed_at": "2025-06-08T17:32:00Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "SimSim",
+    "html_url": "https://github.com/sbeeredd04/SimSim",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-06-06T07:17:27Z",
+    "language": "Swift",
+    "homepage": null
+  },
+  {
+    "name": "iOS-101",
+    "html_url": "https://github.com/sbeeredd04/iOS-101",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-06-05T18:12:18Z",
+    "language": "Swift",
+    "homepage": null
+  },
+  {
+    "name": "TBD",
+    "html_url": "https://github.com/sbeeredd04/TBD",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-05-23T01:33:57Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "cookbook",
+    "html_url": "https://github.com/sbeeredd04/cookbook",
+    "description": "Examples and guides for using the Gemini API",
+    "fork": true,
+    "visibility": "public",
+    "pushed_at": "2026-05-30T15:48:10Z",
+    "language": "Jupyter Notebook",
+    "homepage": "https://ai.google.dev/gemini-api/docs"
+  },
+  {
+    "name": "Relightable-Portrait-Animation",
+    "html_url": "https://github.com/sbeeredd04/Relightable-Portrait-Animation",
+    "description": "[CVPR 2025] High-Fidelity Relightable Monocular Portrait Animation with Lighting-Controllable Video Diffusion Model",
+    "fork": true,
+    "visibility": "public",
+    "pushed_at": "2025-03-24T08:06:16Z",
+    "language": null,
+    "homepage": ""
+  },
+  {
+    "name": "Trainer",
+    "html_url": "https://github.com/sbeeredd04/Trainer",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-04-23T00:41:15Z",
+    "language": "Python",
+    "homepage": null
+  },
+  {
+    "name": "HeadBobberGames",
+    "html_url": "https://github.com/sbeeredd04/HeadBobberGames",
+    "description": "HeadBobberGames \ud83c\udfae : A vibrant collection of multiplayer games created for friends to enjoy together. This repository features arcade-style games with a modern twist, designed to bring people together for fun and competitive gameplay.",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-04-18T17:51:11Z",
+    "language": "HTML",
+    "homepage": "https://sbeeredd04.github.io/HeadBobberGames/"
+  },
+  {
+    "name": "PromenClient",
+    "html_url": "https://github.com/sbeeredd04/PromenClient",
+    "description": "Website for the Promen Chrome Extension",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-04-11T14:48:45Z",
+    "language": "TypeScript",
+    "homepage": "https://promen-client.vercel.app"
+  },
+  {
+    "name": "XML_Xpoloration",
+    "html_url": "https://github.com/sbeeredd04/XML_Xpoloration",
+    "description": "Learning about XML",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-04-07T06:44:18Z",
+    "language": null,
+    "homepage": null
+  },
+  {
+    "name": "Trak",
+    "html_url": "https://github.com/sbeeredd04/Trak",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-04-04T14:16:55Z",
+    "language": "TypeScript",
+    "homepage": null
+  },
+  {
+    "name": "Aristotle",
+    "html_url": "https://github.com/sbeeredd04/Aristotle",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-04-03T12:14:59Z",
+    "language": null,
+    "homepage": null
+  },
+  {
+    "name": "Chrome-extension-101",
+    "html_url": "https://github.com/sbeeredd04/Chrome-extension-101",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-03-26T02:38:11Z",
+    "language": "JavaScript",
+    "homepage": null
+  },
+  {
+    "name": "puter",
+    "html_url": "https://github.com/sbeeredd04/puter",
+    "description": "\ud83c\udf10 The Internet OS! Free, Open-Source, and Self-Hostable.",
+    "fork": true,
+    "visibility": "public",
+    "pushed_at": "2025-03-14T23:37:29Z",
+    "language": null,
+    "homepage": "https://puter.com"
+  },
+  {
+    "name": "SceneGraphVLM",
+    "html_url": "https://github.com/sbeeredd04/SceneGraphVLM",
+    "description": "Using VLM to predict scene graphs from the visual genome dataset",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-02-07T00:46:03Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "GunShotAnalysis",
+    "html_url": "https://github.com/sbeeredd04/GunShotAnalysis",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-04-22T16:23:53Z",
+    "language": null,
+    "homepage": null
+  },
+  {
+    "name": "MesaInteractiveExhibit",
+    "html_url": "https://github.com/sbeeredd04/MesaInteractiveExhibit",
+    "description": "Interactive website software for Mesa Historical Museum",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-01-23T02:50:18Z",
+    "language": "JavaScript",
+    "homepage": null
+  },
+  {
+    "name": "market-anomaly",
+    "html_url": "https://github.com/sbeeredd04/market-anomaly",
+    "description": "ML project to detect potential market crashes.",
+    "fork": true,
+    "visibility": "public",
+    "pushed_at": "2025-01-18T09:34:33Z",
+    "language": "Jupyter Notebook",
+    "homepage": "https://stone-crash-detector.streamlit.app"
+  },
+  {
+    "name": "findprod",
+    "html_url": "https://github.com/sbeeredd04/findprod",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-01-15T04:31:49Z",
+    "language": "Python",
+    "homepage": null
+  },
+  {
+    "name": "MAD",
+    "html_url": "https://github.com/sbeeredd04/MAD",
+    "description": "This project involves building an anomaly detection system that serves as an early warning mechanism for identifying potential financial market crashes before they occur. Using data and machine learning models, the system will classify market conditions and propose investment strategies for risk mitigation and optimization.",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-01-13T07:51:01Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "pentagram",
+    "html_url": "https://github.com/sbeeredd04/pentagram",
+    "description": "Pentagram: Instagram, but with AI Images",
+    "fork": true,
+    "visibility": "public",
+    "pushed_at": "2024-12-21T04:57:35Z",
+    "language": "TypeScript",
+    "homepage": ""
+  },
+  {
+    "name": "FoodThought",
+    "html_url": "https://github.com/sbeeredd04/FoodThought",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2024-11-15T16:24:34Z",
+    "language": "JavaScript",
+    "homepage": null
+  },
+  {
+    "name": "Flask-101",
+    "html_url": "https://github.com/sbeeredd04/Flask-101",
+    "description": "This is an introduction to flask.",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2024-10-26T19:14:27Z",
+    "language": null,
+    "homepage": null
+  },
+  {
+    "name": "CSE_360_Project",
+    "html_url": "https://github.com/sbeeredd04/CSE_360_Project",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2024-10-10T05:54:50Z",
+    "language": null,
+    "homepage": null
+  },
+  {
+    "name": "Wish",
+    "html_url": "https://github.com/sbeeredd04/Wish",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2024-10-07T03:54:21Z",
+    "language": "CSS",
+    "homepage": null
+  },
+  {
+    "name": "CSE_360_Projec",
+    "html_url": "https://github.com/sbeeredd04/CSE_360_Projec",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2024-09-24T23:29:49Z",
+    "language": "Java",
+    "homepage": null
+  },
+  {
+    "name": "sri_portfolio",
+    "html_url": "https://github.com/sbeeredd04/sri_portfolio",
+    "description": "Website for my portfolio ",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2023-09-13T21:54:31Z",
+    "language": "CSS",
+    "homepage": null
+  },
+  {
+    "name": "Song_Rec",
+    "html_url": "https://github.com/sbeeredd04/Song_Rec",
+    "description": "This is the song reccomendation system using spotify million data set ",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2024-08-31T23:36:02Z",
+    "language": "Jupyter Notebook",
+    "homepage": null
+  },
+  {
+    "name": "ARuReady",
+    "html_url": "https://github.com/sbeeredd04/ARuReady",
+    "description": "Website for ARuReady devils invent hackathon ",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2023-09-17T17:30:26Z",
+    "language": "CSS",
+    "homepage": null
+  },
+  {
+    "name": "AviSol",
+    "html_url": "https://github.com/sbeeredd04/AviSol",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2024-05-13T10:02:35Z",
+    "language": "C++",
+    "homepage": null
+  },
+  {
+    "name": "Gymception",
+    "html_url": "https://github.com/sbeeredd04/Gymception",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2025-01-14T16:21:53Z",
+    "language": "Python",
+    "homepage": null
+  },
+  {
+    "name": "Notion_widgets",
+    "html_url": "https://github.com/sbeeredd04/Notion_widgets",
+    "description": "Widgets database for notion pages",
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2024-06-14T08:16:43Z",
+    "language": "HTML",
+    "homepage": null
+  },
+  {
+    "name": "SparkDev_LAA",
+    "html_url": "https://github.com/sbeeredd04/SparkDev_LAA",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2023-10-08T21:59:57Z",
+    "language": "CSS",
+    "homepage": null
+  },
+  {
+    "name": "BIOMOD_CCB",
+    "html_url": "https://github.com/sbeeredd04/BIOMOD_CCB",
+    "description": null,
+    "fork": false,
+    "visibility": "public",
+    "pushed_at": "2023-10-28T14:27:20Z",
+    "language": "HTML",
+    "homepage": null
+  }
+]

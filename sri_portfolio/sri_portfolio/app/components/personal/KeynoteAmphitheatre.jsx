@@ -2,13 +2,9 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import {
-  canopySurface,
-  screen,
-  sideScreens,
-  stage,
-} from "../../lib/amphitheatre.mjs";
-import { projects } from "../../json/personal";
+import { canopySurface, screen, stage } from "../../lib/amphitheatre.mjs";
+import { keynoteSlides } from "../../lib/keynote.mjs";
+import { drawKeynote } from "../../lib/keynote-drawing.mjs";
 
 export function canvasTexture(width, height, draw) {
   const c = document.createElement("canvas");
@@ -24,46 +20,6 @@ export function canvasTexture(width, height, draw) {
   t.colorSpace = THREE.SRGBColorSpace;
   t.anisotropy = 4;
   return t;
-}
-
-// One keynote slide per project: category, name, a short line and stack.
-function drawSlide(x, w, h, font, project, index, total) {
-  const g = x.createLinearGradient(0, 0, w, h);
-  g.addColorStop(0, "#0d1420");
-  g.addColorStop(1, "#1b2740");
-  x.fillStyle = g;
-  x.fillRect(0, 0, w, h);
-  x.fillStyle = "#ffae98";
-  x.fillRect(80, 120, 60, 6);
-  x.font = `500 30px ${font}`;
-  x.fillStyle = "#9fb3cc";
-  x.fillText(project.category || "PROJECT", 80, 190, w - 160);
-  x.font = `600 150px ${font}`;
-  x.fillStyle = "#f4f1ea";
-  x.fillText(project.name, 74, 350, w - 160);
-  x.font = `400 38px ${font}`;
-  x.fillStyle = "#c8d2de";
-  const words = (project.description || "").split(" ");
-  let line = "",
-    y = 440;
-  for (const word of words) {
-    if (x.measureText(line + word).width > w - 180 && line) {
-      x.fillText(line, 80, y);
-      line = "";
-      y += 54;
-      if (y > 560) break;
-    }
-    line += word + " ";
-  }
-  if (y <= 560) x.fillText(line, 80, y);
-  x.font = `500 26px ${font}`;
-  x.fillStyle = "#7f8ea3";
-  x.fillText(
-    `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`,
-    80,
-    h - 60,
-  );
-  x.fillText((project.stack || []).join("  ·  "), 260, h - 60, w - 340);
 }
 
 // A rounded-corner panel whose UVs span the whole rectangle.
@@ -88,67 +44,91 @@ function roundedPanel(width, height, radius) {
   return g;
 }
 
-// The big screen and both side screens share one material, so the slide
-// changes everywhere at once. A click opens whichever project is up.
-function Screens({ animate, onProjectOpen }) {
-  const slides = useMemo(
-    () =>
-      projects.map((p, i) =>
-        canvasTexture(1280, 640, (x, w, h, font) =>
-          drawSlide(x, w, h, font, p, i, projects.length),
-        ),
-      ),
-    [],
-  );
-  const material = useMemo(
-    () => new THREE.MeshBasicMaterial({ map: slides[0], toneMapped: false }),
-    [slides],
-  );
+// A single reusable canvas keeps the stage's memory and upload cost bounded.
+function Screens({ animate, index = 0, onProjectOpen, onHover }) {
   const panel = useMemo(
-    () => roundedPanel(screen.width, screen.height, 0.9),
+    () => roundedPanel(screen.width, screen.height, 0.35),
     [],
   );
+  const font = useMemo(() => getComputedStyle(document.body).fontFamily, []);
+  const texture = useMemo(() => {
+    const map = canvasTexture(1280, 640, () => {});
+    map.generateMipmaps = false;
+    map.minFilter = THREE.LinearFilter;
+    return map;
+  }, []);
+  const material = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        map: texture,
+        toneMapped: false,
+        fog: false,
+      }),
+    [texture],
+  );
+  const clock = useRef({ elapsed: 0, frame: -1 });
+  const reduced = useRef(false);
+  const draw = (time) => {
+    const canvas = texture.image;
+    drawKeynote(
+      canvas.getContext("2d"),
+      canvas.width,
+      canvas.height,
+      font,
+      keynoteSlides[index],
+      index,
+      time,
+    );
+    texture.needsUpdate = true;
+  };
+  useEffect(() => {
+    const query = matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => {
+      reduced.current = query.matches;
+    };
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  useEffect(() => {
+    clock.current = { elapsed: 0, frame: -1 };
+    draw(2.2);
+  }, [index]);
   useEffect(
     () => () => {
-      slides.forEach((t) => t.dispose());
-      material.dispose();
       panel.dispose();
+      material.dispose();
+      texture.dispose();
     },
-    [slides, material, panel],
+    [panel, material, texture],
   );
-  const state = useRef({ index: 0, clock: 0 });
   useFrame((_, dt) => {
-    if (!animate) return;
-    const s = state.current;
-    s.clock += Math.min(dt, 0.1);
-    if (s.clock < 7) return;
-    s.clock = 0;
-    s.index = (s.index + 1) % slides.length;
-    material.map = slides[s.index];
+    if (!animate || reduced.current) return;
+    const state = clock.current;
+    state.elapsed += Math.min(dt, 0.1);
+    const frame = Math.floor(state.elapsed * 12);
+    if (frame === state.frame) return;
+    state.frame = frame;
+    draw(state.elapsed);
   });
-  const open = (e) => {
-    e.stopPropagation();
-    onProjectOpen?.(projects[state.current.index].id);
+  const hover = (event) => {
+    event.stopPropagation();
+    onHover?.(`Read ${keynoteSlides[index].name}`, event, "pointer");
   };
   return (
-    <group onClick={open}>
-      <mesh
-        geometry={panel}
-        material={material}
-        position={[screen.x, screen.y, stage.z]}
-        rotation={[0, -Math.PI / 2, 0]}
-      />
-      {sideScreens.map((s) => (
-        <mesh
-          key={s.z}
-          material={material}
-          position={[s.x, s.y, s.z]}
-          rotation={[0, s.yaw, 0]}
-        >
-          <planeGeometry args={[s.width, s.height]} />
-        </mesh>
-      ))}
-    </group>
+    <mesh
+      geometry={panel}
+      material={material}
+      position={[screen.x, screen.y, stage.z]}
+      rotation={[0, -Math.PI / 2, 0]}
+      onPointerOver={hover}
+      onPointerMove={hover}
+      onPointerOut={(event) => onHover?.("", event)}
+      onClick={(event) => {
+        event.stopPropagation();
+        onProjectOpen?.(keynoteSlides[index].id);
+      }}
+    />
   );
 }
 
@@ -157,13 +137,19 @@ function Canopy() {
   const { geometry, posts, masts } = useMemo(() => {
     const s = canopySurface();
     const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.Float32BufferAttribute(s.positions, 3));
+    g.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(s.positions, 3),
+    );
     g.setIndex(s.indices);
     g.computeVertexNormals();
     return { geometry: g, posts: s.posts, masts: s.masts };
   }, []);
   useEffect(() => () => geometry.dispose(), [geometry]);
-  const poles = [...posts.map((p) => ({ ...p, r: 0.09 })), ...masts.map((m) => ({ ...m, r: 0.2 }))];
+  const poles = [
+    ...posts.map((p) => ({ ...p, r: 0.09 })),
+    ...masts.map((m) => ({ ...m, r: 0.2 })),
+  ];
   return (
     <group>
       <mesh geometry={geometry} castShadow receiveShadow>
@@ -181,17 +167,26 @@ function Canopy() {
           castShadow
         >
           <cylinderGeometry args={[p.r, p.r * 1.25, p.height + 1.2, 8]} />
-          <meshStandardMaterial color="#9aa0a6" roughness={0.45} metalness={0.6} />
+          <meshStandardMaterial
+            color="#9aa0a6"
+            roughness={0.45}
+            metalness={0.6}
+          />
         </mesh>
       ))}
     </group>
   );
 }
 
-export default function KeynoteAmphitheatre({ animate, onProjectOpen }) {
+export default function KeynoteAmphitheatre({
+  animate,
+  index,
+  onProjectOpen,
+  onHover,
+}) {
   return (
     <group>
-      <Screens animate={animate} onProjectOpen={onProjectOpen} />
+      <Screens {...{ animate, index, onProjectOpen, onHover }} />
       <Canopy />
     </group>
   );

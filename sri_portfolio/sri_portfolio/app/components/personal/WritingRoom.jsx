@@ -3,6 +3,7 @@ import { useId, useRef, useState } from "react";
 import FieldnoteDoodle from "./FieldnoteDoodle";
 import {
   fieldnoteShelves,
+  externalFieldnotes,
   publishedFieldnotes,
 } from "../../lib/fieldnotes.mjs";
 
@@ -69,6 +70,21 @@ export default function WritingRoom() {
           </p>
         </div>
       </header>
+      <section className="fn-published fn-latest" aria-label="Latest writing">
+        <h3 className="fn-published-title">Latest writing</h3>
+        <ol>
+          {externalFieldnotes.map((note) => (
+            <li key={note.id}>
+              <a href={note.href} target="_blank" rel="noopener noreferrer">
+                <span>{note.category}</span>
+                <strong>{note.title}</strong>
+                <p>{note.summary}</p>
+                <small>{note.dateLabel} · Read on LinkedIn ↗</small>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
       <section
         className="fn-notebooks"
         aria-label="Explore the notebooks"
@@ -133,7 +149,11 @@ export default function WritingRoom() {
                 <FieldnoteDoodle kind={shelf.art} />
                 <span className="fn-cover-bottom">
                   <strong>{shelf.title}</strong>
-                  <small>Opening soon</small>
+                  <small>
+                    {shelf.id === "build"
+                      ? "Notes on building with AI"
+                      : "More notes to come"}
+                  </small>
                 </span>
               </button>
             );
@@ -173,7 +193,9 @@ export default function WritingRoom() {
       </section>
       <section className="fn-published" aria-labelledby={`${id}-published`}>
         <h3 id={`${id}-published`} className="fn-published-title">
-          {publishedFieldnotes.length ? "Published notes" : "The first page"}
+          {publishedFieldnotes.length
+            ? "Published notes"
+            : "Inside the notebook"}
         </h3>
         {publishedFieldnotes.length ? (
           <ol>
@@ -194,10 +216,10 @@ export default function WritingRoom() {
               <FieldnoteDoodle kind="notice" />
             </span>
             <span className="fn-first-copy">
-              <strong>The first note is still taking shape.</strong>
+              <strong>More notes are on the way.</strong>
               <span>
-                Until then, here’s how one will read. Images, sketches,
-                evidence, and a little less text.
+                A look at the reading format. Images, sketches, evidence, and a
+                little less text.
               </span>
               <em>
                 See the reading format <span aria-hidden="true">→</span>

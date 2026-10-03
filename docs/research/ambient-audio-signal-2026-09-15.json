@@ -1,0 +1,37 @@
+{
+  "quiet-room": {
+    "seconds": 8.0,
+    "decoded_peak_dbfs": -11.03,
+    "decoded_rms_dbfs": -23.55,
+    "boundary_delta": 0.00516,
+    "boundary_to_99th_percentile_step": 0.75
+  },
+  "lakeside": {
+    "seconds": 12.0,
+    "decoded_peak_dbfs": -9.71,
+    "decoded_rms_dbfs": -24.63,
+    "boundary_delta": 0.02347,
+    "boundary_to_99th_percentile_step": 0.355
+  },
+  "open-air": {
+    "seconds": 12.0,
+    "decoded_peak_dbfs": -9.92,
+    "decoded_rms_dbfs": -24.65,
+    "boundary_delta": 0.01265,
+    "boundary_to_99th_percentile_step": 0.769
+  },
+  "rain-window": {
+    "seconds": 12.0,
+    "decoded_peak_dbfs": -8.05,
+    "decoded_rms_dbfs": -22.66,
+    "boundary_delta": 0.04989,
+    "boundary_to_99th_percentile_step": 0.356
+  },
+  "somewhere-soft": {
+    "seconds": 48.0,
+    "decoded_peak_dbfs": -7.2,
+    "decoded_rms_dbfs": -18.67,
+    "boundary_delta": 0.00683,
+    "boundary_to_99th_percentile_step": 0.491
+  }
+}

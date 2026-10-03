@@ -7,8 +7,6 @@ import { projectWalks } from "./project-town-layout.mjs";
 import { entertainmentPaths } from "./entertainment-layout.mjs";
 import { overlookSegments, trailCenter } from "./trail-layout.mjs";
 import { overlookDeck, overlookPolyline } from "./valley-layout.mjs";
-import { campusCenter, campusFeet, onCampusPath } from "./campus-layout.mjs";
-import { campusPavingHeight } from "./campus-surface.mjs";
 import { trailFootHeight } from "./trail-surface.mjs";
 import { streetRoutes } from "./street-view.mjs";
 import { cityWalkRuns } from "./sf-streets.mjs";
@@ -49,8 +47,6 @@ function localSegments(world, paths, roof = false) {
     if (roof) return APARTMENT_LEVEL + (z > 5.1 ? 0.004 : 0.144);
     if (world === "future") return fieldnotesFootHeight(x, z);
     if (world === "trail") return trailFootHeight(x, z);
-    if (world === "projects" && onCampusPath(x, z))
-      return campusPavingHeight() + 0.004;
     let height = renderedSurfaceHeight(world, x, z) + 0.031;
     for (const s of stones)
       if (
@@ -172,10 +168,6 @@ export function nearestWalk(point, network) {
 export function walkStart(world, roof = false, entry) {
   const gardenEntry = world === "future" ? fieldnotesWalkEntries[entry] : null;
   const atOverlook = world === "trail" && entry === "overlook";
-  const campusEntry =
-    world === "projects" && (entry === "campus" || entry === "ring")
-      ? campusFeet()[entry]
-      : null;
   const points = {
     studio: [-4, 10],
     court: [-21, 13],
@@ -188,9 +180,7 @@ export function walkStart(world, roof = false, entry) {
     ? streetRoutes.studio[2].point
     : atOverlook
       ? [overlookDeck().x, overlookDeck().z]
-      : campusEntry
-        ? [campusEntry.x, campusEntry.z]
-        : points[world] || points.studio;
+      : points[world] || points.studio;
   const position = worldPoint(world, [
     x,
     roof
@@ -199,9 +189,7 @@ export function walkStart(world, roof = false, entry) {
         ? trailFootHeight(x, z)
         : world === "future"
           ? fieldnotesFootHeight(x, z)
-          : campusEntry
-            ? campusPavingHeight() + 0.004
-            : renderedSurfaceHeight(world, x, z) + 0.1,
+          : renderedSurfaceHeight(world, x, z) + 0.1,
     z,
   ]);
   const r = regions.find((r) => r.id === world);
@@ -226,14 +214,6 @@ export function walkStart(world, roof = false, entry) {
         0,
       ).forward,
     );
-  if (campusEntry) {
-    const aim = entry === "campus" ? { x: x + 4, z } : campusCenter;
-    forward
-      .copy(r.east)
-      .multiplyScalar(aim.x - x)
-      .addScaledVector(r.north, aim.z - z)
-      .normalize();
-  }
   if (gardenEntry) {
     forward
       .copy(r.east)

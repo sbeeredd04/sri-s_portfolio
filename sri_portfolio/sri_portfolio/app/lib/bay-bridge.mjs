@@ -212,12 +212,16 @@ function studioCamera(v) {
 }
 const middle = pathPose(bayRoute, 0.59);
 export const bridgeView = {
+  // The bridge has travelled around the globe: its local vertical is no
+  // longer the city normal. Share the deck frame with the camera.
+  up: middle.normal.toArray(),
+  fov: 55,
   position: studioCamera(
     middle.position
       .clone()
-      .addScaledVector(middle.right, 76)
-      .addScaledVector(middle.normal, 39)
-      .addScaledVector(middle.forward, 9),
+      .addScaledVector(middle.right, 140)
+      .addScaledVector(middle.normal, 36)
+      .addScaledVector(middle.forward, 90),
   ),
   target: studioCamera(
     middle.position.clone().addScaledVector(middle.normal, 3.5),
@@ -226,14 +230,14 @@ export const bridgeView = {
     position: studioCamera(
       middle.position
         .clone()
-        .addScaledVector(middle.right, 60)
-        .addScaledVector(middle.normal, 38)
-        .addScaledVector(middle.forward, 68),
+        .addScaledVector(middle.right, 90)
+        .addScaledVector(middle.normal, 45)
+        .addScaledVector(middle.forward, 190),
     ),
     target: studioCamera(
       middle.position.clone().addScaledVector(middle.normal, 4),
     ),
-    fov: 66,
+    fov: 60,
   },
 };
 

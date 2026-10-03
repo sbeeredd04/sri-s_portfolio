@@ -8,7 +8,7 @@ import { skyFragment, skyUniforms } from "./AtmosphereSky";
 // scattering sky (with a soft dark ground below the horizon) into a PMREM, so
 // metal, glass, water and every rough surface pick up the true time of day.
 // It refreshes only when the sky has visibly changed, never every frame.
-export default function MaterialLighting({ daylight }) {
+export default function MaterialLighting({ daylight, world }) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const invalidate = useThree((s) => s.invalidate);
@@ -21,11 +21,18 @@ export default function MaterialLighting({ daylight }) {
       vertexShader: `varying vec3 vDir; void main(){ vDir=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
       fragmentShader: skyFragment,
     });
-    probeScene.add(new THREE.Mesh(new THREE.SphereGeometry(10, 48, 32), material));
-    return { scene: probeScene, material, generator: new THREE.PMREMGenerator(gl) };
+    probeScene.add(
+      new THREE.Mesh(new THREE.SphereGeometry(10, 48, 32), material),
+    );
+    return {
+      scene: probeScene,
+      material,
+      generator: new THREE.PMREMGenerator(gl),
+    };
   }, [gl]);
   const current = useRef(null);
   const last = useRef({ key: "", at: -Infinity });
+  const pending = useRef({ key: "", since: 0 });
   useEffect(() => {
     const previous = scene.environment;
     return () => {
@@ -38,19 +45,22 @@ export default function MaterialLighting({ daylight }) {
   }, [scene, probe]);
   useFrame(({ clock }) => {
     const u = skyUniforms;
-    // Quantised signature: regenerate on a meaningful change, at most 2/s.
+    // Reflections follow the biome and meaningful light/weather changes, not
+    // the moving camera. Wait for the sky to settle before generating once.
     const key = [
-      u.uHorizon.value.getHexString(),
-      u.uZenith.value.getHexString(),
-      u.uUp.value.x.toFixed(2),
-      u.uUp.value.y.toFixed(2),
-      u.uUp.value.z.toFixed(2),
-      u.uSun.value.y.toFixed(2),
+      world,
+      Math.round(daylight * 8),
+      Math.round(u.uCloud.value * 4),
+      Math.round(u.uRain.value * 4),
     ].join();
-    const now = clock.getElapsedTime();
-    if (key === last.current.key || now - last.current.at < 0.5) return;
+    const now = clock.elapsedTime;
+    if (key !== pending.current.key) pending.current = { key, since: now };
+    if (key === last.current.key || now - pending.current.since < 1.2) return;
+    if (current.current && now - last.current.at < 5) return;
     last.current = { key, at: now };
-    const target = probe.generator.fromScene(probe.scene, 0, 0.1, 50);
+    const target = probe.generator.fromScene(probe.scene, 0, 0.1, 50, {
+      size: 128,
+    });
     current.current?.dispose();
     current.current = target;
     scene.environment = target.texture;

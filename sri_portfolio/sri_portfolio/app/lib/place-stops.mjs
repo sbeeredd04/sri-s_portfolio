@@ -1,8 +1,5 @@
 import { projectGallerySites } from "./project-town-layout.mjs";
-import { campusView } from "./campus-layout.mjs";
 import { courtViews } from "./court-layout.mjs";
-import { bridgeView } from "./bay-bridge.mjs";
-import { cityViews } from "./sf-views.mjs";
 import { techViews } from "./tech-plan.mjs";
 import { trailView } from "./valley-layout.mjs";
 import { campFire } from "./trail-life.mjs";
@@ -23,7 +20,7 @@ export const placeStops = {
       target: [-0.5, 1.15, -1.1],
       content: "journey",
       prompt: "Building at Offseason",
-      hint: "Personal wellness, with an AI agent alongside you.",
+      hint: "AI agents, context systems, and the harnesses around them.",
     },
     {
       id: "bookshelf",
@@ -45,15 +42,6 @@ export const placeStops = {
       content: "about",
       prompt: "The life around the work",
       hint: "Following your little wanderer, between home and play. Choose another view to leave the path.",
-    },
-    ...cityViews,
-    {
-      id: "bay",
-      label: "Across the bay",
-      ...bridgeView,
-      content: "notes",
-      prompt: "A little further out",
-      hint: "An orange crossing from the city toward the trails. A small tribute to the Bay.",
     },
   ],
   projects: [
@@ -102,24 +90,6 @@ export const placeStops = {
       hint: "Devils Invent, three times. AZ Spark. Voxel51. Made with a team.",
     },
     ...techViews,
-    {
-      id: "ring",
-      label: "The ring",
-      ...campusView().overview,
-      content: "work",
-      collection: "mobile",
-      prompt: "A courtyard for pocket experiments",
-      hint: "Low glass, a continuous canopy, and a garden in the middle.",
-    },
-    {
-      id: "campus",
-      label: "Courtyard",
-      ...campusView().court,
-      content: "work",
-      collection: "mobile",
-      prompt: "Open the iPhone & iPad shelf",
-      hint: "Aatram, SimSim, and learning SwiftUI.",
-    },
     {
       id: "aether",
       label: "Aether",
@@ -305,7 +275,7 @@ export const placeStops = {
       ...fieldnotesCameras.writing,
       content: "writing",
       prompt: "What I want to share",
-      hint: "Coming soon: stories about building, design, and learning.",
+      hint: "Notes on AI engineering, agents, and the work around models.",
     },
     ...quarterViews,
     {

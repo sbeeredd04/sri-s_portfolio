@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from "react";
 import { useTexture } from "@react-three/drei";
 
 // Loads a CC0 texture set from public/materials/<name>/ (color, normal,
@@ -11,5 +12,8 @@ export default function usePbrSet(name) {
     `/materials/${name}/normal.webp`,
     `/materials/${name}/arm.webp`,
   ]);
-  return { albedo, normal, roughness: arm };
+  return useMemo(
+    () => ({ albedo, normal, roughness: arm }),
+    [albedo, normal, arm],
+  );
 }

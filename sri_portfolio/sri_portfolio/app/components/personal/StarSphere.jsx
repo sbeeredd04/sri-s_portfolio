@@ -14,7 +14,7 @@ export default function StarSphere({ daylight }) {
     () => ({ starMap: { value: texture }, brightness: { value: 0.08 } }),
     [texture],
   );
-  uniforms.brightness.value = 0.13 - daylight * 0.065;
+  uniforms.brightness.value = 0.055 - daylight * 0.03;
   useEffect(() => {
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = 4;
@@ -69,7 +69,7 @@ export default function StarSphere({ daylight }) {
             // Keep the brightest stars, gently suppressing the photograph's
             // dense haze so it stays behind the world and readable type.
             float luminance = dot(photograph, vec3(.2126, .7152, .0722));
-            float separation = mix(.12, 1., smoothstep(.015, .3, luminance));
+            float separation = smoothstep(.12, .6, luminance);
             gl_FragColor = vec4(photograph * separation * brightness, 1.);
             #include <colorspace_fragment>
           }

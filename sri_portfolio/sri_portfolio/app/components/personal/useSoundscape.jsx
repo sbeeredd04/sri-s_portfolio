@@ -21,6 +21,7 @@ export default function useSoundscape(
   section = null,
   detail = null,
   weather = null,
+  { autoStart = true } = {},
 ) {
   const reading = Boolean(section);
   const destination = soundDestination(biome, section, detail);
@@ -73,9 +74,9 @@ export default function useSoundscape(
     }
   }, []);
   const cue = useCallback(
-    (kind = "press") => {
+    (kind = "press", options) => {
       pulse(kind);
-      engine.current?.cue(kind);
+      engine.current?.cue(kind, options);
     },
     [pulse],
   );
@@ -99,56 +100,69 @@ export default function useSoundscape(
     },
     [pulse],
   );
-  const start = useCallback(async () => {
-    if (engine.current) return;
-    stop(true);
-    let current, context;
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) throw new Error("Audio is unavailable.");
-      context = new AudioContext();
-      current = new SoundEngine(context, {
-        place: place.current,
-        preferences: settings.current,
-        weather: weatherRef.current,
-        ...focus.current,
-        onError: () => {
-          if (engine.current !== current) return;
-          stop(true);
-          changeStatus("error");
-        },
-      });
-      engine.current = current;
-      changeStatus("starting");
-      context.onstatechange = () => {
-        if (
-          engine.current !== current ||
-          document.hidden ||
-          current.hidden ||
-          statusRef.current === "starting"
-        )
-          return;
-        if (context.state !== "running") {
-          stop(true);
-          changeStatus("error");
-        }
-      };
-      // Resume in the actual click gesture, before awaiting any asset fetch.
-      await context.resume();
-      if (context.state !== "running" && !document.hidden)
-        throw new Error("Audio needs another tap to start.");
-      await current.prepare();
-      if (engine.current !== current || !live.current) return;
-      if (document.hidden) await current.setHidden(true);
-      changeStatus("on");
-      current.cue("welcome");
-    } catch {
-      if (current && engine.current !== current) return;
+  const start = useCallback(
+    async (arrivalCue = "press") => {
+      if (engine.current) return;
       stop(true);
-      if (!current) context?.close().catch(() => {});
-      changeStatus("error");
-    }
-  }, [stop, changeStatus, pulse]);
+      let current, context;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) throw new Error("Audio is unavailable.");
+        context = new AudioContext();
+        current = new SoundEngine(context, {
+          place: place.current,
+          preferences: settings.current,
+          weather: weatherRef.current,
+          ...focus.current,
+          onError: () => {
+            if (engine.current !== current) return;
+            stop(true);
+            changeStatus("error");
+          },
+        });
+        engine.current = current;
+        changeStatus("starting");
+        context.onstatechange = () => {
+          if (
+            engine.current !== current ||
+            document.hidden ||
+            current.hidden ||
+            statusRef.current === "starting"
+          )
+            return;
+          if (context.state !== "running") {
+            stop(true);
+            changeStatus("error");
+          }
+        };
+        // Resume in the actual click gesture, before awaiting any asset fetch.
+        await context.resume();
+        if (context.state !== "running" && !document.hidden)
+          throw new Error("Audio needs another tap to start.");
+        current.cue(arrivalCue);
+        await current.prepare();
+        if (engine.current !== current || !live.current) return;
+        if (document.hidden) await current.setHidden(true);
+        changeStatus("on");
+      } catch {
+        if (current && engine.current !== current) return;
+        stop(true);
+        if (!current) context?.close().catch(() => {});
+        changeStatus("error");
+      }
+    },
+    [stop, changeStatus, pulse],
+  );
+
+  const enable = useCallback(() => {
+    setPreference("enabled", true);
+    return start("welcome");
+  }, [setPreference, start]);
+  const disable = useCallback(() => {
+    setPreference("enabled", false);
+    stop();
+    changeStatus("off");
+  }, [setPreference, stop, changeStatus]);
 
   const toggle = useCallback(() => {
     pulse("press");
@@ -174,6 +188,7 @@ export default function useSoundscape(
     changeStatus(settings.current.enabled ? "ready" : "off");
     const beginOnGesture = (event) => {
       if (
+        !autoStart ||
         !settings.current.enabled ||
         engine.current ||
         event.target.closest?.("[data-quiet],input,textarea") ||
@@ -244,7 +259,7 @@ export default function useSoundscape(
       } catch {}
       stop(true);
     };
-  }, [stop, changeStatus, start]);
+  }, [stop, changeStatus, start, autoStart]);
   useEffect(() => {
     engine.current?.update({ place: destination, ...focus.current });
   }, [destination, reading]);
@@ -257,6 +272,7 @@ export default function useSoundscape(
       const control = event.target.closest?.("button, a, summary");
       if (
         !control ||
+        control.closest("[data-quiet]") ||
         control.matches('[aria-disabled="true"], :disabled, [data-quiet]')
       )
         return;
@@ -266,6 +282,44 @@ export default function useSoundscape(
     },
     [cue],
   );
+  useEffect(() => {
+    // Shared by world, standalone rooms and articles. Existing semantic handlers
+    // fire first; the engine suppresses the bubbling fallback for the same click.
+    const click = (event) => {
+      if (event.target.closest?.("[data-quiet]")) return;
+      const control = event.target.closest?.("button,a,summary");
+      if (control && !control.matches(":disabled,[aria-disabled='true']"))
+        cue(control.dataset.sound || "press");
+    };
+    const type = (event) => {
+      if (event.inputType !== "insertText" || event.isComposing) return;
+      if (
+        event.target.matches?.("input:not([type=password]),textarea") &&
+        !event.target.closest("[data-quiet]")
+      )
+        cue("type");
+    };
+    const hover = (event) => {
+      if (event.pointerType !== "mouse") return;
+      const control = event.target.closest?.("button,a,summary");
+      if (
+        !control ||
+        control.contains(event.relatedTarget) ||
+        control.closest("[data-quiet]") ||
+        control.matches(":disabled")
+      )
+        return;
+      cue("hover");
+    };
+    window.addEventListener("click", click);
+    window.addEventListener("input", type);
+    window.addEventListener("pointerover", hover);
+    return () => {
+      window.removeEventListener("click", click);
+      window.removeEventListener("input", type);
+      window.removeEventListener("pointerover", hover);
+    };
+  }, [cue]);
   return {
     enabled: status === "starting" || status === "on",
     error: status === "error",
@@ -276,6 +330,8 @@ export default function useSoundscape(
     foreground,
     place: soundPlaces[destination] || soundPlaces.planet,
     toggle,
+    enable,
+    disable,
     cue,
     press,
     setPreference,

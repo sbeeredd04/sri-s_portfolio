@@ -1,0 +1,80 @@
+{
+  "/": {
+    "status": 200,
+    "bytes": 14760,
+    "contentType": "text/html; charset=utf-8",
+    "diagnosticLabelInEntryBundles": false
+  },
+  "/story": {
+    "status": 200,
+    "bytes": 71820,
+    "contentType": "text/html; charset=utf-8",
+    "projectIds": [
+      "project-aether",
+      "project-agentex",
+      "project-gitcue",
+      "project-mesa",
+      "project-csdna",
+      "project-soda",
+      "project-aatram",
+      "project-simsim",
+      "project-ios-101",
+      "project-safeside",
+      "project-aruready",
+      "project-avisol",
+      "project-voxelcv",
+      "project-mine-alliance",
+      "project-sage-ai",
+      "project-chalant",
+      "project-beli-codes",
+      "project-amano",
+      "project-headbobbergames",
+      "project-market-anomaly-detection",
+      "project-scenegraphvlm",
+      "project-computervision",
+      "project-trainer",
+      "project-prom10",
+      "project-song-rec",
+      "project-zsh-autocomplete",
+      "project-octodoc-doced"
+    ],
+    "containsHistory": {
+      "Offseason": true,
+      "Geometric Media": true,
+      "Biodesign": true,
+      "SoDA": true,
+      "Mesa": true,
+      "4.0": true,
+      "Entrepreneurship certificate": true
+    }
+  },
+  "/icon.svg": {
+    "status": 200,
+    "bytes": 435,
+    "contentType": "image/svg+xml"
+  },
+  "/sitemap.xml": {
+    "status": 200,
+    "bytes": 340,
+    "contentType": "application/xml"
+  },
+  "/robots.txt": {
+    "status": 200,
+    "bytes": 76,
+    "contentType": "text/plain"
+  },
+  "/opengraph-image": {
+    "status": 200,
+    "bytes": 69689,
+    "contentType": "image/png"
+  },
+  "/SafeSide.pdf": {
+    "status": 200,
+    "bytes": 1751114,
+    "contentType": "application/pdf"
+  },
+  "musicRange": {
+    "status": 206,
+    "bytes": 1024
+  }
+}

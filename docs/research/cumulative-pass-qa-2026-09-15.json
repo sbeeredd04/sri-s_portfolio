@@ -1,0 +1,79 @@
+{
+  "date": "2026-09-15",
+  "scope": "Cumulative request queue, repository coverage, shared world/time, project interactions, materials, residents and responsive QA",
+  "buildId": "4eUBfqGrCE7lhKoB59pgI",
+  "validation": {
+    "productionBuild": "pass",
+    "typeConfigurationCheck": "pass",
+    "automatedTests": {
+      "passed": 35,
+      "failed": 0
+    },
+    "gitDiffCheck": "pass",
+    "httpRoutes": {
+      "/": 200,
+      "/story": 200,
+      "/robots.txt": 200,
+      "/sitemap.xml": 200,
+      "/icon.svg": 200,
+      "/opengraph-image": 200
+    },
+    "serverRenderedProjectAnchors": 61
+  },
+  "content": {
+    "publicRepositoriesAccountedFor": 60,
+    "unresolvedRepositoryDispositions": 0,
+    "libraryEntries": 61,
+    "note": "Entries include team projects, early drafts, learning work and labeled forks; they are not 61 original launched products.",
+    "sourceSafety": "An embedded API credential in findprod was redacted from the research sample and never used. Gymception private-key filenames and database artifacts were observed without reading their contents. Source promotion is withheld for both."
+  },
+  "browserReview": [
+    "1280x800 and 1280x720 desktop: full globe, home, Project Town, entertainment and sports navigation.",
+    "375x667 and 390x844 portrait: full globe, notebook links, expanded project reading, search/filtering, keyboard focus and no horizontal document overflow.",
+    "375x667 final globe: increased visible diameter, smaller visible numbered badges inside 44-pixel hit areas, retained professional introduction and controls.",
+    "844x390 landscape: visible footer and settings, compact left controls, Mesa book and guided walking. Selected local stop scrolls into view.",
+    "All six featured projects: three-step explanatory sketches with native controls; native and physical SoDA/Mesa selections were exercised. Art is explicitly labeled as an interactive sketch.",
+    "Nous deep-link reload: #project-nous expands the correct details and focuses project-nous. Reference filtering returns nine entries, removes the stale hash and keeps focus on the filter.",
+    "Original v4 track: user-initiated playback advances currentTime; closing the reading sheet removes the audio element. Show selection updates the selected sitcom.",
+    "Environment sound enable/mute and live/day/night selection exercised, including lighting changes with motion paused. Sound mix was not independently evaluated through calibrated audio playback.",
+    "Actual WebGL context-loss action in development: fallback appears and Try 3D again restores the scene. Later final-build 3D off/on preserves the walking clock and usable controls.",
+    "Take a walk: same world, synchronized avatar/camera, tap greeting, Enter-key greeting, short sleeves following arm motion, paused/resumed motion, portrait/landscape and exit to Project Town.",
+    "Close-up material review: walnut floor boards, desk, monitor panels, chair, upholstery, capped hair-lock roots. Artist reference fidelity remains an open review item."
+  ],
+  "latestPerformanceSample": {
+    "environment": "Local development build, M4 Pro, browser viewport 1280x800, DPR 1, 30 Hz demand-render driver",
+    "globe": {
+      "drawCalls": 761,
+      "trianglesApprox": 984000,
+      "cpuMsPerFrame": 3.8,
+      "fps": 30.3
+    },
+    "settledHome": {
+      "drawCalls": 470,
+      "trianglesApprox": 907000,
+      "geometries": 580,
+      "textures": 42,
+      "programs": 61,
+      "cpuMsPerFrame": 3.6,
+      "fps": 30.3
+    },
+    "firstHomeTrip8Seconds": {
+      "renderedFrames": 474,
+      "peakCpuMs": 39,
+      "longestFrameGapMs": 136,
+      "peakDrawCalls": 852,
+      "longTasks": 1,
+      "longestTaskMs": 127,
+      "blockingMs": 77
+    },
+    "limits": "Variable browser load; CPU/render samples, not GPU measurements. No physical old-M1 or phone hardware benchmark."
+  },
+  "runtime": "No application errors observed in the final production browser review. Upstream Rapier initialization deprecation warnings remain and are not suppressed.",
+  "remaining": [
+    "Close-up environment/model art is still stylized and does not yet match every supplied reference.",
+    "True live/historical visitor presence awaits the pending preference and expired InsForge account reconnection confirmation. Decorative residents are never displayed as an online count.",
+    "Chalant purpose/stage/repository and exact graduation/employment dates are still pending.",
+    "API credential revocation and source-safety review require follow-through before restoring withheld repository links.",
+    "Physical old-M1/phone testing, Spotify account data, future LinkedIn/blog integration and production/DNS publication have not been completed."
+  ]
+}

@@ -217,15 +217,16 @@ export default function FoundryCampus({
               if (event.delta > 4) return;
               open();
             }}
-            onPointerOver={(event) => {
+            onPointerMove={(event) => {
               event.stopPropagation();
               onHover(
                 shelf
                   ? "Open the iPhone and iPad shelf"
                   : `The story of ${pose.name}`,
+                event,
               );
             }}
-            onPointerOut={() => onHover("")}
+            onPointerOut={(e) => onHover("", e)}
           >
             <mesh
               geometry={shelf ? built.parts.widePlinth : built.parts.plinth}

@@ -1,0 +1,100 @@
+{
+  "checked": "2026-09-14",
+  "sources": [
+    {
+      "url": "https://students.engineering.asu.edu/devils-invent/past-events/",
+      "verified": [
+        "AR You Ready: September 15–17, 2023; Sri named in third-place team",
+        "AviSol: April 19–21, 2024; Sri named in Innovation Technology award team",
+        "SafeSide: February 24–26, 2023; tied third for problem statement 1, Devils Invent + DASSH. Original portfolio team deck names Sri and matches the event problem statement."
+      ],
+      "limits": [
+        "Team awards, not individual awards"
+      ]
+    },
+    {
+      "url": "https://devpost.com/software/mine-alliance",
+      "verified": [
+        "Sri listed as backend developer on the team submission",
+        "Project explores mining information, mapping, and AI-assisted assessments",
+        "Original portfolio AcheivementTimeline.js at HEAD explicitly maps Mine Alliance to AZ Spark; retained as author-provided history, separate from organizer-confirmed results"
+      ],
+      "limits": [
+        "No prize amount or measured product outcome added"
+      ]
+    },
+    {
+      "url": "https://itunes.apple.com/lookup?id=6760587556&country=us",
+      "verified": [
+        "Aatram, developer Sri Ujjwal Reddy Beereddy",
+        "US App Store release date 2026-03-25, version 2.0",
+        "Listing describes momentum meter, emotion check-ins, focus timer, on-device data, no account"
+      ]
+    },
+    {
+      "url": "https://github.com/sbeeredd04/SimSim",
+      "verified": [
+        "Swift app with Photos, Core ML image/text embedding services, photo indexing, search, and local persistence"
+      ],
+      "limits": [
+        "No App Store release claimed",
+        "Source snapshots retained separately"
+      ]
+    },
+    {
+      "url": "https://github.com/sbeeredd04/iOS-101",
+      "verified": [
+        "Swift Scrumdinger learning workspace"
+      ],
+      "limits": [
+        "Learning project, not an original shipped product"
+      ]
+    },
+    {
+      "url": "https://github.com/sbeeredd04/VoxelCV",
+      "verified": [
+        "Pose landmarks, MediaPipe/OpenCV, webcam processing, image-based fall classification"
+      ],
+      "limits": [
+        "Sri confirms Voxel hackathon participation; older resume calls it PosturePro/Voxel51",
+        "No organizer-confirmed award found in this pass; do not add winner claim"
+      ]
+    },
+    {
+      "source": "Original repository public/SafeSide.pdf, recovered from HEAD and restored unchanged",
+      "verified": [
+        "Title page names Sri Ujjwal Reddy as one of six team members",
+        "Deck addresses the exact ASU DASSH crowd-decision challenge",
+        "Indoor BLE positioning, evacuation maps, alerts, responder updates proposed"
+      ],
+      "limits": [
+        "A hackathon concept; the deck lists integrations as future work, so no deployed system or measured safety impact is claimed",
+        "Individual implementation role is not specified in the deck"
+      ]
+    }
+  ],
+  "user_confirmed": [
+    "Devils Invent three times",
+    "AZ Spark participation",
+    "Voxel hackathon participation",
+    "Currently working on Chalant",
+    "Exploring iPhone apps"
+  ],
+  "pending": [
+    "Chalant purpose, stage, and repository",
+    "Additional unfinished ideas Sri wants shown",
+    "ASU graduation month and Offseason start month"
+  ],
+  "typography": [
+    {
+      "font": "Bricolage Grotesque",
+      "source": "https://github.com/google/fonts/tree/main/ofl/bricolagegrotesque",
+      "license": "app/fonts/BricolageGrotesque-OFL.txt"
+    },
+    {
+      "font": "Manrope",
+      "source": "https://github.com/google/fonts/tree/main/ofl/manrope",
+      "license": "app/fonts/Manrope-OFL.txt"
+    }
+  ]
+}

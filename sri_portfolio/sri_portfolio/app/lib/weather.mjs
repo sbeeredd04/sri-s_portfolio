@@ -89,16 +89,21 @@ export function parseOpenMeteo(json) {
   const kind = kindFromCode(Math.round(code));
   const base = presets[kind];
   const cloudCover = number(current.cloud_cover, base.cloud * 100, 0, 100);
-  const precipitation = number(current.precipitation, 0, 0, 50);
-  const visibility = number(current.visibility, 20000, 0, 100000);
+  const precipitation = number(current.precipitation, base.rain * 4, 0, 50);
+  const visibility = number(
+    current.visibility,
+    kind === "fog" ? 1500 : 20000,
+    0,
+    100000,
+  );
   const fogFromVisibility = 1 - clamp((visibility - 800) / 9200, 0, 1);
   return {
     kind,
     label: labels[kind],
-    cloud: Math.max(cloudCover / 100, base.cloud * 0.6),
-    // 4 mm/h is heavy rain; drizzle codes keep a visible minimum.
-    rain: Math.max(clamp(precipitation / 4, 0, 1), base.rain * 0.6),
-    fog: Math.max(fogFromVisibility, kind === "fog" ? base.fog : 0),
+    cloud: cloudCover / 100,
+    // Measured precipitation wins; WMO presets only fill missing fields.
+    rain: clamp(precipitation / 4, 0, 1),
+    fog: fogFromVisibility,
     wind: number(current.wind_speed_10m, base.wind, 0, 40),
     windDirection: number(current.wind_direction_10m, 290, 0, 360),
     temperature: number(current.temperature_2m, null, -30, 50),

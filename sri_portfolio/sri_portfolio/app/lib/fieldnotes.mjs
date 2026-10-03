@@ -29,6 +29,20 @@ export const fieldnoteShelves = [
   },
 ];
 
+// Public writing hosted elsewhere stays an external link, not a fabricated article route.
+export const externalFieldnotes = [
+  {
+    id: "agentic-software-factory",
+    shelf: "build",
+    category: "AI ENGINEERING · LINKEDIN",
+    title: "When agents do more, what do engineers do?",
+    summary:
+      "Notes on agentic software factories: context, coordination, review, and the human checkpoints between a goal and production.",
+    dateLabel: "September 2026",
+    href: "https://www.linkedin.com/feed/update/urn:li:activity:7509280963181498369/",
+  },
+];
+
 export const fieldnotes = [];
 
 export function isPublishedFieldnote(note) {

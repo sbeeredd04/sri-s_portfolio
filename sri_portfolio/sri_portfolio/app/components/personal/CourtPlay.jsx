@@ -161,8 +161,6 @@ export default function CourtPlay({
   useEffect(
     () => () => {
       onActivity?.(variant, false);
-      onHover?.("");
-      document.body.style.cursor = "";
     },
     [variant, onActivity, onHover],
   );
@@ -196,13 +194,12 @@ export default function CourtPlay({
   function play(e) {
     if (!animate || motion.current.busy || e.delta > 4) return;
     e.stopPropagation();
-    onHover?.("");
+    onHover?.("", e);
     onPlay?.(variant);
   }
   function hover(e) {
     if (!animate) return;
     e.stopPropagation();
-    document.body.style.cursor = motion.current.busy ? "" : "pointer";
     onHover?.(
       motion.current.busy
         ? isBasket
@@ -211,6 +208,8 @@ export default function CourtPlay({
         : isBasket
           ? "Tap a player to take a shot."
           : "Tap a player to serve.",
+      e,
+      motion.current.busy ? "auto" : "pointer",
     );
   }
   return (
@@ -221,10 +220,9 @@ export default function CourtPlay({
           position={player.position}
           scale={PLAYER_SCALE}
           onClick={play}
-          onPointerOver={hover}
-          onPointerOut={() => {
-            onHover?.("");
-            document.body.style.cursor = "";
+          onPointerMove={hover}
+          onPointerOut={(e) => {
+            onHover?.("", e);
           }}
         >
           <Character
@@ -240,10 +238,9 @@ export default function CourtPlay({
       <group
         ref={ball}
         onClick={play}
-        onPointerOver={hover}
-        onPointerOut={() => {
-          onHover?.("");
-          document.body.style.cursor = "";
+        onPointerMove={hover}
+        onPointerOut={(e) => {
+          onHover?.("", e);
         }}
       >
         <group ref={spin}>

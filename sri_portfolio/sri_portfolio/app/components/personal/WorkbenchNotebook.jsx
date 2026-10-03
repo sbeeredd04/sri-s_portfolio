@@ -175,11 +175,11 @@ export default function WorkbenchNotebook({ book, onOpen, onHover }) {
         e.stopPropagation();
         if (e.delta <= 4) onOpen(book.id);
       }}
-      onPointerOver={(e) => {
+      onPointerMove={(e) => {
         e.stopPropagation();
-        onHover(`Open ${book.name}`);
+        onHover(`Open ${book.name}`, e);
       }}
-      onPointerOut={() => onHover("")}
+      onPointerOut={(e) => onHover("", e)}
     >
       <Box
         position={[0, 0.54, -0.075]}

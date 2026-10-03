@@ -101,8 +101,16 @@ export const metadata = {
   metadataBase: new URL("https://www.sriujjwalreddy.com"),
   title: "Sri Ujjwal Reddy — A little world of my own.",
   description:
-    "Founding Engineer at Offseason in San Francisco. A curious builder who cares about how things work, how they feel, and life beyond the screen.",
+    "Sri Ujjwal Reddy — Founding Engineer at Offseason in San Francisco. AI engineering, agents, context systems, and model harnesses.",
   alternates: { canonical: "/" },
+  applicationName: "Sri Ujjwal Reddy",
+  icons: {
+    icon: [
+      { url: "/brand/sri-icon-96.png", sizes: "96x96", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     title: "Sri Ujjwal Reddy — A little world of my own.",
     description: "Building, exploring, and finding joy in the little things.",

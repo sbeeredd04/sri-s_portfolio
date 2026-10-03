@@ -485,3 +485,134 @@ test("Fieldnotes chimes without the street hum following", () => {
     engine.destroy(true);
   }
 });
+
+test("first interaction has an audible bus before background downloads finish", (t) => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  assert.equal(engine.master.gain.value, sensoryDefaults.volume);
+  assert.ok(engine.effects.gain.value > 0);
+  engine.cue("press");
+  assert.equal(ctx.oscillators.length, 1);
+  assert.equal(ctx.oscillators[0].type, "triangle");
+  assert.equal(engine.loaded.size, 0);
+  ctx.currentTime += 1;
+  engine.preferences.enabled = false;
+  engine.cue("press");
+  assert.equal(
+    ctx.oscillators.length,
+    1,
+    "remembered master mute suppresses interaction sounds",
+  );
+});
+
+test("micro sounds never swallow a click and rapid typing stays bounded", (t) => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "studio",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  engine.cue("type");
+  const typed = ctx.oscillators.length;
+  for (let i = 0; i < 30; i++) engine.cue("type");
+  assert.equal(ctx.oscillators.length, typed);
+  engine.cue("press");
+  assert.equal(ctx.oscillators.length, typed + 1);
+});
+
+test("travel has low body, finite sources, and follows the effects mute", (t) => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  engine.cue("travel");
+  assert.ok(ctx.oscillators.some((node) => node.frequency.value < 100));
+  assert.ok(ctx.oscillators.every((node) => node.stopped));
+  const count = ctx.oscillators.length;
+  engine.preferences.effects = false;
+  ctx.currentTime += 2;
+  engine.cue("welcome");
+  assert.equal(ctx.oscillators.length, count);
+});
+
+// Unlike the basic fake, this clock keeps scheduled notes alive until onended.
+function scheduledContext() {
+  const ctx = context();
+  for (const method of ["createOscillator", "createBufferSource"]) {
+    const create = ctx[method];
+    ctx[method] = () => {
+      const node = create();
+      node.start = (at) => {
+        node.startsAt = at;
+      };
+      node.stop = (at = ctx.currentTime) => {
+        node.stopsAt = at;
+      };
+      return node;
+    };
+  }
+  return ctx;
+}
+
+test("morph sound follows the decode score, has a bass octave and a bounded voice count", () => {
+  const ctx = scheduledContext();
+  const engine = new SoundEngine(ctx, {
+    place: "studio",
+    preferences: sensoryDefaults,
+  });
+  engine.cue("morph", { destination: "projects" });
+  assert.equal(ctx.oscillators.length, 4);
+  assert.equal(ctx.sources.length, 1);
+  assert.ok(ctx.oscillators[0].frequency.value < 100);
+  assert.equal(
+    ctx.oscillators[1].frequency.value,
+    ctx.oscillators[0].frequency.value * 2,
+  );
+  assert.equal(ctx.oscillators[2].startsAt, ctx.currentTime + 0.72);
+  assert.ok(
+    [...ctx.oscillators, ...ctx.sources].every(
+      (n) => n.stopsAt <= ctx.currentTime + 1.1,
+    ),
+  );
+  const count = ctx.oscillators.length;
+  engine.cue("press"); // Bubbling click must not double the score.
+  assert.equal(ctx.oscillators.length, count);
+  [...ctx.oscillators, ...ctx.sources].forEach((n) => n.onended());
+  assert.equal(engine.nodes.size, 0);
+  engine.destroy(true);
+});
+
+test("rapid biome changes cancel the old resolution; pause and effects mute cancel pending notes", async () => {
+  const ctx = scheduledContext();
+  const engine = new SoundEngine(ctx, {
+    place: "studio",
+    preferences: sensoryDefaults,
+  });
+  engine.prepare = async () => {};
+  engine.cue("morph", { destination: "projects" });
+  const first = [...ctx.oscillators, ...ctx.sources];
+  ctx.currentTime += 0.02; // Faster than the ordinary click rate limit.
+  engine.cue("morph", { destination: "court" });
+  assert.ok(first.every((n) => n.stopsAt <= ctx.currentTime + 0.04));
+  assert.equal(ctx.oscillators.length, 8);
+  engine.cue("cancel-morph");
+  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.04));
+  ctx.currentTime += 1;
+  engine.cue("morph", { destination: "trail" });
+  engine.update({ preferences: { ...sensoryDefaults, effects: false } });
+  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.04));
+  const mutedCount = ctx.oscillators.length;
+  engine.cue("morph", { destination: "future" });
+  assert.equal(ctx.oscillators.length, mutedCount);
+  engine.update({ preferences: sensoryDefaults });
+  engine.cue("morph", { destination: "future" });
+  await engine.setHidden(true);
+  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.04));
+  engine.destroy(true);
+});

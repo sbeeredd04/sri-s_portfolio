@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-14",
+  "scope": "Listening enclosure, botanical geometry, paper pendants and portrait camera",
+  "automated": {
+    "build": "passed",
+    "typecheck": "passed",
+    "testsPassed": 26,
+    "diffWhitespace": "passed",
+    "manualPendulumSimulation": "Zero/invalid delta preserved state; bounded nudge settled below 0.001 angle and angular velocity after ten seconds"
+  },
+  "production": {
+    "viewport": [390, 844],
+    "documentWidth": 390,
+    "scrollWidth": 390,
+    "canvasCount": 1,
+    "visual": "Ceiling, ribbed paper shade, chair, botanical leaves and textured record cabinet fit the authored portrait view",
+    "contentLink": "Put a record on opened On repeat with Sri's v4, artist taste and five comfort shows",
+    "warningsAndErrors": 0
+  },
+  "development": {
+    "pause": "Two 95019-byte desktop captures were identical with motion off",
+    "pendant": "Pointer nudge visibly tilted the shade and cord; it subsequently settled",
+    "contextRecovery": "Fallback appeared and retry restored the textured room and new geometry",
+    "applicationErrors": 0,
+    "upstreamWarnings": [
+      "Rapier initialization deprecation",
+      "WEBGL_lose_context extension not supported during teardown"
+    ],
+    "restoredListeningSample": {
+      "viewport": [1280, 800],
+      "dpr": 1,
+      "drawCalls": 296,
+      "triangles": 460000,
+      "geometries": 591,
+      "textures": 34,
+      "programs": 41,
+      "cpuMsPerFrame": 5.7,
+      "fps": 30.4
+    }
+  },
+  "limitations": [
+    "Local counts include both shadow and main passes; timings are not controlled hardware measurements.",
+    "Old-M1 performance and first-entry shader/geometry cost remain unmeasured.",
+    "Plant motion is authored joint sway; pendant motion approximates independent axes.",
+    "No cord/shade collision or moving practical-light simulation was added.",
+    "Reference-level art fidelity and broader world interaction remain unfinished."
+  ]
+}

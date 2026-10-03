@@ -133,7 +133,7 @@ export default function ExperienceStory({
         </h2>
         <p className="xp-lead">
           The work has taken me from molecular-scale images to museum visitors,
-          student communities, and now personal wellness. Different problems.
+          student communities, and now AI engineering at Offseason. Different problems.
           More ways to see.
         </p>
         <a className="xp-resume" href="/resume">

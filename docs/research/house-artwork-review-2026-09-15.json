@@ -1,0 +1,61 @@
+{
+  "date": "2026-09-15",
+  "scope": "House architecture, authentic artwork, placement, matching interaction destinations",
+  "desktop": [
+    1280,
+    800
+  ],
+  "phone": [
+    390,
+    844
+  ],
+  "visual_review": [
+    "House arrival before continuous travel into the room",
+    "Joined roof, framing, door approach, credenza, photo, pendant, sofa and coffee table",
+    "Official book cover on desk and in About Me, author and photo credit retained",
+    "House desk monitor artwork and pointer opening the pictured Brooklyn Nine-Nine collection",
+    "Phone show collection including horizontal selection of How I Met Your Mother and correct official source link",
+    "GitHub and LinkedIn authentic profile marks with existing destinations",
+    "Cinema wide artwork after correcting landscape-versus-portrait composition",
+    "Escape closes reading sheets and restores native trigger focus"
+  ],
+  "interaction_review": [
+    "Book pickup/release moved the textured physical object while the camera remained stationary",
+    "Room reset control exercised",
+    "Local arrival/desk/book/return controls and chapter navigation",
+    "Shared show selection and native Next show controls"
+  ],
+  "fixed_defects": [
+    "Book initially overhung desktop; now bounded by tested edge clearance",
+    "1px placeholder texture produced a black cover after larger image upload; release GPU allocation before replacement",
+    "Initial camera-only arrival entry leaked into visible stop list; separated studioArrival contract",
+    "Phone exterior camera too tight; wider authored position",
+    "Front glass crossed doorway; corrected pane span",
+    "Open door angled across approach; opened leaf parallel to the side of the approach",
+    "Roof remained translucent from arrival; exterior opaque before entering",
+    "Wide Brooklyn artwork too small in portrait-style cinema composition; dedicated landscape placement",
+    "Media monitor opened music while showing Brooklyn; now opens matching show",
+    "3D photograph was 4.2MB; 24KB derivative used"
+  ],
+  "checks": {
+    "build": "pass",
+    "typecheck": "pass",
+    "tests": {
+      "passed": 44,
+      "failed": 0
+    },
+    "diff_whitespace": "pass",
+    "local_official_assets": 9,
+    "local_asset_http_status": "all 200",
+    "story_contains_all_artwork": true,
+    "browser_errors": 0,
+    "known_warning": "Upstream Rapier initialization deprecation remains."
+  },
+  "limitations": [
+    "This is authored browser 3D, not AAA or reference-equivalent model fidelity",
+    "Physical older-M1 and phone performance still unverified",
+    "Warner Bros key-art originals delivered at 256x384; retained without invented upscaling",
+    "No authoritative logos invented for unverified project/employer brands",
+    "Real visitor presence, broader world art and publishing remain in the cumulative queue"
+  ]
+}

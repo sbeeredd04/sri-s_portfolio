@@ -25,12 +25,14 @@ export default function PostEffects({ world, daylight }) {
   useEffect(() => {
     // The composer tone-maps its final pass; the renderer must stay linear.
     const previous = gl.toneMapping;
-    gl.toneMapping = THREE.NoToneMapping;
+    gl.toneMapping =
+      quality.tier === "low" ? THREE.AgXToneMapping : THREE.NoToneMapping;
     invalidate();
     return () => {
       gl.toneMapping = previous;
     };
-  }, [gl, invalidate]);
+  }, [gl, invalidate, quality.tier]);
+  if (quality.tier === "low") return null;
   const close = world !== "planet";
   const night = daylight < 0.15;
   return (
@@ -49,20 +51,23 @@ export default function PostEffects({ world, daylight }) {
         />
       )}
       {quality.bloom && (
-      <Bloom
-        mipmapBlur
-        luminanceThreshold={night ? 0.62 : 0.9}
-        luminanceSmoothing={0.2}
-        intensity={night ? 0.85 : 0.35}
-        radius={0.72}
-      />
+        <Bloom
+          mipmapBlur
+          luminanceThreshold={night ? 0.62 : 0.9}
+          luminanceSmoothing={0.2}
+          intensity={night ? 0.85 : 0.35}
+          radius={0.72}
+        />
       )}
       <ToneMapping mode={ToneMappingMode.AGX} />
       {/* Grade after tone mapping: in scene-linear light a saturation or
           contrast push drives saturated and near-black channels negative,
           which AgX turns into black holes (bright yellow title art did). */}
       <HueSaturation saturation={night ? -0.04 : 0.14} />
-      <BrightnessContrast brightness={night ? 0.02 : 0} contrast={night ? 0.06 : 0.1} />
+      <BrightnessContrast
+        brightness={night ? 0.02 : 0}
+        contrast={night ? 0.06 : 0.1}
+      />
       <Vignette offset={0.32} darkness={0.46} eskil={false} />
       {quality.smaa && <SMAA />}
     </EffectComposer>

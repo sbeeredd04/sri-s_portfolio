@@ -1,0 +1,244 @@
+/* Shared tempo, entrance choreography and editorial reading surfaces. */
+:root {
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-fast: 160ms;
+  --motion-page: 520ms;
+  --type-editorial: var(--font-newsreader), Georgia, serif;
+}
+.world-loader {
+  overflow-x: hidden;
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    #203547 0%,
+    #101d29 35%,
+    #080f17 78%
+  );
+  padding: 65px 24px 76px;
+}
+.world-loader-inner {
+  position: relative;
+  width: min(620px, 100%);
+  padding: 18px 0;
+}
+.entrance-folio {
+  position: absolute;
+  inset: 28px 36px auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #99adbf;
+  font: 10px/1.5 var(--font-mono);
+  letter-spacing: 0.07em;
+}
+.entrance-map {
+  position: absolute;
+  width: min(640px, 110vw);
+  left: 50%;
+  top: -15px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.entrance-map svg {
+  width: 100%;
+  overflow: visible;
+}
+.entrance-route {
+  stroke: #bed7e2;
+  opacity: 0.28;
+  stroke-width: 0.7;
+  stroke-dasharray: 1;
+  animation: entrance-trace 1800ms var(--motion-ease) both;
+}
+.entrance-orbit {
+  stroke: #c9dcde;
+  opacity: 0.09;
+  stroke-width: 0.6;
+  transform-origin: center;
+  animation: entrance-orbit 1900ms var(--motion-ease) both;
+}
+.entrance-map circle {
+  fill: #d3e5df;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: entrance-mark 700ms calc(350ms + var(--mark) * 160ms)
+    var(--motion-ease) both;
+}
+.entrance-signature {
+  position: relative;
+  width: clamp(170px, 23vw, 245px);
+  margin: 45px auto 40px;
+  animation: entrance-settle 1800ms var(--motion-ease) both;
+}
+.entrance-signature .signature-stroke {
+  animation-duration: 1550ms;
+}
+.entrance-signature .signature-i-dot {
+  animation-delay: 1000ms;
+}
+.entrance-signature .signature-period {
+  animation-delay: 1250ms;
+}
+.world-loader h2 {
+  font: 400 clamp(39px, 4.6vw, 64px)/1.03 var(--type-editorial);
+  letter-spacing: -0.035em;
+}
+.world-loader h2 span {
+  font-style: italic;
+  color: #bdd1d0;
+}
+.entrance-eyebrow {
+  font: 10px/1.6 var(--font-mono);
+  letter-spacing: 0.16em;
+  margin-bottom: 15px;
+}
+.entrance-description {
+  max-width: 360px;
+  margin: 18px auto 26px;
+}
+.entrance-eyebrow,
+.world-loader h2,
+.entrance-description {
+  animation: entrance-copy 900ms 700ms var(--motion-ease) both;
+}
+.entrance-actions {
+  animation: entrance-copy 800ms 1000ms var(--motion-ease) both;
+}
+.entrance-actions button {
+  transition:
+    transform var(--motion-fast) var(--motion-ease),
+    background var(--motion-fast);
+}
+.entrance-audio {
+  background: #dce9e5;
+}
+.entrance-places {
+  position: absolute;
+  bottom: 26px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: center;
+  gap: clamp(15px, 3vw, 40px);
+  color: #91a9bb;
+  font: 10px/1.5 var(--font-sans);
+  animation: entrance-copy 800ms 1250ms both;
+}
+.world-loader[data-leaving="true"] {
+  animation: entrance-depart 580ms var(--motion-ease) forwards;
+}
+.world-loader[data-leaving="true"] .entrance-map {
+  opacity: 0;
+  transition: opacity 200ms;
+}
+.world-loader[data-leaving="true"] .entrance-signature {
+  transition: transform 580ms var(--motion-ease);
+  transform: translateY(-25px) scale(0.8);
+}
+@keyframes entrance-trace {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0.28;
+  }
+}
+@keyframes entrance-orbit {
+  from {
+    transform: rotate(-25deg) scale(0.4);
+    opacity: 0;
+  }
+}
+@keyframes entrance-mark {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+@keyframes entrance-settle {
+  from {
+    transform: translateY(22px) scale(0.75);
+    filter: blur(5px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    filter: none;
+    opacity: 1;
+  }
+}
+@media (max-width: 600px) {
+  .world-loader {
+    padding: 65px 20px;
+  }
+  .entrance-folio {
+    inset: 20px 20px auto;
+    font-size: 9px;
+  }
+  .entrance-folio span:last-child {
+    max-width: 105px;
+    text-align: right;
+  }
+  .entrance-map {
+    top: 0;
+    width: 440px;
+  }
+  .entrance-signature {
+    margin: 35px auto 35px;
+  }
+  .entrance-places {
+    gap: 14px;
+    flex-wrap: wrap;
+    max-width: 310px;
+    margin: auto;
+    font-size: 9px;
+    bottom: 20px;
+  }
+  .entrance-readiness {
+    margin-top: 12px;
+  }
+}
+@media (max-height: 740px) {
+  .world-loader[open] {
+    display: block;
+  }
+  .world-loader-inner {
+    margin: auto;
+  }
+  .entrance-signature {
+    width: 150px;
+    margin-top: 20px;
+    margin-bottom: 28px;
+  }
+  .entrance-places {
+    position: static;
+    margin: 15px auto 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-loader,
+  .world-loader *,
+  .world-loader::backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+  .entrance-map {
+    display: none;
+  }
+}
+.site-mark .personal-signature {
+  width: 52px;
+  height: 30px;
+  display: block;
+  color: inherit;
+}
+/* The dark story masthead must not lend its light text to the paper mixer. */
+.fn-article .room-sound-panel {
+  --paper: #f1efe7;
+  --ink: #25302e;
+  --muted: #575f59;
+  --line: #25302e24;
+  --accent: #57706a;
+  color: var(--ink);
+}

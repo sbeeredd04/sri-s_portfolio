@@ -1,0 +1,26 @@
+{
+  "checked": "2026-09-15",
+  "sources": [
+    "HEAD:app/json/features.json",
+    "HEAD:app/json/deployed.json",
+    "HEAD:app/json/projects.json",
+    "HEAD:public/sri_resume.pdf",
+    "https://agentex.sriujjwalreddy.com",
+    "https://devpost.com/software/mine-alliance",
+    "https://github.com/LuaanNguyen/Mine-Alliance",
+    "https://github.com/sbeeredd04/AviSol"
+  ],
+  "recordings": {
+    "agentex": "OKv4dPgsCkM",
+    "mine-alliance": "7ei89DcPWfY"
+  },
+  "demoCount": 9,
+  "availability": "Product pages returned HTTP 200; external backend operations were not exercised. Agentex embed rendered its original thumbnail/title in the local reading panel.",
+  "awards": {
+    "mine-alliance": "Team repository explicitly names Principled Innovation Hackathon Winner. Original r\u00e9sum\u00e9 claims a prize; no exact prize/rank added.",
+    "voxelcv": "Original author r\u00e9sum\u00e9 names PosturePro as a Voxel51 hackathon winner; no independent organizer result found.",
+    "importantLimit": "ASU September 9 2024 article names a different first-place team. It cannot substantiate Sri\u2019s rank or prize.",
+    "asuArticle": "https://tech.asu.edu/features/sustainable-arizona-spark-challenge-asu-students-tackle-sustainability-issues-arizona-mining"
+  },
+  "resume": "Restored original PDF unchanged, explicitly archived. Current printable /resume draws from current experience data; no unknown dates invented."
+}

@@ -42,8 +42,6 @@ const nightTint = {
   trail: new THREE.Color(0.025, 0.045, 0.06),
 };
 
-// Share of the day sky replaced by marine-layer grey: the city is overcast.
-export const overcast = { studio: 0.62 };
 const cloudDeck = {
   zenith: new THREE.Color(0.34, 0.37, 0.41),
   horizon: new THREE.Color(0.58, 0.6, 0.62),
@@ -66,9 +64,8 @@ export function skyState({
   const cloud = weather?.cloud ?? 0;
   const rain = weather?.rain ?? 0;
   const mist = weather?.fog ?? 0;
-  // The city keeps some marine layer even on a clear day; live cover adds
-  // to it everywhere.
-  const deck = Math.max((overcast[world] || 0) * 0.6, cloud * cloud * 0.9);
+  // Biome mood never invents weather: measured cloud cover controls the deck.
+  const deck = cloud * cloud * 0.9;
   const opacity =
     world === "planet"
       ? 0

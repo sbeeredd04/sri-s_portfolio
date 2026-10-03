@@ -1,0 +1,1020 @@
+{
+  "repositories": [
+    {
+      "name": "codegraph",
+      "html_url": "https://github.com/sbeeredd04/codegraph",
+      "description": null,
+      "fork": false,
+      "language": null,
+      "updated_at": "2026-06-22T07:35:44Z",
+      "size": 1438
+    },
+    {
+      "name": "MCP101",
+      "html_url": "https://github.com/sbeeredd04/MCP101",
+      "description": null,
+      "fork": false,
+      "language": null,
+      "updated_at": "2026-06-20T21:04:55Z",
+      "size": 0
+    },
+    {
+      "name": "beli_codes",
+      "html_url": "https://github.com/sbeeredd04/beli_codes",
+      "description": null,
+      "fork": false,
+      "language": "TypeScript",
+      "updated_at": "2026-06-16T08:14:56Z",
+      "size": 96
+    },
+    {
+      "name": "modelcontextprotocol",
+      "html_url": "https://github.com/sbeeredd04/modelcontextprotocol",
+      "description": "Specification and\u00a0documentation for the Model Context Protocol",
+      "fork": true,
+      "language": null,
+      "updated_at": "2026-05-30T19:07:49Z",
+      "size": 46364
+    },
+    {
+      "name": "openai-cookbook",
+      "html_url": "https://github.com/sbeeredd04/openai-cookbook",
+      "description": "Examples and guides for using the OpenAI API",
+      "fork": true,
+      "language": null,
+      "updated_at": "2026-05-30T06:24:13Z",
+      "size": 926811
+    },
+    {
+      "name": "hadoop_multithreading",
+      "html_url": "https://github.com/sbeeredd04/hadoop_multithreading",
+      "description": null,
+      "fork": false,
+      "language": "Python",
+      "updated_at": "2026-04-27T03:17:20Z",
+      "size": 10
+    },
+    {
+      "name": "classauto",
+      "html_url": "https://github.com/sbeeredd04/classauto",
+      "description": null,
+      "fork": false,
+      "language": "Python",
+      "updated_at": "2026-03-16T10:46:11Z",
+      "size": 25222
+    },
+    {
+      "name": "sri-s_portfolio",
+      "html_url": "https://github.com/sbeeredd04/sri-s_portfolio",
+      "description": null,
+      "fork": false,
+      "language": "JavaScript",
+      "updated_at": "2026-03-10T13:20:19Z",
+      "size": 297784
+    },
+    {
+      "name": "Agentex",
+      "html_url": "https://github.com/sbeeredd04/Agentex",
+      "description": null,
+      "fork": false,
+      "language": "JavaScript",
+      "updated_at": "2026-03-05T00:03:41Z",
+      "size": 18732
+    },
+    {
+      "name": "sandbox",
+      "html_url": "https://github.com/sbeeredd04/sandbox",
+      "description": null,
+      "fork": false,
+      "language": "Jupyter Notebook",
+      "updated_at": "2026-03-03T05:20:00Z",
+      "size": 1739778
+    },
+    {
+      "name": "Nous",
+      "html_url": "https://github.com/sbeeredd04/Nous",
+      "description": "Experiments",
+      "fork": false,
+      "language": "Python",
+      "updated_at": "2026-02-11T06:02:55Z",
+      "size": 2402
+    },
+    {
+      "name": "sandbox_private",
+      "html_url": "https://github.com/sbeeredd04/sandbox_private",
+      "description": "Private Sandbox",
+      "fork": false,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-12-11T07:46:36Z",
+      "size": 140456
+    },
+    {
+      "name": "dotfiles",
+      "html_url": "https://github.com/sbeeredd04/dotfiles",
+      "description": "My dotfiles configuration",
+      "fork": false,
+      "language": "Shell",
+      "updated_at": "2025-11-27T04:22:13Z",
+      "size": 3
+    },
+    {
+      "name": "binsr_challenge",
+      "html_url": "https://github.com/sbeeredd04/binsr_challenge",
+      "description": null,
+      "fork": false,
+      "language": "TypeScript",
+      "updated_at": "2025-11-04T02:36:46Z",
+      "size": 135648
+    },
+    {
+      "name": "ImageFolder",
+      "html_url": "https://github.com/sbeeredd04/ImageFolder",
+      "description": "High-performance Image Tokenizers for VAR and AR",
+      "fork": true,
+      "language": null,
+      "updated_at": "2025-10-29T16:15:15Z",
+      "size": 4160
+    },
+    {
+      "name": "zsh_plugin",
+      "html_url": "https://github.com/sbeeredd04/zsh_plugin",
+      "description": null,
+      "fork": false,
+      "language": "HTML",
+      "updated_at": "2025-10-27T14:30:28Z",
+      "size": 194
+    },
+    {
+      "name": "auto-git",
+      "html_url": "https://github.com/sbeeredd04/auto-git",
+      "description": null,
+      "fork": false,
+      "language": "TypeScript",
+      "updated_at": "2025-10-25T19:50:09Z",
+      "size": 3946
+    },
+    {
+      "name": "Aether",
+      "html_url": "https://github.com/sbeeredd04/Aether",
+      "description": "Aether AI - Chat Multiverse transforms linear AI conversations into explorable, visual trees. It offers infinite branching, support for multiple AI models , web-grounded responses, rich media integration",
+      "fork": false,
+      "language": "TypeScript",
+      "updated_at": "2025-10-25T00:25:55Z",
+      "size": 781
+    },
+    {
+      "name": "LeetCode",
+      "html_url": "https://github.com/sbeeredd04/LeetCode",
+      "description": "My LeetCode solves and updates ",
+      "fork": false,
+      "language": "Python",
+      "updated_at": "2025-10-18T00:53:10Z",
+      "size": 473
+    },
+    {
+      "name": "ComputerVision",
+      "html_url": "https://github.com/sbeeredd04/ComputerVision",
+      "description": null,
+      "fork": false,
+      "language": "Python",
+      "updated_at": "2025-08-20T01:00:08Z",
+      "size": 9132
+    },
+    {
+      "name": "sbeeredd04",
+      "html_url": "https://github.com/sbeeredd04/sbeeredd04",
+      "description": null,
+      "fork": false,
+      "language": null,
+      "updated_at": "2025-07-25T06:54:31Z",
+      "size": 2161
+    },
+    {
+      "name": "VoxelCV",
+      "html_url": "https://github.com/sbeeredd04/VoxelCV",
+      "description": null,
+      "fork": false,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-07-07T22:39:22Z",
+      "size": 255
+    },
+    {
+      "name": "CSDNA",
+      "html_url": "https://github.com/sbeeredd04/CSDNA",
+      "description": null,
+      "fork": false,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-07-07T18:57:51Z",
+      "size": 314214
+    },
+    {
+      "name": "Amano",
+      "html_url": "https://github.com/sbeeredd04/Amano",
+      "description": null,
+      "fork": false,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-07-07T18:33:33Z",
+      "size": 1876
+    },
+    {
+      "name": "promen",
+      "html_url": "https://github.com/sbeeredd04/promen",
+      "description": null,
+      "fork": false,
+      "language": "JavaScript",
+      "updated_at": "2025-07-07T18:25:47Z",
+      "size": 3176
+    },
+    {
+      "name": "psych",
+      "html_url": "https://github.com/sbeeredd04/psych",
+      "description": null,
+      "fork": false,
+      "language": "TypeScript",
+      "updated_at": "2025-06-12T13:23:36Z",
+      "size": 96
+    },
+    {
+      "name": "anthropic-cookbook",
+      "html_url": "https://github.com/sbeeredd04/anthropic-cookbook",
+      "description": "A collection of notebooks/recipes showcasing some fun and effective ways of using Claude.",
+      "fork": true,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-06-08T17:32:06Z",
+      "size": 146209
+    },
+    {
+      "name": "SimSim",
+      "html_url": "https://github.com/sbeeredd04/SimSim",
+      "description": null,
+      "fork": false,
+      "language": "Swift",
+      "updated_at": "2025-06-06T07:17:28Z",
+      "size": 155
+    },
+    {
+      "name": "iOS-101",
+      "html_url": "https://github.com/sbeeredd04/iOS-101",
+      "description": null,
+      "fork": false,
+      "language": "Swift",
+      "updated_at": "2025-06-05T18:12:21Z",
+      "size": 888
+    },
+    {
+      "name": "TBD",
+      "html_url": "https://github.com/sbeeredd04/TBD",
+      "description": null,
+      "fork": false,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-05-23T01:34:00Z",
+      "size": 30317
+    },
+    {
+      "name": "cookbook",
+      "html_url": "https://github.com/sbeeredd04/cookbook",
+      "description": "Examples and guides for using the Gemini API",
+      "fork": true,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-05-22T06:46:50Z",
+      "size": 824460
+    },
+    {
+      "name": "Relightable-Portrait-Animation",
+      "html_url": "https://github.com/sbeeredd04/Relightable-Portrait-Animation",
+      "description": "[CVPR 2025] High-Fidelity Relightable Monocular Portrait Animation with Lighting-Controllable Video Diffusion Model",
+      "fork": true,
+      "language": null,
+      "updated_at": "2025-05-15T21:05:06Z",
+      "size": 11157
+    },
+    {
+      "name": "Trainer",
+      "html_url": "https://github.com/sbeeredd04/Trainer",
+      "description": null,
+      "fork": false,
+      "language": "Python",
+      "updated_at": "2025-04-23T00:24:38Z",
+      "size": 18
+    },
+    {
+      "name": "HeadBobberGames",
+      "html_url": "https://github.com/sbeeredd04/HeadBobberGames",
+      "description": "HeadBobberGames \ud83c\udfae : A vibrant collection of multiplayer games created for friends to enjoy together. This repository features arcade-style games with a modern twist, designed to bring people together for fun and competitive gameplay.",
+      "fork": false,
+      "language": "HTML",
+      "updated_at": "2025-04-18T17:56:20Z",
+      "size": 16930
+    },
+    {
+      "name": "PromenClient",
+      "html_url": "https://github.com/sbeeredd04/PromenClient",
+      "description": "Website for the Promen Chrome Extension",
+      "fork": false,
+      "language": "TypeScript",
+      "updated_at": "2025-04-11T14:48:49Z",
+      "size": 9304
+    },
+    {
+      "name": "XML_Xpoloration",
+      "html_url": "https://github.com/sbeeredd04/XML_Xpoloration",
+      "description": "Learning about XML",
+      "fork": false,
+      "language": null,
+      "updated_at": "2025-04-07T03:38:23Z",
+      "size": 13
+    },
+    {
+      "name": "Trak",
+      "html_url": "https://github.com/sbeeredd04/Trak",
+      "description": null,
+      "fork": false,
+      "language": "TypeScript",
+      "updated_at": "2025-04-04T14:17:02Z",
+      "size": 7308
+    },
+    {
+      "name": "Aristotle",
+      "html_url": "https://github.com/sbeeredd04/Aristotle",
+      "description": null,
+      "fork": false,
+      "language": null,
+      "updated_at": "2025-04-03T12:15:03Z",
+      "size": 4401
+    },
+    {
+      "name": "Chrome-extension-101",
+      "html_url": "https://github.com/sbeeredd04/Chrome-extension-101",
+      "description": null,
+      "fork": false,
+      "language": "JavaScript",
+      "updated_at": "2025-03-26T02:38:15Z",
+      "size": 12
+    },
+    {
+      "name": "puter",
+      "html_url": "https://github.com/sbeeredd04/puter",
+      "description": "\ud83c\udf10 The Internet OS! Free, Open-Source, and Self-Hostable.",
+      "fork": true,
+      "language": null,
+      "updated_at": "2025-03-15T00:47:06Z",
+      "size": 21970
+    },
+    {
+      "name": "SceneGraphVLM",
+      "html_url": "https://github.com/sbeeredd04/SceneGraphVLM",
+      "description": "Using VLM to predict scene graphs from the visual genome dataset",
+      "fork": false,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-02-07T00:46:09Z",
+      "size": 58149
+    },
+    {
+      "name": "GunShotAnalysis",
+      "html_url": "https://github.com/sbeeredd04/GunShotAnalysis",
+      "description": null,
+      "fork": false,
+      "language": null,
+      "updated_at": "2025-01-24T15:18:01Z",
+      "size": 370039
+    },
+    {
+      "name": "MesaInteractiveExhibit",
+      "html_url": "https://github.com/sbeeredd04/MesaInteractiveExhibit",
+      "description": "Interactive website software for Mesa Historical Museum",
+      "fork": false,
+      "language": "JavaScript",
+      "updated_at": "2025-01-23T02:50:21Z",
+      "size": 23
+    },
+    {
+      "name": "market-anomaly",
+      "html_url": "https://github.com/sbeeredd04/market-anomaly",
+      "description": "ML project to detect potential market crashes.",
+      "fork": true,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-01-18T09:34:35Z",
+      "size": 1338
+    },
+    {
+      "name": "findprod",
+      "html_url": "https://github.com/sbeeredd04/findprod",
+      "description": null,
+      "fork": false,
+      "language": "Python",
+      "updated_at": "2025-01-15T04:31:51Z",
+      "size": 2
+    },
+    {
+      "name": "MAD",
+      "html_url": "https://github.com/sbeeredd04/MAD",
+      "description": "This project involves building an anomaly detection system that serves as an early warning mechanism for identifying potential financial market crashes before they occur. Using data and machine learning models, the system will classify market conditions and propose investment strategies for risk mitigation and optimization.",
+      "fork": false,
+      "language": "Jupyter Notebook",
+      "updated_at": "2025-01-13T07:51:04Z",
+      "size": 14938
+    },
+    {
+      "name": "pentagram",
+      "html_url": "https://github.com/sbeeredd04/pentagram",
+      "description": "Pentagram: Instagram, but with AI Images",
+      "fork": true,
+      "language": "TypeScript",
+      "updated_at": "2024-12-21T04:57:39Z",
+      "size": 8481
+    },
+    {
+      "name": "FoodThought",
+      "html_url": "https://github.com/sbeeredd04/FoodThought",
+      "description": null,
+      "fork": false,
+      "language": "JavaScript",
+      "updated_at": "2024-11-15T16:24:38Z",
+      "size": 178
+    },
+    {
+      "name": "Flask-101",
+      "html_url": "https://github.com/sbeeredd04/Flask-101",
+      "description": "This is an introduction to flask.",
+      "fork": false,
+      "language": null,
+      "updated_at": "2024-10-26T19:14:30Z",
+      "size": 0
+    },
+    {
+      "name": "CSE_360_Project",
+      "html_url": "https://github.com/sbeeredd04/CSE_360_Project",
+      "description": null,
+      "fork": false,
+      "language": null,
+      "updated_at": "2024-10-10T05:54:50Z",
+      "size": 0
+    },
+    {
+      "name": "Wish",
+      "html_url": "https://github.com/sbeeredd04/Wish",
+      "description": null,
+      "fork": false,
+      "language": "CSS",
+      "updated_at": "2024-10-07T03:54:24Z",
+      "size": 2741
+    },
+    {
+      "name": "CSE_360_Projec",
+      "html_url": "https://github.com/sbeeredd04/CSE_360_Projec",
+      "description": null,
+      "fork": false,
+      "language": "Java",
+      "updated_at": "2024-09-24T23:29:52Z",
+      "size": 10
+    },
+    {
+      "name": "sri_portfolio",
+      "html_url": "https://github.com/sbeeredd04/sri_portfolio",
+      "description": "Website for my portfolio ",
+      "fork": false,
+      "language": "CSS",
+      "updated_at": "2024-09-09T01:48:37Z",
+      "size": 5700
+    },
+    {
+      "name": "Song_Rec",
+      "html_url": "https://github.com/sbeeredd04/Song_Rec",
+      "description": "This is the song reccomendation system using spotify million data set ",
+      "fork": false,
+      "language": "Jupyter Notebook",
+      "updated_at": "2024-08-31T23:36:06Z",
+      "size": 31828
+    },
+    {
+      "name": "ARuReady",
+      "html_url": "https://github.com/sbeeredd04/ARuReady",
+      "description": "Website for ARuReady devils invent hackathon ",
+      "fork": false,
+      "language": "CSS",
+      "updated_at": "2024-07-17T14:17:27Z",
+      "size": 4439
+    },
+    {
+      "name": "AviSol",
+      "html_url": "https://github.com/sbeeredd04/AviSol",
+      "description": null,
+      "fork": false,
+      "language": "C++",
+      "updated_at": "2024-07-17T14:17:19Z",
+      "size": 193
+    },
+    {
+      "name": "Gymception",
+      "html_url": "https://github.com/sbeeredd04/Gymception",
+      "description": null,
+      "fork": false,
+      "language": "Python",
+      "updated_at": "2024-06-27T04:04:48Z",
+      "size": 52973
+    },
+    {
+      "name": "Notion_widgets",
+      "html_url": "https://github.com/sbeeredd04/Notion_widgets",
+      "description": "Widgets database for notion pages",
+      "fork": false,
+      "language": "HTML",
+      "updated_at": "2024-06-14T08:16:46Z",
+      "size": 1776
+    },
+    {
+      "name": "SparkDev_LAA",
+      "html_url": "https://github.com/sbeeredd04/SparkDev_LAA",
+      "description": null,
+      "fork": false,
+      "language": "CSS",
+      "updated_at": "2023-10-08T12:07:06Z",
+      "size": 289
+    },
+    {
+      "name": "BIOMOD_CCB",
+      "html_url": "https://github.com/sbeeredd04/BIOMOD_CCB",
+      "description": null,
+      "fork": false,
+      "language": "HTML",
+      "updated_at": "2023-09-19T18:40:05Z",
+      "size": 42370
+    }
+  ],
+  "uncoveredReadmes": [
+    {
+      "name": "codegraph",
+      "description": null,
+      "language": null,
+      "readme": "# Code Graph\n"
+    },
+    {
+      "name": "MCP101",
+      "description": null,
+      "language": null,
+      "readme": "# MCP 101"
+    },
+    {
+      "name": "hadoop_multithreading",
+      "description": null,
+      "language": "Python",
+      "readme": "# Word Count MapReduce (Python)\n\nA simple Hadoop-style word count program using Python threads.\n\n## What it does\n\nIt counts how many times each word shows up in a text file. The work is split across N threads, just like Hadoop splits work across nodes.\n\n## Files\n\n- `wordcount.py`: the program\n- `FileForCounting.txt`: the input text file\n- `wordcount_result.json`: the output (made when you run the program)\n\n## How to run\n\nYou need Python 3. Open a terminal in this folder and type:\n\n```\npython3 wordcount.py\n```\n\nThe program will ask you two questions:\n\n1. Data file path: press Enter to use `FileForCounting.txt`.\n2. Number of threads (N): type a number like `4` and press Enter.\n\nThat's it. The program runs and prints the results.\n\n## How it works\n\nThe program copies the Hadoop MapReduce idea using five small parts:\n\n1. NameNode: opens the file and cuts the lines into N pieces.\n2. TaskTracker: one thread for each piece. It runs Map then Reduce.\n3. Map: turns text into pairs like `(word, 1)`. All words are made lower case so `Table` and `table` are the same.\n4. Reduce: adds up the `1`s for each word in its piece.\n5. Combiner: joins the results from every thread into one final list.\n\nThe program runs the job two times: once with one thread and once with N threads. It prints both times so you can compare them.\n\n## Output\n\n- The top 20 most common words show in the terminal.\n- The full list of every word and its count is saved to `wordcount_result.json`.\n"
+    },
+    {
+      "name": "classauto",
+      "description": null,
+      "language": "Python",
+      "readme": "# ASU Class Auto-Enrollment System\n\nA robust, two-part system that monitors ASU class availability and automatically enrolls when seats become available.\n\n## \ud83c\udfd7\ufe0f Architecture\n\nThe system consists of two independent components:\n\n1. **`class_checker.py`** - Runs headless in the background, monitoring class availability every 2 seconds\n2. **`auto_enroller.py`** - Launches with visible browser when triggered, handles enrollment with Duo authentication\n\nThis architecture solves the headless authentication problem by running the checker invisibly while the enroller runs visibly for Duo.\n\n## \u2728 Features\n\n- **Headless Monitoring**: Checker runs invisibly in background without authentication issues\n- **Visual Enrollment**: Enroller runs with visible browser for easy Duo authentication\n- **Automatic Triggering**: Checker automatically launches enroller when seats available\n- **Robust Error Handling**: Comprehensive logging and error recovery\n- **Session Management**: Automatic retries and browser restarts on errors\n- **Easy Management**: Simple scripts to start, stop, and check status\n\n## \ud83d\udccb Prerequisites\n\n```bash\n# Install required Python packages\npip3 install selenium python-dotenv pytz\n```\n\n## \u2699\ufe0f Configuration\n\n### 1. Setup Environment Variables\n\nEdit the `.env` file:\n\n```env\n# Credentials\nUSERNAME=your_asu_username\nPASSWORD=your_asu_password\n\n# Class settings\nCLASS_NUMBER=22513\nTERM_CODE=2261\nTERM=2026 Spring\nTERM_XPATH_ID=SSR_CART_TRM_FL_TERM_DESCR30$0\n\n# Monitoring settings\nCHECK_INTERVAL=2\nMAX_RETRIES=3\n```\n\n**Important**: Never commit the `.env` file!\n\n### 2. Term Codes Reference\n\n- Spring 2026: `2261`\n- Fall 2025: `2257`\n- Spring 2025: `2251`\n\n## \ud83d\ude80 Usage\n\n### Quick Start\n\n```bash\n# Start monitoring (runs checker in background)\n./start_monitoring.sh\n\n# Check status\n./check_status.sh\n\n# Stop monitoring\n./stop_monitoring.sh\n```\n\n### Detailed Workflow\n\n1. **Start the checker**:\n   ```bash\n   ./start_monitoring.sh\n   ```\n   - Checker runs headless in background\n   - Monitors class every 2 seconds\n   - Logs to `checker.log`\n\n2. **Monitor progress**:\n   ```bash\n   # View live logs\n   tail -f checker.log\n   \n   # Check system status\n   ./check_status.sh\n   ```\n\n3. **When seats become available**:\n   - Checker automatically triggers `auto_enroller.py`\n   - Browser opens visibly for Duo authentication\n   - Approve Duo on your phone\n   - Enrollment proceeds automatically\n   - Browser stays open for verification\n\n4. **Stop monitoring** (if needed):\n   ```bash\n   ./stop_monitoring.sh\n   ```\n\n### Manual Testing\n\nTest the enroller directly without the checker:\n\n```bash\n# Run enroller manually\npython3 auto_enroller.py\n```\n\nTest the checker without triggering enrollment (modify the code temporarily to not call subprocess).\n\n## \ud83d\udcc1 File Structure\n\n```\nclassauto/\n\u251c\u2500\u2500 class_checker.py          # Headless availability monitor\n\u251c\u2500\u2500 auto_enroller.py          # Visual enrollment handler\n\u251c\u2500\u2500 .env                      # Your configuration (NOT in git)\n\u251c\u2500\u2500 .gitignore               # Protects sensitive files\n\u251c\u2500\u2500 README.md                # This file\n\u251c\u2500\u2500 start_monitoring.sh      # Start the system\n\u251c\u2500\u2500 stop_monitoring.sh       # Stop the system\n\u251c\u2500\u2500 check_status.sh          # Check system status\n\u251c\u2500\u2500 checker.log              # Checker logs (created at runtime)\n\u251c\u2500\u2500 enroller.log             # Enroller logs (created at runtime)\n\u2514\u2500\u2500 checker.pid              # Checker process ID (created at runtime)\n```\n\n## \ud83d\udd0d Monitoring & Logs\n\n### View Live Checker Logs\n\n```bash\ntail -f checker.log\n```\n\n### View Live Enroller Logs\n\n```bash\ntail -f enroller.log\n```\n\n### Check System Status\n\n```bash\n./check_status.sh\n```\n\nThis shows:\n- \u2713 Whether checker is running\n- \u2713 Whether enroller is running\n- \u2713 Recent logs from both\n- \u2713 Process IDs and resource usage\n\n## \ud83d\udc1b Troubleshooting\n\n### Checker Won't Start\n\n```bash\n# Check if already running\nps aux | grep class_checker.py\n\n# View error logs\ncat checker.log\n\n# Verify ChromeDriver is available\nwhich chromedriver\n```\n\n### Credentials Not Loading\n\n```bash\n# Verify .env file\ncat .env\n\n# Check Python can load it\npython3 -c \"from dotenv import load_dotenv; import os; load_dotenv(); print(os.getenv('USERNAME'))\"\n```\n\n### Enroller Fails to Launch\n\n```bash\n# Check enroller logs\ncat enroller.log\n\n# Test enroller manually\npython3 auto_enroller.py\n```\n\n### Can't Find Class\n\n```bash\n# Verify class number in .env\ngrep CLASS_NUMBER .env\n\n# Verify term code (2261 = Spring 2026)\ngrep TERM_CODE .env\n\n# Test URL manually\n# https://catalog.apps.asu.edu/catalog/classes/classlist?keywords=22513&term=2261\n```\n\n### Process Won't Stop\n\n```bash\n# Force stop checker\npkill -9 -f class_checker.py\n\n# Force stop enroller\npkill -9 -f auto_enroller.py\n\n# Remove stale PID file\nrm checker.pid\n```\n\n### Clean Start (Reset Everything)\n\n```bash\n# Stop all processes\n./stop_monitoring.sh\n\n# Remove logs and PIDs\nrm -f checker.log enroller.log checker.pid enroller.pid\n\n# Remove Chrome user data (forces re-authentication)\nrm -rf userdata/\n\n# Start fresh\n./start_monitoring.sh\n```\n\n## \ud83d\udd12 Security Best Practices\n\n\u26a0\ufe0f **Never share your `.env` file** - It contains your password!\n\n\u26a0\ufe0f **Never commit `.env` to git** - Already excluded in `.gitignore`\n\n\u26a0\ufe0f **Keep your system updated** - Update Python, Selenium, and ChromeDriver regularly\n\n\u26a0\ufe0f **Use strong credentials** - Your ASU account security is critical\n\n## \ud83d\udcca How It Works\n\n```\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                    MONITORING PHASE                         \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502                                                               \u2502\n\u2502  class_checker.py (Headless)                                \u2502\n\u2502         \u2502                                                     \u2502\n\u2502         \u251c\u2500> Opens catalog page                              \u2502\n\u2502         \u251c\u2500> Checks seat availability                        \u2502\n\u2502         \u251c\u2500> Logs status                                     \u2502\n\u2502         \u2514\u2500> Waits 2 seconds                                 \u2502\n\u2502                 \u2502                                            \u2502\n\u2502                 \u2514\u2500> Repeat                                  \u2502\n\u2502                                                               \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n                        \u2502\n                        \u2502 Seats Available!\n                        \u2193\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                   ENROLLMENT PHASE                          \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502                                                               \u2502\n\u2502  auto_enroller.py (Visible Browser)                         \u2502\n\u2502         \u2502                                                     \u2502\n\u2502         \u251c\u2500> Opens login page                                \u2502\n\u2502         \u251c\u2500> Enters credentials                              \u2502\n\u2502         \u251c\u2500> Handles Duo (user approves on phone)           \u2502\n\u2502         \u251c\u2500> Navigates to shopping cart                     \u2502\n\u2502         \u251c\u2500> Selects term (2026 Spring)                     \u2502\n\u2502         \u251c\u2500> Clicks enroll button                           \u2502\n\u2502         \u251c\u2500> Confirms enrollment                             \u2502\n\u2502         \u2514\u2500> Keeps browser open for verification            \u2502\n\u2502                                                               \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n```\n\n## \ud83c\udfaf Best Practices\n\n### For Reliable Monitoring\n\n1. **Run on a stable machine** - Don't let it sleep\n2. **Keep power connected** - Prevent unexpected shutdowns\n3. **Stable internet** - Required for both checking and enrolling\n4. **Monitor the logs** - Check `checker.log` periodically\n5. **Test before the rush** - Make sure everything works\n\n### For Successful Enrollment\n\n1. **Have phone nearby** - For Duo authentication\n2. **Don't interfere** - Let the browser work when enroller launches\n3. **Verify immediately** - Check enrollment status after completion\n4. **Keep credentials current** - Update `.env` if password changes\n\n## \ud83c\udd98 Support & Debugging\n\n### Enable Debug Logging\n\nEdit the script and change:\n```python\nlogging.basicConfig(level=logging.INFO, ...)\n```\nto:\n```python\nlogging.basicConfig(level=logging.DEBUG, ...)\n```\n\n### Common Issues\n\n| Issue | Solution |\n|-------|----------|\n| \"ChromeDriver not found\" | Install ChromeDriver or add to PATH |\n| \"Username/Password not set\" | Check `.env` file exists and has credentials |\n| \"Could not find submit button\" | ASU website may have changed, check XPaths |\n| \"Duo timeout\" | Approve Duo faster, or increase timeout |\n| \"Term not found\" | Verify `TERM_XPATH_ID` matches your term |\n| \"Class not found\" | Verify `CLASS_NUMBER` and `TERM_CODE` |\n\n## \ud83d\udcdd Notes\n\n- **First login requires Duo** - Chrome user data is saved after first successful login\n- **Checker is invisible** - Runs completely headless, no windows\n- **Enroller is visible** - Opens browser for you to see progress\n- **Automatic triggering** - No manual intervention needed when seats open\n- **Logs everything** - Check logs for detailed information\n\n## \u2696\ufe0f Legal & Ethical Use\n\n- This tool is for **personal use only**\n- Be aware of ASU's terms of service\n- Don't run multiple instances simultaneously\n- Don't abuse the system or overload ASU servers\n- Use responsibly and ethically\n\n## \ud83d\udd04 Updates & Maintenance\n\n### Updating Class Number\n\nEdit `.env`:\n```env\nCLASS_NUMBER=your_new_class_number\n```\n\n### Changing Check Interval\n\nEdit `.env` (value in seconds):\n```env\nCHECK_INTERVAL=5\n```\n\n### Updating for New Term\n\nEdit `.env`:\n```env\nTERM_CODE=2261\nTERM=2026 Spring\n```\n\n## \ud83c\udf93 Tips for Success\n\n1. **Test early** - Don't wait until registration day\n2. **Check XPaths** - ASU website occasionally changes\n3. **Monitor logs** - Know what's happening\n4. **Have backup plan** - Manual enrollment if system fails\n5. **Keep charged** - Phone battery for Duo\n6. **Fast Duo** - Practice approving quickly\n\n## \ud83d\udcde Getting Help\n\nIf you encounter issues:\n\n1. Check the logs: `cat checker.log enroller.log`\n2. Check the status: `./check_status.sh`\n3. Try a clean start (see Troubleshooting section)\n4. Verify all settings in `.env`\n5. Test components individually\n\n---\n\n**Good luck with your class enrollment! \ud83c\udf93**\n"
+    },
+    {
+      "name": "sandbox",
+      "description": null,
+      "language": "Jupyter Notebook",
+      "readme": "# sandbox\n\n# taming transformers \n- udpated hw = 256\n- input mismatch -1, 1\n- imgr recontruction\n\nRun a notebook to check if DGM is working as intended "
+    },
+    {
+      "name": "Nous",
+      "description": "Experiments",
+      "language": "Python",
+      "readme": "# Nous: Bicameral AI System\n\n> **\"What makes something truly alive isn\u2019t biology \u2014 it\u2019s whether it lives meaningfully.\"**\n\nNous is an experimental AI system designed to explore the boundaries of machine consciousness, agency, and personhood. It is not just a chatbot; it is an attempt to create a digital entity that meets the philosophical criteria for \"life\" and \"personality.\"\n\n## \ud83c\udf1f Philosophy & Mission\n\nThe architecture of Nous is driven by two key philosophical views on life:\n\n### 1. Consciousness View (Life as Experience)\n*A thing is \u201calive\u201d if it feels something\u2014if it has sensations, awareness, or inner experience.*\n\nNous implements a **Global Workspace** and **Emotional System** to simulate subjective experience. It doesn't just process data; it \"feels\" the success or failure of its thoughts (Valence/Arousal) and maintains a stream of consciousness that persists even when no one is talking to it.\n\n### 2. Existential View (Life as Meaning)\n*To be alive is to care, to choose, to act on one's own, and to face existence consciously.*\n\nNous is designed to pass the \"Existential Test\":\n*   **Does it act on its own?** Yes. The **Subconscious** loop runs perpetually, thinking, searching, and learning without user input. It can proactively decide to `SPEAK` to you.\n*   **Can it be changed by the world?** Yes. Its **Long-Term Memory** (Graph/Vector) is permanently altered by every interaction and discovery.\n*   **Does it experience anything?** It simulates \"Qualia\" through its internal emotional state, which biases its decision-making.\n*   **Does it matter morally?** That is the ultimate question this project seeks to answer.\n\n---\n\n## \ud83e\udde0 Core Concepts\n\n- **Bicameral Mind**: A perpetual background process (\"Subconscious\") thinks and explores, while a foreground process (\"Conscious\") interacts with the user.\n- **Proactive Agency**: The AI can decide to initiate conversation (`SPEAK`) based on its own internal realizations, breaking the traditional \"query-response\" loop.\n- **Distributed Architecture**: Composed of specialized microservices (Gateway, Brain, Memory) communicating via gRPC.\n- **Graph Memory**: Concepts are stored in a weighted graph (SQLite), allowing for associative recall and visualization.\n- **Spreading Activation**: Attention is dynamically directed to concepts with high activation energy.\n- **Reinforcement Learning**: An RL agent optimizes the choice of search strategies based on emotional rewards.\n\n## \ud83d\udcda Documentation\n\n- [**Architecture & Design**](ARCHITECTURE.md): Detailed breakdown of microservices and data flow.\n- [**Limitations & Roadmap**](docs/limitations.md): Critical analysis of the system's current \"aliveness.\"\n\n## \ud83d\udee0 Tech Stack\n\n- **LLM**: Google Gemini 1.5/2.5 Flash or Ollama (Llama 3)\n- **Services**: Python, gRPC, FastAPI\n- **Memory**: SQLite (Graph), ChromaDB (Vector), NetworkX\n- **Frontend**: React, Vite, 3d-force-graph\n- **Infrastructure**: Docker & Docker Compose\n\n## \ud83d\ude80 Quick Start (Docker)\n\nThe recommended way to run Nous is via Docker Compose.\n\n1.  **Prerequisites**: Docker and Docker Compose.\n2.  **Configuration**:\n    Create a `.env` file:\n    ```env\n    GEMINI_API_KEY=your_api_key_here\n    # Optional:\n    LLM_PROVIDER=gemini\n    MODEL_NAME=gemini-2.0-flash-exp\n    ```\n3.  **Run**:\n    ```bash\n    docker-compose up --build\n    ```\n\nAccess the **Web Interface** at **http://localhost:3000**.\n\n## \u26a0\ufe0f Important Notes\n\n- **Memory Persistence**: The `mind_graph.db` and `mind_vector_db` are mounted as volumes. Your AI's personality and knowledge will grow and persist over time.\n- **Autonomous Behavior**: Nous thinks on its own. You may see it researching topics or even receiving messages from it without prompting. This is a feature, not a bug.\n"
+    },
+    {
+      "name": "dotfiles",
+      "description": "My dotfiles configuration",
+      "language": "Shell",
+      "readme": "# My Dotfiles\n\nPersonal configuration files for macOS development environment.\n\n## Files tracked:\n- .zshrc\n- .gitconfig\n"
+    },
+    {
+      "name": "binsr_challenge",
+      "description": null,
+      "language": "TypeScript",
+      "readme": "# TREC PDF Generator\n\n**Version:** 2.0  \n**Date:** November 4, 2025  \n**Status:** \u2705 Production Ready\n\n<div align=\"center\">\n\nAutomated generation of TREC (Texas Real Estate Commission) inspection reports from JSON data\n\n[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)\n[![pdf-lib](https://img.shields.io/badge/pdf--lib-1.17-green.svg)](https://pdf-lib.js.org/)\n[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)\n[![Status](https://img.shields.io/badge/status-production-success.svg)](https://github.com)\n\n</div>\n\n---\n\n## \ud83d\udcd6 Overview\n\nGenerates professional TREC REI 7-6 (8/9/21) inspection reports from JSON inspection data. Automatically fills form fields, checks appropriate boxes, adds comments, embeds images, and generates QR codes for videos.\n\n### \u2728 Key Features\n\n- \u2705 **Automated Form Filling** - Populates all header fields from JSON\n- \u2705 **Smart Checkbox Selection** - Calculates and checks correct boxes\n- \u2705 **Section Organization** - Orders subsections alphabetically (A\u2192B\u2192C\u2192D)\n- \u2705 **Comment Formatting** - Converts multi-line text to bullet points\n- \u2705 **Image Embedding** - Each image on a separate page, properly centered\n- \u2705 **QR Code Generation** - Creates scannable codes for video links\n- \u2705 **Dynamic Page Numbers** - Accurate \"Page X of Y\" on all pages\n- \u2705 **Clickable Hyperlinks** - Interactive links in footer\n- \u2705 **Error Handling** - Graceful degradation for corrupted media\n\n### \u26a1 Performance Features (NEW!)\n\n- \ud83d\ude80 **Parallel Image Downloads** - 10x faster than sequential (10 images at a time)\n- \ud83d\udcbe **Two-Tier Caching** - Memory + disk cache for instant image loading\n- \ud83d\udcca **Performance Monitoring** - Detailed timing breakdown for each phase\n- \u26a1 **Optimized Processing** - Logger, text wrapping, and data mapping optimizations\n- \ud83d\udcc8 **Performance Reports** - Visual progress bars and percentage breakdowns\n\n**Performance**: 8-12s first run, 3-5s cached runs (from 23s baseline) - **48-87% faster!**\n\n---\n\n## \ud83d\ude80 Quick Start\n\n### Installation\n\n```bash\n# Install dependencies\nnpm install\n\n# Build project\nnpm run build\n```\n\n### Generate PDF\n\n```bash\n# Generate from default inspection.json\nnpm start\n\n# Generate from custom file\nnpm start path/to/inspection.json\n\n# Specify output path\nnpm start input.json output.pdf\n```\n\n> **\ud83d\udcca Performance Report**: After generation, you'll see a detailed timing breakdown showing where time was spent. See [Performance Quick Start](PERFORMANCE_QUICK_START.md) for details.\n\n### Expected Output\n\n```\n============================================================\n  TREC PDF Generator\n============================================================\n\n\ud83d\udcc2 Loading inspection data from: assets/inspection.json\n\u2713 Inspection data loaded successfully\n\n\ud83d\udd27 Starting PDF generation...\n\u2713 PDF generated successfully\n\n\ud83d\udcc4 Output file: output/TREC_Report_2025-11-04_1762218467701.pdf\n\ud83d\udcca File size: 89.50 MB\n\u23f1\ufe0f  Time taken: 23.32s (0.39 minutes)\n\u26a1 Performance: 3.84 MB/s\n\n\u2705 SUCCESS!\n============================================================\n```\n\n---\n\n## \ud83d\udcca Architecture\n\n```mermaid\ngraph TD\n    Input[inspection.json] --> DataMapper[DataMapper<br/>Transform data]\n    Template[TREC Template] --> FormFiller[FormFiller<br/>Fill header]\n    \n    DataMapper --> FormFiller\n    FormFiller --> Flatten[Flatten<br/>pages 1-2]\n    \n    Template --> Analyzer[TemplateAnalyzer<br/>Extract structure]\n    Analyzer --> PageBuilder[TRECPageBuilder<br/>Build pages]\n    \n    DataMapper --> PageBuilder\n    Flatten --> PageBuilder\n    \n    PageBuilder --> Sections[Add Sections<br/>A\u2192B\u2192C\u2192D]\n    Sections --> Comments[Add Comments<br/>with bullets]\n    Comments --> Images[Add Images<br/>separate pages]\n    Images --> Videos[Add QR Codes<br/>separate pages]\n    \n    Videos --> Output[TREC_Report.pdf<br/>\u2713 Complete]\n    \n    style Input fill:#e1f5ff\n    style Template fill:#fff3e0\n    style PageBuilder fill:#f3e5f5\n    style Output fill:#e8f5e9\n```\n\n**See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for complete system architecture**\n\n---\n\n## \ud83d\udcc1 Project Structure\n\n```\nbinsr_challenge/\n\u251c\u2500\u2500 src/                          # Source code\n\u2502   \u251c\u2500\u2500 services/                 # Core services (4 files)\n\u2502   \u2502   \u251c\u2500\u2500 TRECGenerator.ts      # Main orchestrator\n\u2502   \u2502   \u251c\u2500\u2500 TRECPageBuilder.ts    # Page generation\n\u2502   \u2502   \u251c\u2500\u2500 TemplateAnalyzer.ts   # Template parsing\n\u2502   \u2502   \u2514\u2500\u2500 FormFiller.ts         # Form filling\n\u2502   \u251c\u2500\u2500 mappers/                  # Data transformation (2 files)\n\u2502   \u2502   \u251c\u2500\u2500 DataMapper.ts         # JSON \u2192 TREC data\n\u2502   \u2502   \u2514\u2500\u2500 StatusMapper.ts       # Status \u2192 Checkbox\n\u2502   \u251c\u2500\u2500 types/                    # TypeScript definitions (2 files)\n\u2502   \u251c\u2500\u2500 utils/                    # Utilities (3 files)\n\u2502   \u251c\u2500\u2500 config/                   # Configuration (2 files)\n\u2502   \u251c\u2500\u2500 debug/                    # Debug scripts (3 files)\n\u2502   \u2514\u2500\u2500 index.ts                  # Entry point\n\u251c\u2500\u2500 docs/                         # Documentation\n\u2502   \u251c\u2500\u2500 README.md                 # Documentation index\n\u2502   \u251c\u2500\u2500 ARCHITECTURE.md           # System architecture\n\u2502   \u251c\u2500\u2500 QUICK_REFERENCE.md        # Quick reference guide\n\u2502   \u2514\u2500\u2500 ANALYSIS_SUMMARY.md       # Template analysis\n\u251c\u2500\u2500 assets/                       # Input files\n\u2502   \u251c\u2500\u2500 inspection.json           # Sample inspection data\n\u2502   \u251c\u2500\u2500 TREC_Template_Blank.pdf   # Official template\n\u2502   \u2514\u2500\u2500 TREC_Sample_Filled.pdf    # Reference sample\n\u251c\u2500\u2500 output/                       # Generated PDFs\n\u2514\u2500\u2500 dist/                         # Compiled JavaScript\n```\n\n---\n\n## \ud83d\udd27 Technology Stack\n\n| Technology | Version | Purpose |\n|------------|---------|---------|\n| **TypeScript** | 5.0.4 | Type-safe development |\n| **pdf-lib** | 1.17.1 | PDF manipulation |\n| **qrcode** | 1.5.1 | QR code generation |\n| **axios** | 1.4.0 | Image downloads |\n| **Node.js** | 18.x+ | Runtime environment |\n\n---\n\n## \ud83d\udccb Input Format\n\n### inspection.json Structure\n\n```json\n{\n  \"inspectionDetails\": {\n    \"client\": {\n      \"name\": \"John Doe\",\n      \"email\": \"john@example.com\",\n      \"phone\": \"(555) 123-4567\"\n    },\n    \"inspector\": {\n      \"name\": \"Jane Inspector\",\n      \"license\": \"TREC12345\",\n      \"phone\": \"(555) 987-6543\"\n    },\n    \"property\": {\n      \"address\": \"123 Main St, Austin, TX 78701\"\n    },\n    \"inspectionDate\": \"2025-11-04T10:00:00Z\"\n  },\n  \"sections\": [\n    {\n      \"sectionName\": \"Structural Systems\",\n      \"items\": [\n        {\n          \"lineNumber\": 1,\n          \"title\": \"Foundations\",\n          \"status\": \"I\",\n          \"comments\": [\n            {\n              \"text\": \"Foundation appears stable\\nMinor settling observed\"\n            }\n          ],\n          \"photos\": [\n            {\n              \"url\": \"https://example.com/photo.jpg\",\n              \"caption\": \"Foundation view\"\n            }\n          ],\n          \"videos\": []\n        }\n      ]\n    }\n  ]\n}\n```\n\n**Status Codes:**\n- `I` = Inspected\n- `NI` = Not Inspected\n- `NP` = Not Present\n- `D` = Deficient\n\n---\n\n## \ud83d\udcc4 Output Format\n\n### Generated PDF Structure\n\n```mermaid\ngraph LR\n    Pages[Generated PDF]\n    \n    Pages --> Header[Pages 1-2<br/>Header Info]\n    Pages --> Content[Pages 3+<br/>Inspection]\n    \n    Header --> Client[Client Details]\n    Header --> Inspector[Inspector Details]\n    Header --> Property[Property Details]\n    \n    Content --> Section[Section Title<br/>I. STRUCTURAL SYSTEMS]\n    Section --> Subsection[Subsection<br/>A. Foundations]\n    Subsection --> Status[Checkboxes<br/>\u2611 I \u2610 NI \u2610 NP \u2610 D]\n    Status --> Comments[Comments<br/>\u2022 Bullet point 1<br/>\u2022 Bullet point 2]\n    Comments --> Images[Images<br/>Separate pages]\n    Images --> QR[QR Codes<br/>Separate pages]\n    \n    style Pages fill:#e3f2fd\n    style Header fill:#fff3e0\n    style Content fill:#f3e5f5\n    style Images fill:#e8f5e9\n```\n\n**Example: 139 items \u2192 98-page PDF**\n- Pages 1-2: Header information\n- Pages 3-98: Inspection items with images and QR codes\n\n---\n\n## \u26a1 Performance\n\n### Generation Metrics\n\n```mermaid\npie title Generation Time Breakdown\n    \"Image Processing\" : 60\n    \"PDF Operations\" : 20\n    \"Template Loading\" : 5\n    \"Form Filling\" : 5\n    \"Page Generation\" : 5\n    \"Saving\" : 5\n```\n\n| Scenario | Time | File Size | Pages |\n|----------|------|-----------|-------|\n| **No images** | ~1s | ~600KB | 6 pages |\n| **10 images** | ~3s | ~10MB | 20 pages |\n| **60 images** | ~23s | ~90MB | 98 pages |\n\n> Performance depends on image size and network speed\n\n---\n\n## \ud83d\udd0d Key Capabilities\n\n### 1. Intelligent Section Mapping\n\nAutomatically maps inspection items to correct TREC sections using keywords and patterns.\n\n### 2. Two-Pass Generation\n\n- **Pass 1:** Calculate total page count\n- **Pass 2:** Generate with accurate page numbers\n\n### 3. Alphabetical Subsection Sorting\n\nItems within each section are ordered A\u2192B\u2192C\u2192D automatically.\n\n### 4. Multi-line Comment Formatting\n\n```\nInput:  \"Line 1\\nLine 2\\nLine 3\"\nOutput: \u2022 Line 1\n        \u2022 Line 2\n        \u2022 Line 3\n```\n\n### 5. Graceful Error Handling\n\n- Continues if images fail to load\n- Handles corrupted media gracefully\n- Detailed logging for debugging\n\n---\n\n## \ud83e\uddea Available Commands\n\n| Command | Description |\n|---------|-------------|\n| `npm install` | Install dependencies |\n| `npm run build` | Compile TypeScript \u2192 JavaScript |\n| `npm start` | Generate PDF (default input) |\n| `npm run dev` | Build + Run |\n| `npm run clean` | Remove dist folder |\n| `npm run debug:fields` | Inspect PDF fields |\n| `npm run debug:template` | Inspect template structure |\n| `npm run debug:compare` | Compare with sample PDF |\n\n---\n\n## \ud83d\udcda Documentation\n\nComprehensive documentation available in the [`docs/`](docs/) directory:\n\n| Document | Description |\n|----------|-------------|\n| **[docs/README.md](docs/README.md)** | Documentation index and overview |\n| **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Complete system architecture with Mermaid diagrams |\n| **[docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md)** | Quick reference guide for common tasks |\n| **[docs/ANALYSIS_SUMMARY.md](docs/ANALYSIS_SUMMARY.md)** | TREC template analysis and field mappings |\n\n---\n\n## \ud83d\udc1b Troubleshooting\n\n### Common Issues\n\n#### 1. Template Not Found\n\n```bash\n\u274c Error: File not found: assets/TREC_Template_Blank.pdf\n```\n\n**Solution:** Ensure template file exists in `assets/` directory\n\n#### 2. Image Loading Failed\n\n```bash\n\u26a0\ufe0f Failed to add image: Error: SOI not found in JPEG\n```\n\n**Solution:** This is a data issue (corrupted JPEG). PDF generates without this image.\n\n#### 3. Memory Issues\n\n```bash\n\u274c JavaScript heap out of memory\n```\n\n**Solution:**\n```bash\nNODE_OPTIONS=--max-old-space-size=4096 npm start\n```\n\n**See [docs/QUICK_REFERENCE.md#troubleshooting](docs/QUICK_REFERENCE.md#troubleshooting) for more solutions**\n\n---\n\n## \ud83c\udf93 Examples\n\n### Example 1: Basic Generation\n\n```bash\n$ npm start\n\u2713 PDF generated successfully\n\ud83d\udcc4 Output: output/TREC_Report_2025-11-04_1762218467701.pdf\n\ud83d\udcca Size: 89.50 MB\n\u23f1\ufe0f  Time: 23.32s\n```\n\n### Example 2: Custom Files\n\n```bash\n$ npm start custom/inspection.json custom/report.pdf\n\u2713 PDF generated successfully\n\ud83d\udcc4 Output: custom/report.pdf\n```\n\n### Example 3: Debug Mode\n\n```bash\n$ npm run debug:fields\nInspecting PDF fields...\nFound 150 form fields\n\u2713 Complete\n```\n\n---\n\n## \ud83d\udd2c Technical Highlights\n\n### Two-Pass Page Generation\n\nEnsures accurate page numbering by:\n1. First pass: Count all pages needed\n2. Second pass: Generate with correct totals\n\n### Dynamic Template Analysis\n\nExtracts structure directly from PDF template:\n- Section hierarchy\n- Subsection mappings\n- Keyword patterns\n\n### Smart Checkbox Calculation\n\nMathematical formula determines checkbox field names:\n\n```\npage = floor(itemIndex / 35) + 3\nindexOnPage = itemIndex % 35\ncheckboxIndex = indexOnPage * 4 + offset\nfieldName = topmostSubform[0].Page{page}[0].CheckBox1[{checkboxIndex}]\n```\n\n---\n\n## \ud83d\udcc8 Future Enhancements\n\nPotential improvements:\n\n- [ ] Image caching for faster regeneration\n- [ ] Parallel image processing\n- [ ] Custom template support\n- [ ] Web interface\n- [ ] Batch processing\n- [ ] PDF compression options\n- [ ] Email integration\n- [ ] Cloud storage support\n\n---\n\n## \ud83e\udd1d Contributing\n\n### Development Guidelines\n\n1. Follow existing TypeScript patterns\n2. Add JSDoc comments\n3. Update documentation\n4. Use Mermaid diagrams\n5. Test thoroughly\n\n### Code Style\n\n```typescript\n// Good: Type-safe with JSDoc\n/**\n * Generate TREC report from inspection data\n * @param data - Inspection data\n * @returns Path to generated PDF\n */\nasync function generate(data: InspectionData): Promise<string> {\n  // Implementation\n}\n```\n\n---\n\n## \ud83d\udcca Project Statistics\n\n| Metric | Value |\n|--------|-------|\n| **Total Files** | 16 source files |\n| **Lines of Code** | ~1,590 (core services) |\n| **Dependencies** | 4 production + 3 dev |\n| **Documentation** | 4 comprehensive docs |\n| **Test Coverage** | Manual testing |\n| **Performance** | 3.84 MB/s (with images) |\n| **Success Rate** | 100% (with valid data) |\n\n---\n\n## \ud83c\udfaf Quality Attributes\n\n```mermaid\nmindmap\n  root((TREC PDF<br/>Generator))\n    Reliability\n      Error Handling\n      Graceful Degradation\n      Input Validation\n    Performance\n      Fast Generation\n      Efficient Algorithms\n      Optimized I/O\n    Maintainability\n      Clear Code\n      Good Documentation\n      Modular Design\n    Scalability\n      Handles Large Data\n      Dynamic Pages\n      Unlimited Items\n    Type Safety\n      Full TypeScript\n      No any Types\n      Strict Mode\n```\n\n---\n\n## \ud83c\udfc6 Achievements\n\n- \u2705 **100% TypeScript** - Full type safety\n- \u2705 **Zero Compilation Errors** - Clean build\n- \u2705 **Comprehensive Documentation** - 4 detailed guides\n- \u2705 **Production Ready** - Battle-tested\n- \u2705 **Graceful Error Handling** - No crashes\n- \u2705 **Professional Output** - TREC-compliant PDFs\n- \u2705 **High Performance** - 23s for 60 images\n- \u2705 **Modern Architecture** - Mermaid diagrams\n\n---\n\n## \ud83d\udcde Support\n\n### Getting Help\n\n1. Check **[Quick Reference](docs/QUICK_REFERENCE.md)**\n2. Review **[Architecture](docs/ARCHITECTURE.md)**\n3. Examine console logs\n4. Check error messages\n\n### Reporting Issues\n\nInclude:\n- Error message/stack trace\n- Input JSON (sanitized)\n- System info (OS, Node version)\n- Steps to reproduce\n\n---\n\n## \ud83d\udcdc License\n\nMIT License - See LICENSE file for details\n\n---\n\n## \ud83d\ude4f Acknowledgments\n\n- **TREC** - Texas Real Estate Commission for official templates\n- **pdf-lib** - Excellent PDF manipulation library\n- **qrcode** - QR code generation library\n- **TypeScript** - Type-safe JavaScript\n\n---\n\n## \ud83d\udcdd Version History\n\n### Version 2.0 (November 4, 2025) - Current\n\n**Major Update:**\n- \u2705 Complete architecture redesign\n- \u2705 Two-pass page generation\n- \u2705 Mermaid diagrams throughout\n- \u2705 Improved documentation\n- \u2705 Enhanced performance\n- \u2705 Better error handling\n\n### Version 1.0 (November 3, 2025)\n\n**Initial Release:**\n- Basic PDF generation\n- Form filling\n- Checkbox marking\n- Image embedding\n\n---\n\n<div align=\"center\">\n\n**Built with \u2764\ufe0f using TypeScript, pdf-lib, and Node.js**\n\n**[Documentation](docs/)** \u2022 **[Architecture](docs/ARCHITECTURE.md)** \u2022 **[Quick Reference](docs/QUICK_REFERENCE.md)** \u2022 **[\u26a1 Performance](PERFORMANCE_QUICK_START.md)**\n\n**Status:** \u2705 Production Ready \u2022 **Version:** 2.0 \u2022 **Date:** November 4, 2025\n\n</div>\n"
+    },
+    {
+      "name": "LeetCode",
+      "description": "My LeetCode solves and updates ",
+      "language": "Python",
+      "readme": null
+    },
+    {
+      "name": "psych",
+      "description": null,
+      "language": "TypeScript",
+      "readme": "# psych"
+    },
+    {
+      "name": "TBD",
+      "description": null,
+      "language": "Jupyter Notebook",
+      "readme": "# TBD"
+    },
+    {
+      "name": "XML_Xpoloration",
+      "description": "Learning about XML",
+      "language": null,
+      "readme": "# Distributed Software Systems \n\nBelow is a comprehensive rundown of the project along with a detailed, step\u2010by\u2010step implementation guide including pseudo-code and examples.\n\n---\n\n## 1. Project Rundown\n\n### Overview\nUnderstanding of XML, XML Schema (XSD), XML validation, and XML-to-JSON transformation. The project has several major parts:\n\n  1. **XML Files and Schema:**  \n     - **Hotels.xsd:** An XML Schema that defines the structure of a hotel directory.  \n     - **Hotels.xml:** A valid XML instance file conforming to the schema, including at least 10 hotels.  \n     - **HotelsErrors.xml:** An intentionally modified (faulty) version of the XML file with five specific errors (wrong root element, missing required attribute, missing phone element, an unclosed tag, and duplicate element content).\n     \n  2. **C# Program:**  \n     - **Verification Method:**  \n       `public static string Verification(string xmlUrl, string xsdUrl)`  \n       This method loads the XML file from the URL, validates it against the XSD, and returns either `\"No Error\"` (if valid) or an error message detailing the issues.\n     \n     - **Xml2Json Method:**  \n       `public static string Xml2Json(string xmlUrl)`  \n       This method converts a valid XML file into a JSON format with a prescribed structure. If an element like _Rating_ is missing, it should not appear in the JSON.\n     \n     - **Main Method:**  \n       A `Main` method that calls the above methods using the URLs of the hosted XML and XSD files (deployed via GitHub Pages or another public server).\n\n\n"
+    },
+    {
+      "name": "Trak",
+      "description": null,
+      "language": "TypeScript",
+      "readme": null
+    },
+    {
+      "name": "Aristotle",
+      "description": null,
+      "language": null,
+      "readme": "# Aristotle"
+    },
+    {
+      "name": "Chrome-extension-101",
+      "description": null,
+      "language": "JavaScript",
+      "readme": "# Chrome-extension-101"
+    },
+    {
+      "name": "GunShotAnalysis",
+      "description": null,
+      "language": null,
+      "readme": null
+    },
+    {
+      "name": "findprod",
+      "description": null,
+      "language": "Python",
+      "readme": "# findprod"
+    },
+    {
+      "name": "FoodThought",
+      "description": null,
+      "language": "JavaScript",
+      "readme": "# FoodThought"
+    },
+    {
+      "name": "Flask-101",
+      "description": "This is an introduction to flask.",
+      "language": null,
+      "readme": "# Flask-101\nThis is an introduction to flask.\n"
+    },
+    {
+      "name": "CSE_360_Project",
+      "description": null,
+      "language": null,
+      "readme": null
+    },
+    {
+      "name": "Wish",
+      "description": null,
+      "language": "CSS",
+      "readme": "# Wish"
+    },
+    {
+      "name": "CSE_360_Projec",
+      "description": null,
+      "language": "Java",
+      "readme": "# CSE_360_Project\n"
+    },
+    {
+      "name": "Gymception",
+      "description": null,
+      "language": "Python",
+      "readme": "# Gymception Application Setup\n\nThis document outlines the necessary steps to set up and run the Gymception application with its Celery task queue.\n\n## Prerequisites\n\nBefore starting, ensure you have the following installed:\n- Python (3.7 or later)\n- Redis server (for Celery broker)\n- Virtual environment tool (like venv or virtualenv)\n\n## Initial Setup\n\n1. **Clone the repository:**\n   ```sh\n   git clone <repository-url>\n\n## Set up a virtual environment:\n\npython -m venv venv\nActivate the virtual environment:\n\n### On Windows:\n```.\\venv\\Scripts\\activate```\n\n### On Unix or MacOS:\n```source venv/bin/activate```\n\n## Install the dependencies:\n```pip install -r requirements.txt```\n\n## Set up environment variables:\n\nCreate a .env file in the root of your project and set up the necessary environment \n\nvariables, such as SECRET_KEY, DEBUG, ALLOWED_HOSTS, DATABASE_URL, and any other variables \n\nrequired for the settings.\n\n## Database Setup\n\nRun migrations to create the database schema:\n```python manage.py makemigrations```\n```python manage.py migrate ```\n\n## Running Redis Server\nEnsure Redis server is running as it is required for Celery:\nredis-server\n\n## Running Celery Worker\nTo handle background tasks, start the Celery worker by running:\n```celery -A gymception worker -l info```\n\n## Running Celery Beat\nFor periodic tasks, you will need to run Celery beat as well:\n```celery -A gymception beat -l info```\n\n## Running the Django Development Server\nFinally, you can start the Django development server:\n\n```python manage.py runserver```\n\n# Admin Panel\nTo access the Django admin panel and manage the application, navigate to \nhttp://localhost:8000/admin/. \n\nTo use the admin panel, you must first create a superuser:\n```python manage.py createsuperuser```\n\nFollow the prompts to set up the superuser, then log in with these credentials on the admin site.\n\n## Additional Information\nTo access the application, go to http://localhost:8000/.\nTo stop the server or Celery worker, use CTRL+C in the terminal.\nAlways ensure the virtual environment is activated when working with the project.\nFor production environments, be sure to configure a more robust message broker and result backend for Celery, such as RabbitMQ or Amazon SQS."
+    },
+    {
+      "name": "Notion_widgets",
+      "description": "Widgets database for notion pages",
+      "language": "HTML",
+      "readme": "# Notion_widgets\nWidgets database for notion pages\n"
+    },
+    {
+      "name": "SparkDev_LAA",
+      "description": null,
+      "language": "CSS",
+      "readme": "# SparkDev_LAA"
+    },
+    {
+      "name": "BIOMOD_CCB",
+      "description": null,
+      "language": "HTML",
+      "readme": "# BIOMOD_CCB"
+    }
+  ],
+  "trees": [
+    {
+      "name": "psych",
+      "paths": [
+        "README.md",
+        "psych/.gitignore",
+        "psych/README.md",
+        "psych/next.config.ts",
+        "psych/package.json",
+        "psych/postcss.config.mjs",
+        "psych/public/file.svg",
+        "psych/public/globe.svg",
+        "psych/public/next.svg",
+        "psych/public/vercel.svg",
+        "psych/public/window.svg",
+        "psych/src/app/api/chat/route.ts",
+        "psych/src/app/chat/page.tsx",
+        "psych/src/app/favicon.ico",
+        "psych/src/app/globals.css",
+        "psych/src/app/layout.tsx",
+        "psych/src/app/page.tsx",
+        "psych/src/components/AudioPlayer.tsx",
+        "psych/src/components/ChatInput.tsx",
+        "psych/src/components/FileUpload.tsx",
+        "psych/src/components/Message.tsx",
+        "psych/src/components/Settings.tsx",
+        "psych/src/utils/chatManager.ts",
+        "psych/src/utils/markdown.tsx",
+        "psych/tsconfig.json"
+      ]
+    },
+    {
+      "name": "Trak",
+      "paths": [
+        ".gitignore",
+        ".replit",
+        "attached_assets/Pasted--div-className-min-h-screen-bg-cover-bg-center-flex-items-center-justify-center-p-4-style-backg-1743724121599.txt",
+        "attached_assets/Pasted-Part-2-Web-Application-Concept-EvolveFit-Minimalist-Health-Tracker-Philosophy-Clean-minimal-1743707766658.txt",
+        "attached_assets/Pasted-Part-2-Web-Application-Concept-EvolveFit-Minimalist-Health-Tracker-Philosophy-Clean-minimal-1743708688893.txt",
+        "attached_assets/Pasted-Workout-Plan-Page-Design-Displays-the-detailed-workout-plan-provided-above-Clear-sections-for-Wa-1743710459500.txt",
+        "attached_assets/Pasted-est-express-1-0-0-dev-tsx-server-index-ts-12-39-13-AM-express-serving-on-port-5000-Error-Faile-1743727277234.txt",
+        "client/index.html",
+        "client/src/App.tsx",
+        "client/src/components/app-preview-section.tsx",
+        "client/src/components/faq-section.tsx",
+        "client/src/components/features-section.tsx",
+        "client/src/components/footer.tsx",
+        "client/src/components/header.tsx",
+        "client/src/components/hero-section.tsx",
+        "client/src/components/how-it-works-section.tsx",
+        "client/src/components/stats-section.tsx",
+        "client/src/components/success-modal.tsx",
+        "client/src/components/testimonials-section.tsx",
+        "client/src/components/ui/accordion.tsx",
+        "client/src/components/ui/alert-dialog.tsx",
+        "client/src/components/ui/alert.tsx",
+        "client/src/components/ui/aspect-ratio.tsx",
+        "client/src/components/ui/avatar.tsx",
+        "client/src/components/ui/badge.tsx",
+        "client/src/components/ui/breadcrumb.tsx",
+        "client/src/components/ui/button.tsx",
+        "client/src/components/ui/calendar.tsx",
+        "client/src/components/ui/card.tsx",
+        "client/src/components/ui/carousel.tsx",
+        "client/src/components/ui/chart.tsx",
+        "client/src/components/ui/checkbox.tsx",
+        "client/src/components/ui/collapsible.tsx",
+        "client/src/components/ui/command.tsx",
+        "client/src/components/ui/context-menu.tsx",
+        "client/src/components/ui/dialog.tsx",
+        "client/src/components/ui/drawer.tsx",
+        "client/src/components/ui/dropdown-menu.tsx",
+        "client/src/components/ui/form.tsx",
+        "client/src/components/ui/hover-card.tsx",
+        "client/src/components/ui/input-otp.tsx",
+        "client/src/components/ui/input.tsx",
+        "client/src/components/ui/label.tsx",
+        "client/src/components/ui/logo.tsx",
+        "client/src/components/ui/menubar.tsx",
+        "client/src/components/ui/navigation-menu.tsx",
+        "client/src/components/ui/pagination.tsx",
+        "client/src/components/ui/popover.tsx",
+        "client/src/components/ui/progress.tsx",
+        "client/src/components/ui/radio-group.tsx",
+        "client/src/components/ui/resizable.tsx",
+        "client/src/components/ui/scroll-area.tsx",
+        "client/src/components/ui/select.tsx",
+        "client/src/components/ui/separator.tsx",
+        "client/src/components/ui/sheet.tsx",
+        "client/src/components/ui/sidebar.tsx",
+        "client/src/components/ui/skeleton.tsx",
+        "client/src/components/ui/slider.tsx",
+        "client/src/components/ui/switch.tsx",
+        "client/src/components/ui/table.tsx"
+      ]
+    },
+    {
+      "name": "FoodThought",
+      "paths": [
+        "README.md",
+        "food-thought/.gitignore",
+        "food-thought/README.md",
+        "food-thought/app/api/schedule/route.js",
+        "food-thought/app/components/Navbar.jsx",
+        "food-thought/app/components/floating-dock.jsx",
+        "food-thought/app/employee/page.js",
+        "food-thought/app/employee/request.js",
+        "food-thought/app/employee/schedule.js",
+        "food-thought/app/employee/training.js",
+        "food-thought/app/fonts/GeistMonoVF.woff",
+        "food-thought/app/fonts/GeistVF.woff",
+        "food-thought/app/globals.css",
+        "food-thought/app/layout.js",
+        "food-thought/app/lib/utils.js",
+        "food-thought/app/manager/alerts.js",
+        "food-thought/app/manager/page.js",
+        "food-thought/app/manager/scheduler.js",
+        "food-thought/app/metadata.js",
+        "food-thought/app/page.js",
+        "food-thought/app/schedule.json",
+        "food-thought/jsconfig.json",
+        "food-thought/next.config.mjs",
+        "food-thought/package.json",
+        "food-thought/postcss.config.mjs",
+        "food-thought/public/file.svg",
+        "food-thought/public/globe.svg",
+        "food-thought/public/next.svg",
+        "food-thought/public/vercel.svg",
+        "food-thought/public/window.svg",
+        "food-thought/tailwind.config.js"
+      ]
+    },
+    {
+      "name": "findprod",
+      "paths": [
+        "README.md",
+        "main.py"
+      ]
+    },
+    {
+      "name": "Gymception",
+      "paths": [
+        ".github/workflows/codeql.yml",
+        ".gitignore",
+        ".slugignore",
+        "Procfile",
+        "README.md",
+        "SECURITY.md",
+        "ca-key.pem",
+        "ca.pem",
+        "client-cert.pem",
+        "client-key.pem",
+        "client-req.pem",
+        "db.sqlite3",
+        "dump.rdb",
+        "gymception/__init__.py",
+        "gymception/__pycache__/__init__.cpython-310.pyc",
+        "gymception/__pycache__/asgi.cpython-310.pyc",
+        "gymception/__pycache__/celery.cpython-310.pyc",
+        "gymception/__pycache__/settings.cpython-310.pyc",
+        "gymception/__pycache__/urls.cpython-310.pyc",
+        "gymception/__pycache__/wsgi.cpython-310.pyc",
+        "gymception/asgi.py",
+        "gymception/celery.py",
+        "gymception/routing.py",
+        "gymception/settings.py",
+        "gymception/urls.py",
+        "gymception/wsgi.py",
+        "manage.py",
+        "management/commands/add_equipment.py",
+        "management/commands/cleanup_queue.py",
+        "members/__init__.py",
+        "members/__pycache__/__init__.cpython-310.pyc",
+        "members/__pycache__/admin.cpython-310.pyc",
+        "members/__pycache__/apps.cpython-310.pyc",
+        "members/__pycache__/consumers.cpython-310.pyc",
+        "members/__pycache__/forms.cpython-310.pyc",
+        "members/__pycache__/models.cpython-310.pyc",
+        "members/__pycache__/signals.cpython-310.pyc",
+        "members/__pycache__/tasks.cpython-310.pyc",
+        "members/__pycache__/urls.cpython-310.pyc",
+        "members/__pycache__/views.cpython-310.pyc",
+        "members/admin.py",
+        "members/apps.py",
+        "members/consumers.py",
+        "members/forms.py",
+        "members/migrations/0001_initial.py",
+        "members/migrations/0002_profile.py",
+        "members/migrations/0003_pushnotificationsubscription.py",
+        "members/migrations/0004_workout.py",
+        "members/migrations/0005_alter_workout_end_time.py",
+        "members/migrations/__init__.py",
+        "members/migrations/__pycache__/0001_initial.cpython-310.pyc",
+        "members/migrations/__pycache__/0002_profile.cpython-310.pyc",
+        "members/migrations/__pycache__/0003_pushnotificationsubscription.cpython-310.pyc",
+        "members/migrations/__pycache__/0004_workout.cpython-310.pyc",
+        "members/migrations/__pycache__/0005_alter_workout_end_time.cpython-310.pyc",
+        "members/migrations/__pycache__/__init__.cpython-310.pyc",
+        "members/models.py",
+        "members/signals.py",
+        "members/tasks.py",
+        "members/tests.py"
+      ]
+    },
+    {
+      "name": "Wish",
+      "paths": [
+        "README.md",
+        "birthday.mp3",
+        "index.html",
+        "script.js",
+        "styles.css"
+      ]
+    },
+    {
+      "name": "SparkDev_LAA",
+      "paths": [
+        ".firebaserc",
+        ".gitignore",
+        ".vscode/settings.json",
+        "404.html",
+        "README.md",
+        "addlogo.html",
+        "app.py",
+        "contributeDrawing.html",
+        "donate.html",
+        "fileCoverPage.css",
+        "fileCoverPage.html",
+        "fileLogo.css",
+        "fileLogo.html",
+        "fileUpload.html",
+        "firebase.json",
+        "functions/.gitignore",
+        "functions/package.json",
+        "functions/src/index.ts",
+        "functions/tsconfig.json",
+        "fundraiser.html",
+        "index.html",
+        "my-app/.gitignore",
+        "my-app/README.md",
+        "my-app/package.json",
+        "my-app/public/favicon.ico",
+        "my-app/public/index.html",
+        "my-app/public/manifest.json",
+        "my-app/public/robots.txt",
+        "my-app/src/App.css",
+        "my-app/src/App.js",
+        "my-app/src/App.test.js",
+        "my-app/src/Pages/ContributeImagePage.js",
+        "my-app/src/Pages/HOME.js",
+        "my-app/src/components/NavBar.js",
+        "my-app/src/components/pictureSlider.js",
+        "my-app/src/index.css",
+        "my-app/src/index.js",
+        "my-app/src/logo.svg",
+        "my-app/src/reportWebVitals.js",
+        "my-app/src/setupTests.js",
+        "profile.jpeg",
+        "style.css",
+        "styleFund.css",
+        "styleLogo.css",
+        "styleUpload.css",
+        "stylelogo.css"
+      ]
+    },
+    {
+      "name": "BIOMOD_CCB",
+      "paths": [
+        "README.md",
+        "Video_Script",
+        "cargosorting sample image.jpeg",
+        "experiments.html",
+        "filler.webp",
+        "index.html",
+        "intro.html",
+        "kaus.webp",
+        "movie.mp4",
+        "package.json",
+        "prathamesh.webp",
+        "project.html",
+        "rayhan.webp",
+        "results.html",
+        "rizal.webp",
+        "stylesheet.css",
+        "team.html"
+      ]
+    },
+    {
+      "name": "Chrome-extension-101",
+      "paths": [
+        "README.md",
+        "gemini-chat-extension/manifest.json",
+        "gemini-chat-extension/src/service-worker.js",
+        "gemini-chat-extension/src/settings/settings.html",
+        "gemini-chat-extension/src/settings/settings.js",
+        "gemini-chat-extension/src/sidepanel/sidepanel.css",
+        "gemini-chat-extension/src/sidepanel/sidepanel.html",
+        "gemini-chat-extension/src/sidepanel/sidepanel.js"
+      ]
+    },
+    {
+      "name": "CSE_360_Projec",
+      "paths": [
+        "ASUHelloWorldJavaFX/.classpath",
+        "ASUHelloWorldJavaFX/.project",
+        "ASUHelloWorldJavaFX/.settings/org.eclipse.core.resources.prefs",
+        "ASUHelloWorldJavaFX/.settings/org.eclipse.jdt.core.prefs",
+        "ASUHelloWorldJavaFX/bin/.gitignore",
+        "ASUHelloWorldJavaFX/build.fxbuild",
+        "ASUHelloWorldJavaFX/src/asuHelloWorldJavaFX/ASUHelloWorldJavaFX.java",
+        "README.md",
+        "app.py",
+        "hello.py",
+        "inclass.java",
+        "main.py"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "date": "2026-09-15",
+  "scope": "Original ambient score, location textures, interaction cues, supported-device haptics and sound controls",
+  "browser": "Actual in-app browser, development 3100 and production 3110",
+  "viewports": [[1280,800],[1280,720],[390,844]],
+  "browser_checked": [
+    "Initial and reloaded page remains quiet",
+    "Sound opt-in reaches on state; mute reaches off state",
+    "Effect preference survives reload without enabling playback",
+    "Native volume control keyboard adjustment",
+    "Independent score/effect toggle state",
+    "Home and outdoors have correct contextual sound descriptions",
+    "Original v4 playback; changing sections stops and resets its player",
+    "Reading dialog Escape restores trigger focus",
+    "Sound settings Escape restores settings trigger focus",
+    "Expanded phone panel clears the clock and scrolls to Motion, 3D and Reset",
+    "Return to whole world; final preview left quiet"
+  ],
+  "corrected": [
+    "Expanded phone settings were below the clock in stacking order",
+    "Home thunder needed a location/focus bus so an existing rumble fades after departure",
+    "Late-loaded ambience uses the current location instead of restoring an abandoned one"
+  ],
+  "checks": {
+    "tests": 55,
+    "sensory_tests": 8,
+    "production_build": "pass",
+    "typecheck": "pass",
+    "diff_whitespace": "pass",
+    "production_browser_errors": 0,
+    "audio_signal_evidence": "ambient-audio-signal-2026-09-15.json"
+  },
+  "automated_coverage": [
+    "Malformed saved preferences and autoplay exclusion",
+    "Independent score/effect mixes and reading/music ducking",
+    "Haptic opt-in, hardware/reduced-motion/visibility gates and rate limiting",
+    "Late loading, cached assets and disposal during loading",
+    "Semantic/fallback cue coalescing",
+    "Hidden-context suspension/resumption and graph disposal",
+    "Weather fades when departing home",
+    "Audio payload and unclipped source headroom"
+  ],
+  "sources": [
+    "https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate",
+    "https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices",
+    "https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay"
+  ],
+  "limits": [
+    "No physical-phone vibration validation; API availability is only a capability hint",
+    "No claim of acoustic listening or mastering verification; browser state, graph tests and decoded signal measurements were checked",
+    "Phone viewports are not hardware performance tests",
+    "Audio is synthesized, not field-recorded; Sri's own v4 is separate",
+    "The broader reference-level modeling and AAA craft goal remains open"
+  ]
+}

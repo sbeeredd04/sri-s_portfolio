@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-14",
+  "scope": "Main desk hardware, purposeful screen links, chair, lamp and palm clearance",
+  "automated": {
+    "productionBuild": "passed",
+    "typecheck": "passed",
+    "tests": 26,
+    "strengthenedTest": "Typing palms clear the actual keycaps while wrists remain reachable throughout the animation",
+    "diffWhitespace": "passed"
+  },
+  "browser": {
+    "physicalScreenLinks": {
+      "left": "Projects & ideas with 27 projects",
+      "center": "Experience with Offseason selected",
+      "right": "On repeat with Sri's v4 and five comfort shows"
+    },
+    "productionViewports": [[1280, 720], [390, 844]],
+    "phoneDocumentWidth": 390,
+    "phoneScrollWidth": 390,
+    "phoneCanvasCount": 1,
+    "productionApplicationErrors": 0,
+    "productionWarnings": ["Upstream Rapier initialization deprecation"],
+    "developmentRecovery": "Context loss exposed fallback; retry restored the desk geometry and all three screen textures",
+    "developmentWarnings": ["Upstream Rapier initialization deprecation", "WEBGL_lose_context extension unavailable during teardown", "Transient HMR import warning during edits"]
+  },
+  "limits": [
+    "This pass does not establish old-M1 performance or complete full-world rendering cost.",
+    "Screens are authored personal chapter cards, not live application/product screenshots.",
+    "Chair and cable detail is static geometry, not added rigid-body or cloth simulation.",
+    "Reference-level environment and character art remains unfinished."
+  ]
+}

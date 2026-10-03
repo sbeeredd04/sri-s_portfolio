@@ -1,0 +1,250 @@
+{
+  "inventoryCount": 60,
+  "dispositions": [
+    {
+      "repository": "codegraph",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "MCP101",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "beli_codes",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "modelcontextprotocol",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "openai-cookbook",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "hadoop_multithreading",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "classauto",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "sri-s_portfolio",
+      "disposition": "Current website itself."
+    },
+    {
+      "repository": "Agentex",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "sandbox",
+      "disposition": "Research notebook workspace; not promoted pending personal research/publication review."
+    },
+    {
+      "repository": "Nous",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "sandbox_private",
+      "disposition": "Public metadata suggests private intent; not promoted."
+    },
+    {
+      "repository": "dotfiles",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "binsr_challenge",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "ImageFolder",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "zsh_plugin",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "auto-git",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Aether",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "LeetCode",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "ComputerVision",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "sbeeredd04",
+      "disposition": "GitHub profile configuration, not a project."
+    },
+    {
+      "repository": "VoxelCV",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "CSDNA",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Amano",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "promen",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "psych",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "anthropic-cookbook",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "SimSim",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "iOS-101",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "TBD",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "cookbook",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Relightable-Portrait-Animation",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Trainer",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "HeadBobberGames",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "PromenClient",
+      "disposition": "Companion website to Prom10/promen."
+    },
+    {
+      "repository": "XML_Xpoloration",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Trak",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Aristotle",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Chrome-extension-101",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "puter",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "SceneGraphVLM",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "GunShotAnalysis",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "MesaInteractiveExhibit",
+      "disposition": "Earlier repository for the Mesa project; the represented project links to the current team repository."
+    },
+    {
+      "repository": "market-anomaly",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "findprod",
+      "disposition": "Described as A clearer first prompt; direct source link withheld because source includes an embedded API credential."
+    },
+    {
+      "repository": "MAD",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "pentagram",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "FoodThought",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Flask-101",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "CSE_360_Project",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Wish",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "CSE_360_Projec",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "sri_portfolio",
+      "disposition": "Earlier version of this portfolio."
+    },
+    {
+      "repository": "Song_Rec",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "ARuReady",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "AviSol",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "Gymception",
+      "disposition": "Described as Gymception; direct source link withheld pending public-key/database review."
+    },
+    {
+      "repository": "Notion_widgets",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "SparkDev_LAA",
+      "disposition": "Linked in the project library"
+    },
+    {
+      "repository": "BIOMOD_CCB",
+      "disposition": "Linked in the project library"
+    }
+  ],
+  "notes": [
+    "Forks and early drafts are separate collections.",
+    "No credentials were tested, used, rotated or changed.",
+    "No source assets or content from private-intent sandbox repositories are published."
+  ]
+}

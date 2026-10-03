@@ -63,3 +63,33 @@ test("the review override accepts only known presets", () => {
   assert.equal(weatherOverride("?weather=<script>"), null);
   assert.equal(weatherOverride(""), null);
 });
+
+test("measured cover, precipitation and visibility override category defaults", () => {
+  const state = parseOpenMeteo({
+    current: {
+      weather_code: 45,
+      cloud_cover: 12,
+      precipitation: 0,
+      visibility: 20000,
+      wind_speed_10m: 0,
+    },
+  });
+  assert.equal(state.cloud, 0.12);
+  assert.equal(state.rain, 0);
+  assert.equal(state.fog, 0);
+  assert.equal(state.wind, 0);
+  const raining = parseOpenMeteo({
+    current: { weather_code: 61, precipitation: 0 },
+  });
+  assert.equal(
+    raining.rain,
+    0,
+    "do not invent precipitation when a measured zero is available",
+  );
+});
+
+test("missing visibility and cover still have safe WMO fallbacks", () => {
+  const state = parseOpenMeteo({ current: { weather_code: 45 } });
+  assert.ok(state.fog > 0.8);
+  assert.equal(state.cloud, 0.85);
+});

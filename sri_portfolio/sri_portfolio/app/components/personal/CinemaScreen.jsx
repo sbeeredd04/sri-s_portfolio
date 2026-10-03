@@ -74,11 +74,11 @@ export default function CinemaScreen({ channel, position, onNext, onHover }) {
   return (
     <mesh
       position={position}
-      onPointerOver={(e) => {
+      onPointerMove={(e) => {
         e.stopPropagation();
-        onHover?.("Tap the screen to change the show.");
+        onHover?.("Tap the screen to change the show.", e);
       }}
-      onPointerOut={() => onHover?.("")}
+      onPointerOut={(e) => onHover?.("", e)}
       onClick={(e) => {
         e.stopPropagation();
         if (e.delta <= 4) onNext();

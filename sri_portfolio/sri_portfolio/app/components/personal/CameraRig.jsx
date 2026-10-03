@@ -95,12 +95,13 @@ export default function CameraRig({
   const street = streetStop(world, stop);
   const roaming = stop.startsWith("roam");
   const phone = size.width < 560;
+  const portraitFrame = phone || size.width < size.height;
   const shortPhone = phone && size.height <= 730;
   const globeTopGap = shortPhone ? 12 : 28;
   const globeFooterSpace = shortPhone ? 122 : 145;
   const followingWanderer = world === "studio" && stop === "walk";
   const landscape = size.width >= 600 && size.height < 560;
-  const fieldOfView = phone
+  const fieldOfView = portraitFrame
     ? (world === "court" && stop === "arrival"
         ? courtViews.arrival.portrait.fov
         : world === "studio" && stop === "arrival"
@@ -113,7 +114,7 @@ export default function CameraRig({
       60
     : landscape
       ? 50
-      : 45;
+      : placeStops[world]?.find((s) => s.id === stop)?.fov || 45;
   function destination(id) {
     if (street && id !== "planet") {
       if (street.worldPosition) {
@@ -181,7 +182,7 @@ export default function CameraRig({
             : id === "future" && stop === "arrival"
               ? fieldnotesArrival
               : placeStops[id]?.find((s) => s.id === stop);
-    const portrait = phone
+    const portrait = portraitFrame
       ? closeStop?.portrait ||
         (id === "trail" && stop === "arrival"
           ? trailView().arrival.portrait
@@ -231,7 +232,13 @@ export default function CameraRig({
       );
       position.sub(target).multiplyScalar(frameScale).add(target);
     }
-    return { position, target, up: region.normal.clone() };
+    return {
+      position,
+      target,
+      up: closeStop?.up
+        ? new THREE.Vector3(...closeStop.up).normalize()
+        : region.normal.clone(),
+    };
   }
 
   function begin(id, immediate = false) {
@@ -312,11 +319,9 @@ export default function CameraRig({
       const offset =
         world === "planet"
           ? size.height / 2 - (start + room / 2)
-          : world === "projects" && stop === "ring" && size.width < 560
-            ? size.height * 0.07
-            : ((world === "trail" && stop === "overlook") ||
-                  (world === "projects" && stop === "campus")) &&
-                size.width < 560
+          : world === "projects" && stop === "keynote" && size.width < 560
+            ? -size.height * 0.1
+            : (world === "trail" && stop === "overlook") && size.width < 560
               ? size.height * 0.045
               : -size.height *
                 (stop !== "arrival"

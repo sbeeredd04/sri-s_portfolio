@@ -99,7 +99,7 @@ test("the Foundry pad stays level under the workshops and the new ring", () => {
     );
 });
 
-test("the ring keeps the existing studios, galleries and mobile shelf", () => {
+test("removing the campus keeps the studios and mobile exhibits accessible", () => {
   assert.equal(workshops.length, 6);
   assert.deepEqual(projectGallerySites.mobile.position, [-8.5, 0, -10.5]);
   assert.deepEqual(projectGallerySites.hackathons.position, [7.7, 0, -11.1]);
@@ -122,17 +122,20 @@ test("the ring keeps the existing studios, galleries and mobile shelf", () => {
   for (const id of ["aatram", "simsim", "ios-101"])
     assert.match(mobile, new RegExp(`id: "${id}"`));
   assert.match(mobile, /id6760587556/);
-  for (const id of ["ring", "campus"]) {
-    const stop = placeStops.projects.find((item) => item.id === id);
-    assert.equal(stop.collection, "mobile");
-    assert.equal(stop.content, "work");
-  }
-  assert.deepEqual(placeStops.projects.find((s) => s.id === "ring").position, [
-    ...campusView().overview.position,
-  ]);
-  assert.deepEqual(
-    placeStops.projects.find((s) => s.id === "campus").position,
-    [...campusView().court.position],
+  for (const id of ["ring", "campus", "valley"])
+    assert.equal(
+      placeStops.projects.some((stop) => stop.id === id),
+      false,
+    );
+  assert.equal(
+    placeStops.projects.find((stop) => stop.id === "mobile").collection,
+    "mobile",
+  );
+  assert.equal(
+    projectWalks.some((path) =>
+      campusPaths().some((old) => JSON.stringify(old) === JSON.stringify(path)),
+    ),
+    false,
   );
 });
 
@@ -222,7 +225,6 @@ test("full paving width and a visitor shoulder clear columns, planting and exhib
       );
     }
   }
-  assert.ok(projectWalks.length > campusPaths().length);
 });
 
 test("each exhibit bay has an open approach and faces the courtyard", () => {
@@ -253,39 +255,12 @@ test("each exhibit bay has an open approach and faces the courtyard", () => {
   assert.ok(campusBench.z > campusCenter.z);
 });
 
-test("on foot starts at the selected campus stop and can reach the courtyard", () => {
-  const feet = campusFeet();
-  for (const entry of ["campus", "ring"]) {
-    const [x, z] = localOf(walkStart("projects", false, entry).position);
+test("removed campus entries fall back to the connected Foundry entrance", () => {
+  const home = walkStart("projects").position;
+  for (const id of ["campus", "ring"])
     assert.ok(
-      Math.hypot(x - feet[entry].x, z - feet[entry].z) < 0.05,
-      `${entry} starts at ${x}, ${z}`,
+      walkStart("projects", false, id).position.distanceTo(home) < 0.001,
     );
-  }
-  const home = localOf(walkStart("projects").position);
-  assert.ok(Math.hypot(home[0] + 2.8, home[1] - 11.7) < 0.05);
-  const state = walkStart("projects", false, "ring");
-  const loop = courtyardLoop();
-  const goals = [[campusCenter.x, -18.05], loop[0], ...loop.slice(1, 11)];
-  for (const [tx, tz] of goals) {
-    let reached = false;
-    for (let i = 0; i < 280; i++) {
-      const [x, z] = localOf(state.position);
-      if (Math.hypot(x - tx, z - tz) < 0.6) {
-        reached = true;
-        break;
-      }
-      steer(state, tx - x, tz - z);
-    }
-    const [x, z] = localOf(state.position);
-    assert.ok(
-      reached,
-      `stopped at ${x.toFixed(2)}, ${z.toFixed(2)} before ${tx}, ${tz}`,
-    );
-  }
-  const court = nearestWalk(state.position, network);
-  assert.equal(court.segment.world, "projects");
-  assert.ok(Math.sqrt(court.distance) < 0.2);
 });
 
 test("the ring floor clears rendered ground and the skirt is buried", () => {
@@ -497,14 +472,6 @@ test("continuous courtyard paving supports visitor feet and full corridor width"
           `terrain above path at ${x},${z}`,
         );
       }
-  }
-  for (const id of ["ring", "campus"]) {
-    const state = walkStart("projects", false, id),
-      relative = state.position.clone().sub(region.center);
-    assert.ok(
-      Math.abs(relative.dot(region.normal) - campusPavingHeight() - 0.004) <
-        0.0001,
-    );
   }
   geometry.dispose();
   material.dispose();

@@ -11,7 +11,6 @@ import {
 } from "./StreetFurniture";
 import { useRoomTexture } from "./RoomMaterials";
 import ProjectDistricts from "./ProjectDistricts";
-import FoundryCampus from "./FoundryCampus";
 import TechDistrict from "./TechDistrict";
 import Workbench from "./Workbench";
 import { FinishBox, useFinish } from "./Finishes";
@@ -159,13 +158,14 @@ function Workshop({
         if (active) onOpen(data.id);
         else onVisit(data.id);
       }}
-      onPointerOver={(e) => {
+      onPointerMove={(e) => {
         e.stopPropagation();
         onHover(
           active ? `Read the ${data.name} story` : `Step inside ${data.name}`,
+          e,
         );
       }}
-      onPointerOut={() => onHover("")}
+      onPointerOut={(e) => onHover("", e)}
     >
       <Suspense fallback={<PlainShell />}>
         <WorkshopShell type={type} />
@@ -264,6 +264,7 @@ export default function ProjectTown({
   onContentOpen,
   onHover,
   activeProject,
+  keynoteIndex,
   exhibitValues,
   onExhibitChange,
   onProjectVisit,
@@ -284,13 +285,7 @@ export default function ProjectTown({
         {...{ detailed, night, onProjectOpen, onContentOpen, onHover }}
       />
       <TechDistrict
-        {...{ detailed, night, animate, onContentOpen, onProjectOpen }}
-      />
-      <FoundryCampus
-        night={night}
-        onContentOpen={onContentOpen}
-        onProjectOpen={onProjectOpen}
-        onHover={onHover}
+        {...{ detailed, night, animate, onContentOpen, onProjectOpen, onHover, activeProject, keynoteIndex }}
       />
       {workshops.map((w) => (
         <Workshop

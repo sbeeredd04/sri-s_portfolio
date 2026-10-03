@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-14",
+  "scope": "Aether and GitCue interactive physical exhibits",
+  "behavior": {
+    "aether": "One original question, explore/belong branches, selectable return to original.",
+    "gitcue": "Authored three-stage example: related changes, settling activity, descriptive commit.",
+    "delivery": "1,280×840 CanvasTexture on a physical display in each existing workshop. Native controls share shell state; no app iframe, backend, AI call or Git operation.",
+    "navigation": "A workshop click enters the camera stop; a separate action reads the project. Back returns to town. Focus follows removed local controls and returns after the story."
+  },
+  "checks": {
+    "productionBuild": "passed",
+    "typecheck": "passed (Next configuration/generated types only)",
+    "existingTests": 26,
+    "whitespace": "passed",
+    "development": [
+      "All six walkthrough selections exercised",
+      "Actual mesh screen hit testing through pavilion glass",
+      "Enter-key selection",
+      "Phone framing revised after neighboring-building occlusion was found"
+    ],
+    "production": {
+      "desktop": [
+        1280,
+        800
+      ],
+      "phone": [
+        390,
+        844
+      ],
+      "phoneDocumentWidth": 390,
+      "phoneScrollWidth": 390,
+      "canvasCount": 1,
+      "interactions": [
+        "Aether choice, original thread and selected card visibly match native pressed state",
+        "Aether workshop roof click enters the close-up and retains chosen branch",
+        "GitCue commit stage rendered after Enter key with motion disabled",
+        "Aether story opens #project-aether, expands the project, and closes back to its trigger",
+        "Town Back returns focus to Take it in",
+        "Still view removes 3D; returning remounts selected GitCue commit state"
+      ],
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "limits": [
+    "Authored sketches explaining the project, not live product sessions or screenshots.",
+    "Phone framing uses authored camera parameters; no general building collision system added.",
+    "The frame, console and scene architecture remain authored static geometry.",
+    "The other four selected-work exhibits retain earlier sculptures; reference-level world art and hardware profiling remain unfinished."
+  ]
+}

@@ -1,13 +1,13 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
-import { PerformanceMonitor } from "@react-three/drei";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useFrame } from "@react-three/fiber";
 import {
   chooseTier,
   dprSteps,
   lowerTier,
-  raiseTier,
   readDevice,
   tierSettings,
+  sampleFramePressure,
 } from "../../lib/device-tier.mjs";
 
 const QualityContext = createContext({
@@ -28,12 +28,13 @@ export function initialTier() {
 
 // Lives inside the Canvas. Starts at the device's ceiling and steps down when
 // sustained frame rate falls, so an overloaded phone recovers instead of
-// stuttering; it only climbs back toward the original ceiling.
-export function QualityProvider({ ceiling, onTier, children }) {
+// stuttering. Pixel clarity can recover after a long stable period.
+export function QualityProvider({ ceiling, onTier, active, children }) {
   // One state so a decline either sheds pixels or, at the last step, a tier.
   const [{ tier, step }, setLevel] = useState({ tier: ceiling, step: 0 });
   const settings = tierSettings[tier];
-  const deviceRatio = typeof window === "undefined" ? 1 : window.devicePixelRatio;
+  const deviceRatio =
+    typeof window === "undefined" ? 1 : window.devicePixelRatio;
   const steps = dprSteps(tier, deviceRatio);
   const dpr = steps[Math.min(step, steps.length - 1)];
   // Shader compilation and texture upload stall the first seconds of every
@@ -54,32 +55,41 @@ export function QualityProvider({ ceiling, onTier, children }) {
       const next = lowerTier(l.tier);
       return next === l.tier ? l : { tier: next, step: 0 };
     });
-  const incline = () =>
-    setLevel((l) => {
-      if (l.step > 0) return { ...l, step: l.step - 1 };
-      const next = raiseTier(l.tier, ceiling);
-      if (next === l.tier) return l;
-      // Climb into the richer tier at its softest ratio, then sharpen.
-      return { tier: next, step: dprSteps(next, deviceRatio).length - 1 };
-    });
   // The Canvas owns pixel ratio (its dpr prop is re-applied on every render),
   // so the active tier is reported upward and the Canvas prop follows it.
   useEffect(() => {
     onTier?.(tier, dpr);
   }, [tier, dpr, onTier]);
+  const sample = useRef({ elapsed: 0, slow: 0 });
+  const stable = useRef(0);
+  useFrame((_, dt) => {
+    // Paused/hidden demand frames and first-use shader compilation are not
+    // steady-state GPU pressure. Do not turn them into permanent downgrades.
+    if (!active || !armed) {
+      sample.current = { elapsed: 0, slow: 0 };
+      stable.current = 0;
+      return;
+    }
+    const s = sampleFramePressure(sample.current, dt);
+    sample.current = s;
+    if (s.elapsed < 3) return;
+    const pressure = s.slow / s.elapsed;
+    if (pressure > 0.7) {
+      stable.current = 0;
+      decline();
+    } else if (pressure < 0.08) {
+      stable.current += s.elapsed;
+      // Recover only pixels within the current tier. Expensive effects stay off.
+      if (stable.current >= 15 && step > 0) {
+        stable.current = 0;
+        setLevel((level) => ({ ...level, step: Math.max(0, level.step - 1) }));
+      }
+    } else stable.current = 0;
+    sample.current = { elapsed: 0, slow: 0 };
+  });
   return (
-    <PerformanceMonitor
-      // Step down only below ~30 fps sustained (45 on high-refresh displays).
-      bounds={(refresh) => (refresh > 90 ? [45, 100] : [30, 57])}
-      ms={400}
-      iterations={12}
-      flipflops={6}
-      onDecline={() => armed && decline()}
-      onIncline={() => armed && incline()}
-    >
-      <QualityContext.Provider value={{ tier, ...settings }}>
-        {children}
-      </QualityContext.Provider>
-    </PerformanceMonitor>
+    <QualityContext.Provider value={{ tier, ...settings }}>
+      {children}
+    </QualityContext.Provider>
   );
 }

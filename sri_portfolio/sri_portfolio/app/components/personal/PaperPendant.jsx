@@ -47,11 +47,11 @@ export default function PaperPendant({
     <group position={position}>
       <group
         ref={pivot}
-        onPointerOver={(e) => {
+        onPointerMove={(e) => {
           e.stopPropagation();
-          onHover?.("Give the pendant a gentle nudge.");
+          onHover?.("Give the pendant a gentle nudge.", e);
         }}
-        onPointerOut={() => onHover?.("")}
+        onPointerOut={(e) => onHover?.("", e)}
         onClick={(e) => {
           e.stopPropagation();
           if (!animate) return;

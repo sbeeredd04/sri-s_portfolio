@@ -35,7 +35,7 @@ export default function VisitorWalker({
   const network = useMemo(() => makeWalkNetwork(roof), [roof]);
   const state = useRef(null),
     avatar = useRef(),
-    motion = useRef({ gait: 0, stride: 0 });
+    motion = useRef({ gait: 0, stride: 0, speed: 0 });
   const controls = useRef({
     keys: new Set(),
     cruise: false,
@@ -256,12 +256,20 @@ export default function VisitorWalker({
       }
 
       motion.current.gait = s.distance * 5.6;
+      motion.current.speed = THREE.MathUtils.lerp(
+        motion.current.speed,
+        speed,
+        1 - Math.exp(-dt * 10),
+      );
       motion.current.stride = THREE.MathUtils.lerp(
         motion.current.stride,
         Math.min(1, speed / 2.6),
         1 - Math.exp(-dt * 16),
       );
-    } else motion.current.stride = 0;
+    } else {
+      motion.current.stride = 0;
+      motion.current.speed = 0;
+    }
     const forward = s.forward
         .clone()
         .addScaledVector(s.up, -s.forward.dot(s.up))

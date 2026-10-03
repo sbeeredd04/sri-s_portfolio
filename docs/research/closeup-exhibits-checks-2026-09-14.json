@@ -1,0 +1,66 @@
+{
+  "date": "2026-09-14",
+  "scope": "Listening materials, persistent light rig, five hackathon exhibits and shared artwork",
+  "automated": {
+    "build": "passed",
+    "typecheck": "passed",
+    "tests": {
+      "passed": 26,
+      "newCoverage": "Trees remain on the radial terrain across the listening-room ridges"
+    }
+  },
+  "browser": {
+    "production": {
+      "phoneViewport": [
+        390,
+        844
+      ],
+      "desktopViewport": [
+        1280,
+        800
+      ],
+      "hackathonCollectionCount": 6,
+      "illustratedHackathonCount": 5,
+      "phoneDocumentWidth": 390,
+      "phoneScrollWidth": 390,
+      "laptopClick": "AR You Ready laptop opened #project-aruready with its details expanded",
+      "azSparkClick": "Mine Alliance physical poster opened the correct story",
+      "consoleApplicationErrors": 0
+    },
+    "development": {
+      "contextLoss": "Fallback appeared; retry restored one canvas and the textured listening room",
+      "postRecoveryApplicationErrors": 0,
+      "teardownWarning": "THREE.WebGLRenderer: WEBGL_lose_context extension not supported.",
+      "dayNightReview": [
+        "house at night",
+        "playground by day"
+      ],
+      "steadyRestoredListeningSample": {
+        "viewport": [
+          1280,
+          800
+        ],
+        "dpr": 1,
+        "drawCalls": 671,
+        "triangles": 430000,
+        "geometries": 710,
+        "textures": 32,
+        "programs": 39,
+        "cpuMsPerFrame": 2.9,
+        "fps": 30.3
+      }
+    }
+  },
+  "fixesFoundByVisualQA": [
+    "Do not swap an uploaded Texture Source before disposal.",
+    "Release the GPU allocation before changing a 2px placeholder to a larger image.",
+    "Center desktop close-ups after shrinking the narrative introduction."
+  ],
+  "limits": [
+    "The render sample is not a controlled hardware/GPU benchmark.",
+    "First-entry geometry and material compilation remains to be profiled.",
+    "Reference-level interior, vegetation and character fidelity remains unfinished.",
+    "The texture is generated base color, not a captured PBR scan.",
+    "Chalant details and exact dates still await Sri."
+  ]
+}

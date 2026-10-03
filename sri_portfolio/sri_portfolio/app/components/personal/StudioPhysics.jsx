@@ -46,7 +46,6 @@ function HeldObject({
     if (!grab.current) return;
     grab.current = null;
     if (controls) controls.enabled = priorControls.current;
-    document.body.style.cursor = "";
     onHover?.("");
     invalidate();
   }
@@ -57,7 +56,6 @@ function HeldObject({
       window.removeEventListener("blur", release);
       window.removeEventListener("pointerup", release);
       if (grab.current && controls) controls.enabled = priorControls.current;
-      document.body.style.cursor = "";
     };
   }, [controls]);
   useEffect(() => {
@@ -111,13 +109,19 @@ function HeldObject({
             priorControls.current = controls.enabled;
             controls.enabled = false;
           }
-          document.body.style.cursor = "grabbing";
+          onHover?.("Release to let go", e, "grabbing");
           body.current.wakeUp();
           invalidate();
         }}
         onPointerMove={(e) => {
-          if (!grab.current) return;
+          if (!grab.current) {
+            if (!animate) return;
+            e.stopPropagation();
+            onHover?.("Drag to pick up · release to let go", e, "grab");
+            return;
+          }
           e.stopPropagation();
+          onHover?.("Release to let go", e, "grabbing");
           if (!e.ray.intersectPlane(plane, hit)) return;
           grab.current = {
             x: THREE.MathUtils.clamp(hit.x, -3.5, 3.7),
@@ -138,13 +142,11 @@ function HeldObject({
         onPointerOver={(e) => {
           if (!animate) return;
           e.stopPropagation();
-          document.body.style.cursor = "grab";
-          onHover?.("Drag to pick up · release to let go");
+          onHover?.("Drag to pick up · release to let go", e, "grab");
         }}
-        onPointerOut={() => {
+        onPointerOut={(e) => {
           if (!grab.current) {
-            document.body.style.cursor = "";
-            onHover?.("");
+            onHover?.("", e);
           }
         }}
       >

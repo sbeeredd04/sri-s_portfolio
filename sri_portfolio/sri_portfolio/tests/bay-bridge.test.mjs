@@ -108,3 +108,44 @@ test("bridge walking stays on its own deck route and does not jump into the apar
     );
   }
 });
+
+test("bay overview uses the bridge deck vertical instead of the distant city vertical", async () => {
+  const { bridgeView } = await import("../app/lib/bay-bridge.mjs");
+  const up = new Vector3(...bridgeView.up),
+    deck = pathPose(bayRoute, 0.59);
+  assert.ok(up.distanceTo(deck.normal) < 1e-8);
+  assert.ok(Math.abs(up.dot(deck.right)) < 1e-8);
+  assert.ok(Math.abs(up.dot(deck.forward)) < 0.01);
+});
+
+test("both bay towers fit the desktop and portrait composition", async () => {
+  const { PerspectiveCamera } = await import("three");
+  const { bridgeView } = await import("../app/lib/bay-bridge.mjs");
+  const { worldPoint } = await import("../app/lib/world-layout.mjs");
+  const { apartmentPoint } = await import("../app/lib/studio-layout.mjs");
+  for (const [width, height] of [
+    [1440, 900],
+    [390, 844],
+  ]) {
+    const view = width < 560 ? bridgeView.portrait : bridgeView;
+    const camera = new PerspectiveCamera(view.fov, width / height, 0.22, 3000);
+    camera.position.copy(worldPoint("studio", apartmentPoint(view.position)));
+    camera.up.set(...bridgeView.up);
+    camera.lookAt(worldPoint("studio", apartmentPoint(view.target)));
+    camera.updateMatrixWorld();
+    for (const t of bayCrossing.towers)
+      for (const side of [-2.6, 2.6])
+        for (const y of [-1.5, 13]) {
+          const point = bridgePoint(t, side, y).project(camera);
+          assert.ok(
+            Math.abs(point.x) < 0.8,
+            `${width}px clips a tower horizontally`,
+          );
+          assert.ok(
+            point.y > -0.4 && point.y < 0.3,
+            `${width}px tower is under navigation`,
+          );
+          assert.ok(point.z > -1 && point.z < 1);
+        }
+  }
+});

@@ -151,8 +151,8 @@ const detailRooms = {
     1.04,
   ],
   writing: [
-    "An unwritten page",
-    "Sparse keys and quiet air for an unfinished thought.",
+    "Between the lines",
+    "Warm keys and quiet air, kept low while you read.",
     "paper-light",
     "open-air",
     0.12,
@@ -310,11 +310,14 @@ export function hapticPulse(
 }
 
 export const glassCues = {
+  type: { notes: [740], spacing: 0, duration: 0.026, gain: 0.025 },
+  hover: { notes: [587.33], spacing: 0, duration: 0.045, gain: 0.018 },
+  reveal: { notes: [293.66, 440], spacing: 0.07, duration: 0.24, gain: 0.03 },
   ripple: { notes: [659.25, 440], spacing: 0.09, duration: 0.42, gain: 0.018 },
-  press: { notes: [220], spacing: 0, duration: 0.065, gain: 0.038 },
+  press: { notes: [392], spacing: 0, duration: 0.075, gain: 0.11 },
   object: { notes: [587.33, 880], spacing: 0.022, duration: 0.14, gain: 0.025 },
-  open: { notes: [440, 659.25], spacing: 0.055, duration: 0.26, gain: 0.035 },
-  close: { notes: [440, 293.66], spacing: 0.03, duration: 0.16, gain: 0.023 },
+  open: { notes: [440, 659.25], spacing: 0.055, duration: 0.26, gain: 0.065 },
+  close: { notes: [440, 293.66], spacing: 0.03, duration: 0.16, gain: 0.05 },
   travel: {
     notes: [293.66, 440, 587.33],
     spacing: 0.075,

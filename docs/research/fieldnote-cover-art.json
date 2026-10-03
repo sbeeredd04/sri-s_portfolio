@@ -1,0 +1,13 @@
+{
+  "tool": "Built-in image_gen",
+  "purpose": "Original editorial cover for the draft The work around the model.",
+  "prompt": "Use case: illustration-story. Asset type: cinematic full-bleed editorial website opening for a short essay called The work around the model. Original story illustration, no text in image. Scene: a quiet dark architectural studio at night. On a large matte walnut worktable in the lower half of the frame, an open cream book at left and a small warm luminous ceramic cuboid held inside a carefully built fine brass armature at center-right, surrounded by just a few precision tools and translucent tracing sheets. This is a tactile metaphor for the harness around an AI model, not a sci-fi computer. Behind the table, one very tall industrial window on the right shows vague foggy San Francisco rooftops in deep blue night. A restrained warm desk lamp makes a pool of light connecting book and object. Style: beautifully art-directed, tactile handmade miniature, cinematic 3D editorial illustration, matte paper and brushed metal, delicate subtle film grain, sophisticated shadow and material details, emotionally quiet, substantial dark negative space. Composition: widescreen 16:9, viewed from a slightly elevated seated eye level, subjects clustered in the lower middle 55 percent width, top 50 percent is mostly dark near-black blue wall with subtle light, so centered white italic headline can be placed there in HTML. Leftmost 15 percent dark empty for small navigation. Strong diagonal light and atmospheric depth, no bright areas in upper half. Whole desk surface has physical sense; all items rest on it. Palette near-black ink #080e11, desaturated midnight blue, warm ivory and restrained honey light. Avoid humans, lettering, logos, watermarks, robot heads, neon, glowing circuit diagrams, floating HUDs, spheres, excessive ornament. Render wide at 2048x1152.",
+  "assets": [
+    "public/fieldnotes/harness-studio-768.webp",
+    "public/fieldnotes/harness-studio-1280.webp",
+    "public/fieldnotes/harness-studio-1600.webp"
+  ],
+  "encoding": "WebP quality 84; responsive derivatives from the generated 1672×941 image. Portrait cover sizing accounts for the cropped rendered width.",
+  "reference": "https://www.benxrun.com/01-look/",
+  "design": "Original night workbench illustration; no reference assets copied."
+}

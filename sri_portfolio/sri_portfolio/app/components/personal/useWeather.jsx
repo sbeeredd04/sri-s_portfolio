@@ -27,14 +27,18 @@ export default function useWeather() {
       }
       controller?.abort();
       controller = new AbortController();
+      const request = controller;
+      const timeout = setTimeout(() => request.abort("weather-timeout"), 6500);
       try {
         const response = await fetch("/api/weather", {
           signal: controller.signal,
         });
         setWeather(response.ok ? await response.json() : fallbackWeather);
       } catch (error) {
-        if (error?.name === "AbortError") return;
+        if (request.signal.aborted && request.signal.reason !== "weather-timeout") return;
         setWeather(fallbackWeather);
+      } finally {
+        clearTimeout(timeout);
       }
       fetchedAt = Date.now();
       timer = setTimeout(refresh, REFRESH);

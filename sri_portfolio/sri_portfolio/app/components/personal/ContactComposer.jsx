@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
 import { mailDraft } from "../../lib/contact-validation.mjs";
+import { submitContact, gmailDraft } from "../../lib/contact-client.mjs";
 
 const sfDate = (date, withTime = false) =>
   new Intl.DateTimeFormat("en-US", {
@@ -12,9 +13,9 @@ const sfDate = (date, withTime = false) =>
   }).format(date);
 export default function ContactComposer() {
   const id = useId(),
-    pending = useRef(false);
-  const [available, setAvailable] = useState(false),
-    [status, setStatus] = useState("idle"),
+    pending = useRef(false),
+    delivery = useRef(null);
+  const [status, setStatus] = useState("idle"),
     [feedback, setFeedback] = useState(""),
     [today, setToday] = useState(""),
     [postmark, setPostmark] = useState("");
@@ -25,35 +26,23 @@ export default function ContactComposer() {
     website: "",
   });
   useEffect(() => setToday(sfDate(new Date())), []);
-  useEffect(() => {
-    const abort = new AbortController();
-    fetch("/api/contact", { signal: abort.signal })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((r) => setAvailable(Boolean(r?.available)))
-      .catch(() => {});
-    return () => abort.abort();
-  }, []);
+  useEffect(() => () => delivery.current?.abort(), []);
   async function send(e) {
     e.preventDefault();
-    if (!available || pending.current) return;
+    if (pending.current || status === "sent") return;
     pending.current = true;
     setStatus("sending");
     setFeedback("Sending your note…");
+    const controller = new AbortController();
+    delivery.current = controller;
+    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(draft),
-        signal: AbortSignal.timeout(15000),
-      });
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(
-          data.error || "That didn’t reach my inbox. Try email below.",
-        );
+      await submitContact(draft, { signal: controller.signal });
       setPostmark(sfDate(new Date(), true));
       setStatus("sent");
-      setFeedback("Your note is in my inbox. Thanks for reaching out.");
+      setFeedback(
+        "Your note was saved to my private website inbox. Thanks for reaching out.",
+      );
     } catch (error) {
       setStatus("error");
       setFeedback(
@@ -62,6 +51,8 @@ export default function ContactComposer() {
           : error.message,
       );
     } finally {
+      clearTimeout(timeout);
+      delivery.current = null;
       pending.current = false;
     }
   }
@@ -134,33 +125,32 @@ export default function ContactComposer() {
           </label>
         </div>
         <div className="contact-submit">
-          {available && (
-            <button
-              type="submit"
-              className="letter-send"
-              disabled={status === "sending" || status === "sent"}
-            >
-              {status === "sent"
-                ? "Sent ✓"
-                : status === "sending"
-                  ? "Sending…"
-                  : "Seal and send"}
-            </button>
-          )}
-          <a
-            className={available ? "letter-alt" : "letter-send"}
-            href={mailDraft(draft)}
+          <button
+            type="submit"
+            className="letter-send"
+            disabled={status === "sending" || status === "sent"}
           >
-            {available
-              ? "Use my email app instead"
-              : "Continue in your email app"}
+            {status === "sent"
+              ? "Sent ✓"
+              : status === "sending"
+                ? "Sending…"
+                : "Send message"}
+          </button>
+          <a className="letter-alt" href={mailDraft(draft)}>
+            Use my email app
+          </a>
+          <a
+            className="letter-alt"
+            href={gmailDraft(draft)}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Gmail
           </a>
         </div>
         <p className="contact-status" role="status">
           {feedback ||
-            (available
-              ? "Your name, email and message go privately to Sri. No mailing list."
-              : "Your draft opens in your email app. Review it there before sending.")}
+            "Your name, email and message go to Sri’s private website inbox. Email options open a draft for you to review and send."}
         </p>
         {status === "sent" && (
           <span className="letter-postmark" aria-hidden="true">
