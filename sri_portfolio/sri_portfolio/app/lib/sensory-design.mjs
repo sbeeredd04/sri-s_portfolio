@@ -266,8 +266,10 @@ export function soundMix(
       : 0,
     environment:
       p.level * focus * (music ? 0 : 1) * (preferences.environmentLevel ?? 1),
+    // The 0–100% effects control spans the full, stronger interaction mix.
+    // Master volume, music ducking and the output limiter still apply.
     effects: preferences.effects
-      ? (music ? 0.3 : 0.92) * (preferences.effectsLevel ?? 1)
+      ? 2 * (music ? 0.3 : 1) * (preferences.effectsLevel ?? 1)
       : 0,
   };
 }

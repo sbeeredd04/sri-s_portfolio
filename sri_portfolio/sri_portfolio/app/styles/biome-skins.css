@@ -675,25 +675,37 @@
   font-size: 10px;
 }
 .experience-shell[data-biome="future"] .place-stops {
-  gap: 0;
-  padding: 4px;
-  background: var(--skin-surface);
-  border-block: 1px solid var(--skin-ink);
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+  border: 0;
 }
 .experience-shell[data-biome="future"] .place-exploration .place-stops button {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  border: 1px solid var(--skin-line);
+  border-radius: 5px;
+  background: var(--skin-surface);
   color: var(--skin-ink);
-  padding-inline: 14px;
+  font-size: 14px;
+  letter-spacing: 0;
+  padding: 9px 12px;
+  box-shadow: 0 2px 4px #00000012;
+}
+.experience-shell[data-biome="future"]
+  .place-exploration
+  .place-stops
+  button:hover {
+  background: var(--skin-tint);
 }
 .experience-shell[data-biome="future"]
   .place-exploration
   .place-stops
   button[aria-pressed="true"] {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 6px;
+  color: var(--skin-accent);
+  border-color: var(--skin-accent);
+  box-shadow:
+    inset 0 -2px var(--skin-accent),
+    0 2px 4px #00000012;
+  text-decoration: none;
 }
 .experience-shell[data-biome="future"] .chapter-route::before {
   clip-path: inset(calc(100% - 3px) 0 0);
@@ -704,18 +716,29 @@
 .experience-shell[data-biome="future"] .chapter-route button {
   border-radius: 0;
 }
-.experience-shell[data-biome="future"]
-  :is(
-    .biome-pages-toggle,
-    .walk-here,
-    .stop-story,
-    .sound-toggle,
-    .world-settings > button
-  ) {
+.experience-shell[data-biome="future"] .biome-pages-toggle {
   border-radius: 0;
   border-width: 0 0 1px;
   border-color: var(--skin-ink);
   box-shadow: none;
+}
+.experience-shell[data-biome="future"]
+  :is(.walk-here, .stop-story, .sound-toggle, .world-settings > button) {
+  border: 1px solid var(--skin-line);
+  border-radius: 5px;
+  font: 12px/1.4 var(--skin-label);
+  min-height: 44px;
+  padding: 9px 12px;
+  box-shadow: 0 2px 4px #00000012;
+}
+.experience-shell[data-biome="future"] .stop-story {
+  gap: 20px;
+  margin-top: 8px;
+}
+@media (min-width: 701px) {
+  .experience-shell[data-biome="future"] .place-exploration {
+    bottom: 168px;
+  }
 }
 
 .experience-shell

@@ -1,0 +1,372 @@
+/* One mark, five chapters, one home. The sequence is finite and skippable. */
+.experience-shell[data-entry-pending="true"] {
+  visibility: hidden;
+}
+.experience-shell[data-entry-pending="true"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: #f1eee6;
+  visibility: visible;
+  z-index: 10000;
+}
+.world-loader {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  padding: clamp(20px, 3.4vw, 48px);
+  overflow: auto;
+  color: #302f2a;
+  background: #f1eee6;
+  font-family: var(--font-manrope), sans-serif;
+  color-scheme: light;
+}
+.world-loader[open] {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+}
+.world-loader::backdrop {
+  background: #f1eee6;
+}
+.entrance-masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+.entrance-masthead > span {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+}
+.entrance-replay {
+  font-size: 11px;
+  padding: 8px 0 8px 12px;
+  min-height: 44px;
+  color: inherit;
+  background: none;
+}
+.entrance-composition {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+.entrance-stage {
+  width: 100%;
+  aspect-ratio: 660 / 340;
+  position: relative;
+  isolation: isolate;
+}
+.entrance-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.entrance-material,
+.entrance-object {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.entrance-material {
+  fill: #302f2a;
+  rx: 48px;
+  transform: translate(90px, 90px) scale(0.25);
+}
+.entrance-detail {
+  opacity: 0;
+  stroke: #fffaf0;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.entrance-detail-build {
+  stroke: #09172b;
+  stroke-width: 2.5;
+}
+.entrance-detail-play {
+  stroke: #352419;
+  stroke-width: 1;
+}
+.entrance-halo {
+  position: absolute;
+  inset: -4% 10%;
+  background: radial-gradient(ellipse, currentColor -200%, transparent 68%);
+  opacity: 0;
+  pointer-events: none;
+}
+.entrance-chapter {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 45%;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  opacity: 0;
+}
+.entrance-chapter-word {
+  font-size: clamp(56px, 10.8vw, 92px);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+.entrance-chapter-label {
+  font:
+    10px/1.5 var(--font-manrope),
+    sans-serif;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.entrance-chapter-home {
+  font-family: var(--font-bricolage), sans-serif;
+  font-weight: 500;
+}
+.entrance-chapter-build {
+  font-family: var(--font-jetbrains), monospace;
+  font-weight: 500;
+}
+.entrance-chapter-play {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-weight: 650;
+}
+.entrance-chapter-play .entrance-chapter-label {
+  font-style: normal;
+}
+.entrance-chapter-wander {
+  font-family: var(--font-caveat), cursive;
+  font-weight: 500;
+}
+.entrance-chapter-wander .entrance-chapter-word {
+  font-size: clamp(65px, 12vw, 108px);
+}
+.entrance-chapter-write {
+  font-family: var(--font-newsreader), Georgia, serif;
+}
+.entrance-signature {
+  position: absolute;
+  left: 30%;
+  top: 22.941176%;
+  width: 40%;
+  color: #302f2a;
+}
+.entrance-signature .personal-signature {
+  color: inherit;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.entrance-signature .signature-stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.entrance-signature .signature-i-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* The travelling object supplies the period, so there is only ever one dot. */
+.entrance-signature .signature-period {
+  visibility: hidden;
+}
+.world-loader h2 {
+  margin: -14% 0 0;
+  font:
+    400 clamp(24px, 3vw, 34px)/1.2 var(--font-bricolage),
+    sans-serif;
+  letter-spacing: -0.04em;
+}
+.entrance-description {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.entrance-footer {
+  text-align: center;
+}
+.entrance-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.entrance-actions button {
+  min-height: 50px;
+  padding: 0 24px;
+  font-size: 12px;
+  border-radius: 999px;
+  transition:
+    transform 160ms,
+    background 160ms;
+}
+.entrance-audio {
+  background: #302f2a;
+  color: #fffaf0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 1px solid #7f7a6c;
+}
+.entrance-audio svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  fill: none;
+}
+.entrance-audio:hover {
+  transform: translateY(-2px);
+  background: #49463d;
+}
+.entrance-quiet {
+  color: #302f2a;
+  background: #f1eee6;
+  border: 1px solid #b8b1a3;
+}
+.entrance-quiet:hover {
+  transform: translateY(-2px);
+  background: #fffaf0;
+}
+.world-loader button:focus-visible,
+.world-loader a:focus-visible {
+  outline: 2px solid #64718c;
+  outline-offset: 5px;
+}
+.entrance-readiness {
+  height: 25px;
+  max-width: 220px;
+  margin: 16px auto 0;
+  font-size: 10px;
+}
+.world-loader-bar {
+  display: block;
+  margin-top: 5px;
+  height: 1px;
+  background: #88888844;
+}
+.world-loader-bar > span {
+  display: block;
+  height: 100%;
+  background: currentColor;
+  transform-origin: left;
+  transition: transform 250ms;
+}
+.entrance-story {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 44px;
+  color: inherit;
+  font-size: 11px;
+  text-underline-offset: 4px;
+}
+.entrance-story:hover {
+  text-decoration: underline;
+}
+.world-loader[data-leaving="true"] {
+  animation: entrance-depart 500ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+.world-loader[data-leaving="true"]::backdrop {
+  animation: entrance-backdrop 500ms ease forwards;
+}
+@keyframes entrance-depart {
+  to {
+    opacity: 0;
+    transform: translateY(-12px) scale(1.02);
+  }
+}
+@keyframes entrance-backdrop {
+  to {
+    opacity: 0;
+  }
+}
+@media (max-width: 600px) {
+  .world-loader {
+    padding: 16px 20px max(16px, env(safe-area-inset-bottom));
+  }
+  .entrance-masthead > span {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+  }
+  .entrance-replay {
+    font-size: 10px;
+  }
+  .entrance-stage {
+    width: calc(100% + 24px);
+    margin-left: -12px;
+  }
+  .entrance-chapter {
+    gap: 10px;
+  }
+  .entrance-chapter-label {
+    font-size: 8px;
+    letter-spacing: 0.06em;
+  }
+  .world-loader h2 {
+    margin-top: 12px;
+  }
+  .entrance-description {
+    font-size: 11px;
+  }
+  .entrance-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .entrance-actions button {
+    min-width: 225px;
+  }
+  .entrance-quiet {
+    border-color: transparent;
+    background: transparent;
+    color: inherit;
+  }
+}
+@media (max-height: 650px) and (min-width: 601px) {
+  .world-loader {
+    padding: 12px 24px;
+  }
+  .world-loader[open] {
+    gap: 5px;
+  }
+  .entrance-composition {
+    max-width: 460px;
+  }
+  .entrance-chapter-word {
+    font-size: 64px;
+  }
+  .entrance-chapter-wander .entrance-chapter-word {
+    font-size: 74px;
+  }
+  .world-loader h2 {
+    font-size: 24px;
+  }
+  .entrance-description {
+    margin-top: 6px;
+  }
+  .entrance-readiness {
+    margin-top: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-loader,
+  .world-loader *,
+  .world-loader::backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+  .entrance-audio:hover,
+  .entrance-quiet:hover {
+    transform: none;
+  }
+}

@@ -550,6 +550,7 @@ export default function ExperienceShell() {
   return (
     <div
       data-biome={biome}
+      data-entry-pending={entered === null}
       style={biomeSkinStyle(biome)}
       onClick={audio.press}
       className={`experience-shell ${night ? "shell-night" : ""} ${playing ? "" : "is-paused"}`}
