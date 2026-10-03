@@ -934,3 +934,28 @@
     animation: none !important;
   }
 }
+
+/* Short desktop windows keep the arrival card above the exploration tray. */
+@media (min-width: 701px) and (max-height: 800px) {
+  .experience-shell .place-story .place-heading {
+    padding: 14px 18px;
+  }
+  .experience-shell .place-heading .biome-title {
+    font-size: min(var(--skin-heading-size), 30px);
+    margin-block: 10px;
+  }
+  .experience-shell .place-heading .narrative-copy {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .experience-shell[data-biome="future"] .biome-heading-number {
+    font-size: 30px;
+  }
+  .experience-shell[data-biome="projects"] .place-heading .eyebrow {
+    margin: -14px -18px 0;
+    padding: 8px 18px;
+  }
+  .experience-shell[data-biome="trail"] .place-story .place-heading {
+    padding-left: 33px;
+  }
+}
