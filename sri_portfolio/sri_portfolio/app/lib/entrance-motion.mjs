@@ -34,7 +34,7 @@ const ease = "cubic-bezier(.65,0,.2,1)";
 
 // Native finite timelines share a start time and pause in hidden tabs.
 // No frame loop or animation dependency.
-export function playEntrance(root, onComplete) {
+export function playEntrance(root, onComplete, { onPlayback = () => {} } = {}) {
   const media = matchMedia("(prefers-reduced-motion: reduce)");
   const animations = [];
   let completed = false;
@@ -42,6 +42,7 @@ export function playEntrance(root, onComplete) {
   const cancel = () => {
     report();
     completed = true;
+    onPlayback({ playing: false, position: 0 });
     animations.forEach((animation) => animation.cancel());
     document.removeEventListener("visibilitychange", visibility);
     media.removeEventListener("change", preference);
@@ -50,6 +51,7 @@ export function playEntrance(root, onComplete) {
     if (completed) return;
     report();
     completed = true;
+    onPlayback({ playing: false, position: ENTRANCE_DURATION });
     // CSS's settled state replaces these final frames on React's next paint.
     animations.forEach((animation) => {
       animation.onfinish = null;
@@ -68,6 +70,7 @@ export function playEntrance(root, onComplete) {
     // restarts them; every effect now spans the same finite score instead.
     if (document.hidden) {
       const position = animations[0]?.currentTime ?? 0;
+      onPlayback({ playing: false, position });
       animations.forEach((animation) => {
         animation.pause();
         animation.currentTime = position;
@@ -75,6 +78,7 @@ export function playEntrance(root, onComplete) {
     } else {
       const origin =
         document.timeline.currentTime - (animations[0]?.currentTime ?? 0);
+      onPlayback({ playing: true, position: animations[0]?.currentTime ?? 0 });
       animations.forEach((animation) => {
         if (animation.playState === "paused") animation.startTime = origin;
       });
@@ -96,25 +100,28 @@ export function playEntrance(root, onComplete) {
   };
   const at = (ms, frame) => ({ offset: ms / ENTRANCE_DURATION, ...frame });
   const palette = entranceChapters.map(({ biome }) => biomeSkins[biome]);
-  const colors = [];
-  palette.forEach((skin, i) => {
-    const frame = {
-      backgroundColor: skin.surface,
-      color: skin.ink,
-      easing: ease,
-    };
-    colors.push(at(i * beat, frame), at(i * beat + 540, frame));
+  // Fade prepainted palette layers on the compositor. Animating the dialog's
+  // background/color repainted the whole viewport while WebGL was compiling.
+  entranceChapters.forEach((chapter, i) => {
+    if (!i) return;
+    animate(`.entrance-palette-${chapter.id}`, [
+      at(0, { opacity: 0 }),
+      at(i * beat - 360, { opacity: 0, easing: ease }),
+      at(i * beat, { opacity: 1 }),
+      at(i === 4 ? 4500 : (i + 1) * beat, { opacity: 1, easing: ease }),
+      at(i === 4 ? 4850 : (i + 1) * beat + 160, { opacity: 0 }),
+      at(ENTRANCE_DURATION, { opacity: 0 }),
+    ]);
   });
-  colors.push(
-    at(4850, { backgroundColor: palette[0].surface, color: palette[0].ink }),
+  const ink = palette.flatMap((skin, i) => [
+    at(i * beat, { color: skin.ink, easing: ease }),
+    at(i * beat + 540, { color: skin.ink, easing: ease }),
+  ]);
+  ink.push(
+    at(4850, { color: palette[0].ink }),
+    at(ENTRANCE_DURATION, { color: palette[0].ink }),
   );
-  colors.push(
-    at(ENTRANCE_DURATION, {
-      backgroundColor: palette[0].surface,
-      color: palette[0].ink,
-    }),
-  );
-  const clock = animate(null, colors);
+  const clock = animate(null, ink);
   clock.onfinish = finish;
   const forms = [
     { rx: "24px", transform: "rotate(0deg)", fill: palette[0].accent },

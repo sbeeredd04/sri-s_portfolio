@@ -9,6 +9,46 @@ import {
   soundPlaces,
 } from "../app/lib/sensory-design.mjs";
 import { SoundEngine } from "../app/lib/sound-engine.mjs";
+import { entranceNotes } from "../app/lib/entrance-sound.mjs";
+
+test("introduction is synchronized, resumes from its offset, and follows the music bus", () => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  engine.introduction({ playing: true, position: 0 });
+  assert.equal(ctx.oscillators.length, entranceNotes.length);
+  assert.ok(ctx.oscillators.some((source) => source.frequency.value < 30));
+  assert.ok(entranceNotes.some(([at, , duration]) => at + duration > 8));
+  engine.introduction({ playing: false, position: 2700 });
+  assert.ok(ctx.oscillators.every((source) => source.stopped));
+  const previous = ctx.oscillators.length;
+  engine.introduction({ playing: true, position: 2700 });
+  assert.equal(
+    ctx.oscillators.length - previous,
+    entranceNotes.filter(([at, , duration]) => at + duration > 2.7).length,
+  );
+  engine.preferences = { ...sensoryDefaults, music: false };
+  engine.mix();
+  assert.equal(engine.introBus.gain.value, 0);
+  engine.destroy(true);
+  assert.ok(ctx.oscillators.every((source) => source.stopped));
+});
+
+test("world score is an original compact loop with bass headroom", () => {
+  const { metrics } = JSON.parse(
+    readFileSync(new URL("../public/audio/world-thread.json", import.meta.url)),
+  );
+  assert.equal(metrics.beat_seconds, 0.9);
+  assert.ok(metrics.seconds > 55);
+  assert.ok(metrics.peak_dbfs < -6);
+  assert.ok(metrics.loop_boundary_delta < 0.005);
+  assert.ok(
+    statSync(new URL("../public/audio/world-thread.mp3", import.meta.url))
+      .size < 500000,
+  );
+});
 
 test("saved mute survives and invalid mixer levels are bounded", () => {
   assert.deepEqual(sensoryPreferences(null), sensoryDefaults);
@@ -209,7 +249,7 @@ test("late asset loads cannot restore the sound of a place the visitor already l
   engine.update({ place: "trail" });
   pending.get("/audio/lakeside.mp3")();
   pending.get("/audio/shoreline.mp3")();
-  pending.get("/audio/somewhere-soft.mp3")();
+  pending.get("/audio/world-thread.mp3")();
   await flush();
   pending.get("/audio/open-air.mp3")();
   await loading;
@@ -228,7 +268,7 @@ test("late asset loads cannot restore the sound of a place the visitor already l
   );
   await engine.prepare();
   assert.equal(
-    requests.filter((url) => url.includes("somewhere-soft")).length,
+    requests.filter((url) => url.includes("world-thread")).length,
     1,
   );
 });

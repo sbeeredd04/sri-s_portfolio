@@ -25,6 +25,28 @@
   background: #f1eee6;
   font-family: var(--font-manrope), sans-serif;
   color-scheme: light;
+  isolation: isolate;
+}
+.entrance-palettes {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.entrance-palette {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: opacity;
+}
+.entrance-palette-home {
+  opacity: 1;
+}
+.world-loader[data-settled="true"] .entrance-palettes {
+  display: none;
+}
+.entrance-chapter {
+  will-change: opacity, transform;
 }
 .world-loader[open] {
   display: grid;
@@ -45,6 +67,10 @@
   gap: 18px;
 }
 .entrance-masthead > span {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: #f1eee6;
+  color: #302f2a;
   font-size: 10px;
   letter-spacing: 0.14em;
   font-weight: 500;
@@ -56,6 +82,24 @@
   color: #302f2a;
   background: #f1eee6;
   border-radius: 999px;
+}
+.entrance-utilities {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.entrance-sound {
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f1eee6;
+  color: #302f2a;
+  font-size: 11px;
+  border: 1px solid #b8b1a3;
+}
+.entrance-sound[aria-pressed="true"] {
+  background: #302f2a;
+  color: #fffaf0;
 }
 /* Do not let the world skin's button transitions chase animated ink. */
 .experience-shell .world-loader button {
@@ -322,6 +366,17 @@
   }
 }
 @media (max-width: 600px) {
+  .entrance-masthead {
+    align-items: flex-start;
+  }
+  .entrance-utilities {
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-end;
+  }
+  .entrance-sound {
+    font-size: 10px;
+  }
   .world-loader {
     padding: 16px 20px max(16px, env(safe-area-inset-bottom));
   }

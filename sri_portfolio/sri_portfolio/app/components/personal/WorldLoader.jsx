@@ -11,6 +11,7 @@ import { observeStartup } from "../../lib/entrance-diagnostics.mjs";
 import PersonalSignature from "./PersonalSignature";
 import { playEntrance, entranceChapters } from "../../lib/entrance-motion.mjs";
 import { worldLoading, entranceReadiness } from "../../lib/world-loading.mjs";
+import { biomeSkins } from "../../lib/biome-skins.mjs";
 
 // Prepare alongside the intro. Entry is a single gesture after real readiness;
 // reading remains immediate while a cold scene prepares behind this surface.
@@ -19,6 +20,9 @@ export default function WorldLoader({
   onPreload,
   onPrepare,
   onChooseAudio,
+  onIntroSound,
+  onIntroPlayback,
+  soundEnabled,
   onEnter,
 }) {
   const dialog = useRef(null);
@@ -32,6 +36,9 @@ export default function WorldLoader({
   const [settled, setSettled] = useState(false);
   const [replay, setReplay] = useState(0);
   const [requested, setRequested] = useState(false);
+  const [startingSound, setStartingSound] = useState(false);
+  const playback = useRef(onIntroPlayback);
+  playback.current = onIntroPlayback;
   const loading = useSyncExternalStore(
     worldLoading.subscribe,
     worldLoading.getSnapshot,
@@ -43,23 +50,15 @@ export default function WorldLoader({
     progress: loading.progress,
   });
 
-  // Overlap network/terrain work with the score. Keep final GPU construction
-  // after the motion: compiling the full scene during it causes visible hitches.
+  // Start the real scene alongside the score, not after its 5.9 second runtime.
+  // ConnectedWorld still assembles one district per batch to yield between them.
   useEffect(() => {
-    const frame = requestAnimationFrame(onPreload);
-    return () => cancelAnimationFrame(frame);
-  }, [onPreload]);
-  useEffect(() => {
-    if (!settled) return;
-    let second;
-    const first = requestAnimationFrame(() => {
-      second = requestAnimationFrame(onPrepare);
+    const frame = requestAnimationFrame(() => {
+      onPreload();
+      onPrepare();
     });
-    return () => {
-      cancelAnimationFrame(first);
-      cancelAnimationFrame(second);
-    };
-  }, [settled, onPrepare]);
+    return () => cancelAnimationFrame(frame);
+  }, [onPreload, onPrepare]);
 
   useLayoutEffect(() => observeStartup(dialog.current), []);
   useLayoutEffect(() => {
@@ -74,7 +73,9 @@ export default function WorldLoader({
         ?.focus({ preventScroll: true });
   }, [available]);
   useLayoutEffect(() => {
-    motion.current = playEntrance(dialog.current, () => setSettled(true));
+    motion.current = playEntrance(dialog.current, () => setSettled(true), {
+      onPlayback: (state) => playback.current?.(state),
+    });
     return () => motion.current?.cancel();
   }, [replay]);
   useEffect(() => {
@@ -148,20 +149,55 @@ export default function WorldLoader({
           finish();
       }}
     >
+      <div className="entrance-palettes" aria-hidden="true">
+        {entranceChapters.map((chapter) => (
+          <div
+            key={chapter.id}
+            className={`entrance-palette entrance-palette-${chapter.id}`}
+            style={{ background: biomeSkins[chapter.biome].surface }}
+          />
+        ))}
+      </div>
       <header className="entrance-masthead">
         <span>SRI UJJWAL REDDY</span>
-        <button
-          className="entrance-replay"
-          disabled={requested}
-          onClick={() => {
-            if (settled) {
-              setSettled(false);
-              setReplay((value) => value + 1);
-            } else motion.current?.finish();
-          }}
-        >
-          {settled ? "Replay introduction ↻" : "Skip introduction ↗"}
-        </button>
+        <div className="entrance-utilities">
+          <button
+            className="entrance-sound"
+            data-audio-control
+            disabled={startingSound || requested}
+            aria-pressed={soundEnabled}
+            onClick={async () => {
+              setStartingSound(true);
+              try {
+                const enabled = await onIntroSound();
+                if (enabled) {
+                  setSettled(false);
+                  setReplay((value) => value + 1);
+                }
+              } finally {
+                setStartingSound(false);
+              }
+            }}
+          >
+            {startingSound
+              ? "Starting sound…"
+              : soundEnabled
+                ? "Sound on"
+                : "Play intro with sound"}
+          </button>
+          <button
+            className="entrance-replay"
+            disabled={requested}
+            onClick={() => {
+              if (settled) {
+                setSettled(false);
+                setReplay((value) => value + 1);
+              } else motion.current?.finish();
+            }}
+          >
+            {settled ? "Replay introduction ↻" : "Skip introduction ↗"}
+          </button>
+        </div>
       </header>
       <div className="entrance-composition">
         <div className="entrance-stage" aria-hidden="true">
@@ -200,6 +236,7 @@ export default function WorldLoader({
             <div
               className={`entrance-chapter entrance-chapter-${chapter.id}`}
               key={chapter.id}
+              style={{ color: biomeSkins[chapter.biome].ink }}
             >
               <span className="entrance-chapter-word">{chapter.word}</span>
               <span className="entrance-chapter-label">{chapter.label}</span>
@@ -218,6 +255,7 @@ export default function WorldLoader({
         <div className="entrance-actions">
           <button
             className="entrance-audio"
+            data-audio-control
             disabled={!available || requested}
             aria-busy={!available}
             aria-describedby="entrance-status"
@@ -234,6 +272,7 @@ export default function WorldLoader({
           </button>
           <button
             className="entrance-quiet"
+            data-audio-control
             disabled={!available || requested}
             onClick={() => enter(false)}
           >
@@ -260,7 +299,7 @@ export default function WorldLoader({
                   : loading.label}
           </span>
         </div>
-        <a className="entrance-story" href="/story">
+        <a className="entrance-story" href="/story" data-audio-control>
           Read the story <span aria-hidden="true">↗</span>
         </a>
       </footer>

@@ -108,16 +108,19 @@ test("discovering another asset batch cannot rewind progress or claim readiness"
   assert.ok(loading.getSnapshot().progress < 100);
 });
 
-test("both real world readiness and the completed or skipped intro are required to enter", () => {
+test("real world readiness enables entry even while the optional intro plays", () => {
   for (const [ready, settled] of [
     [false, false],
-    [true, false],
     [false, true],
   ]) {
     const state = entranceReadiness({ ready, settled, progress: 100 });
     assert.equal(state.available, false);
     assert.equal(state.progress, 99);
   }
+  assert.deepEqual(
+    entranceReadiness({ ready: true, settled: false, progress: 95 }),
+    { available: true, progress: 100 },
+  );
   assert.deepEqual(
     entranceReadiness({ ready: true, settled: true, progress: 95 }),
     {

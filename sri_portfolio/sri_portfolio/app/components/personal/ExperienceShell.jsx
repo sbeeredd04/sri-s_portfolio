@@ -228,7 +228,7 @@ export default function ExperienceShell() {
       sheet,
       roomDetail,
       weather,
-      { autoStart: returning },
+      { autoStart: true, introAutoplay: !returning },
     ),
     returnFocus = useRef(null),
     chapterGuide = useRef(null),
@@ -679,6 +679,15 @@ export default function ExperienceShell() {
             onPreload={preloadScene}
             onPrepare={prepareScene}
             ready={sceneReady || still || graphicsError}
+            soundEnabled={audio.enabled}
+            onIntroSound={async () => {
+              if (audio.enabled) {
+                audio.disable();
+                return false;
+              }
+              return audio.enable(null);
+            }}
+            onIntroPlayback={audio.introduction}
             onChooseAudio={(withAudio) =>
               withAudio ? audio.enable() : audio.disable()
             }

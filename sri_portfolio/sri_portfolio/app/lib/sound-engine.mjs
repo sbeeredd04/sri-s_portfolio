@@ -6,6 +6,7 @@ import {
 } from "./sensory-design.mjs";
 import { playMorph } from "./morph-sound.mjs";
 import { voices } from "./sound-voices.mjs";
+import { playEntranceSound } from "./entrance-sound.mjs";
 
 function soften(parameter, value, now, time = 0.65) {
   if (parameter.cancelAndHoldAtTime) parameter.cancelAndHoldAtTime(now);
@@ -44,6 +45,8 @@ export class SoundEngine {
     this.loops = new Map();
     this.nodes = new Set();
     this.cancelMorph = null;
+    this.cancelIntroduction = null;
+    this.introActive = false;
     this.abort = new AbortController();
     this.lastCue = -Infinity;
     this.lastMicroCue = -Infinity;
@@ -61,6 +64,11 @@ export class SoundEngine {
     this.effects = context.createGain();
     this.effects.gain.value = initialMix.effects;
     this.effects.connect(this.master);
+    this.introBus = context.createGain();
+    this.introBus.gain.value = this.preferences.music
+      ? this.preferences.musicLevel
+      : 0;
+    this.introBus.connect(this.master);
     this.weather = context.createGain();
     this.weather.gain.value = 0;
     this.weather.connect(this.master);
@@ -112,6 +120,7 @@ export class SoundEngine {
       this.master,
       limiter,
       this.effects,
+      this.introBus,
       this.weather,
       this.city,
       this.hall,
@@ -211,6 +220,12 @@ export class SoundEngine {
     const score = profile.track || "somewhere-soft";
     soften(this.master.gain, this.hidden ? 0 : levels.master, now, 0.15);
     soften(this.effects.gain, levels.effects, now, 0.06);
+    soften(
+      this.introBus.gain,
+      this.preferences.music ? this.preferences.musicLevel : 0,
+      now,
+      0.025,
+    );
     // Even an already-rumbling storm follows departure and reading/music focus.
     soften(
       this.weather.gain,
@@ -236,7 +251,7 @@ export class SoundEngine {
       soften(
         gain.gain,
         name === score
-          ? levels.score
+          ? levels.score * (this.introActive ? 0.12 : 1)
           : name === bed
             ? Math.max(levels.environment, name === RAIN_BED ? rain * 0.5 : 0)
             : name === RAIN_BED
@@ -252,6 +267,19 @@ export class SoundEngine {
       this.nodes.delete(source);
       for (const node of nodes) node.disconnect();
     };
+  }
+
+  introduction({ playing, position = 0 }) {
+    // Let the resolved phrase ring into the world score. Replay/Skip use a
+    // shorter release; neither hard-cuts the low waveform at a visual boundary.
+    this.cancelIntroduction?.(position >= 5900 ? 1.8 : 0.18);
+    this.cancelIntroduction = null;
+    this.introActive = Boolean(
+      playing && !this.disposed && this.preferences.enabled,
+    );
+    if (this.introActive)
+      this.cancelIntroduction = playEntranceSound(this, position);
+    this.mix();
   }
 
   noiseCue(
@@ -386,14 +414,15 @@ export class SoundEngine {
     const duration = kind === "welcome" ? 1.35 : kind === "travel" ? 0.8 : 0.28;
     // A mono low fundamental with an audible octave, so phone speakers retain
     // some body. Both follow the effects mixer and the existing master limiter.
-    [73.42, 146.83].forEach((hz, i) => {
+    [36.71, 73.42, 146.83].forEach((hz, i) => {
       const source = this.context.createOscillator();
       const gain = this.context.createGain();
       source.type = "sine";
       source.frequency.setValueAtTime(hz * (kind === "close" ? 0.75 : 1), now);
       gain.gain.setValueAtTime(0, now);
       gain.gain.linearRampToValueAtTime(
-        (i ? 0.055 : 0.13) * (kind === "open" || kind === "close" ? 0.55 : 1),
+        [0.13, 0.09, 0.04][i] *
+          (kind === "open" || kind === "close" ? 0.55 : 1),
         now + 0.035,
       );
       gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
@@ -425,6 +454,7 @@ export class SoundEngine {
     if (this.disposed) return;
     this.disposed = true;
     this.cancelMorph?.();
+    this.cancelIntroduction?.();
     clearInterval(this.thunder);
     clearInterval(this.cityClock);
     clearTimeout(this.suspendTimer);

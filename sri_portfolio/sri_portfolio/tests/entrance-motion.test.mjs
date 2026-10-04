@@ -111,21 +111,27 @@ test("intro is bounded and an early entry resolves it exactly once", (t) => {
 });
 test("background tabs freeze and resume the whole score together", (t) => {
   const f = withBrowser(t);
-  const player = playEntrance(f.root, () => {});
+  const playback = [];
+  const player = playEntrance(f.root, () => {}, {
+    onPlayback: (state) => playback.push(state),
+  });
   f.animations.forEach((a) => {
     a.currentTime = 1400;
   });
   f.doc.hidden = true;
   f.listeners.get("visibilitychange")();
+  assert.deepEqual(playback.at(-1), { playing: false, position: 1400 });
   assert.ok(f.animations.every((a) => a.state === "paused"));
   f.doc.timeline.currentTime = 5100;
   f.doc.hidden = false;
   f.listeners.get("visibilitychange")();
+  assert.deepEqual(playback.at(-1), { playing: true, position: 1400 });
   assert.ok(f.animations.every((a) => a.state === "running"));
   assert.ok(
     f.animations.every((a) => a.startTime === 3700 && a.currentTime === 1400),
   );
   player.cancel();
+  assert.equal(playback.at(-1).playing, false);
   assert.equal(f.listeners.size, 0);
   assert.equal(f.mediaListeners.size, 0);
 });

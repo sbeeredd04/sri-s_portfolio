@@ -50,7 +50,9 @@ export function createWorldLoading() {
 
 export const worldLoading = createWorldLoading();
 
-export function entranceReadiness({ ready, settled, progress }) {
-  const available = Boolean(ready && settled);
+export function entranceReadiness({ ready, progress }) {
+  // The animation is optional: a prepared world can be entered immediately.
+  // Replaying the introduction must not make a ready world unavailable again.
+  const available = Boolean(ready);
   return { available, progress: available ? 100 : Math.min(99, progress) };
 }

@@ -21,7 +21,7 @@ export default function useSoundscape(
   section = null,
   detail = null,
   weather = null,
-  { autoStart = true } = {},
+  { autoStart = true, introAutoplay = false } = {},
 ) {
   const reading = Boolean(section);
   const destination = soundDestination(biome, section, detail);
@@ -40,6 +40,7 @@ export default function useSoundscape(
     last: -Infinity,
   });
   const focus = useRef({ reading, music: false });
+  const intro = useRef({ playing: false, position: 0, at: 0 });
   const weatherRef = useRef(weather);
   weatherRef.current = weather;
   const place = useRef(destination);
@@ -101,14 +102,20 @@ export default function useSoundscape(
     [pulse],
   );
   const start = useCallback(
-    async (arrivalCue = "press") => {
-      if (engine.current) return;
+    async (arrivalCue = "press", automatic = false) => {
+      if (engine.current) return true;
       stop(true);
       let current, context;
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) throw new Error("Audio is unavailable.");
         context = new AudioContext();
+        // A blocked autoplay attempt must not leave resume() pending forever or
+        // make the UI claim it is playing. The first gesture retries normally.
+        if (automatic && context.state !== "running") {
+          await context.close();
+          return false;
+        }
         current = new SoundEngine(context, {
           place: place.current,
           preferences: settings.current,
@@ -137,27 +144,44 @@ export default function useSoundscape(
         };
         // Resume in the actual click gesture, before awaiting any asset fetch.
         await context.resume();
+        if (engine.current !== current || !live.current) return false;
         if (context.state !== "running" && !document.hidden)
           throw new Error("Audio needs another tap to start.");
-        current.cue(arrivalCue);
+        if (intro.current.playing) {
+          current.introduction({
+            playing: true,
+            position:
+              intro.current.position + performance.now() - intro.current.at,
+          });
+        }
+        if (arrivalCue) current.cue(arrivalCue);
         await current.prepare();
         if (engine.current !== current || !live.current) return;
         if (document.hidden) await current.setHidden(true);
         changeStatus("on");
+        return true;
       } catch {
         if (current && engine.current !== current) return;
         stop(true);
         if (!current) context?.close().catch(() => {});
         changeStatus("error");
+        return false;
       }
     },
     [stop, changeStatus, pulse],
   );
 
-  const enable = useCallback(() => {
-    setPreference("enabled", true);
-    return start("welcome");
-  }, [setPreference, start]);
+  const enable = useCallback(
+    (arrivalCue = "welcome") => {
+      setPreference("enabled", true);
+      return start(arrivalCue);
+    },
+    [setPreference, start],
+  );
+  const introduction = useCallback((state) => {
+    intro.current = { ...state, at: performance.now() };
+    engine.current?.introduction(state);
+  }, []);
   const disable = useCallback(() => {
     setPreference("enabled", false);
     stop();
@@ -186,16 +210,19 @@ export default function useSoundscape(
       setPreferences(saved);
     } catch {}
     changeStatus(settings.current.enabled ? "ready" : "off");
+    if (introAutoplay && settings.current.enabled) start(null, true);
     const beginOnGesture = (event) => {
+      const inIntro = Boolean(event.target.closest?.(".world-loader"));
       if (
         !autoStart ||
         !settings.current.enabled ||
         engine.current ||
-        event.target.closest?.("[data-quiet],input,textarea") ||
+        event.target.closest?.("[data-audio-control],input,textarea") ||
+        (!inIntro && event.target.closest?.("[data-quiet]")) ||
         (event.type === "keydown" && !["Enter", " "].includes(event.key))
       )
         return;
-      start();
+      start(inIntro ? null : "press");
     };
     window.addEventListener("pointerdown", beginOnGesture);
     window.addEventListener("keydown", beginOnGesture);
@@ -259,7 +286,7 @@ export default function useSoundscape(
       } catch {}
       stop(true);
     };
-  }, [stop, changeStatus, start, autoStart]);
+  }, [stop, changeStatus, start, autoStart, introAutoplay]);
   useEffect(() => {
     engine.current?.update({ place: destination, ...focus.current });
   }, [destination, reading]);
@@ -331,6 +358,7 @@ export default function useSoundscape(
     place: soundPlaces[destination] || soundPlaces.planet,
     toggle,
     enable,
+    introduction,
     disable,
     cue,
     press,

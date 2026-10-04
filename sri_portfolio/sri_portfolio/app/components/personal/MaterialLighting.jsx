@@ -55,7 +55,13 @@ export default function MaterialLighting({ daylight, world }) {
     ].join();
     const now = clock.elapsedTime;
     if (key !== pending.current.key) pending.current = { key, since: now };
-    if (key === last.current.key || now - pending.current.since < 1.2) return;
+    // The first probe gates the entire scene. Only later weather/biome changes
+    // need the long debounce; let the initial sky settle for two frames.
+    if (
+      key === last.current.key ||
+      now - pending.current.since < (current.current ? 1.2 : 0.05)
+    )
+      return;
     if (current.current && now - last.current.at < 5) return;
     last.current = { key, at: now };
     const target = probe.generator.fromScene(probe.scene, 0, 0.1, 50, {

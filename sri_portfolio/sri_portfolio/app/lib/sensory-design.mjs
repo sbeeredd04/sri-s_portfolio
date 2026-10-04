@@ -11,13 +11,15 @@ export const sensoryDefaults = {
 };
 export const soundPlaces = {
   planet: {
+    track: "world-thread",
     label: "A little further out",
-    description: "Soft chords, a little air, room to wander.",
+    description: "Deep warm bass, open chords, and a slow melodic pulse.",
     bed: "open-air",
     level: 0.16,
     score: 0.65,
   },
   studio: {
+    track: "world-thread",
     label: "The city outside",
     description:
       "Streets humming below, a cable-car bell, a foghorn when the fog is in.",
@@ -62,6 +64,7 @@ export const soundPlaces = {
     fire: true,
   },
   entertainment: {
+    track: "world-thread",
     label: "After hours",
     description: "Warm room tone and soft chords. Settle in for a while.",
     bed: "quiet-room",
@@ -69,6 +72,7 @@ export const soundPlaces = {
     score: 0.72,
   },
   court: {
+    track: "world-thread",
     label: "One more game",
     description: "Open air, a bounce, a return. The music takes a step back.",
     bed: "open-air",
