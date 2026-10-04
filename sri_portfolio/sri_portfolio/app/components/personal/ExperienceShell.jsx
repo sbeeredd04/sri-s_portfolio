@@ -54,6 +54,8 @@ import {
   rememberWorldEntry,
 } from "../../lib/world-return.mjs";
 import { initialTier } from "../../lib/device-tier.mjs";
+import { worldLoading } from "../../lib/world-loading.mjs";
+import { createAssetPreloader } from "../../lib/world-assets.mjs";
 function footEntry(biome, stop) {
   if (
     biome === "future" &&
@@ -63,12 +65,22 @@ function footEntry(biome, stop) {
   if (biome === "trail" && stop === "overlook") return "roam:overlook";
   return biome === "studio" && stop !== "bay" ? "roam:roof" : "roam";
 }
-const WorldScene = dynamic(
-  async () => {
+let terrainPreparation;
+const preloadAssets = createAssetPreloader({ onProgress: worldLoading.report });
+function prepareWorldTerrain() {
+  return (terrainPreparation ||= (async () => {
     const { prepareTerrainGeometry } =
       await import("../../lib/terrain-geometry.mjs");
     await prepareTerrainGeometry();
-    return import("./WorldScene");
+    worldLoading.report({ terrain: true });
+  })());
+}
+const WorldScene = dynamic(
+  async () => {
+    await prepareWorldTerrain();
+    const scene = await import("./WorldScene");
+    worldLoading.report({ code: true });
+    return scene;
   },
   { ssr: false, loading: () => null },
 );
@@ -318,6 +330,10 @@ export default function ExperienceShell() {
     setStill(true);
     setHint("");
   }, []);
+  const preloadScene = useCallback(() => {
+    preloadAssets();
+    prepareWorldTerrain().catch(graphicsUnavailable);
+  }, [graphicsUnavailable]);
   useEffect(() => {
     const mq = matchMedia("(prefers-reduced-motion: reduce)");
     const update = () =>
@@ -660,6 +676,7 @@ export default function ExperienceShell() {
         </div>
         {entered === false && (
           <WorldLoader
+            onPreload={preloadScene}
             onPrepare={prepareScene}
             ready={sceneReady || still || graphicsError}
             onChooseAudio={(withAudio) =>

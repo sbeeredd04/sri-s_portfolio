@@ -10,6 +10,7 @@ import {
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, useProgress } from "@react-three/drei";
 import { sampleSceneStartup } from "../../lib/scene-startup.mjs";
+import { worldLoading } from "../../lib/world-loading.mjs";
 import * as THREE from "three";
 import {
   regions,
@@ -51,7 +52,7 @@ import { QualityProvider } from "./Quality";
 import { tierSettings } from "../../lib/device-tier.mjs";
 
 // Warm the real render path, including late textures and environment lighting,
-// behind the settled entrance. Stop scheduling as soon as it is ready.
+// behind the entrance. Stop scheduling as soon as it is ready.
 function FirstFrame({ onReady, surfaceRef, assembled }) {
   const sample = useRef(null);
   const done = useRef(false);
@@ -75,6 +76,7 @@ function FirstFrame({ onReady, surfaceRef, assembled }) {
     });
     if (sample.current.ready) {
       done.current = true;
+      worldLoading.report({ ready: true });
       onReady?.();
     } else state.invalidate();
   });
@@ -150,8 +152,18 @@ function ConnectedWorld({
       return;
     if (++assemblyFrame.current < 3) return;
     assemblyFrame.current = 0;
+    // A step counts only after its geometry, lighting and asset batch settled.
+    worldLoading.report({
+      surface: true,
+      assembly,
+      total: regions.length + 2,
+    });
     setAssembly((value) => Math.min(value + 1, regions.length + 2));
   });
+  useEffect(() => {
+    if (assembly === regions.length + 2 && !pendingAssets)
+      worldLoading.report({ assembly, total: regions.length + 2 });
+  }, [assembly, pendingAssets]);
   const cameraDirection = useMemo(() => new THREE.Vector3(), []);
   const viewportWidth = useThree((s) => s.size.width);
   const viewportHeight = useThree((s) => s.size.height);

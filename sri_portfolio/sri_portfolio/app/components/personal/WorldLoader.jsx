@@ -5,15 +5,18 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import { observeStartup } from "../../lib/entrance-diagnostics.mjs";
 import PersonalSignature from "./PersonalSignature";
 import { playEntrance, entranceChapters } from "../../lib/entrance-motion.mjs";
+import { worldLoading, entranceReadiness } from "../../lib/world-loading.mjs";
 
-// Run the intro before mounting the GPU scene. Early entry skips the score;
+// Prepare alongside the intro. Entry is a single gesture after real readiness;
 // reading remains immediate while a cold scene prepares behind this surface.
 export default function WorldLoader({
   ready,
+  onPreload,
   onPrepare,
   onChooseAudio,
   onEnter,
@@ -29,8 +32,23 @@ export default function WorldLoader({
   const [settled, setSettled] = useState(false);
   const [replay, setReplay] = useState(0);
   const [requested, setRequested] = useState(false);
+  const loading = useSyncExternalStore(
+    worldLoading.subscribe,
+    worldLoading.getSnapshot,
+    worldLoading.getServerSnapshot,
+  );
+  const { available, progress } = entranceReadiness({
+    ready,
+    settled,
+    progress: loading.progress,
+  });
 
-  // Give the settled mark/status a paint before 3D construction starts.
+  // Overlap network/terrain work with the score. Keep final GPU construction
+  // after the motion: compiling the full scene during it causes visible hitches.
+  useEffect(() => {
+    const frame = requestAnimationFrame(onPreload);
+    return () => cancelAnimationFrame(frame);
+  }, [onPreload]);
   useEffect(() => {
     if (!settled) return;
     let second;
@@ -46,11 +64,15 @@ export default function WorldLoader({
   useLayoutEffect(() => observeStartup(dialog.current), []);
   useLayoutEffect(() => {
     dialog.current.showModal();
-    dialog.current
-      .querySelector(".entrance-audio")
-      ?.focus({ preventScroll: true });
+    dialog.current.focus({ preventScroll: true });
     return () => clearTimeout(timer.current);
   }, []);
+  useEffect(() => {
+    if (available && document.activeElement === dialog.current)
+      dialog.current
+        .querySelector(".entrance-audio")
+        ?.focus({ preventScroll: true });
+  }, [available]);
   useLayoutEffect(() => {
     motion.current = playEntrance(dialog.current, () => setSettled(true));
     return () => motion.current?.cancel();
@@ -66,10 +88,9 @@ export default function WorldLoader({
     enterCallback.current();
   }, []);
   const enter = (withAudio) => {
-    if (choice.current !== null) return;
+    if (!available || choice.current !== null) return;
     choice.current = withAudio;
-    // Commit the one-shot request independently of audio or the intro callback.
-    // Readiness completes it automatically, even when the first click is early.
+    // The world is already ready. Commit before unlocking optional audio.
     setRequested(true);
     setSettled(true);
     motion.current?.finish();
@@ -86,6 +107,23 @@ export default function WorldLoader({
     timer.current = setTimeout(finish, 540);
     return () => clearTimeout(timer.current);
   }, [requested, ready, finish]);
+  const entryLabel = (
+    <span className="entrance-button-content">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 10v4m4-7v10m4-13v16m4-13v10m4-7v4" />
+      </svg>
+      <span>
+        {requested && choice.current
+          ? "Entering…"
+          : available
+            ? "Enter with audio"
+            : "Loading your world"}
+      </span>
+      <span className="entrance-button-end" aria-hidden="true">
+        {available ? "↗" : `${progress}%`}
+      </span>
+    </span>
+  );
   return (
     <dialog
       ref={dialog}
@@ -93,11 +131,14 @@ export default function WorldLoader({
       data-leaving={leaving}
       data-settled={settled}
       data-ready={ready}
+      data-progress={progress}
       data-quiet
       aria-labelledby="entrance-title"
+      tabIndex={-1}
       onCancel={(event) => {
         event.preventDefault();
-        enter(false);
+        if (available) enter(false);
+        else motion.current?.finish();
       }}
       onAnimationEnd={(event) => {
         if (
@@ -175,42 +216,48 @@ export default function WorldLoader({
       </div>
       <footer className="entrance-footer">
         <div className="entrance-actions">
-          {requested ? (
-            <div className="entrance-pending" role="status">
-              <span className="entrance-spinner" aria-hidden="true" />
-              Opening your world…
-            </div>
-          ) : (
-            <>
-              <button
-                className="entrance-audio"
-                autoFocus
-                onClick={() => enter(true)}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M4 10v4m4-7v10m4-13v16m4-13v10m4-7v4" />
-                </svg>
-                Enter with audio{" "}
-                <span aria-hidden="true">↗</span>
-              </button>
-              <button
-                className="entrance-quiet"
-                onClick={() => enter(false)}
-              >
-                Enter quietly
-              </button>
-            </>
-          )}
+          <button
+            className="entrance-audio"
+            disabled={!available || requested}
+            aria-busy={!available}
+            aria-describedby="entrance-status"
+            onClick={() => enter(true)}
+          >
+            {entryLabel}
+            <span
+              className="entrance-fill"
+              aria-hidden="true"
+              style={{ clipPath: `inset(0 ${100 - progress}% 0 0)` }}
+            >
+              {entryLabel}
+            </span>
+          </button>
+          <button
+            className="entrance-quiet"
+            disabled={!available || requested}
+            onClick={() => enter(false)}
+          >
+            {requested && !choice.current ? "Entering…" : "Enter quietly"}
+          </button>
         </div>
+        <div
+          className="visually-hidden"
+          role="progressbar"
+          aria-label="World preparation"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progress}
+          aria-valuetext={`${progress}% — ${available ? "Ready" : loading.label}`}
+        />
         <div className="entrance-readiness">
-          <span role={requested ? undefined : "status"}>
+          <span id="entrance-status" role="status">
             {requested
-              ? `${choice.current ? "With audio" : "Quietly"}. We'll enter automatically.`
-              : ready
+              ? "Come on in."
+              : available
                 ? "Ready when you are."
-                : settled
-                  ? "Preparing the world…"
-                  : "Five places. One little world."}
+                : ready
+                  ? "Finishing the introduction…"
+                  : loading.label}
           </span>
         </div>
         <a className="entrance-story" href="/story">

@@ -32,6 +32,9 @@
   align-items: center;
   gap: 20px;
 }
+.world-loader:focus {
+  outline: none;
+}
 .world-loader::backdrop {
   background: #f1eee6;
 }
@@ -218,40 +221,44 @@
     transform 160ms,
     background 160ms;
 }
-.entrance-audio {
-  background: #302f2a;
-  color: #fffaf0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
+.entrance-actions .entrance-audio {
+  position: relative;
+  width: 280px;
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+  color: #302f2a;
+  background: #e6e0d5;
   border: 1px solid #7f7a6c;
 }
-.entrance-pending {
+.entrance-button-content {
   min-height: 50px;
-  padding: 0 24px;
-  display: inline-flex;
+  padding: 0 20px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  font-size: 12px;
-  color: #fffaf0;
+  gap: 12px;
+  white-space: nowrap;
+}
+.entrance-button-end {
+  min-width: 3ch;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.entrance-fill {
+  position: absolute;
+  inset: 0;
   background: #302f2a;
-  border: 1px solid #7f7a6c;
-  border-radius: 999px;
+  color: #fffaf0;
+  pointer-events: none;
+  transition: clip-path 220ms ease-out;
 }
-.entrance-spinner {
-  width: 16px;
-  height: 16px;
-  border: 1.5px solid #fffaf050;
-  border-top-color: currentColor;
-  border-radius: 50%;
-  animation: entrance-wait 900ms linear infinite;
+.entrance-audio:disabled {
+  cursor: wait;
 }
-@keyframes entrance-wait {
-  to {
-    transform: rotate(1turn);
-  }
+.entrance-quiet:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 .entrance-audio svg {
   width: 20px;
@@ -261,16 +268,15 @@
   stroke-linecap: round;
   fill: none;
 }
-.entrance-audio:hover {
+.entrance-audio:hover:not(:disabled) {
   transform: translateY(-2px);
-  background: #49463d;
 }
 .entrance-quiet {
   color: #302f2a;
   background: #f1eee6;
   border: 1px solid #b8b1a3;
 }
-.entrance-quiet:hover {
+.entrance-quiet:hover:not(:disabled) {
   transform: translateY(-2px);
   background: #fffaf0;
 }
@@ -280,8 +286,8 @@
   outline-offset: 5px;
 }
 .entrance-readiness {
-  height: 25px;
-  max-width: 220px;
+  min-height: 28px;
+  max-width: 320px;
   margin: 16px auto 0;
   font-size: 10px;
 }
@@ -347,8 +353,7 @@
     flex-direction: column;
     gap: 10px;
   }
-  .entrance-actions button,
-  .entrance-pending {
+  .entrance-actions button {
     min-width: 225px;
   }
   .entrance-quiet {
@@ -401,7 +406,7 @@
     transition: none !important;
   }
   .entrance-audio:hover,
-  .entrance-quiet:hover {
+  .entrance-quiet:hover:not(:disabled) {
     transform: none;
   }
 }
