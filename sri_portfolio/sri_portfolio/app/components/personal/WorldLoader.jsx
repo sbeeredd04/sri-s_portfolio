@@ -68,10 +68,13 @@ export default function WorldLoader({
   const enter = (withAudio) => {
     if (choice.current !== null) return;
     choice.current = withAudio;
+    // Commit the one-shot request independently of audio or the intro callback.
+    // Readiness completes it automatically, even when the first click is early.
+    setRequested(true);
+    setSettled(true);
+    motion.current?.finish();
     // Resume inside the gesture; browsers reject audio unlocked after an exit.
     onChooseAudio(withAudio);
-    motion.current?.finish();
-    setRequested(true);
   };
   useEffect(() => {
     if (!requested || !ready) return;
@@ -172,38 +175,42 @@ export default function WorldLoader({
       </div>
       <footer className="entrance-footer">
         <div className="entrance-actions">
-          <button
-            className="entrance-audio"
-            autoFocus
-            aria-busy={requested && !ready}
-            disabled={requested}
-            onClick={() => enter(true)}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 10v4m4-7v10m4-13v16m4-13v10m4-7v4" />
-            </svg>
-            {requested && choice.current
-              ? "Entering with audio…"
-              : "Enter with audio"}{" "}
-            <span aria-hidden="true">↗</span>
-          </button>
-          <button
-            className="entrance-quiet"
-            disabled={requested}
-            onClick={() => enter(false)}
-          >
-            {requested && !choice.current
-              ? "Entering quietly…"
-              : "Enter quietly"}
-          </button>
+          {requested ? (
+            <div className="entrance-pending" role="status">
+              <span className="entrance-spinner" aria-hidden="true" />
+              Opening your world…
+            </div>
+          ) : (
+            <>
+              <button
+                className="entrance-audio"
+                autoFocus
+                onClick={() => enter(true)}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 10v4m4-7v10m4-13v16m4-13v10m4-7v4" />
+                </svg>
+                Enter with audio{" "}
+                <span aria-hidden="true">↗</span>
+              </button>
+              <button
+                className="entrance-quiet"
+                onClick={() => enter(false)}
+              >
+                Enter quietly
+              </button>
+            </>
+          )}
         </div>
         <div className="entrance-readiness">
-          <span role="status">
-            {ready
-              ? "Ready when you are."
-              : settled
-                ? "Preparing the world…"
-                : "Five places. One little world."}
+          <span role={requested ? undefined : "status"}>
+            {requested
+              ? `${choice.current ? "With audio" : "Quietly"}. We'll enter automatically.`
+              : ready
+                ? "Ready when you are."
+                : settled
+                  ? "Preparing the world…"
+                  : "Five places. One little world."}
           </span>
         </div>
         <a className="entrance-story" href="/story">
