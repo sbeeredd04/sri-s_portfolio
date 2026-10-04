@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { observeStartup } from "../../lib/entrance-diagnostics.mjs";
 import PersonalSignature from "./PersonalSignature";
 import { playEntrance, entranceChapters } from "../../lib/entrance-motion.mjs";
 
@@ -42,6 +43,7 @@ export default function WorldLoader({
     };
   }, [settled, onPrepare]);
 
+  useLayoutEffect(() => observeStartup(dialog.current), []);
   useLayoutEffect(() => {
     dialog.current.showModal();
     dialog.current
@@ -87,6 +89,7 @@ export default function WorldLoader({
       className="world-loader"
       data-leaving={leaving}
       data-settled={settled}
+      data-ready={ready}
       data-quiet
       aria-labelledby="entrance-title"
       onCancel={(event) => {

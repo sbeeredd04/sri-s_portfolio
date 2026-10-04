@@ -48,10 +48,21 @@
 }
 .entrance-replay {
   font-size: 11px;
-  padding: 8px 0 8px 12px;
+  padding: 8px 12px;
   min-height: 44px;
-  color: inherit;
-  background: none;
+  color: #302f2a;
+  background: #f1eee6;
+  border-radius: 999px;
+}
+/* Do not let the world skin's button transitions chase animated ink. */
+.experience-shell .world-loader button {
+  transition:
+    transform 160ms,
+    background-color 160ms;
+}
+.world-loader[data-settled="false"]
+  :is(.entrance-signature, #entrance-title, .entrance-description) {
+  opacity: 0;
 }
 .entrance-composition {
   width: min(760px, 100%);
@@ -248,19 +259,6 @@
   margin: 16px auto 0;
   font-size: 10px;
 }
-.world-loader-bar {
-  display: block;
-  margin-top: 5px;
-  height: 1px;
-  background: #88888844;
-}
-.world-loader-bar > span {
-  display: block;
-  height: 100%;
-  background: currentColor;
-  transform-origin: left;
-  transition: transform 250ms;
-}
 .entrance-story {
   display: inline-flex;
   align-items: center;
@@ -321,15 +319,15 @@
   }
   .entrance-actions {
     flex-direction: column;
-    gap: 4px;
+    gap: 10px;
   }
   .entrance-actions button {
     min-width: 225px;
   }
   .entrance-quiet {
-    border-color: transparent;
-    background: transparent;
-    color: inherit;
+    border-color: #b8b1a3;
+    background: #f1eee6;
+    color: #302f2a;
   }
 }
 @media (max-height: 650px) and (min-width: 601px) {
@@ -338,6 +336,16 @@
   }
   .world-loader[open] {
     gap: 5px;
+  }
+  /* Do not let the world skin's button transitions chase animated ink. */
+  .experience-shell .world-loader button {
+    transition:
+      transform 160ms,
+      background-color 160ms;
+  }
+  .world-loader[data-settled="false"]
+    :is(.entrance-signature, #entrance-title, .entrance-description) {
+    opacity: 0;
   }
   .entrance-composition {
     max-width: 460px;

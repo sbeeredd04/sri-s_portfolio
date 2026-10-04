@@ -63,10 +63,15 @@ function footEntry(biome, stop) {
   if (biome === "trail" && stop === "overlook") return "roam:overlook";
   return biome === "studio" && stop !== "bay" ? "roam:roof" : "roam";
 }
-const WorldScene = dynamic(() => import("./WorldScene"), {
-  ssr: false,
-  loading: () => null,
-});
+const WorldScene = dynamic(
+  async () => {
+    const { prepareTerrainGeometry } =
+      await import("../../lib/terrain-geometry.mjs");
+    await prepareTerrainGeometry();
+    return import("./WorldScene");
+  },
+  { ssr: false, loading: () => null },
+);
 function clearProjectLink() {
   if (linkedProjectId(window.location.hash))
     window.history.replaceState(

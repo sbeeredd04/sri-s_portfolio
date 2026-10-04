@@ -41,9 +41,53 @@ function onCityHill(normal) {
 }
 // Relief cells are refined; boundary edges stay on the adjacent coarse
 // triangle, avoiding cracks without raising the whole globe LOD.
+let preparedGeometry, preparation;
+
+// The renderer and physical-height sampler share one exact CPU mesh. Keep
+// ownership separate: callers may dispose their geometry on route changes.
 export function createTerrainGeometry() {
+  if (!preparedGeometry) {
+    const steps = buildTerrainGeometry();
+    let step;
+    do {
+      step = steps.next();
+    } while (!step.done);
+    preparedGeometry = step.value;
+  }
+  return preparedGeometry.clone();
+}
+
+// Build before importing the scene's props, which also query this surface.
+// Yield between small batches so input and the entrance can keep painting.
+export function prepareTerrainGeometry() {
+  if (preparedGeometry) return Promise.resolve();
+  if (preparation) return preparation;
+  preparation = (async () => {
+    const steps = buildTerrainGeometry();
+    let slice = performance.now();
+    for (;;) {
+      const step = steps.next();
+      if (step.done) {
+        preparedGeometry = step.value;
+        return;
+      }
+      if (performance.now() - slice >= 6) {
+        if (globalThis.scheduler?.yield) await globalThis.scheduler.yield();
+        else await new Promise((resolve) => setTimeout(resolve, 0));
+        slice = performance.now();
+      }
+    }
+  })().catch((error) => {
+    preparation = undefined;
+    throw error;
+  });
+  return preparation;
+}
+
+function* buildTerrainGeometry() {
   const { width, height } = terrainSegments;
   const sphere = new SphereGeometry(WORLD_RADIUS, width, height);
+  yield;
   const p = sphere.attributes.position,
     uv = sphere.attributes.uv,
     n = new Vector3();
@@ -52,6 +96,7 @@ export function createTerrainGeometry() {
   for (let i = 0; i < p.count; i++) {
     n.fromBufferAttribute(p, i).normalize().multiplyScalar(planetRadiusAt(n));
     positions.push(n.x, n.y, n.z);
+    if (i % 512 === 0) yield;
   }
   // Refine wherever the true surface bends away from the flat coarse
   // triangle: hills, basins, shoulders and the valley. Level plateaus are
@@ -61,6 +106,7 @@ export function createTerrainGeometry() {
     mid = new Vector3();
   for (let j = 0; j < height; j++)
     for (let i = 0; i < width; i++) {
+      if (i === 0) yield;
       const ids = [
         j * (width + 1) + i,
         j * (width + 1) + i + 1,
@@ -102,6 +148,7 @@ export function createTerrainGeometry() {
     edgeCounts = new Map();
   const edge = (a, b) => (a < b ? `${a}:${b}` : `${b}:${a}`);
   for (let k = 0; k < index.length; k += 3) {
+    if (k % 1536 === 0) yield;
     const tri = index.slice(k, k + 3);
     const row = Math.min(...tri.map((v) => Math.floor(v / (width + 1))));
     const col = Math.min(...tri.map((v) => v % (width + 1)));
@@ -170,7 +217,9 @@ export function createTerrainGeometry() {
     split(ca, bc, c, level - 1, out);
     split(ab, bc, ca, level - 1, out);
   }
+  let batch = 0;
   for (const { tri, cell, detailed, level } of roots) {
+    if (batch++ % 256 === 0) yield;
     if (!detailed) {
       result.push(...tri);
       continue;
@@ -185,7 +234,9 @@ export function createTerrainGeometry() {
   sphere.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
   sphere.deleteAttribute("normal");
   sphere.setIndex(result);
+  yield;
   sphere.computeVertexNormals();
+  yield;
   sphere.userData.refinedCells = refined;
   sphere.userData.refinedTriangleCount = [...refined.values()].reduce(
     (sum, tri) => sum + tri.length / 3,

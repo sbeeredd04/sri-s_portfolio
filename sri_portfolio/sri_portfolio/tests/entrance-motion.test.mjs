@@ -31,6 +31,17 @@ function fixture(reduced = false) {
       frames,
       options,
       state: "running",
+      currentTime: 0,
+      get playState() {
+        return this.state;
+      },
+      set startTime(value) {
+        this.origin = value;
+        this.state = "running";
+      },
+      get startTime() {
+        return this.origin;
+      },
       onfinish: null,
       cancel() {
         this.state = "idle";
@@ -86,6 +97,11 @@ test("intro is bounded and an early entry resolves it exactly once", (t) => {
     ),
   );
   assert.ok(f.animations.every((a) => a.startTime === 100));
+  assert.ok(
+    f.animations.every(
+      (a) => a.options.duration === ENTRANCE_DURATION && !a.options.delay,
+    ),
+  );
   player.finish();
   player.finish();
   assert.equal(completed, 1);
@@ -96,12 +112,19 @@ test("intro is bounded and an early entry resolves it exactly once", (t) => {
 test("background tabs freeze and resume the whole score together", (t) => {
   const f = withBrowser(t);
   const player = playEntrance(f.root, () => {});
+  f.animations.forEach((a) => {
+    a.currentTime = 1400;
+  });
   f.doc.hidden = true;
   f.listeners.get("visibilitychange")();
   assert.ok(f.animations.every((a) => a.state === "paused"));
+  f.doc.timeline.currentTime = 5100;
   f.doc.hidden = false;
   f.listeners.get("visibilitychange")();
   assert.ok(f.animations.every((a) => a.state === "running"));
+  assert.ok(
+    f.animations.every((a) => a.startTime === 3700 && a.currentTime === 1400),
+  );
   player.cancel();
   assert.equal(f.listeners.size, 0);
   assert.equal(f.mediaListeners.size, 0);

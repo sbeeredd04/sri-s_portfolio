@@ -52,7 +52,7 @@ import { tierSettings } from "../../lib/device-tier.mjs";
 
 // Warm the real render path, including late textures and environment lighting,
 // behind the settled entrance. Stop scheduling as soon as it is ready.
-function FirstFrame({ onReady, surfaceRef }) {
+function FirstFrame({ onReady, surfaceRef, assembled }) {
   const sample = useRef(null);
   const done = useRef(false);
   const pending = useProgress((s) => s.active);
@@ -69,7 +69,7 @@ function FirstFrame({ onReady, surfaceRef }) {
     if (done.current || document.hidden) return;
     sample.current = sampleSceneStartup(sample.current, {
       now: performance.now(),
-      pending,
+      pending: pending || !assembled,
       surface: Boolean(surfaceRef.current),
       lighting: Boolean(state.scene.environment),
     });
@@ -134,6 +134,24 @@ function ConnectedWorld({
   const planet = useRef(),
     lastNear = useRef("");
   const districtGroups = useRef({});
+  // Assemble one district at a time behind the entrance, after the actual
+  // sky lighting is ready. A single giant mount monopolized the main thread
+  // and compiled materials twice (before and after the environment arrived).
+  const [assembly, setAssembly] = useState(0);
+  const assemblyFrame = useRef(0);
+  const pendingAssets = useProgress((s) => s.active);
+  useFrame(({ scene }) => {
+    if (
+      assembly >= regions.length + 2 ||
+      !planet.current ||
+      !scene.environment ||
+      pendingAssets
+    )
+      return;
+    if (++assemblyFrame.current < 3) return;
+    assemblyFrame.current = 0;
+    setAssembly((value) => Math.min(value + 1, regions.length + 2));
+  });
   const cameraDirection = useMemo(() => new THREE.Vector3(), []);
   const viewportWidth = useThree((s) => s.size.width);
   const viewportHeight = useThree((s) => s.size.height);
@@ -184,7 +202,11 @@ function ConnectedWorld({
   });
   return (
     <>
-      <FirstFrame onReady={onReady} surfaceRef={planet} />
+      <FirstFrame
+        onReady={onReady}
+        surfaceRef={planet}
+        assembled={assembly >= regions.length + 2}
+      />
       <AnimationDriver animate={animate} />
       <MaterialLighting daylight={solar.daylight} world={world} />
       <WorldLighting
@@ -200,16 +222,18 @@ function ConnectedWorld({
       <Suspense fallback={null}>
         <PlanetSurface surfaceRef={planet} weather={solar.weather} />
       </Suspense>
-      <Walkways daylight={solar.daylight} />
-      <WorldResidents
-        {...{ animate, visitorColor, onHover, onCue }}
-        clock={residentClock}
-      />
+      {assembly >= 1 && <Walkways daylight={solar.daylight} />}
+      {assembly >= regions.length + 2 && (
+        <WorldResidents
+          {...{ animate, visitorColor, onHover, onCue }}
+          clock={residentClock}
+        />
+      )}
       <Suspense fallback={null}>
         <CloudVolume animate={animate} />
       </Suspense>
       <PostEffects world={world} daylight={solar.daylight} />
-      {regions.map((region) => (
+      {regions.slice(0, Math.max(0, assembly - 1)).map((region) => (
         <group
           key={region.id}
           ref={(node) => {
@@ -373,7 +397,7 @@ function ConnectedWorld({
             )}
         </group>
       ))}
-      <WalkingPaths />
+      {assembly >= regions.length + 2 && <WalkingPaths />}
       {stop.startsWith("roam") && (
         <VisitorWalker
           key={`${stop}:${reset}`}

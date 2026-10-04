@@ -17,8 +17,8 @@ import usePbrSet from "./usePbrSet";
 
 // One designed landscape, with the same material scale from orbit to the garden.
 export default function PlanetSurface({ surfaceRef, weather }) {
-  const geometry = useMemo(createTerrainGeometry, []);
   const ground = usePbrSet("grass");
+  const geometry = useMemo(createTerrainGeometry, []);
   const seaTime = useMemo(() => ({ value: 0 }), []);
   const seaState = useMemo(() => ({ value: 0.3 }), []);
   const wet = useMemo(() => ({ value: 0 }), []);

@@ -1,3 +1,4 @@
+import { observeEntrance } from "./entrance-diagnostics.mjs";
 import { biomeSkins } from "./biome-skins.mjs";
 
 export const entranceChapters = [
@@ -37,7 +38,9 @@ export function playEntrance(root, onComplete) {
   const media = matchMedia("(prefers-reduced-motion: reduce)");
   const animations = [];
   let completed = false;
+  let report = () => {};
   const cancel = () => {
+    report();
     completed = true;
     animations.forEach((animation) => animation.cancel());
     document.removeEventListener("visibilitychange", visibility);
@@ -45,6 +48,7 @@ export function playEntrance(root, onComplete) {
   };
   const finish = () => {
     if (completed) return;
+    report();
     completed = true;
     // CSS's settled state replaces these final frames on React's next paint.
     animations.forEach((animation) => {
@@ -60,9 +64,21 @@ export function playEntrance(root, onComplete) {
   }
   function visibility() {
     if (completed) return;
-    animations.forEach((animation) =>
-      document.hidden ? animation.pause() : animation.play(),
-    );
+    // Freeze one shared position. Calling play() on finished short effects
+    // restarts them; every effect now spans the same finite score instead.
+    if (document.hidden) {
+      const position = animations[0]?.currentTime ?? 0;
+      animations.forEach((animation) => {
+        animation.pause();
+        animation.currentTime = position;
+      });
+    } else {
+      const origin =
+        document.timeline.currentTime - (animations[0]?.currentTime ?? 0);
+      animations.forEach((animation) => {
+        if (animation.playState === "paused") animation.startTime = origin;
+      });
+    }
   }
   if (media.matches || !root.animate) {
     onComplete();
@@ -146,27 +162,39 @@ export function playEntrance(root, onComplete) {
     at(400, { opacity: 1, transform: "none" }),
     at(ENTRANCE_DURATION, { opacity: 1, transform: "none" }),
   ]);
+  // Absolute keyframes preserve the hold. An effect-wide easing curve bends
+  // offsets too, which made the old 840ms words disappear halfway through.
+  const cue = (selector, begin, end, from, to, holdUntil = null) => {
+    const frames = [
+      at(0, from),
+      at(begin, { ...from, easing: ease }),
+      at(end, to),
+    ];
+    if (holdUntil !== null)
+      frames.push(
+        at(holdUntil, { ...to, easing: ease }),
+        at(holdUntil + 160, from),
+      );
+    frames.push(at(ENTRANCE_DURATION, holdUntil === null ? to : from));
+    return animate(selector, frames);
+  };
   entranceChapters.forEach((chapter, i) => {
     const begin = i * beat;
-    animate(
+    cue(
       `.entrance-chapter-${chapter.id}`,
-      [
-        { opacity: 0, transform: "translateY(15px)" },
-        { opacity: 1, transform: "translateY(0)", offset: 0.24 },
-        { opacity: 1, transform: "translateY(0)", offset: 0.76 },
-        { opacity: 0, transform: "translateY(-12px)" },
-      ],
-      { delay: begin, duration: 840, easing: "cubic-bezier(.2,.7,.2,1)" },
+      begin,
+      begin + 150,
+      { opacity: 0, transform: "translateY(9px)" },
+      { opacity: 1, transform: "translateY(0)" },
+      begin + 600,
     );
-    animate(
+    cue(
       `.entrance-detail-${chapter.id}`,
-      [
-        { opacity: 0 },
-        { opacity: 1, offset: 0.3 },
-        { opacity: 1, offset: 0.86 },
-        { opacity: 0 },
-      ],
-      { delay: begin, duration: 850 },
+      begin,
+      begin + 180,
+      { opacity: 0 },
+      { opacity: 1 },
+      begin + 600,
     );
   });
   animate(".entrance-halo", [
@@ -175,37 +203,35 @@ export function playEntrance(root, onComplete) {
     { opacity: 0.35, transform: "scale(1.07)", offset: 0.72 },
     { opacity: 0, transform: "scale(.9)" },
   ]);
-  animate(".entrance-signature", [{ opacity: 0 }, { opacity: 1 }], {
-    delay: 4600,
-    duration: 450,
-  });
-  animate(
+  cue(".entrance-signature", 4600, 5050, { opacity: 0 }, { opacity: 1 });
+  cue(
     ".signature-stroke",
-    [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }],
-    { delay: 4700, duration: 950, easing: "cubic-bezier(.3,0,.2,1)" },
+    4700,
+    5650,
+    { strokeDashoffset: 1 },
+    { strokeDashoffset: 0 },
   );
-  animate(
+  cue(
     ".signature-i-dot",
-    [
-      { opacity: 0, transform: "translateY(-4px) scale(.7)" },
-      { opacity: 1, transform: "none" },
-    ],
-    { delay: 5250, duration: 350, easing: ease },
+    5250,
+    5600,
+    { opacity: 0, transform: "translateY(-4px) scale(.7)" },
+    { opacity: 1, transform: "none" },
   );
-  for (const selector of ["#entrance-title", ".entrance-description"]) {
-    animate(
-      selector,
-      [
-        { opacity: 0, transform: "translateY(10px)" },
-        { opacity: 1, transform: "translateY(0)" },
-      ],
-      {
-        delay: selector === "#entrance-title" ? 5150 : 5300,
-        duration: 500,
-        easing: ease,
-      },
-    );
-  }
+  cue(
+    "#entrance-title",
+    5150,
+    5650,
+    { opacity: 0, transform: "translateY(10px)" },
+    { opacity: 1, transform: "translateY(0)" },
+  );
+  cue(
+    ".entrance-description",
+    5300,
+    5800,
+    { opacity: 0, transform: "translateY(10px)" },
+    { opacity: 1, transform: "translateY(0)" },
+  );
   const origin = document.timeline.currentTime;
   animations.forEach((animation) => {
     animation.startTime = origin;
@@ -213,5 +239,6 @@ export function playEntrance(root, onComplete) {
   document.addEventListener("visibilitychange", visibility);
   media.addEventListener("change", preference);
   visibility();
+  report = observeEntrance(root, animations);
   return { finish, cancel };
 }
