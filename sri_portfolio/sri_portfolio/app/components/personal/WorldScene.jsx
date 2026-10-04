@@ -8,7 +8,8 @@ import {
   useState,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Html } from "@react-three/drei";
+import { Html, useProgress } from "@react-three/drei";
+import { sampleSceneStartup } from "../../lib/scene-startup.mjs";
 import * as THREE from "three";
 import {
   regions,
@@ -49,19 +50,33 @@ import GrassField from "./GrassField";
 import { QualityProvider } from "./Quality";
 import { tierSettings } from "../../lib/device-tier.mjs";
 
-// Reports once the scene has actually drawn, after Suspense content resolves.
-function FirstFrame({ onReady }) {
-  const frames = useRef(0);
+// Warm the real render path, including late textures and environment lighting,
+// behind the settled entrance. Stop scheduling as soon as it is ready.
+function FirstFrame({ onReady, surfaceRef }) {
+  const sample = useRef(null);
+  const done = useRef(false);
+  const pending = useProgress((s) => s.active);
   const state = useThree();
   useEffect(() => {
-    // Development-only handle for scripted rendering review.
     if (process.env.NODE_ENV === "development") window.__sriScene = state;
+    const resume = () => {
+      if (!document.hidden && !done.current) state.invalidate();
+    };
+    document.addEventListener("visibilitychange", resume);
+    return () => document.removeEventListener("visibilitychange", resume);
   }, [state]);
   useFrame(() => {
-    frames.current += 1;
-    // Complete the initial readiness sample even behind the paused entrance.
-    if (frames.current < 3) state.invalidate();
-    if (frames.current === 3) onReady?.();
+    if (done.current || document.hidden) return;
+    sample.current = sampleSceneStartup(sample.current, {
+      now: performance.now(),
+      pending,
+      surface: Boolean(surfaceRef.current),
+      lighting: Boolean(state.scene.environment),
+    });
+    if (sample.current.ready) {
+      done.current = true;
+      onReady?.();
+    } else state.invalidate();
   });
   return null;
 }
@@ -87,6 +102,7 @@ function AnimationDriver({ animate }) {
 }
 
 function ConnectedWorld({
+  onReady,
   introBottom,
   world,
   stop,
@@ -168,6 +184,7 @@ function ConnectedWorld({
   });
   return (
     <>
+      <FirstFrame onReady={onReady} surfaceRef={planet} />
       <AnimationDriver animate={animate} />
       <MaterialLighting daylight={solar.daylight} world={world} />
       <WorldLighting
@@ -444,7 +461,6 @@ export default function WorldScene(props) {
           onTier={reportTier}
           active={props.animate}
         >
-          <FirstFrame onReady={props.onReady} />
           <RoomMaterialProvider>
             <ConnectedWorld {...props} />
           </RoomMaterialProvider>

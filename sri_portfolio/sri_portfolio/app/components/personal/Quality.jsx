@@ -2,10 +2,8 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import {
-  chooseTier,
   dprSteps,
   lowerTier,
-  readDevice,
   tierSettings,
   sampleFramePressure,
 } from "../../lib/device-tier.mjs";
@@ -15,16 +13,6 @@ const QualityContext = createContext({
   ...tierSettings.medium,
 });
 export const useQuality = () => useContext(QualityContext);
-
-export function initialTier() {
-  try {
-    const forced = new URLSearchParams(location.search).get("quality");
-    if (forced && tierSettings[forced]) return forced;
-    return chooseTier(readDevice());
-  } catch {
-    return "medium";
-  }
-}
 
 // Lives inside the Canvas. Starts at the device's ceiling and steps down when
 // sustained frame rate falls, so an overloaded phone recovers instead of

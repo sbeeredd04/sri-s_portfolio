@@ -1,25 +1,46 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useProgress } from "@react-three/drei";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import PersonalSignature from "./PersonalSignature";
 import { playEntrance, entranceChapters } from "../../lib/entrance-motion.mjs";
 
-// One finite introduction. Entry, quiet entry and reading never wait for it.
-export default function WorldLoader({ ready, onChooseAudio, onEnter }) {
-  const { progress, total } = useProgress();
+// Run the intro before mounting the GPU scene. Early entry skips the score;
+// reading remains immediate while a cold scene prepares behind this surface.
+export default function WorldLoader({
+  ready,
+  onPrepare,
+  onChooseAudio,
+  onEnter,
+}) {
   const dialog = useRef(null);
   const choice = useRef(null);
   const timer = useRef(null);
   const motion = useRef(null);
-  const highest = useRef(0);
+  const enterCallback = useRef(onEnter);
+  enterCallback.current = onEnter;
   const finished = useRef(false);
   const [leaving, setLeaving] = useState(false);
   const [settled, setSettled] = useState(false);
   const [replay, setReplay] = useState(0);
-  highest.current = Math.max(
-    highest.current,
-    ready ? 100 : Math.min(96, total ? progress : 0),
-  );
+  const [requested, setRequested] = useState(false);
+
+  // Give the settled mark/status a paint before 3D construction starts.
+  useEffect(() => {
+    if (!settled) return;
+    let second;
+    const first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(onPrepare);
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      cancelAnimationFrame(second);
+    };
+  }, [settled, onPrepare]);
 
   useLayoutEffect(() => {
     dialog.current.showModal();
@@ -36,22 +57,30 @@ export default function WorldLoader({ ready, onChooseAudio, onEnter }) {
     if (settled) motion.current?.cancel();
   }, [settled]);
 
-  const finish = () => {
+  const finish = useCallback(() => {
     if (choice.current === null || finished.current) return;
     finished.current = true;
     clearTimeout(timer.current);
-    onEnter();
-  };
+    enterCallback.current();
+  }, []);
   const enter = (withAudio) => {
     if (choice.current !== null) return;
     choice.current = withAudio;
     // Resume inside the gesture; browsers reject audio unlocked after an exit.
     onChooseAudio(withAudio);
     motion.current?.finish();
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return finish();
+    setRequested(true);
+  };
+  useEffect(() => {
+    if (!requested || !ready) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      finish();
+      return;
+    }
     setLeaving(true);
     timer.current = setTimeout(finish, 540);
-  };
+    return () => clearTimeout(timer.current);
+  }, [requested, ready, finish]);
   return (
     <dialog
       ref={dialog}
@@ -76,6 +105,7 @@ export default function WorldLoader({ ready, onChooseAudio, onEnter }) {
         <span>SRI UJJWAL REDDY</span>
         <button
           className="entrance-replay"
+          disabled={requested}
           onClick={() => {
             if (settled) {
               setSettled(false);
@@ -142,33 +172,36 @@ export default function WorldLoader({ ready, onChooseAudio, onEnter }) {
           <button
             className="entrance-audio"
             autoFocus
+            aria-busy={requested && !ready}
+            disabled={requested}
             onClick={() => enter(true)}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 10v4m4-7v10m4-13v16m4-13v10m4-7v4" />
             </svg>
-            Enter with audio <span aria-hidden="true">↗</span>
+            {requested && choice.current
+              ? "Entering with audio…"
+              : "Enter with audio"}{" "}
+            <span aria-hidden="true">↗</span>
           </button>
-          <button className="entrance-quiet" onClick={() => enter(false)}>
-            Enter quietly
+          <button
+            className="entrance-quiet"
+            disabled={requested}
+            onClick={() => enter(false)}
+          >
+            {requested && !choice.current
+              ? "Entering quietly…"
+              : "Enter quietly"}
           </button>
         </div>
         <div className="entrance-readiness">
           <span role="status">
-            {ready ? "Ready when you are." : "Preparing the world…"}
+            {ready
+              ? "Ready when you are."
+              : settled
+                ? "Preparing the world…"
+                : "Five places. One little world."}
           </span>
-          {!ready && (
-            <span
-              className="world-loader-bar"
-              role="progressbar"
-              aria-label="World loading"
-              aria-valuenow={Math.round(highest.current)}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
-              <span style={{ transform: `scaleX(${highest.current / 100})` }} />
-            </span>
-          )}
         </div>
         <a className="entrance-story" href="/story">
           Read the story <span aria-hidden="true">↗</span>

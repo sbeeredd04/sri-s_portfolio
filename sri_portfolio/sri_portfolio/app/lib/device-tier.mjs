@@ -121,3 +121,13 @@ export function sampleFramePressure(sample, delta) {
     slow: sample.slow + (dt > 1 / 45 ? dt : 0),
   };
 }
+
+export function initialTier() {
+  try {
+    const forced = new URLSearchParams(location.search).get("quality");
+    if (forced && tierSettings[forced]) return forced;
+    return chooseTier(readDevice());
+  } catch {
+    return "medium";
+  }
+}

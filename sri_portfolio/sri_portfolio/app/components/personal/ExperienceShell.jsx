@@ -53,7 +53,7 @@ import {
   hasEnteredWorld,
   rememberWorldEntry,
 } from "../../lib/world-return.mjs";
-import { initialTier } from "./Quality";
+import { initialTier } from "../../lib/device-tier.mjs";
 function footEntry(biome, stop) {
   if (
     biome === "future" &&
@@ -114,6 +114,7 @@ export default function ExperienceShell() {
     [introBottom, setIntroBottom] = useState(0),
     [tierCeiling, setTierCeiling] = useState(null),
     [sceneReady, setSceneReady] = useState(false),
+    [prepareWorld, setPrepareWorld] = useState(false),
     [entered, setEntered] = useState(null),
     [returning, setReturning] = useState(false);
   useEffect(() => {
@@ -126,6 +127,7 @@ export default function ExperienceShell() {
     setHover((current) => nextHover(current, text, event, cursor));
   }, []);
   const markReady = useCallback(() => setSceneReady(true), []);
+  const prepareScene = useCallback(() => setPrepareWorld(true), []);
   const visitedScreens = useRef(new Set());
   const [walkerStatus, setWalkerStatus] = useState({
     distance: 0,
@@ -587,7 +589,7 @@ export default function ExperienceShell() {
       </header>
       <main className="immersive-main" aria-label="Explore Sri’s world">
         <div className="immersive-canvas">
-          {!still && tierCeiling ? (
+          {!still && tierCeiling && (entered || prepareWorld) ? (
             <WorldBoundary onFailure={graphicsUnavailable}>
               <WorldScene
                 tier={tierCeiling}
@@ -653,6 +655,7 @@ export default function ExperienceShell() {
         </div>
         {entered === false && (
           <WorldLoader
+            onPrepare={prepareScene}
             ready={sceneReady || still || graphicsError}
             onChooseAudio={(withAudio) =>
               withAudio ? audio.enable() : audio.disable()
