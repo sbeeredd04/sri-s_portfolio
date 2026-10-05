@@ -69,9 +69,7 @@
 }
 .entrance-masthead > span {
   padding: 8px 10px;
-  border-radius: 999px;
-  background: #f1eee6;
-  color: #302f2a;
+  color: inherit;
   font-size: 10px;
   letter-spacing: 0.14em;
   font-weight: 500;
@@ -84,8 +82,8 @@
   font-size: 11px;
   padding: 8px 12px;
   min-height: 44px;
-  color: #302f2a;
-  background: #f1eee6;
+  color: inherit;
+  background: transparent;
   border-radius: 999px;
 }
 .entrance-utilities {
@@ -101,14 +99,14 @@
   min-height: 44px;
   padding: 8px 12px;
   border-radius: 999px;
-  background: #f1eee6;
-  color: #302f2a;
+  background: transparent;
+  color: inherit;
   font-size: 11px;
-  border: 1px solid #b8b1a3;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
 }
 .entrance-sound[aria-pressed="true"] {
-  background: #302f2a;
-  color: #fffaf0;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  border-color: currentColor;
 }
 /* Do not let the world skin's button transitions chase animated ink. */
 .experience-shell .world-loader button {
@@ -325,13 +323,13 @@
   transform: translateY(-2px);
 }
 .entrance-quiet {
-  color: #302f2a;
-  background: #f1eee6;
-  border: 1px solid #b8b1a3;
+  color: inherit;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
 }
 .entrance-quiet:hover:not(:disabled) {
   transform: translateY(-2px);
-  background: #fffaf0;
+  background: color-mix(in srgb, currentColor 8%, transparent);
 }
 .world-loader button:focus-visible,
 .world-loader a:focus-visible {
@@ -428,7 +426,7 @@
     min-height: 44px;
     border-color: transparent;
     background: transparent;
-    color: #302f2a;
+    color: inherit;
     font-size: 11px;
   }
   .entrance-readiness {

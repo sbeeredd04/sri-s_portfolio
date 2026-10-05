@@ -54,6 +54,10 @@ import {
   hasEnteredWorld,
   rememberWorldEntry,
 } from "../../lib/world-return.mjs";
+import {
+  PHONE_LAYOUT_QUERY,
+  navigationStop,
+} from "../../lib/mobile-navigation.mjs";
 import { initialTier } from "../../lib/device-tier.mjs";
 import { worldLoading } from "../../lib/world-loading.mjs";
 import {
@@ -160,9 +164,7 @@ export default function ExperienceShell() {
   const restoredTools = useRef(null);
   const mobileToolsToggle = useRef(null);
   useEffect(() => {
-    const mq = matchMedia(
-      "(max-width: 700px), (max-height: 500px) and (max-width: 1000px)",
-    );
+    const mq = matchMedia(PHONE_LAYOUT_QUERY);
     const update = () => setPhone(mq.matches);
     update();
     mq.addEventListener("change", update);
@@ -188,6 +190,14 @@ export default function ExperienceShell() {
     )
       setToolsExpanded(true);
   }, [biome, stop, collapseTools]);
+  useEffect(() => {
+    // Resizing or returning from a full page must not revive phone walking.
+    const nextStop = navigationStop(biome, stop, phone);
+    if (nextStop !== stop) {
+      setStop(nextStop);
+      setReset((value) => value + 1);
+    }
+  }, [biome, stop, phone]);
   const hint = hover.text;
   const setHint = useCallback((text, event, cursor) => {
     setHover((current) => nextHover(current, text, event, cursor));
@@ -450,7 +460,7 @@ export default function ExperienceShell() {
   function explore(id) {
     audio.cue("travel");
     setHint("");
-    setStop(id);
+    setStop(navigationStop(biome, id, phone));
     setReset((n) => n + 1);
   }
   // Terminals (the "/" bar, the Discoveries console) act through one event.
@@ -515,7 +525,13 @@ export default function ExperienceShell() {
       restoredTools.current = saved.toolsExpanded === true;
       setToolsExpanded(restoredTools.current);
       setBiome(saved.biome);
-      setStop(saved.stop);
+      setStop(
+        navigationStop(
+          saved.biome,
+          saved.stop,
+          matchMedia(PHONE_LAYOUT_QUERY).matches,
+        ),
+      );
       setSheet(
         saved.sheet === "index" ||
           readingSections.some((r) => r.id === saved.sheet)
@@ -1053,17 +1069,21 @@ export default function ExperienceShell() {
                       </div>
                     ) : (
                       <>
-                        <div className="explore-mode">
-                          <span className="eyebrow">LOOK A LITTLE CLOSER</span>
-                          {!still && (
-                            <button
-                              className="walk-here"
-                              onClick={() => explore(footEntry(biome, stop))}
-                            >
-                              Explore on foot <UiIcon />
-                            </button>
-                          )}
-                        </div>
+                        {!phone && (
+                          <div className="explore-mode">
+                            <span className="eyebrow">
+                              LOOK A LITTLE CLOSER
+                            </span>
+                            {!still && (
+                              <button
+                                className="walk-here"
+                                onClick={() => explore(footEntry(biome, stop))}
+                              >
+                                Explore on foot <UiIcon />
+                              </button>
+                            )}
+                          </div>
+                        )}
                         <div
                           className="place-stops"
                           role="group"

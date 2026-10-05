@@ -30,7 +30,9 @@
 
 @media (max-width: 700px), (max-height: 500px) and (max-width: 1000px) {
   .experience-shell {
-    --phone-bottom: max(10px, env(safe-area-inset-bottom));
+    height: 100dvh;
+    min-height: 0;
+    --phone-bottom: max(12px, env(safe-area-inset-bottom));
   }
   .experience-shell .experience-header {
     padding: max(12px, env(safe-area-inset-top)) 16px 0;
@@ -188,8 +190,7 @@
     padding: 0 12px 12px;
   }
   .experience-shell .place-tools .explore-mode {
-    justify-content: flex-start;
-    margin: 0 0 8px;
+    display: none;
   }
   .experience-shell .place-tools .explore-mode > .eyebrow {
     display: none;
@@ -199,8 +200,8 @@
     min-height: 44px;
   }
   .experience-shell .place-tools .place-stops {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     margin: 0;
     padding: 0;
@@ -453,5 +454,71 @@
     :is(.place-tools, .world-settings > div, .spotlight, .window-panel) {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+}
+
+/* A stable six-destination dock: wrapped names share the same number baseline.
+   Skin colors, typefaces and selection morphs remain distinct. */
+@media (max-width: 700px), (max-height: 500px) and (max-width: 1000px) {
+  .experience-shell .journey-footer .chapter-route button {
+    display: grid;
+    grid-template-rows: 12px 28px;
+    align-content: center;
+    justify-items: center;
+    gap: 2px;
+    height: 54px;
+    margin: 0;
+    padding: 4px 2px;
+    line-height: 1.15;
+  }
+  .experience-shell .journey-footer .chapter-route button > small {
+    align-self: center;
+    line-height: 1;
+  }
+  .experience-shell .journey-footer .chapter-route button > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    text-align: center;
+    line-height: 1.15;
+    font-size: 10px;
+    text-wrap: balance;
+  }
+  .experience-shell .journey-footer .map-button {
+    flex: 0 0 44px;
+    min-width: 44px;
+    height: 54px;
+    padding: 4px;
+  }
+  .experience-shell .place-story .place-heading .biome-title {
+    font-size: min(6vw, var(--skin-small-heading-size));
+    line-height: 1.15;
+    margin: 7px 0 0;
+  }
+  .experience-shell :is(.sound-toggle, .world-settings > button) {
+    background: var(--skin-surface);
+    border: 1px solid var(--skin-line);
+    box-shadow: none;
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-size: 11px;
+    min-height: 44px;
+    line-height: 1.2;
+  }
+  .experience-shell .sound-toggle {
+    gap: 8px;
+  }
+  .experience-shell .mobile-tools-toggle > span {
+    align-items: center;
+  }
+  .experience-shell .mobile-tools-toggle strong {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1000px) and (max-height: 500px) {
+  .experience-shell .place-story .place-heading .biome-title {
+    font-size: 22px;
   }
 }

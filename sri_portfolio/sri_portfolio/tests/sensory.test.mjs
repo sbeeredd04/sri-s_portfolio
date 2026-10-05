@@ -321,11 +321,11 @@ test("a semantic cue and the click fallback sound once, and effects respect mute
   assert.equal(ctx.oscillators.length, count);
   ctx.currentTime += 0.1;
   engine.cue("press");
-  assert.equal(ctx.oscillators.length, count + 1);
+  assert.equal(ctx.oscillators.length, count + 2);
   engine.preferences = { ...sensoryDefaults, effects: false };
   ctx.currentTime += 0.2;
   engine.cue("travel");
-  assert.equal(ctx.oscillators.length, count + 1);
+  assert.equal(ctx.oscillators.length, count + 2);
 });
 
 test("hidden audio suspends and destruction closes the entire graph", async (t) => {
@@ -546,15 +546,15 @@ test("first interaction has an audible bus before background downloads finish", 
   assert.equal(engine.master.gain.value, sensoryDefaults.volume);
   assert.ok(engine.effects.gain.value > 0);
   engine.cue("press");
-  assert.equal(ctx.oscillators.length, 1);
-  assert.equal(ctx.oscillators[0].type, "triangle");
+  assert.equal(ctx.oscillators.length, 2);
+  assert.ok(ctx.oscillators.every((source) => source.type === "sine"));
   assert.equal(engine.loaded.size, 0);
   ctx.currentTime += 1;
   engine.preferences.enabled = false;
   engine.cue("press");
   assert.equal(
     ctx.oscillators.length,
-    1,
+    2,
     "remembered master mute suppresses interaction sounds",
   );
 });
@@ -571,7 +571,7 @@ test("micro sounds never swallow a click and rapid typing stays bounded", (t) =>
   for (let i = 0; i < 30; i++) engine.cue("type");
   assert.equal(ctx.oscillators.length, typed);
   engine.cue("press");
-  assert.equal(ctx.oscillators.length, typed + 1);
+  assert.equal(ctx.oscillators.length, typed + 2);
 });
 
 test("travel has low body, finite sources, and follows the effects mute", (t) => {
@@ -638,32 +638,33 @@ test("morph sound follows the decode score, has a bass octave and a bounded voic
   engine.destroy(true);
 });
 
-test("rapid biome changes cancel the old resolution; pause and effects mute cancel pending notes", async () => {
+test("rapid biome changes cancel the old resolution; pause and effects mute cancel pending notes", async (t) => {
   const ctx = scheduledContext();
   const engine = new SoundEngine(ctx, {
     place: "studio",
     preferences: sensoryDefaults,
   });
+  t.after(() => engine.destroy(true));
   engine.prepare = async () => {};
   engine.cue("morph", { destination: "projects" });
   const first = [...ctx.oscillators, ...ctx.sources];
   ctx.currentTime += 0.02; // Faster than the ordinary click rate limit.
   engine.cue("morph", { destination: "court" });
-  assert.ok(first.every((n) => n.stopsAt <= ctx.currentTime + 0.04));
+  assert.ok(first.every((n) => n.stopsAt <= ctx.currentTime + 0.085));
   assert.equal(ctx.oscillators.length, 8);
   engine.cue("cancel-morph");
-  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.04));
+  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.085));
   ctx.currentTime += 1;
   engine.cue("morph", { destination: "trail" });
   engine.update({ preferences: { ...sensoryDefaults, effects: false } });
-  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.04));
+  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.085));
   const mutedCount = ctx.oscillators.length;
   engine.cue("morph", { destination: "future" });
   assert.equal(ctx.oscillators.length, mutedCount);
   engine.update({ preferences: sensoryDefaults });
   engine.cue("morph", { destination: "future" });
   await engine.setHidden(true);
-  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.04));
+  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.085));
   engine.destroy(true);
 });
 
@@ -718,4 +719,25 @@ test("leaving a destination stops and releases its decoded ambience", async (t) 
   assert.equal(previous.source.buffer, null);
   assert.equal(previous.warmth.disconnected, true);
   assert.equal(engine.loaded.size, 0);
+});
+
+test("rapid interaction bursts are bounded while semantic cues still win", (t) => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  engine.cue("open");
+  const first = ctx.oscillators.length;
+  for (let i = 0; i < 8; i++) {
+    ctx.currentTime += 0.01;
+    engine.cue("press");
+  }
+  assert.equal(ctx.oscillators.length, first);
+  ctx.currentTime += 0.02;
+  engine.cue("press");
+  assert.equal(ctx.oscillators.length, first + 2);
+  assert.equal(engine.effectsCompressor.threshold.value, -20);
+  assert.ok(engine.effectsCompressor.knee.value > 10);
 });

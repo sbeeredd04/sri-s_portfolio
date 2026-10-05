@@ -315,25 +315,78 @@ export function hapticPulse(
     : 0;
 }
 
-export const glassCues = {
-  type: { notes: [740], spacing: 0, duration: 0.026, gain: 0.025 },
-  hover: { notes: [587.33], spacing: 0, duration: 0.045, gain: 0.018 },
-  reveal: { notes: [293.66, 440], spacing: 0.07, duration: 0.24, gain: 0.03 },
-  ripple: { notes: [659.25, 440], spacing: 0.09, duration: 0.42, gain: 0.018 },
-  press: { notes: [392], spacing: 0, duration: 0.075, gain: 0.11 },
-  object: { notes: [587.33, 880], spacing: 0.022, duration: 0.14, gain: 0.025 },
-  open: { notes: [440, 659.25], spacing: 0.055, duration: 0.26, gain: 0.065 },
-  close: { notes: [440, 293.66], spacing: 0.03, duration: 0.16, gain: 0.05 },
-  travel: {
-    notes: [293.66, 440, 587.33],
-    spacing: 0.075,
+// Warm, rounded feedback: a low body plus a quieter audible harmonic.
+// Small speakers retain the gesture without relying on inaudible sub-bass.
+export const interactionCues = {
+  type: {
+    notes: [220],
+    spacing: 0,
+    attack: 0.012,
+    duration: 0.065,
+    gain: 0.017,
+  },
+  hover: {
+    notes: [196],
+    spacing: 0,
+    attack: 0.018,
+    duration: 0.1,
+    gain: 0.012,
+  },
+  reveal: {
+    notes: [196, 293.66],
+    spacing: 0.065,
+    attack: 0.026,
+    duration: 0.36,
+    gain: 0.03,
+  },
+  ripple: {
+    notes: [293.66, 196],
+    spacing: 0.085,
+    attack: 0.028,
+    duration: 0.46,
+    gain: 0.02,
+  },
+  press: {
+    notes: [130.81, 261.63],
+    weights: [1, 0.24],
+    spacing: 0,
+    attack: 0.016,
+    duration: 0.22,
+    gain: 0.13,
+  },
+  object: {
+    notes: [174.61, 261.63],
+    spacing: 0.04,
+    attack: 0.022,
+    duration: 0.28,
+    gain: 0.055,
+  },
+  open: {
+    notes: [196, 293.66],
+    spacing: 0.065,
+    attack: 0.025,
     duration: 0.38,
-    gain: 0.027,
+    gain: 0.05,
+  },
+  close: {
+    notes: [196, 130.81],
+    spacing: 0.045,
+    attack: 0.02,
+    duration: 0.3,
+    gain: 0.045,
+  },
+  travel: {
+    notes: [146.83, 220, 293.66],
+    spacing: 0.09,
+    attack: 0.03,
+    duration: 0.48,
+    gain: 0.035,
   },
   welcome: {
-    notes: [293.66, 440, 659.25],
+    notes: [146.83, 220, 329.63],
     spacing: 0.16,
-    duration: 0.65,
-    gain: 0.03,
+    attack: 0.035,
+    duration: 0.72,
+    gain: 0.035,
   },
 };

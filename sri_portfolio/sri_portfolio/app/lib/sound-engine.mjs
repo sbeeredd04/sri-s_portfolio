@@ -1,5 +1,5 @@
 import {
-  glassCues,
+  interactionCues,
   soundMix,
   soundPlaces,
   sensoryPreferences,
@@ -68,7 +68,31 @@ export class SoundEngine {
     this.score = new StreamingScore(context, this.master, createAudio);
     this.effects = context.createGain();
     this.effects.gain.value = initialMix.effects;
-    this.effects.connect(this.master);
+    // Shape and compress only interaction sounds; music keeps its own dynamics.
+    const effectsHighpass = context.createBiquadFilter();
+    effectsHighpass.type = "highpass";
+    effectsHighpass.frequency.value = 45;
+    effectsHighpass.Q.value = 0.5;
+    const effectsLowpass = context.createBiquadFilter();
+    effectsLowpass.type = "lowpass";
+    effectsLowpass.frequency.value = 1800;
+    effectsLowpass.Q.value = 0.5;
+    this.effectsCompressor = context.createDynamicsCompressor();
+    this.effectsCompressor.threshold.value = -20;
+    this.effectsCompressor.knee.value = 18;
+    this.effectsCompressor.ratio.value = 3;
+    this.effectsCompressor.attack.value = 0.012;
+    this.effectsCompressor.release.value = 0.22;
+    // Web Audio compression applies automatic makeup gain; compensate before
+    // the shared mix so a softer envelope does not become a louder button.
+    const effectsOutput = context.createGain();
+    effectsOutput.gain.value = 0.35;
+    this.effects
+      .connect(effectsHighpass)
+      .connect(effectsLowpass)
+      .connect(this.effectsCompressor)
+      .connect(effectsOutput)
+      .connect(this.master);
     this.introBus = context.createGain();
     this.introBus.gain.value = this.preferences.music
       ? this.preferences.musicLevel
@@ -95,7 +119,7 @@ export class SoundEngine {
       wet = context.createGain();
     const impulse = context.createBuffer(
       2,
-      Math.floor(context.sampleRate * 1.15),
+      Math.floor(context.sampleRate * 0.55),
       context.sampleRate,
     );
     let seed = 4561;
@@ -105,12 +129,20 @@ export class SoundEngine {
         seed = (seed * 16807) % 2147483647;
         data[i] =
           ((seed / 2147483647) * 2 - 1) *
-          Math.exp((-i / context.sampleRate) * 6.5);
+          Math.exp((-i / context.sampleRate) * 10);
       }
     }
     room.buffer = impulse;
-    wet.gain.value = 0.16;
-    this.effects.connect(room).connect(wet).connect(this.master);
+    const tailFilter = context.createBiquadFilter();
+    tailFilter.type = "lowpass";
+    tailFilter.frequency.value = 900;
+    tailFilter.Q.value = 0.5;
+    wet.gain.value = 0.12;
+    effectsOutput
+      .connect(room)
+      .connect(tailFilter)
+      .connect(wet)
+      .connect(this.master);
     this.noise = context.createBuffer(
       1,
       context.sampleRate,
@@ -125,6 +157,11 @@ export class SoundEngine {
       this.master,
       limiter,
       this.effects,
+      effectsHighpass,
+      effectsLowpass,
+      this.effectsCompressor,
+      effectsOutput,
+      tailFilter,
       this.introBus,
       this.weather,
       this.city,
@@ -340,7 +377,7 @@ export class SoundEngine {
     gain.gain.linearRampToValueAtTime(level, now + attack);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     source.connect(filter).connect(gain).connect(destination);
-    source.start();
+    source.start(now);
     source.stop(now + duration + 0.02);
     this.track(source, [source, filter, gain]);
   }
@@ -395,12 +432,12 @@ export class SoundEngine {
     // Micro feedback cannot swallow the next intentional click. A ceiling also
     // bounds rapid navigation and release tails on slower devices.
     const micro = kind === "type" || kind === "hover";
-    if (this.nodes.size > 48) return;
+    if (this.nodes.size > 32) return;
     if (micro) {
-      if (now - this.lastMicroCue < 0.09 || now - this.lastCue < 0.1) return;
+      if (now - this.lastMicroCue < 0.12 || now - this.lastCue < 0.1) return;
       this.lastMicroCue = now;
     } else {
-      if (kind !== "morph" && now - this.lastCue < 0.065) return;
+      if (kind !== "morph" && now - this.lastCue < 0.09) return;
       this.lastCue = now;
     }
     if (kind === "morph") {
@@ -409,9 +446,8 @@ export class SoundEngine {
     }
     if (["welcome", "travel", "open", "close"].includes(kind)) {
       this.bodyCue(kind, now);
-      this.noiseCue(kind === "close" ? 550 : 1400, 0.28, 0.016, 0.04);
+      this.noiseCue(kind === "close" ? 280 : 480, 0.34, 0.006, 0.045);
     }
-    if (kind === "type") this.noiseCue(2100, 0.028, 0.026);
     if (["swish", "volley-hit", "basket-bounce", "ball-catch"].includes(kind)) {
       this.noiseCue(
         kind === "swish" ? 4200 : kind === "basket-bounce" ? 290 : 850,
@@ -421,23 +457,23 @@ export class SoundEngine {
       if (kind !== "basket-bounce") return;
       kind = "press";
     }
-    const cue = glassCues[kind] || glassCues.press;
+    const cue = interactionCues[kind] || interactionCues.press;
     cue.notes.forEach((hz, i) => {
       const source = context.createOscillator(),
         gain = context.createGain();
-      const start = now + i * cue.spacing;
-      source.type = kind === "press" ? "triangle" : "sine";
+      const start = now + 0.006 + i * cue.spacing;
+      source.type = "sine";
       const pitch = (soundPlaces[this.place] || soundPlaces.planet).pitch || 1;
       source.frequency.setValueAtTime(hz * pitch, start);
       if (kind === "press")
         source.frequency.exponentialRampToValueAtTime(
-          180 * pitch,
+          hz * pitch * 0.94,
           start + cue.duration,
         );
       gain.gain.setValueAtTime(0, start);
       gain.gain.linearRampToValueAtTime(
-        cue.gain / (1 + i * 0.3),
-        start + 0.009,
+        cue.gain * (cue.weights?.[i] ?? 1 / (1 + i * 0.5)),
+        start + cue.attack,
       );
       gain.gain.exponentialRampToValueAtTime(0.0001, start + cue.duration);
       source.connect(gain).connect(this.effects);
@@ -448,7 +484,7 @@ export class SoundEngine {
   }
 
   bodyCue(kind, now) {
-    const duration = kind === "welcome" ? 1.35 : kind === "travel" ? 0.8 : 0.28;
+    const duration = kind === "welcome" ? 1.35 : kind === "travel" ? 0.8 : 0.38;
     // A mono low fundamental with an audible octave, so phone speakers retain
     // some body. Both follow the effects mixer and the existing master limiter.
     [36.71, 73.42, 146.83].forEach((hz, i) => {
@@ -458,7 +494,7 @@ export class SoundEngine {
       source.frequency.setValueAtTime(hz * (kind === "close" ? 0.75 : 1), now);
       gain.gain.setValueAtTime(0, now);
       gain.gain.linearRampToValueAtTime(
-        [0.13, 0.09, 0.04][i] *
+        [0.07, 0.11, 0.055][i] *
           (kind === "open" || kind === "close" ? 0.55 : 1),
         now + 0.035,
       );

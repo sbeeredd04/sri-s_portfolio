@@ -4,10 +4,10 @@ import { MORPH, morphSettle, skinIdentity } from "./biome-morph.mjs";
 // Destination changes the material/timbre, not the musical key of the world.
 const materials = {
   studio: { hz: 73.42, filter: 1100, finish: [293.66, 440] },
-  projects: { hz: 73.42, filter: 2300, finish: [293.66, 587.33] },
+  projects: { hz: 73.42, filter: 1000, finish: [293.66, 587.33] },
   court: { hz: 65.41, filter: 850, finish: [261.63, 392] },
-  trail: { hz: 73.42, filter: 1450, finish: [293.66, 440] },
-  future: { hz: 65.41, filter: 1800, finish: [261.63, 523.25] },
+  trail: { hz: 73.42, filter: 900, finish: [293.66, 440] },
+  future: { hz: 65.41, filter: 1000, finish: [261.63, 523.25] },
 };
 
 export function playMorph(engine, biome) {
@@ -61,8 +61,8 @@ export function playMorph(engine, biome) {
   for (let i = 0; i < 6; i++) {
     const at = now + (MORPH.start + i * 88) / 1000;
     envelope.gain.setValueAtTime(0, at);
-    envelope.gain.linearRampToValueAtTime(0.042 - i * 0.004, at + 0.006);
-    envelope.gain.exponentialRampToValueAtTime(0.0001, at + 0.065);
+    envelope.gain.linearRampToValueAtTime(0.012 - i * 0.001, at + 0.014);
+    envelope.gain.exponentialRampToValueAtTime(0.0001, at + 0.08);
   }
   noise.connect(filter).connect(envelope).connect(bus);
   own(noise, [noise, filter, envelope], now, now + morphSettle / 1000);
@@ -74,11 +74,11 @@ export function playMorph(engine, biome) {
     if (cancelled || remaining === 0) return;
     cancelled = true;
     const at = context.currentTime;
-    bus.gain.setTargetAtTime(0, at, 0.008);
+    bus.gain.setTargetAtTime(0, at, 0.018);
     // Cancels future resolve notes as well as the currently audible body.
     sources.forEach((source) => {
       try {
-        source.stop(at + 0.035);
+        source.stop(at + 0.08);
       } catch {}
     });
   };
