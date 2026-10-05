@@ -1,0 +1,440 @@
+/* One thumb-reachable disclosure owns local views and stories on a phone.
+   Desktop retains its spatial layout and the same underlying controls. */
+.place-tools,
+.place-tools-reveal,
+.place-tools-content {
+  display: contents;
+}
+.mobile-tools-toggle,
+.mobile-place-description {
+  display: none;
+}
+.place-tools .biome-pages {
+  position: absolute;
+  z-index: 6;
+  top: 117px;
+  right: 42px;
+  width: 238px;
+}
+@media (min-width: 701px) and (max-width: 1100px) {
+  .place-tools .biome-pages {
+    right: 26px;
+    width: 200px;
+  }
+}
+@media (min-width: 701px) and (max-height: 560px) {
+  .place-tools .biome-pages {
+    top: 85px;
+  }
+}
+
+@media (max-width: 700px), (max-height: 500px) and (max-width: 1000px) {
+  .experience-shell {
+    --phone-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+  .experience-shell .experience-header {
+    padding: max(12px, env(safe-area-inset-top)) 16px 0;
+    align-items: center;
+  }
+  .experience-shell .header-links :is(button, a) {
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .experience-shell .world-clock {
+    top: calc(max(12px, env(safe-area-inset-top)) + 48px);
+    right: 16px;
+    left: 16px;
+    transform: none;
+    justify-content: space-between;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    color: #e5eaf2;
+    box-shadow: none;
+    text-shadow: 0 1px 6px #0009;
+  }
+  .experience-shell .world-clock > span:first-child {
+    display: inline;
+  }
+  .experience-shell .world-clock > span {
+    color: inherit;
+    font-size: 10px;
+  }
+  .experience-shell .world-clock time {
+    font-size: 10px;
+  }
+  .experience-shell .intro-heading {
+    top: 106px;
+    left: 20px;
+    right: 20px;
+  }
+  .experience-shell .intro-heading .eyebrow {
+    display: none;
+  }
+  .experience-shell .intro-heading h1 {
+    font-size: 30px;
+    line-height: 1.12;
+    margin: 0 0 12px;
+  }
+  .experience-shell .intro-heading .narrative-copy {
+    font-size: 12px;
+    line-height: 1.55;
+    max-width: 340px;
+  }
+  .experience-shell .intro-actions {
+    margin-top: 12px;
+    gap: 20px;
+  }
+  .experience-shell .intro-actions :is(button, a) {
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .experience-shell .place-story {
+    top: 103px;
+    left: 16px;
+    right: 16px;
+    gap: 0;
+  }
+  .experience-shell .place-story .narrative-heading {
+    width: fit-content;
+    max-width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--skin-control-radius);
+  }
+  .experience-shell .place-heading .eyebrow {
+    font-size: 9px;
+    margin: 0;
+  }
+  .experience-shell .place-heading .biome-title {
+    font-size: var(--skin-small-heading-size);
+    margin: 7px 0 0;
+  }
+  .experience-shell .place-heading .narrative-copy {
+    display: none;
+  }
+  .experience-shell .place-tools {
+    display: block;
+    position: absolute;
+    z-index: 12;
+    left: 12px;
+    right: 12px;
+    bottom: calc(var(--phone-bottom) + 119px);
+    border: 1px solid var(--skin-line);
+    border-radius: 18px;
+    color: var(--skin-ink);
+    background: var(--skin-surface);
+    box-shadow: 0 8px 24px #0003;
+    transition: var(--skin-transition);
+    overflow: hidden;
+  }
+  .experience-shell .mobile-tools-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 56px;
+    padding: 10px 16px;
+    gap: 14px;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+  }
+  .mobile-tools-toggle > span {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
+  .mobile-tools-toggle strong {
+    font: 500 15px/1.3 var(--skin-ui);
+  }
+  .mobile-tools-toggle small {
+    font:
+      10px/1.3 var(--font-manrope),
+      sans-serif;
+    color: var(--skin-muted);
+  }
+  .experience-shell .place-tools-reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .experience-shell .place-tools[data-expanded="true"] .place-tools-reveal {
+    grid-template-rows: 1fr;
+  }
+  .experience-shell .place-tools-content {
+    display: block;
+    min-height: 0;
+    max-height: min(48dvh, 440px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .mobile-place-description {
+    display: block;
+    margin: 0;
+    padding: 2px 16px 14px;
+    font:
+      12px/1.65 var(--font-manrope),
+      sans-serif;
+    color: var(--skin-muted);
+  }
+  .experience-shell .place-tools .place-exploration,
+  .experience-shell .place-tools .keynote-controls {
+    position: static;
+    width: auto;
+    max-height: none;
+    margin: 0;
+    padding: 0 12px 12px;
+  }
+  .experience-shell .place-tools .explore-mode {
+    justify-content: flex-start;
+    margin: 0 0 8px;
+  }
+  .experience-shell .place-tools .explore-mode > .eyebrow {
+    display: none;
+  }
+  .experience-shell .place-tools .walk-here {
+    font-size: 12px;
+    min-height: 44px;
+  }
+  .experience-shell .place-tools .place-stops {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+  .experience-shell .place-tools .place-stops button {
+    flex: 1 0 auto;
+    padding: 10px 12px;
+    min-height: 44px;
+    font-size: max(12px, var(--skin-small-control-size));
+    letter-spacing: 0;
+  }
+  .experience-shell .place-tools .stop-actions {
+    margin-top: 10px;
+  }
+  .experience-shell .place-tools .stop-story {
+    min-height: 44px;
+    font-size: 13px;
+  }
+  .experience-shell .place-tools .biome-pages {
+    position: static;
+    width: auto;
+    padding: 12px;
+    border-top: 1px solid var(--skin-line);
+  }
+  .experience-shell .place-tools .biome-pages-toggle {
+    display: none;
+  }
+  .experience-shell .biome-pages-list {
+    gap: 10px;
+  }
+  .experience-shell .biome-page {
+    flex-basis: 74%;
+    min-width: 220px;
+  }
+  .experience-shell .biome-page-actions button {
+    font-size: 12px;
+  }
+  .experience-shell .journey-footer {
+    bottom: var(--phone-bottom);
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+    border-radius: 18px;
+    padding: 5px;
+  }
+  .experience-shell .journey-footer .command-bar {
+    position: fixed;
+    left: 82px;
+    top: calc(max(12px, env(safe-area-inset-top)) - 1px);
+    height: 44px;
+  }
+  .experience-shell .journey-footer .command-toggle {
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    color: #e5eaf2;
+  }
+  .experience-shell .command-toggle > span {
+    display: none;
+  }
+  .experience-shell .chapter-route button {
+    min-height: 52px;
+  }
+  .experience-shell .chapter-route button > span {
+    font-size: 11px;
+  }
+  .experience-shell .chapter-route button > small {
+    font-size: 8px;
+  }
+  .experience-shell .sound-toggle,
+  .experience-shell .world-settings {
+    bottom: calc(var(--phone-bottom) + 68px);
+  }
+  .experience-shell .sound-toggle {
+    left: 16px;
+    min-height: 44px;
+  }
+  .experience-shell .world-settings {
+    right: 16px;
+  }
+  .experience-shell .world-settings > button {
+    min-height: 44px;
+  }
+  .experience-shell .world-caption {
+    display: none;
+  }
+  .experience-shell .world-settings .settings-options {
+    max-height: 58dvh;
+    overflow: auto;
+  }
+  .experience-shell .place-tools :focus-visible {
+    outline: 2px solid var(--skin-accent);
+    outline-offset: -3px;
+  }
+}
+@media (max-width: 360px) {
+  .experience-shell .header-links :is(button, a) {
+    padding-inline: 6px;
+    font-size: 11px;
+  }
+  .experience-shell .intro-heading h1 {
+    font-size: 26px;
+  }
+  .experience-shell .chapter-route button > span {
+    font-size: 9px;
+  }
+  .mobile-tools-toggle small {
+    display: none;
+  }
+}
+@media (max-width: 700px) and (max-height: 650px) {
+  .experience-shell .intro-heading {
+    top: 95px;
+  }
+  .experience-shell .intro-heading h1 {
+    font-size: 25px;
+  }
+  .experience-shell .intro-heading .narrative-copy {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .experience-shell .place-tools-content {
+    max-height: 38dvh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .experience-shell .place-tools-reveal {
+    transition: none;
+  }
+}
+
+/* Landscape phones keep the view selector to the right of the scene. */
+@media (min-width: 701px) and (max-width: 1000px) and (max-height: 500px) {
+  .experience-shell .world-clock {
+    top: 16px;
+    left: 30%;
+    right: 30%;
+    gap: 8px;
+    flex-direction: column;
+    line-height: 1;
+  }
+  .experience-shell .world-clock > span:first-child {
+    display: none;
+  }
+  .experience-shell .intro-heading {
+    top: 86px;
+    width: 255px;
+    right: auto;
+  }
+  .experience-shell .intro-heading h1 {
+    font-size: 26px;
+  }
+  .experience-shell .intro-heading .narrative-copy {
+    font-size: 11px;
+  }
+  .experience-shell .intro-actions {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .experience-shell .place-story {
+    top: 82px;
+    right: auto;
+    max-width: 300px;
+  }
+  .experience-shell .place-heading .biome-title {
+    font-size: 22px;
+  }
+  .experience-shell .place-tools {
+    left: auto;
+    width: 300px;
+    bottom: calc(var(--phone-bottom) + 70px);
+  }
+  .experience-shell .place-tools-content {
+    max-height: calc(100dvh - 170px);
+  }
+  .experience-shell .sound-toggle,
+  .experience-shell .world-settings {
+    bottom: calc(var(--phone-bottom) + 73px);
+  }
+  .experience-shell .world-settings {
+    right: auto;
+    left: 140px;
+  }
+  .experience-shell .world-settings .settings-options {
+    max-height: 58dvh;
+  }
+}
+
+@media (max-width: 700px), (max-height: 500px) and (max-width: 1000px) {
+  .experience-shell .sound-toggle {
+    top: auto;
+    height: 44px;
+  }
+  .experience-shell .journey-footer {
+    max-width: none;
+  }
+  .experience-shell .journey-footer .next-place {
+    display: none;
+  }
+  .experience-shell .chapter-route {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    flex: 1;
+    min-width: 0;
+    overflow: visible;
+  }
+  .experience-shell .chapter-route button {
+    min-width: 0;
+    width: 100%;
+    padding: 5px 2px;
+  }
+  .experience-shell .chapter-route button > span {
+    white-space: normal;
+  }
+  .experience-shell .biome-pages-list {
+    display: flex;
+    overflow-x: auto;
+    max-height: none;
+    scroll-snap-type: x proximity;
+  }
+  .experience-shell .biome-page {
+    scroll-snap-align: start;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1000px) and (max-height: 500px) {
+  .experience-shell .world-settings .settings-options {
+    left: 0;
+    right: auto;
+  }
+}

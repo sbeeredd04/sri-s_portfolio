@@ -42,7 +42,7 @@ export function createWorldLoading() {
                 : "Preparing your world…";
       const next = Math.max(snapshot.progress, progress);
       if (next === snapshot.progress && label === snapshot.label) return;
-      snapshot = { progress: next, label };
+      snapshot = { progress: next, label, terrainMethod: state.terrainMethod };
       listeners.forEach((listener) => listener());
     },
   };

@@ -1,6 +1,8 @@
 // Shared vector strokes: arrows must never turn into platform emoji on iOS.
 export default function UiIcon({ name = "arrow", size = 16, className = "" }) {
   const paths = {
+    chevronUp: "M5 15l7-7 7 7",
+    chevronDown: "M5 9l7 7 7-7",
     arrow: "M5 19 19 5M5 5h14v14",
     replay: "M4 10a8 8 0 1 1 1 8M4 4v6h6",
     sound: "M4 10v4m4-7v10m4-13v16m4-13v10m4-7v4",

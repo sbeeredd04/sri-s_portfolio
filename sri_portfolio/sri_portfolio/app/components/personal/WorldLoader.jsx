@@ -134,6 +134,7 @@ export default function WorldLoader({
       data-settled={settled}
       data-ready={ready}
       data-progress={progress}
+      data-terrain-preparation={loading.terrainMethod}
       data-quiet
       aria-labelledby="entrance-title"
       tabIndex={-1}

@@ -43,6 +43,12 @@ function onCityHill(normal) {
 // triangle, avoiding cracks without raising the whole globe LOD.
 let preparedGeometry, preparation;
 
+// The worker returns the exact mesh and cell index used for contact sampling.
+export function installTerrainGeometry(geometry) {
+  if (preparedGeometry) { geometry.dispose(); return; }
+  preparedGeometry = geometry;
+}
+
 // The renderer and physical-height sampler share one exact CPU mesh. Keep
 // ownership separate: callers may dispose their geometry on route changes.
 export function createTerrainGeometry() {
