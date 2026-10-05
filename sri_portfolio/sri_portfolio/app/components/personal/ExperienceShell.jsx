@@ -680,6 +680,8 @@ export default function ExperienceShell() {
             onPrepare={prepareScene}
             ready={sceneReady || still || graphicsError}
             soundEnabled={audio.enabled}
+            soundPreferred={audio.preferences.enabled}
+            soundStatus={audio.status}
             onIntroSound={async () => {
               if (audio.enabled) {
                 audio.disable();

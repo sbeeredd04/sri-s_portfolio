@@ -23,6 +23,8 @@ export default function WorldLoader({
   onIntroSound,
   onIntroPlayback,
   soundEnabled,
+  soundPreferred,
+  soundStatus,
   onEnter,
 }) {
   const dialog = useRef(null);
@@ -166,6 +168,13 @@ export default function WorldLoader({
             data-audio-control
             disabled={startingSound || requested}
             aria-pressed={soundEnabled}
+            title={
+              soundEnabled
+                ? "Mute sound"
+                : soundPreferred && soundStatus !== "error"
+                  ? "Sound is enabled. Your browser needs a click or tap before it can play."
+                  : "Start sound and replay the introduction"
+            }
             onClick={async () => {
               setStartingSound(true);
               try {
@@ -179,11 +188,15 @@ export default function WorldLoader({
               }
             }}
           >
-            {startingSound
+            {startingSound || soundStatus === "starting"
               ? "Starting sound…"
               : soundEnabled
                 ? "Sound on"
-                : "Play intro with sound"}
+                : soundStatus === "error"
+                  ? "Retry sound"
+                  : soundPreferred
+                    ? "Sound ready · tap to start"
+                    : "Sound off"}
           </button>
           <button
             className="entrance-replay"
