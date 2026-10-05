@@ -81,3 +81,39 @@ test("blocked and rejected autoplay close promptly so a first gesture can retry"
     assert.equal(context.state, "closed");
   }
 });
+
+test("iOS playback session survives overlapping starts and is restored on final cleanup", async () => {
+  const { acquirePlaybackSession } =
+    await import("../app/lib/audio-activation.mjs");
+  const navigator = { audioSession: { type: "auto" } };
+  const releaseAutoplay = acquirePlaybackSession(navigator);
+  const releaseGesture = acquirePlaybackSession(navigator);
+  assert.equal(navigator.audioSession.type, "playback");
+  releaseAutoplay();
+  releaseAutoplay();
+  assert.equal(navigator.audioSession.type, "playback");
+  releaseGesture();
+  assert.equal(navigator.audioSession.type, "auto");
+});
+
+test("playback session gracefully tolerates unsupported browsers and preserves other session owners", async () => {
+  const { acquirePlaybackSession } =
+    await import("../app/lib/audio-activation.mjs");
+  assert.doesNotThrow(() => acquirePlaybackSession({})());
+  const navigator = {
+    audioSession: {
+      get type() {
+        return "ambient";
+      },
+      set type(_) {
+        throw new Error("Unsupported");
+      },
+    },
+  };
+  assert.doesNotThrow(() => acquirePlaybackSession(navigator)());
+  const other = { audioSession: { type: "auto" } };
+  const release = acquirePlaybackSession(other);
+  other.audioSession.type = "play-and-record";
+  release();
+  assert.equal(other.audioSession.type, "play-and-record");
+});

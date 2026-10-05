@@ -2,6 +2,7 @@
 import { useEffect, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { modelSource } from "../../lib/world-assets.mjs";
 
 const lodPattern = /_LOD(\d)$/;
 
@@ -49,7 +50,7 @@ export default function ModelInstances({
   tint,
   glow,
 }) {
-  const { scene } = useGLTF(src);
+  const { scene } = useGLTF(modelSource(src, lod));
   const parts = useMemo(() => {
     scene.updateMatrixWorld(true);
     const out = [];

@@ -7,8 +7,9 @@ export const cloudLayer = {
   top: WORLD_RADIUS + 104,
   noiseSize: 64,
 };
-// Base samples per ray; long grazing rays can use the shared 22-sample cap.
+// Grazing rays may add samples within a tier-specific ceiling.
 export const cloudSteps = { low: 10, medium: 16, high: 22 };
+export const cloudStepLimits = { low: 14, medium: 20, high: 22 };
 
 // Matches the analytic clipping in the cloud shader; no steps are spent in
 // the empty space between the viewer and the deck or behind the planet.

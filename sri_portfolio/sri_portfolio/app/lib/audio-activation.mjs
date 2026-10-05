@@ -37,3 +37,33 @@ export async function tryAudioAutoplay(context, timeoutMs = 600) {
   await context.close().catch(() => {});
   return false;
 }
+
+// iOS treats ordinary Web Audio as ambient (silenced by the ringer switch).
+// Music belongs to the playback session. Leases keep overlapping autoplay and
+// gesture attempts from restoring the session underneath the winning context.
+const playbackSessions = new WeakMap();
+export function acquirePlaybackSession(navigator) {
+  const session = navigator?.audioSession;
+  if (!session) return () => {};
+  let lease = playbackSessions.get(session);
+  if (!lease) {
+    try {
+      lease = { previous: session.type, users: 0 };
+      session.type = "playback";
+      playbackSessions.set(session, lease);
+    } catch {
+      return () => {};
+    }
+  }
+  lease.users++;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--lease.users) return;
+    playbackSessions.delete(session);
+    try {
+      if (session.type === "playback") session.type = lease.previous;
+    } catch {}
+  };
+}

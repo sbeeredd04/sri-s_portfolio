@@ -4,14 +4,24 @@ export const startupAssets = [
   "/materials/grass/color.webp",
   "/materials/grass/normal.webp",
   "/materials/grass/arm.webp",
-  "/background/stars-4k.webp",
   "/atmosphere/cloud-noise-64.bin",
   "/materials/walnut-albedo.webp",
-  "/models/tree-small-broadleaf.glb",
-  "/models/tree-broadleaf.glb",
-  "/models/tree-pine-dense.glb",
-  "/models/tree-fir.glb",
+  "/models/compact/tree-small-broadleaf.glb",
+  "/models/compact/tree-broadleaf.glb",
+  "/models/compact/tree-pine-dense.glb",
+  "/models/compact/tree-fir.glb",
 ];
+
+const compactModels = new Set(
+  startupAssets
+    .filter((url) => url.includes("/compact/"))
+    .map((url) => url.replace("/compact/", "/")),
+);
+export function modelSource(src, lod) {
+  return lod > 0 && compactModels.has(src)
+    ? src.replace("/models/", "/models/compact/")
+    : src;
+}
 
 export function createAssetPreloader({
   assets = startupAssets,

@@ -1,3 +1,6 @@
+.biome-page-link-icon {
+  display: none;
+}
 /* Real page captures share one aspect ratio at every preview size. */
 .room-preview {
   aspect-ratio: 720 / 446;
@@ -218,9 +221,11 @@
     flex-shrink: 0;
     justify-content: center;
   }
-  .biome-page-actions a::after {
-    content: "↗";
-    font-size: 12px;
+  .biome-page-actions a .biome-page-link-icon {
+    display: block;
+  }
+  .biome-page-actions a > span {
+    display: none;
   }
 }
 

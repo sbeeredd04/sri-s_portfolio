@@ -31,6 +31,7 @@ export class SoundEngine {
       music = false,
       weather = null,
       onError = () => {},
+      onDispose = () => {},
     },
   ) {
     this.context = context;
@@ -39,6 +40,7 @@ export class SoundEngine {
     this.focus = { reading, music };
     this.weatherState = weather;
     this.onError = onError;
+    this.onDispose = onDispose;
     this.disposed = false;
     this.hidden = false;
     this.loaded = new Map();
@@ -169,6 +171,7 @@ export class SoundEngine {
       source.start();
       this.mix();
     })();
+    pending.catch(() => this.loaded.delete(name));
     this.loaded.set(name, pending);
     return pending;
   }
@@ -181,7 +184,7 @@ export class SoundEngine {
 
   async prepare() {
     const profile = soundPlaces[this.place] || soundPlaces.planet;
-    await Promise.all([
+    await Promise.allSettled([
       this.loop(profile.bed),
       this.rainLevel() ? this.loop(RAIN_BED) : Promise.resolve(),
       this.preferences.music
@@ -476,7 +479,10 @@ export class SoundEngine {
       this.loops.clear();
       this.loaded.clear();
       this.nodes.clear();
-      this.context.close().catch(() => {});
+      this.context
+        .close()
+        .catch(() => {})
+        .finally(this.onDispose);
     };
     if (immediate || this.context.state !== "running") dispose();
     else {

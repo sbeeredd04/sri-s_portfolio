@@ -3,14 +3,14 @@ import { useEffect, useMemo } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { WORLD_RADIUS } from "../../lib/world-layout.mjs";
-import { cloudLayer, cloudSteps } from "../../lib/clouds.mjs";
+import { cloudLayer, cloudSteps, cloudStepLimits } from "../../lib/clouds.mjs";
 import { skyUniforms } from "./AtmosphereSky";
 import { useQuality } from "./Quality";
 
 const fragment = `
 uniform highp sampler3D uNoise;
 uniform mat4 projectionMatrix;
-uniform int uSteps;
+uniform int uSteps, uMaxSteps;
 uniform vec3 uSun, uHorizon, uGlow, uDrift;
 uniform float uDay, uCover, uRain, uSkyOpacity;
 varying vec3 vWorld;
@@ -55,7 +55,7 @@ void main() {
   if(end<=start) discard;
   // Long grazing rays need more samples than a short vertical crossing.
   // Spend those samples only at the horizon, where uniform slices band.
-  int steps=int(min(float(${cloudSteps.high}), max(float(uSteps), ceil((end-start)/7.))));
+  int steps=int(min(float(uMaxSteps), max(float(uSteps), ceil((end-start)/7.))));
   float stepSize=(end-start)/float(steps);
   // Stable subpixel dithering avoids visible slice bands without temporal noise.
   float jitter=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(.06711056,.00583715))));
@@ -124,6 +124,7 @@ export default function CloudVolume({ animate }) {
     () => ({
       uNoise: { value: texture },
       uSteps: { value: cloudSteps[tier] },
+      uMaxSteps: { value: cloudStepLimits[tier] },
       uSun: skyUniforms.uSun,
       uHorizon: skyUniforms.uHorizon,
       uGlow: skyUniforms.uGlow,
@@ -138,6 +139,7 @@ export default function CloudVolume({ animate }) {
   useEffect(() => () => texture.dispose(), [texture]);
   useFrame((_, dt) => {
     uniforms.uSteps.value = cloudSteps[tier];
+    uniforms.uMaxSteps.value = cloudStepLimits[tier];
     if (!animate) return;
     const wind = skyUniforms.uWind.value;
     uniforms.uDrift.value.x += wind.x * Math.min(dt, 0.05) * 24;

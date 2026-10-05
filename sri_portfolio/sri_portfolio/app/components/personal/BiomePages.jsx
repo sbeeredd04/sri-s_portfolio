@@ -2,6 +2,7 @@
 import { useId } from "react";
 import { biomeRooms, roomPageHref } from "../../lib/reading-rooms.mjs";
 import { readingSections } from "../../lib/world-story.mjs";
+import UiIcon from "./UiIcon";
 import RoomPreview from "./RoomPreview";
 
 export default function BiomePages({
@@ -56,13 +57,14 @@ export default function BiomePages({
                 </button>
                 <div className="biome-page-actions">
                   <button onClick={() => onOpen(id)}>
-                    {room.name} <span aria-hidden="true">↗</span>
+                    {room.name} <UiIcon />
                   </button>
                   <a
                     href={roomPageHref(id)}
                     aria-label={`Open ${room.name} as a full page`}
                   >
-                    Open page
+                    <span>Open page</span>
+                    <UiIcon className="biome-page-link-icon" />
                   </a>
                 </div>
               </article>

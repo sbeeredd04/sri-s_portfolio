@@ -656,3 +656,32 @@ test("rapid biome changes cancel the old resolution; pause and effects mute canc
   assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.04));
   engine.destroy(true);
 });
+
+test("a failed streamed bed cannot silence working cues or a loaded score", async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async (url) => ({
+    ok: !url.includes(soundPlaces.planet.bed),
+    arrayBuffer: async () => new ArrayBuffer(8),
+  });
+  let released = 0;
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+    onDispose: () => released++,
+  });
+  try {
+    await engine.prepare();
+    assert.equal(engine.disposed, false);
+    assert.ok(engine.loops.has(soundPlaces.planet.track || "somewhere-soft"));
+    assert.ok(!engine.loaded.has(soundPlaces.planet.bed));
+    engine.cue("press");
+    assert.ok(ctx.oscillators.length > 0);
+  } finally {
+    engine.destroy(true);
+    await Promise.resolve();
+    await Promise.resolve();
+    assert.equal(released, 1);
+    globalThis.fetch = original;
+  }
+});

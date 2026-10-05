@@ -403,6 +403,7 @@ export default function FieldnotesQuarter({
   animate,
   onOpenWriting,
 }) {
+  const { tier } = useQuality();
   const treeItems = useMemo(
     () =>
       trees.map((t) => ({
@@ -423,7 +424,11 @@ export default function FieldnotesQuarter({
         <LookoutVista night={night} />
       </Suspense>
       <Suspense fallback={null}>
-        <ModelInstances src="/models/tree-broadleaf.glb" items={treeItems} />
+        <ModelInstances
+          src="/models/tree-broadleaf.glb"
+          items={treeItems}
+          lod={detailed && tier !== "low" ? 0 : 1}
+        />
       </Suspense>
       {detailed && <PaperPlanes animate={animate} />}
     </group>

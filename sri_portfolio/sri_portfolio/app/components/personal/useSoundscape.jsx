@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SoundEngine } from "../../lib/sound-engine.mjs";
 import {
+  acquirePlaybackSession,
   listenForAudioActivation,
   tryAudioAutoplay,
 } from "../../lib/audio-activation.mjs";
@@ -109,22 +110,30 @@ export default function useSoundscape(
     async (arrivalCue = "press", automatic = false) => {
       if (engine.current) return true;
       stop(true);
-      let current, context;
+      let current,
+        context,
+        releasePlayback = () => {};
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) throw new Error("Audio is unavailable.");
-        context = new AudioContext();
+        releasePlayback = acquirePlaybackSession(navigator);
+        context = new AudioContext({ latencyHint: "interactive" });
         // A blocked autoplay attempt must not leave resume() pending forever or
         // make the UI claim it is playing. The first gesture retries normally.
         if (automatic) {
-          if (!(await tryAudioAutoplay(context))) return false;
+          if (!(await tryAudioAutoplay(context))) {
+            releasePlayback();
+            return false;
+          }
           // A gesture, mute, or navigation may have won while autoplay waited.
           if (!live.current || !settings.current.enabled || engine.current) {
             await context.close();
+            releasePlayback();
             return false;
           }
         }
         current = new SoundEngine(context, {
+          onDispose: releasePlayback,
           place: place.current,
           preferences: settings.current,
           weather: weatherRef.current,
@@ -151,7 +160,8 @@ export default function useSoundscape(
           }
         };
         // Resume in the actual click gesture, before awaiting any asset fetch.
-        await context.resume();
+        if (!(await tryAudioAutoplay(context, 1500)))
+          throw new Error("Audio needs a tap to start.");
         if (engine.current !== current || !live.current) return false;
         if (context.state !== "running" && !document.hidden)
           throw new Error("Audio needs another tap to start.");
@@ -163,7 +173,10 @@ export default function useSoundscape(
           });
         }
         if (arrivalCue) current.cue(arrivalCue);
-        await current.prepare();
+        // The running graph and synthesised cues are ready immediately. Let
+        // streamed beds join when decoded; a slow phone connection must not
+        // delay the intro replay or leave its sound button stuck on “Starting”.
+        current.prepare().catch(() => {});
         if (engine.current !== current || !live.current) return;
         if (document.hidden) await current.setHidden(true);
         changeStatus("on");
@@ -171,7 +184,10 @@ export default function useSoundscape(
       } catch {
         if (current && engine.current !== current) return;
         stop(true);
-        if (!current) context?.close().catch(() => {});
+        if (!current) {
+          context?.close().catch(() => {});
+          releasePlayback();
+        }
         changeStatus("error");
         return false;
       }

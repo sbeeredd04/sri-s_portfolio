@@ -982,3 +982,37 @@
     padding-left: 33px;
   }
 }
+
+/* Every chapter remains visible on a phone; the next arrow duplicates them. */
+@media (max-width: 700px) {
+  .experience-shell .journey-footer {
+    padding: 5px;
+  }
+  .experience-shell .journey-footer .next-place {
+    display: none;
+  }
+  .experience-shell .chapter-route {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    flex: 1;
+    min-width: 0;
+    gap: 1px;
+    padding-inline: 3px;
+    overflow: visible;
+  }
+  .experience-shell .chapter-route button {
+    min-width: 0;
+    width: 100%;
+    min-height: 50px;
+    padding: 5px 2px;
+  }
+  .experience-shell .chapter-route button > span {
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: normal;
+    letter-spacing: 0;
+  }
+  .experience-shell .biome-page-actions button > .ui-icon {
+    display: none;
+  }
+}

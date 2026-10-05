@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { observeStartup } from "../../lib/entrance-diagnostics.mjs";
+import UiIcon from "./UiIcon";
 import PersonalSignature from "./PersonalSignature";
 import { playEntrance, entranceChapters } from "../../lib/entrance-motion.mjs";
 import { worldLoading, entranceReadiness } from "../../lib/world-loading.mjs";
@@ -112,9 +113,7 @@ export default function WorldLoader({
   }, [requested, ready, finish]);
   const entryLabel = (
     <span className="entrance-button-content">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 10v4m4-7v10m4-13v16m4-13v10m4-7v4" />
-      </svg>
+      <UiIcon name="sound" size={20} />
       <span>
         {requested && choice.current
           ? "Entering…"
@@ -123,7 +122,7 @@ export default function WorldLoader({
             : "Loading your world"}
       </span>
       <span className="entrance-button-end" aria-hidden="true">
-        {available ? "↗" : `${progress}%`}
+        {available ? <UiIcon /> : `${progress}%`}
       </span>
     </span>
   );
@@ -188,6 +187,7 @@ export default function WorldLoader({
               }
             }}
           >
+            <UiIcon name={soundPreferred ? "sound" : "muted"} />
             {startingSound || soundStatus === "starting"
               ? "Starting sound…"
               : soundEnabled
@@ -195,7 +195,7 @@ export default function WorldLoader({
                 : soundStatus === "error"
                   ? "Retry sound"
                   : soundPreferred
-                    ? "Sound ready · tap to start"
+                    ? "Tap for sound"
                     : "Sound off"}
           </button>
           <button
@@ -208,7 +208,8 @@ export default function WorldLoader({
               } else motion.current?.finish();
             }}
           >
-            {settled ? "Replay introduction ↻" : "Skip introduction ↗"}
+            <span>{settled ? "Replay introduction" : "Skip introduction"}</span>
+            <UiIcon name={settled ? "replay" : "arrow"} />
           </button>
         </div>
       </header>
@@ -313,7 +314,7 @@ export default function WorldLoader({
           </span>
         </div>
         <a className="entrance-story" href="/story" data-audio-control>
-          Read the story <span aria-hidden="true">↗</span>
+          Read the story <UiIcon />
         </a>
       </footer>
     </dialog>

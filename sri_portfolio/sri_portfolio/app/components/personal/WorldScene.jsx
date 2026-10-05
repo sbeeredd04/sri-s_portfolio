@@ -48,8 +48,19 @@ import WeatherRain from "./WeatherRain";
 import AtmosphereSky from "./AtmosphereSky";
 import CloudVolume from "./CloudVolume";
 import GrassField from "./GrassField";
-import { QualityProvider } from "./Quality";
+import { QualityProvider, useQuality } from "./Quality";
 import { tierSettings } from "../../lib/device-tier.mjs";
+
+// The procedural star field is already present at every tier. A phone does
+// not need a second 4K texture and three extra sky samples per pixel.
+function DesktopStarBackdrop({ daylight }) {
+  const { tier } = useQuality();
+  return tier === "low" ? null : (
+    <Suspense fallback={null}>
+      <StarSphere daylight={daylight} />
+    </Suspense>
+  );
+}
 
 // Warm the real render path, including late textures and environment lighting,
 // behind the entrance. Stop scheduling as soon as it is ready.
@@ -204,7 +215,7 @@ function ConnectedWorld({
       (viewportHeight * camera.projectionMatrix.elements[5] * WORLD_RADIUS) /
       (2 *
         Math.sqrt(Math.max(1, camera.position.lengthSq() - WORLD_RADIUS ** 2)));
-    next.compactLabels = viewportWidth < 560 && projectedRadius < 110;
+    next.compactLabels = viewportWidth < 560 && projectedRadius < 160;
     const signature = Object.values(next).join(":");
     if (signature !== lastNear.current) {
       lastNear.current = signature;
@@ -225,9 +236,7 @@ function ConnectedWorld({
         {...{ world, stop, night, animate, solar, residentClock }}
       />
       <SolarSky world={world} solar={solar} />
-      <Suspense fallback={null}>
-        <StarSphere daylight={solar.daylight} />
-      </Suspense>
+      <DesktopStarBackdrop daylight={solar.daylight} />
       <AtmosphereSky world={world} solar={solar} animate={animate} />
       <WeatherRain weather={solar.weather} animate={animate} />
       <Stars daylight={solar.daylight} />

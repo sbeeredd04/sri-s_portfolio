@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import UiIcon from "./UiIcon";
 import MorphHeading from "./MorphHeading";
 import { skinIdentity } from "../../lib/biome-morph.mjs";
 import { biomeSkinStyle } from "../../lib/biome-skins.mjs";
@@ -455,6 +456,7 @@ export default function ExperienceShell() {
     try {
       previouslyEntered = hasEnteredWorld(window.sessionStorage);
     } catch {}
+    if (!saved) setPreviewsExpanded(!matchMedia("(max-width: 700px)").matches);
     setEntered(Boolean(saved || previouslyEntered));
     setReturning(Boolean(saved || previouslyEntered));
     if (
@@ -718,7 +720,9 @@ export default function ExperienceShell() {
             >
               Try 3D again
             </button>
-            <a href="/story">Read the story ↗</a>
+            <a href="/story">
+              Read the story <UiIcon />
+            </a>
           </div>
         )}
         <div
@@ -786,7 +790,7 @@ export default function ExperienceShell() {
                   className="primary-action"
                   onClick={() => travel("studio")}
                 >
-                  Start at home <span>↗</span>
+                  Start at home <UiIcon />
                 </button>
                 <button className="text-action" onClick={() => show("work")}>
                   See my work
@@ -891,7 +895,7 @@ export default function ExperienceShell() {
                       explore(street.group === "bay" ? "bay" : "arrival")
                     }
                   >
-                    See the place ↗
+                    See the place <UiIcon />
                   </button>
                 </div>
                 {street.group === "bay" &&
@@ -958,7 +962,7 @@ export default function ExperienceShell() {
                       className="walk-here"
                       onClick={() => explore(footEntry(biome, stop))}
                     >
-                      Explore on foot ↗
+                      Explore on foot <UiIcon />
                     </button>
                   )}
                 </div>
@@ -979,7 +983,8 @@ export default function ExperienceShell() {
                         travel(biome === "court" ? "entertainment" : "court")
                       }
                     >
-                      {biome === "court" ? "Music & cinema ↗" : "The courts ↗"}
+                      {biome === "court" ? "Music & cinema" : "The courts"}{" "}
+                      <UiIcon />
                     </button>
                   )}
                   {!(biome === "projects" && stop === "keynote") &&
@@ -1008,7 +1013,7 @@ export default function ExperienceShell() {
                         )
                   }
                 >
-                  {activeStop.prompt} <span>↗</span>
+                  {activeStop.prompt} <UiIcon />
                 </button>
                 {biome === "studio" && stop === "walk" && !still && playing && (
                   <button
