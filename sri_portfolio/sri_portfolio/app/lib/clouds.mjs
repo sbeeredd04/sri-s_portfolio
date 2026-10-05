@@ -8,8 +8,8 @@ export const cloudLayer = {
   noiseSize: 64,
 };
 // Grazing rays may add samples within a tier-specific ceiling.
-export const cloudSteps = { low: 10, medium: 16, high: 22 };
-export const cloudStepLimits = { low: 14, medium: 20, high: 22 };
+export const cloudSteps = { low: 6, medium: 16, high: 22 };
+export const cloudStepLimits = { low: 6, medium: 20, high: 22 };
 
 // Matches the analytic clipping in the cloud shader; no steps are spent in
 // the empty space between the viewer and the deck or behind the planet.

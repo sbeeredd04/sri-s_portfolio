@@ -6,7 +6,8 @@ export const TIERS = ["low", "medium", "high"];
 
 export const tierSettings = {
   low: {
-    dpr: [1, 1.25],
+    dpr: [1, 1],
+    fps: 30,
     ao: false,
     bloom: false,
     shadows: false,
@@ -19,6 +20,7 @@ export const tierSettings = {
   },
   medium: {
     dpr: [1, 1.5],
+    fps: 60,
     ao: false,
     bloom: true,
     shadows: true,
@@ -33,6 +35,7 @@ export const tierSettings = {
     // 1.75x on a Retina laptop is within a few percent of native sharpness
     // (MSAA covers edges) at roughly three quarters of the fill cost of 2x.
     dpr: [1, 1.75],
+    fps: 60,
     ao: true,
     bloom: true,
     shadows: true,
@@ -114,11 +117,11 @@ export function dprSteps(tier, deviceRatio = 2) {
 
 // Cap a single stall's weight without excluding sustained multi-second stalls.
 // Ignoring every long frame prevents the weakest devices from ever recovering.
-export function sampleFramePressure(sample, delta) {
+export function sampleFramePressure(sample, delta, targetFps = 60) {
   const dt = Math.min(Math.max(delta, 0), 0.5);
   return {
     elapsed: sample.elapsed + dt,
-    slow: sample.slow + (dt > 1 / 45 ? dt : 0),
+    slow: sample.slow + (dt > 1 / (targetFps * 0.75) ? dt : 0),
   };
 }
 

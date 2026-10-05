@@ -12,6 +12,16 @@ export const startupAssets = [
   "/models/compact/tree-fir.glb",
 ];
 
+export function startupAssetsForTier(tier) {
+  return tier === "low"
+    ? startupAssets.map((url) =>
+        url.startsWith("/materials/grass/")
+          ? url.replace("/materials/", "/materials/mobile/")
+          : url,
+      )
+    : startupAssets;
+}
+
 const compactModels = new Set(
   startupAssets
     .filter((url) => url.includes("/compact/"))

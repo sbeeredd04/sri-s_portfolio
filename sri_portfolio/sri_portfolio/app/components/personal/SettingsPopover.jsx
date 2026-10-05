@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { useEffect, useId, useRef, useState } from "react";
 
 export default function SettingsPopover({ children }) {
@@ -34,19 +35,7 @@ export default function SettingsPopover({ children }) {
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
       >
-        View &amp; sound{" "}
-        <svg
-          viewBox="0 0 20 20"
-          width="16"
-          height="16"
-          aria-hidden="true"
-          fill="currentColor"
-        >
-          <rect x="2" y="4" width="16" height="2" rx="1" />
-          <circle cx="7" cy="5" r="3" />
-          <rect x="2" y="14" width="16" height="2" rx="1" />
-          <circle cx="13" cy="15" r="3" />
-        </svg>
+        View &amp; sound <UiIcon name="sliders" size={18} />
       </button>
       {/* Keep the audio control mounted when the panel closes. */}
       <div

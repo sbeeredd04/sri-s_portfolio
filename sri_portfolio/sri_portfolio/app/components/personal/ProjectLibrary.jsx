@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import FoundryDesk from "./FoundryDesk";
 import WorkCaseFile from "./WorkCaseFile";
 import WorkIndex, { shelves } from "./WorkIndex";
@@ -237,7 +238,7 @@ export default function ProjectLibrary({
                   target="_blank"
                   rel="noreferrer"
                 >
-                  GitHub <span aria-hidden="true">↗</span>
+                  GitHub <UiIcon />
                 </a>
               </p>
             </div>

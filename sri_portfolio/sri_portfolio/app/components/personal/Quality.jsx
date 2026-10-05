@@ -58,7 +58,7 @@ export function QualityProvider({ ceiling, onTier, active, children }) {
       stable.current = 0;
       return;
     }
-    const s = sampleFramePressure(sample.current, dt);
+    const s = sampleFramePressure(sample.current, dt, settings.fps);
     sample.current = s;
     if (s.elapsed < 3) return;
     const pressure = s.slow / s.elapsed;

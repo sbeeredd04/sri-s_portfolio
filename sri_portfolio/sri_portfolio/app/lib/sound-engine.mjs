@@ -6,6 +6,7 @@ import {
 } from "./sensory-design.mjs";
 import { playMorph } from "./morph-sound.mjs";
 import { voices } from "./sound-voices.mjs";
+import { StreamingScore } from "./streaming-score.mjs";
 import { playEntranceSound } from "./entrance-sound.mjs";
 
 function soften(parameter, value, now, time = 0.65) {
@@ -32,6 +33,7 @@ export class SoundEngine {
       weather = null,
       onError = () => {},
       onDispose = () => {},
+      createAudio,
     },
   ) {
     this.context = context;
@@ -63,6 +65,7 @@ export class SoundEngine {
     limiter.attack.value = 0.005;
     limiter.release.value = 0.18;
     this.master.connect(limiter).connect(context.destination);
+    this.score = new StreamingScore(context, this.master, createAudio);
     this.effects = context.createGain();
     this.effects.gain.value = initialMix.effects;
     this.effects.connect(this.master);
@@ -146,6 +149,7 @@ export class SoundEngine {
   }
 
   async loop(name) {
+    if (this.loops.has(name)) return;
     if (this.loaded.has(name)) return this.loaded.get(name);
     const pending = (async () => {
       const response = await fetch(`/audio/${name}.mp3`, {
@@ -153,9 +157,9 @@ export class SoundEngine {
       });
       if (!response.ok) throw new Error("The atmosphere could not load.");
       const data = await response.arrayBuffer();
-      if (this.disposed) return;
+      if (this.disposed || !this.requiredBeds().has(name)) return;
       const buffer = await this.context.decodeAudioData(data);
-      if (this.disposed) return;
+      if (this.disposed || !this.requiredBeds().has(name)) return;
       const source = this.context.createBufferSource(),
         gain = this.context.createGain();
       source.buffer = buffer;
@@ -166,12 +170,11 @@ export class SoundEngine {
       warmth.frequency.value = 180;
       warmth.gain.value = 2.5;
       source.connect(warmth).connect(gain).connect(this.master);
-      this.owned.push(warmth);
-      this.loops.set(name, { source, gain });
+      this.loops.set(name, { source, gain, warmth });
       source.start();
       this.mix();
     })();
-    pending.catch(() => this.loaded.delete(name));
+    pending.finally(() => this.loaded.delete(name)).catch(() => {});
     this.loaded.set(name, pending);
     return pending;
   }
@@ -182,15 +185,39 @@ export class SoundEngine {
     return rain > 0.05 ? Math.min(1, 0.35 + rain) : 0;
   }
 
-  async prepare() {
+  requiredBeds() {
+    if (!this.preferences.environmentLevel) return new Set();
     const profile = soundPlaces[this.place] || soundPlaces.planet;
-    await Promise.allSettled([
-      this.loop(profile.bed),
-      this.rainLevel() ? this.loop(RAIN_BED) : Promise.resolve(),
-      this.preferences.music
-        ? this.loop(profile.track || "somewhere-soft")
-        : Promise.resolve(),
-    ]);
+    return new Set([profile.bed, ...(this.rainLevel() ? [RAIN_BED] : [])]);
+  }
+
+  activate() {
+    this.mix();
+    return this.score.play();
+  }
+
+  async prepare() {
+    if (this.disposed) return;
+    this.mix();
+    const required = this.requiredBeds();
+    // Old destinations used to run forever at zero gain and retain every PCM
+    // buffer. Release them after a short fade; never accumulate visited rooms.
+    for (const [name, loop] of this.loops) {
+      if (required.has(name)) continue;
+      this.loops.delete(name);
+      soften(loop.gain.gain, 0, this.context.currentTime, 0.04);
+      setTimeout(() => {
+        try {
+          loop.source.stop();
+        } catch {}
+        loop.source.disconnect();
+        loop.gain.disconnect();
+        loop.warmth.disconnect();
+        loop.source.buffer = null;
+      }, 180);
+    }
+    this.score.play().catch(() => {});
+    await Promise.allSettled([...required].map((name) => this.loop(name)));
     if (!this.disposed) this.mix();
   }
 
@@ -220,7 +247,16 @@ export class SoundEngine {
     const levels = soundMix(this.place, this.preferences, this.focus);
     const profile = soundPlaces[this.place] || soundPlaces.planet;
     const bed = profile.bed;
-    const score = profile.track || "somewhere-soft";
+    this.score.select(
+      profile.track || "somewhere-soft",
+      Boolean(levels.score && !this.hidden),
+    );
+    soften(
+      this.score.gain.gain,
+      levels.score * (this.introActive ? 0.12 : 1),
+      now,
+      0.4,
+    );
     soften(this.master.gain, this.hidden ? 0 : levels.master, now, 0.15);
     soften(this.effects.gain, levels.effects, now, 0.06);
     soften(
@@ -253,13 +289,11 @@ export class SoundEngine {
     for (const [name, { gain }] of this.loops)
       soften(
         gain.gain,
-        name === score
-          ? levels.score * (this.introActive ? 0.12 : 1)
-          : name === bed
-            ? Math.max(levels.environment, name === RAIN_BED ? rain * 0.5 : 0)
-            : name === RAIN_BED
-              ? (levels.environment / (profile.level || 0.3)) * rain * 0.45
-              : 0,
+        name === bed
+          ? Math.max(levels.environment, name === RAIN_BED ? rain * 0.5 : 0)
+          : name === RAIN_BED
+            ? (levels.environment / (profile.level || 0.3)) * rain * 0.45
+            : 0,
         now,
       );
   }
@@ -442,13 +476,17 @@ export class SoundEngine {
     clearTimeout(this.suspendTimer);
     if (hidden) {
       this.cancelMorph?.();
+      this.score.pause();
       soften(this.master.gain, 0, this.context.currentTime, 0.015);
       this.suspendTimer = setTimeout(() => {
         if (this.hidden && !this.disposed)
           this.context.suspend().catch(this.onError);
       }, 90);
     } else {
-      await this.context.resume();
+      const resume = this.context.resume();
+      this.mix();
+      this.score.play().catch(() => {});
+      await resume;
       if (!this.disposed && !this.hidden) this.mix();
     }
   }
@@ -462,18 +500,21 @@ export class SoundEngine {
     clearInterval(this.cityClock);
     clearTimeout(this.suspendTimer);
     this.abort.abort();
+    this.score.destroy();
     const dispose = () => {
       for (const source of this.nodes) {
         try {
           source.stop();
         } catch {}
       }
-      for (const { source, gain } of this.loops.values()) {
+      for (const { source, gain, warmth } of this.loops.values()) {
         try {
           source.stop();
         } catch {}
         source.disconnect();
         gain.disconnect();
+        warmth.disconnect();
+        source.buffer = null;
       }
       for (const node of this.owned) node.disconnect();
       this.loops.clear();

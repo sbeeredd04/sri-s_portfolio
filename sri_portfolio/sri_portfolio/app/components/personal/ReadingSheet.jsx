@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { useEffect, useRef, useState } from "react";
 import AppContent from "./AppContent";
 import RoomSoundControls from "./RoomSoundControls";
@@ -115,7 +116,7 @@ export default function ReadingSheet({
             aria-label={`Close ${name}`}
             onClick={() => requestClose()}
           >
-            ×
+            <UiIcon name="close" size={20} />
           </button>
         </div>
       </div>
@@ -141,7 +142,7 @@ export default function ReadingSheet({
                     <strong>{s.name}</strong>
                     <small>{s.caption}</small>
                   </span>
-                  <span aria-hidden="true">→</span>
+                  <UiIcon name="arrowRight" />
                 </button>
               ))}
             </div>
@@ -182,7 +183,7 @@ export default function ReadingSheet({
                   <span className="continuation-label">
                     {continuations[id].label}
                   </span>
-                  <span aria-hidden="true">→</span>
+                  <UiIcon name="arrowRight" />
                 </button>
               </footer>
             )}

@@ -108,7 +108,28 @@ export default function useSoundscape(
   );
   const start = useCallback(
     async (arrivalCue = "press", automatic = false) => {
-      if (engine.current) return true;
+      if (engine.current?.context.state === "closed") stop(true);
+      if (engine.current) {
+        const current = engine.current;
+        // Retry the same unlocked context after iOS interruptions. A stale
+        // engine reference must never swallow the user's explicit sound tap.
+        const resume = tryAudioAutoplay(current.context, 1500, false);
+        current.activate().catch(() => {});
+        const running = await resume;
+        if (engine.current !== current || !live.current) return false;
+        changeStatus(running ? "on" : "ready");
+        if (running) {
+          current.prepare().catch(() => {});
+          if (intro.current.playing)
+            current.introduction({
+              playing: true,
+              position:
+                intro.current.position + performance.now() - intro.current.at,
+            });
+          if (arrivalCue) current.cue(arrivalCue);
+        }
+        return running;
+      }
       stop(true);
       let current,
         context,
@@ -140,8 +161,7 @@ export default function useSoundscape(
           ...focus.current,
           onError: () => {
             if (engine.current !== current) return;
-            stop(true);
-            changeStatus("error");
+            changeStatus("ready");
           },
         });
         engine.current = current;
@@ -154,14 +174,15 @@ export default function useSoundscape(
             statusRef.current === "starting"
           )
             return;
-          if (context.state !== "running") {
-            stop(true);
-            changeStatus("error");
-          }
+          changeStatus(context.state === "running" ? "on" : "ready");
         };
         // Resume in the actual click gesture, before awaiting any asset fetch.
-        if (!(await tryAudioAutoplay(context, 1500)))
-          throw new Error("Audio needs a tap to start.");
+        const resuming = tryAudioAutoplay(context, 1500, false);
+        current.activate().catch(() => {});
+        if (!(await resuming)) {
+          if (engine.current === current) changeStatus("ready");
+          return false;
+        }
         if (engine.current !== current || !live.current) return false;
         if (context.state !== "running" && !document.hidden)
           throw new Error("Audio needs another tap to start.");
@@ -214,7 +235,7 @@ export default function useSoundscape(
 
   const toggle = useCallback(() => {
     pulse("press");
-    if (engine.current && statusRef.current !== "error") {
+    if (engine.current && ["on", "starting"].includes(statusRef.current)) {
       setPreference("enabled", false);
       stop();
       changeStatus("off");
@@ -242,7 +263,9 @@ export default function useSoundscape(
       if (
         !autoStart ||
         !settings.current.enabled ||
-        engine.current ||
+        (engine.current?.context.state === "running" &&
+          (!engine.current.score.enabled ||
+            !engine.current.score.audio.paused)) ||
         event.target.closest?.("[data-audio-control],input,textarea") ||
         (!inIntro && event.target.closest?.("[data-quiet]"))
       )
@@ -277,12 +300,19 @@ export default function useSoundscape(
         } catch {}
       }
       const current = engine.current;
-      current?.setHidden(document.hidden).catch(() => {
-        if (engine.current === current) {
-          stop(true);
-          changeStatus("error");
-        }
-      });
+      if (!document.hidden && current) changeStatus("ready");
+      current
+        ?.setHidden(document.hidden)
+        .then(() => {
+          if (engine.current === current && !document.hidden)
+            changeStatus(current.context.state === "running" ? "on" : "ready");
+        })
+        .catch(() => {
+          if (engine.current === current) {
+            stop(true);
+            changeStatus("error");
+          }
+        });
     };
     const music = (event) => {
       focus.current.music = Boolean(event.detail);

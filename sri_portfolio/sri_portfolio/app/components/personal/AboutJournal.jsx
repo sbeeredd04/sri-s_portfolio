@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import Image from "next/image";
 import { useId, useRef, useState } from "react";
 import { bookArtwork } from "../../json/official-artwork.mjs";
@@ -206,7 +207,7 @@ function Chapter({ entry, index }) {
                   things we make.
                 </span>
                 <span className="aj-book-link">
-                  The book <span aria-hidden="true">↗</span>
+                  The book <UiIcon />
                 </span>
               </span>
             </a>

@@ -8,7 +8,13 @@ import {
   hapticPulse,
   soundPlaces,
 } from "../app/lib/sensory-design.mjs";
-import { SoundEngine } from "../app/lib/sound-engine.mjs";
+import { SoundEngine as BaseSoundEngine } from "../app/lib/sound-engine.mjs";
+import { FakeAudio } from "./helpers/fake-media.mjs";
+class SoundEngine extends BaseSoundEngine {
+  constructor(ctx, options) {
+    super(ctx, { ...options, createAudio: () => new FakeAudio() });
+  }
+}
 import { entranceNotes } from "../app/lib/entrance-sound.mjs";
 
 test("introduction is synchronized, resumes from its offset, and follows the music bus", () => {
@@ -175,6 +181,7 @@ function context() {
     sources: [],
     oscillators: [],
   };
+  ctx.createMediaElementSource = () => new Node();
   ctx.createGain =
     ctx.createConvolver =
     ctx.createBiquadFilter =
@@ -248,28 +255,29 @@ test("late asset loads cannot restore the sound of a place the visitor already l
   const loading = engine.prepare();
   engine.update({ place: "trail" });
   pending.get("/audio/lakeside.mp3")();
-  pending.get("/audio/shoreline.mp3")();
-  pending.get("/audio/world-thread.mp3")();
+  assert.equal(engine.score.track, "shoreline");
+  assert.equal(engine.score.audio.paused, false);
   await flush();
   pending.get("/audio/open-air.mp3")();
   await loading;
   await flush();
-  assert.equal(engine.loops.get("open-air").gain.gain.value, 0);
+  assert.equal(engine.loops.has("open-air"), false);
   assert.ok(engine.loops.get("lakeside").gain.gain.value > 0);
   assert.equal(engine.weather.gain.value, 1);
   engine.update({ reading: true });
   assert.ok(engine.weather.gain.value < 0.5);
   engine.update({ place: "planet", weather: { kind: "clear", rain: 0 } });
-  assert.equal(engine.loops.get("lakeside").gain.gain.value, 0);
+  assert.equal(engine.loops.has("lakeside"), false);
   assert.equal(
     engine.weather.gain.value,
     0,
     "thunder must fade once the storm passes",
   );
+  pending.get("/audio/open-air.mp3")();
   await engine.prepare();
   assert.equal(
     requests.filter((url) => url.includes("world-thread")).length,
-    1,
+    0,
   );
 });
 
@@ -290,10 +298,12 @@ test("muting during a load cannot create late audio sources", async (t) => {
       preferences: { ...sensoryDefaults, music: false },
     });
   const loading = engine.prepare();
+  const beforeMute = ctx.sources.length;
   engine.destroy(true);
   release();
   await loading;
-  assert.equal(ctx.sources.length, 0);
+  assert.equal(ctx.sources.length, beforeMute);
+  assert.ok(ctx.sources.every((source) => source.stopped));
   assert.equal(ctx.state, "closed");
   assert.equal(engine.abort.signal.aborted, true);
 });
@@ -416,17 +426,17 @@ test("late room scores stay silent after leaving and independent music mute wins
   t.after(() => engine.destroy(true));
   const load = engine.prepare();
   engine.update({ place: "room-about" });
-  for (const name of ["quiet-room", "rain-window", "paper-light"])
+  for (const name of ["quiet-room", "rain-window"])
     pending.get(`/audio/${name}.mp3`)();
   await flush();
-  pending.get("/audio/workbench.mp3")();
   await load;
   await flush();
-  assert.equal(engine.loops.get("workbench").gain.gain.value, 0);
-  assert.equal(engine.loops.get("quiet-room").gain.gain.value, 0);
-  assert.ok(engine.loops.get("paper-light").gain.gain.value > 0);
+  assert.equal(engine.loops.has("quiet-room"), false);
+  assert.equal(engine.score.track, "paper-light");
+  assert.ok(engine.score.gain.gain.value > 0);
   engine.update({ preferences: { ...sensoryDefaults, music: false } });
-  assert.equal(engine.loops.get("paper-light").gain.gain.value, 0);
+  assert.equal(engine.score.gain.gain.value, 0);
+  assert.equal(engine.score.audio.paused, true);
   assert.ok(engine.loops.get("rain-window").gain.gain.value > 0);
   engine.update({ music: true });
   assert.equal(engine.loops.get("rain-window").gain.gain.value, 0);
@@ -673,7 +683,8 @@ test("a failed streamed bed cannot silence working cues or a loaded score", asyn
   try {
     await engine.prepare();
     assert.equal(engine.disposed, false);
-    assert.ok(engine.loops.has(soundPlaces.planet.track || "somewhere-soft"));
+    assert.equal(engine.score.track, soundPlaces.planet.track);
+    assert.equal(engine.score.audio.paused, false);
     assert.ok(!engine.loaded.has(soundPlaces.planet.bed));
     engine.cue("press");
     assert.ok(ctx.oscillators.length > 0);
@@ -684,4 +695,27 @@ test("a failed streamed bed cannot silence working cues or a loaded score", asyn
     assert.equal(released, 1);
     globalThis.fetch = original;
   }
+});
+
+test("leaving a destination stops and releases its decoded ambience", async (t) => {
+  t.mock.method(globalThis, "fetch", async () => ({
+    ok: true,
+    arrayBuffer: async () => new ArrayBuffer(8),
+  }));
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  await engine.prepare();
+  const previous = engine.loops.get("open-air");
+  engine.update({ place: "trail" });
+  await engine.prepare();
+  assert.deepEqual([...engine.loops.keys()], ["lakeside"]);
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  assert.equal(previous.source.stopped, true);
+  assert.equal(previous.source.buffer, null);
+  assert.equal(previous.warmth.disconnected, true);
+  assert.equal(engine.loaded.size, 0);
 });

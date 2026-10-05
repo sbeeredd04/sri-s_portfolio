@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import ProjectDemo from "./ProjectDemo";
 import ProjectFieldbook from "./ProjectFieldbook";
 import WorkLink from "./WorkLink";
@@ -85,7 +86,7 @@ function IndexRow({ p, number, group, open, onToggle }) {
                 )}
                 {p.sourceUrl && (
                   <a href={p.sourceUrl} target="_blank" rel="noreferrer">
-                    {p.sourceLabel} <span aria-hidden="true">↗</span>
+                    {p.sourceLabel} <UiIcon />
                   </a>
                 )}
               </div>

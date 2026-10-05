@@ -4,7 +4,11 @@ import { stat } from "node:fs/promises";
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
 import { MeshoptDecoder } from "meshoptimizer";
-import { modelSource, startupAssets } from "../app/lib/world-assets.mjs";
+import {
+  modelSource,
+  startupAssets,
+  startupAssetsForTier,
+} from "../app/lib/world-assets.mjs";
 import { cloudSteps, cloudStepLimits } from "../app/lib/clouds.mjs";
 
 await MeshoptDecoder.ready;
@@ -90,4 +94,61 @@ test("first-view preloads and phone cloud work have explicit budgets", () => {
   );
   assert.ok(cloudSteps.low <= cloudStepLimits.low);
   assert.ok(cloudStepLimits.low < cloudStepLimits.medium);
+});
+
+test("phone surface maps preserve complete PBR sets at a bounded GPU size", async () => {
+  const { readdir } = await import("node:fs/promises");
+  const { default: sharp } = await import("sharp");
+  let beforePixels = 0,
+    afterPixels = 0;
+  const sets = await readdir("public/materials/mobile");
+  assert.ok(sets.length >= 18);
+  for (const set of sets) {
+    for (const map of ["color", "normal", "arm"]) {
+      const before = await sharp(
+        `public/materials/${set}/${map}.webp`,
+      ).metadata();
+      const after = await sharp(
+        `public/materials/mobile/${set}/${map}.webp`,
+      ).metadata();
+      assert.ok(after.width <= 512 && after.height <= 512);
+      assert.equal(before.width / before.height, after.width / after.height);
+      beforePixels += before.width * before.height;
+      afterPixels += after.width * after.height;
+    }
+  }
+  assert.ok(afterPixels <= beforePixels / 3);
+});
+
+test("lower phone bevel detail keeps transformed geometry footprints intact", async () => {
+  const { mergedBoxes } = await import("../app/lib/model-geometry.mjs");
+  const items = [
+    { size: [10, 3, 4], radius: 0.06, position: [4, 2, 8] },
+    {
+      size: [5, 1, 2],
+      radius: 0.02,
+      position: [-2, 4, 5],
+      rotation: [0, 0.7, 0],
+    },
+  ];
+  const full = mergedBoxes(items, 2),
+    phone = mergedBoxes(items, 1);
+  assert.ok(
+    phone.attributes.position.count < full.attributes.position.count * 0.5,
+  );
+  for (const edge of ["min", "max"])
+    for (const axis of ["x", "y", "z"])
+      assert.ok(
+        Math.abs(full.boundingBox[edge][axis] - phone.boundingBox[edge][axis]) <
+          0.005,
+      );
+  full.dispose();
+  phone.dispose();
+});
+
+test("phone preload matches the maps the phone actually renders", () => {
+  const urls = startupAssetsForTier("low");
+  assert.ok(urls.includes("/materials/mobile/grass/color.webp"));
+  assert.ok(!urls.includes("/materials/grass/color.webp"));
+  assert.deepEqual(startupAssetsForTier("high"), startupAssets);
 });

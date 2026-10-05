@@ -32,6 +32,7 @@ import VisitorWalker from "./VisitorWalker";
 import WalkingPaths from "./WalkingPaths";
 import CameraRig from "./CameraRig";
 import ScenePointer from "./ScenePointer";
+import UiIcon from "./UiIcon";
 import House from "./House";
 import SanFrancisco, { ApartmentBase } from "./SanFrancisco";
 import { APARTMENT_LEVEL } from "../../lib/studio-layout.mjs";
@@ -67,7 +68,7 @@ function DesktopStarBackdrop({ daylight }) {
 function FirstFrame({ onReady, surfaceRef, assembled }) {
   const sample = useRef(null);
   const done = useRef(false);
-  const pending = useProgress((s) => s.active);
+
   const state = useThree();
   useEffect(() => {
     if (process.env.NODE_ENV === "development") window.__sriScene = state;
@@ -81,7 +82,7 @@ function FirstFrame({ onReady, surfaceRef, assembled }) {
     if (done.current || document.hidden) return;
     sample.current = sampleSceneStartup(sample.current, {
       now: performance.now(),
-      pending: pending || !assembled,
+      pending: useProgress.getState().active || !assembled,
       surface: Boolean(surfaceRef.current),
       lighting: Boolean(state.scene.environment),
     });
@@ -94,6 +95,7 @@ function FirstFrame({ onReady, surfaceRef, assembled }) {
   return null;
 }
 function AnimationDriver({ animate }) {
+  const { fps } = useQuality();
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
     if (!animate) return;
@@ -102,7 +104,7 @@ function AnimationDriver({ animate }) {
     const tick = (now) => {
       // Leave GPU headroom on 120 Hz displays instead of rendering twice as
       // many ambient frames. Camera controls still request frames as needed.
-      if (now - previous >= 1000 / 60 - 0.5) {
+      if (now - previous >= 1000 / fps - 0.5) {
         invalidate();
         previous = now;
       }
@@ -110,7 +112,7 @@ function AnimationDriver({ animate }) {
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [animate, invalidate]);
+  }, [animate, invalidate, fps]);
   return null;
 }
 
@@ -147,18 +149,32 @@ function ConnectedWorld({
   const planet = useRef(),
     lastNear = useRef("");
   const districtGroups = useRef({});
+  // Globe labels only need horizon occlusion. Raycasting the 272k-triangle
+  // contact terrain for every label, every frame is wasted main-thread work.
+  const labelOccluder = useMemo(() => {
+    const object = new THREE.Object3D();
+    const sphere = new THREE.Sphere(new THREE.Vector3(), WORLD_RADIUS);
+    const point = new THREE.Vector3();
+    object.raycast = (raycaster, hits) => {
+      if (!raycaster.ray.intersectSphere(sphere, point)) return;
+      const distance = raycaster.ray.origin.distanceTo(point);
+      if (distance >= raycaster.near && distance <= raycaster.far)
+        hits.push({ distance, point: point.clone(), object });
+    };
+    return { current: object };
+  }, []);
   // Assemble one district at a time behind the entrance, after the actual
   // sky lighting is ready. A single giant mount monopolized the main thread
   // and compiled materials twice (before and after the environment arrived).
   const [assembly, setAssembly] = useState(0);
   const assemblyFrame = useRef(0);
-  const pendingAssets = useProgress((s) => s.active);
+
   useFrame(({ scene }) => {
     if (
       assembly >= regions.length + 2 ||
       !planet.current ||
       !scene.environment ||
-      pendingAssets
+      useProgress.getState().active
     )
       return;
     if (++assemblyFrame.current < 3) return;
@@ -171,10 +187,6 @@ function ConnectedWorld({
     });
     setAssembly((value) => Math.min(value + 1, regions.length + 2));
   });
-  useEffect(() => {
-    if (assembly === regions.length + 2 && !pendingAssets)
-      worldLoading.report({ assembly, total: regions.length + 2 });
-  }, [assembly, pendingAssets]);
   const cameraDirection = useMemo(() => new THREE.Vector3(), []);
   const viewportWidth = useThree((s) => s.size.width);
   const viewportHeight = useThree((s) => s.size.height);
@@ -379,7 +391,7 @@ function ConnectedWorld({
                   0,
                 ]}
                 center
-                occlude={planet.current ? [planet] : undefined}
+                occlude={[labelOccluder]}
                 zIndexRange={[5, 1]}
               >
                 <button
@@ -412,7 +424,7 @@ function ConnectedWorld({
                       }[region.id]
                     }
                   </span>
-                  <span aria-hidden="true">↗</span>
+                  <UiIcon />
                 </button>
               </Html>
             )}

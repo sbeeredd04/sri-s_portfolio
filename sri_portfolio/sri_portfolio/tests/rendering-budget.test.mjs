@@ -121,7 +121,10 @@ test("grass stays within a close-view triangle budget, including the near layer"
 
 test("frame pressure distinguishes isolated stalls from sustained overload", () => {
   const sample = (frames) =>
-    frames.reduce(sampleFramePressure, { elapsed: 0, slow: 0 });
+    frames.reduce((sample, dt) => sampleFramePressure(sample, dt), {
+      elapsed: 0,
+      slow: 0,
+    });
   for (const fps of [30, 4, 0.5]) {
     const s = sample(Array(180).fill(1 / fps));
     assert.ok(s.slow / s.elapsed > 0.7, `${fps}fps must trigger recovery`);
@@ -158,4 +161,15 @@ test("automatic rendering keeps at least one pixel per CSS pixel", () => {
   for (const tier of ["low", "medium", "high"])
     for (const ratio of [1, 1.25, 2, 3])
       assert.ok(dprSteps(tier, ratio).every((dpr) => dpr >= 1));
+});
+
+test("30 fps mobile pacing does not trigger the overload detector", () => {
+  assert.equal(tierSettings.low.fps, 30);
+  assert.deepEqual(dprSteps("low", 3), [1]);
+  const run = (dt) =>
+    Array(240)
+      .fill(dt)
+      .reduce((s, d) => sampleFramePressure(s, d, 30), { elapsed: 0, slow: 0 });
+  assert.equal(run(1 / 30).slow, 0);
+  assert.ok(run(1 / 12).slow / run(1 / 12).elapsed > 0.7);
 });

@@ -38,6 +38,10 @@ test("first mouse, touch, pen and keyboard interactions start on browser-eligibl
   emit("keydown", { key: "Escape" });
   emit("pointerdown", { pointerType: "mouse", isTrusted: false });
   assert.equal(starts, 5);
+  emit("touchend", {});
+  emit("click", {});
+  emit("click", { isTrusted: false });
+  assert.equal(starts, 7);
   cleanup();
   assert.equal(handlers.size, 0);
 });
@@ -116,4 +120,23 @@ test("playback session gracefully tolerates unsupported browsers and preserves o
   other.audioSession.type = "play-and-record";
   release();
   assert.equal(other.audioSession.type, "play-and-record");
+});
+
+test("a pending explicit resume keeps its context for the next Safari gesture", async () => {
+  let resumes = 0;
+  const context = {
+    state: "interrupted",
+    resume() {
+      if (++resumes === 1) return new Promise(() => {});
+      this.state = "running";
+      return Promise.resolve();
+    },
+    close() {
+      this.state = "closed";
+      return Promise.resolve();
+    },
+  };
+  assert.equal(await tryAudioAutoplay(context, 5, false), false);
+  assert.equal(context.state, "interrupted");
+  assert.equal(await tryAudioAutoplay(context, 5, false), true);
 });

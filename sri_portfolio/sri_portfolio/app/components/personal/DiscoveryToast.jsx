@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { useEffect, useRef, useState } from "react";
 import { discoveries } from "../../lib/discoveries.mjs";
 export default function DiscoveryToast({ onOpen }) {
@@ -29,7 +30,7 @@ export default function DiscoveryToast({ onOpen }) {
           onOpen();
         }}
       >
-        View ↗
+        View <UiIcon />
       </button>
       <button aria-label="Dismiss discovery" onClick={() => setItem(null)}>
         ×

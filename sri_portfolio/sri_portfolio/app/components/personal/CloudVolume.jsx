@@ -70,7 +70,13 @@ void main() {
       if(firstCloud<0.) firstCloud=travel;
       // Two spaced light probes integrate shadow through the bank, retaining
       // bright rims and cool interiors rather than whitening every sample.
+      #ifdef MOBILE_CLOUDS
+      // A six-slice volume retains height, wind and weather. Approximate local
+      // shadowing instead of up to 28 extra density probes per screen pixel.
+      float opticalDepth=d*12.;
+      #else
       float opticalDepth=density(p+uSun*8.)*8.+density(p+uSun*24.)*16.;
+      #endif
       float light=exp(-opticalDepth*.22);
       float height=clamp((length(p)-${cloudLayer.base.toFixed(1)})/${(cloudLayer.top - cloudLayer.base).toFixed(1)},0.,1.);
       vec3 ambient=mix(vec3(.013,.019,.034),uHorizon*.24+vec3(.055,.075,.105),uDay);
@@ -149,6 +155,8 @@ export default function CloudVolume({ animate }) {
     <mesh userData={{ sky: true }} renderOrder={20} raycast={() => null}>
       <sphereGeometry args={[cloudLayer.top, 64, 40]} />
       <shaderMaterial
+        key={tier === "low" ? "mobile" : "full"}
+        defines={tier === "low" ? { MOBILE_CLOUDS: 1 } : {}}
         uniforms={uniforms}
         side={THREE.BackSide}
         transparent

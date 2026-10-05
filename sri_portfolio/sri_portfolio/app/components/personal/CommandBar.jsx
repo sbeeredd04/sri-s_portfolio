@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { searchSpotlight } from "../../lib/spotlight.mjs";
 import { roomPageHref } from "../../lib/reading-rooms.mjs";
 import { dispatchCommandAction } from "./command-events";
+import UiIcon from "./UiIcon";
 import RoomPreview from "./RoomPreview";
 
 const typing = (target) =>
@@ -79,18 +80,7 @@ export default function CommandBar({ biome, onOpenChange }) {
         aria-keyshortcuts="Meta+K Control+K /"
         onClick={() => setOpen(true)}
       >
-        <svg
-          width="19"
-          height="19"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          aria-hidden="true"
-        >
-          <circle cx="10.5" cy="10.5" r="6.5" />
-          <path d="m16 16 5 5" />
-        </svg>
+        <UiIcon name="search" size={20} />
         <span>Search</span>
       </button>
       <dialog
@@ -114,7 +104,7 @@ export default function CommandBar({ biome, onOpenChange }) {
         }}
       >
         <div className="spotlight-search">
-          <span aria-hidden="true">⌕</span>
+          <UiIcon name="search" size={20} />
           <input
             ref={input}
             role="combobox"
@@ -171,13 +161,13 @@ export default function CommandBar({ biome, onOpenChange }) {
                   onClick={() => activate(entry)}
                 >
                   <span className="spotlight-result-icon" aria-hidden="true">
-                    {entry.kind === "Page" ? "▤" : "↗"}
+                    <UiIcon name={entry.kind === "Page" ? "page" : "arrow"} />
                   </span>
                   <span>
                     {entry.label}
                     <small>{entry.kind}</small>
                   </span>
-                  <span aria-hidden="true">↵</span>
+                  <UiIcon name="enter" />
                 </button>
               ))}
             </div>
@@ -193,7 +183,10 @@ export default function CommandBar({ biome, onOpenChange }) {
                 <RoomPreview id={choice.room} />
               ) : (
                 <div className="spotlight-place-mark" aria-hidden="true">
-                  {choice.kind === "Place" ? "◎" : "↗"}
+                  <UiIcon
+                    name={choice.kind === "Place" ? "globe" : "arrow"}
+                    size={28}
+                  />
                 </div>
               )}
               <p className="spotlight-kind">{choice.kind}</p>
@@ -206,10 +199,12 @@ export default function CommandBar({ biome, onOpenChange }) {
                     : choice.kind === "Page"
                       ? "Open page"
                       : "Go there"}{" "}
-                  <span aria-hidden="true">↗</span>
+                  <UiIcon />
                 </button>
                 {choice.room && (
-                  <a href={roomPageHref(choice.room)}>Open full page ↗</a>
+                  <a href={roomPageHref(choice.room)}>
+                    Open full page <UiIcon />
+                  </a>
                 )}
               </div>
             </div>
@@ -217,7 +212,9 @@ export default function CommandBar({ biome, onOpenChange }) {
         </div>
         <footer>
           <span>↑ ↓ to browse · Enter to open</span>
-          <a href="/story">Read the whole story ↗</a>
+          <a href="/story">
+            Read the whole story <UiIcon />
+          </a>
         </footer>
       </dialog>
     </div>

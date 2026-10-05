@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { useEffect, useRef, useState } from "react";
 import HarnessFigure from "./HarnessFigure";
 import { readingMinutes } from "../../lib/reading-time.mjs";
@@ -65,7 +66,7 @@ function NoteBlock({ block, onCue }) {
               {" "}
               ·{" "}
               <a href={block.source}>
-                Source <span aria-hidden="true">↗</span>
+                Source <UiIcon />
               </a>
             </>
           )}
@@ -101,7 +102,7 @@ function NoteBlock({ block, onCue }) {
               {" "}
               ·{" "}
               <a href={block.source}>
-                Source <span aria-hidden="true">↗</span>
+                Source <UiIcon />
               </a>
             </>
           )}
@@ -201,7 +202,7 @@ export default function FieldnoteArticle({ note }) {
           {chapterLinks}
         </nav>
         <a className="fn-world-link" href="/?room=writing">
-          Back to the world ↗
+          Back to the world <UiIcon />
         </a>
       </aside>
       <div className="fn-story-tools">
@@ -310,7 +311,7 @@ export default function FieldnoteArticle({ note }) {
                   {note.sources.map((source) => (
                     <li key={source.id} id={`source-${source.id}`}>
                       <a href={source.href} target="_blank" rel="noreferrer">
-                        {source.title} ↗
+                        {source.title} <UiIcon />
                       </a>
                       <span>{source.publisher}</span>
                     </li>
@@ -330,10 +331,10 @@ export default function FieldnoteArticle({ note }) {
                     : "Thanks for spending a little time here."}
               </p>
               <a href="/rooms/writing">← The writing room</a>
-              <a href="/rooms/contact">Start a conversation ↗</a>
+              <a href="/rooms/contact">Start a conversation <UiIcon /></a>
               {note.linkedIn && (
                 <a href={note.linkedIn} target="_blank" rel="noreferrer">
-                  Continue on LinkedIn ↗
+                  Continue on LinkedIn <UiIcon />
                 </a>
               )}
             </footer>

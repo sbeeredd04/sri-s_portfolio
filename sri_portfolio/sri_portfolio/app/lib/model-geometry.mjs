@@ -2,20 +2,20 @@ import { Shape, Matrix4, Quaternion, Euler, Vector3 } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 
-export function roundedBox(size, radius = 0.06) {
+export function roundedBox(size, radius = 0.06, segments = 2) {
   const corner = Math.max(
     0.0001,
     Math.min(radius, ...size.map((n) => n / 2 - 0.0001)),
   );
-  return new RoundedBoxGeometry(...size, 2, corner);
+  return new RoundedBoxGeometry(...size, segments, corner);
 }
 
-export function mergedBoxes(items) {
+export function mergedBoxes(items, segments = 2) {
   const matrix = new Matrix4(),
     rotation = new Quaternion();
   const parts = items.map(
     ({ size, radius, position = [0, 0, 0], rotation: angles = [0, 0, 0] }) => {
-      const geometry = roundedBox(size, radius);
+      const geometry = roundedBox(size, radius, segments);
       rotation.setFromEuler(new Euler(...angles));
       matrix.compose(new Vector3(...position), rotation, new Vector3(1, 1, 1));
       geometry.applyMatrix4(matrix);

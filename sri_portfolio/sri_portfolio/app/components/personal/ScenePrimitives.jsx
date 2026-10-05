@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { roundedBox, mergedBoxes } from "../../lib/model-geometry.mjs";
+import { useQuality } from "./Quality";
 import * as THREE from "three";
 export function Box({
   position = [0, 0, 0],
@@ -14,10 +15,12 @@ export function Box({
   rotation = [0, 0, 0],
   ...props
 }) {
+  const { tier } = useQuality();
+  const segments = tier === "low" ? 1 : 2;
   const [width, height, depth] = size;
   const geometry = useMemo(
-    () => roundedBox([width, height, depth], radius),
-    [width, height, depth, radius],
+    () => roundedBox([width, height, depth], radius, segments),
+    [width, height, depth, radius, segments],
   );
   useEffect(() => () => geometry.dispose(), [geometry]);
   return (
@@ -49,7 +52,11 @@ export function Boxes({
   roughness = 0.65,
   metalness = 0,
 }) {
-  const geometry = useMemo(() => mergedBoxes(items), [items]);
+  const { tier } = useQuality();
+  const geometry = useMemo(
+    () => mergedBoxes(items, tier === "low" ? 1 : 2),
+    [items, tier],
+  );
   useEffect(() => () => geometry.dispose(), [geometry]);
   return (
     <mesh geometry={geometry} castShadow receiveShadow>

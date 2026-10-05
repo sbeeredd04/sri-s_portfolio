@@ -56,7 +56,10 @@ import {
 } from "../../lib/world-return.mjs";
 import { initialTier } from "../../lib/device-tier.mjs";
 import { worldLoading } from "../../lib/world-loading.mjs";
-import { createAssetPreloader } from "../../lib/world-assets.mjs";
+import {
+  createAssetPreloader,
+  startupAssetsForTier,
+} from "../../lib/world-assets.mjs";
 function footEntry(biome, stop) {
   if (
     biome === "future" &&
@@ -67,7 +70,18 @@ function footEntry(biome, stop) {
   return biome === "studio" && stop !== "bay" ? "roam:roof" : "roam";
 }
 let terrainPreparation;
-const preloadAssets = createAssetPreloader({ onProgress: worldLoading.report });
+const assetPreloaders = new Map();
+function preloadAssets(tier) {
+  if (!assetPreloaders.has(tier))
+    assetPreloaders.set(
+      tier,
+      createAssetPreloader({
+        assets: startupAssetsForTier(tier),
+        onProgress: worldLoading.report,
+      }),
+    );
+  return assetPreloaders.get(tier)();
+}
 function prepareWorldTerrain() {
   return (terrainPreparation ||= (async () => {
     const { prepareTerrainInBackground } =
@@ -366,9 +380,9 @@ export default function ExperienceShell() {
     setHint("");
   }, []);
   const preloadScene = useCallback(() => {
-    preloadAssets();
+    preloadAssets(tierCeiling || initialTier());
     prepareWorldTerrain().catch(graphicsUnavailable);
-  }, [graphicsUnavailable]);
+  }, [graphicsUnavailable, tierCeiling]);
   useEffect(() => {
     const mq = matchMedia("(prefers-reduced-motion: reduce)");
     const update = () =>
@@ -643,7 +657,7 @@ export default function ExperienceShell() {
           <button onClick={() => show("work")}>Work</button>
           <a href="/resume">Résumé</a>
           <button className="index-button" onClick={() => show("index")}>
-            Index <span aria-hidden="true">≡</span>
+            Index <UiIcon name="menu" />
           </button>
         </nav>
       </header>
@@ -1013,7 +1027,7 @@ export default function ExperienceShell() {
                           className="exhibit-back"
                           onClick={() => explore("arrival")}
                         >
-                          <span aria-hidden="true">←</span> The Foundry
+                          <UiIcon name="arrowLeft" /> The Foundry
                         </button>
                         <p className="exhibit-invitation">Pick up an idea.</p>
                         <div
@@ -1129,7 +1143,7 @@ export default function ExperienceShell() {
                                 )
                               }
                             >
-                              Next show <span aria-hidden="true">→</span>
+                              Next show <UiIcon name="arrowRight" />
                             </button>
                           )}
                         {biome === "court" &&
@@ -1183,7 +1197,7 @@ export default function ExperienceShell() {
             <SoundPreferences audio={audio} />
             <details className="view-preferences">
               <summary>
-                View &amp; motion <span aria-hidden="true">⌄</span>
+                View &amp; motion <UiIcon name="chevronDown" />
               </summary>
               <div className="view-options">
                 <div className="light-mode-control">
@@ -1255,7 +1269,7 @@ export default function ExperienceShell() {
                     if (biome === "studio") setRoomReset((n) => n + 1);
                   }}
                 >
-                  Reset this view ↺
+                  Reset this view <UiIcon name="replay" />
                 </button>
               </div>
             </details>
@@ -1269,11 +1283,7 @@ export default function ExperienceShell() {
           onClick={() => travel("planet")}
           aria-label="See the whole world"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="8" />
-            <ellipse cx="12" cy="12" rx="3.5" ry="8" />
-            <path d="M4 12h16" />
-          </svg>
+          <UiIcon name="globe" size={24} />
           <span>World</span>
         </button>
         <CommandBar biome={biome} onOpenChange={setSearchOpen} />
@@ -1301,7 +1311,7 @@ export default function ExperienceShell() {
           aria-label={`Continue to ${next.label}`}
         >
           <span>{chapter ? "Keep exploring" : "Come on in"}</span>
-          <b aria-hidden="true">→</b>
+          <UiIcon name="arrowRight" size={24} />
         </button>
       </footer>
       <button

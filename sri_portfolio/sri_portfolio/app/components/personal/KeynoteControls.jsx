@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { keynoteSlides } from "../../lib/keynote.mjs";
 export default function KeynoteControls({ index, onChange, onOpen }) {
   const slide = keynoteSlides[index];
@@ -20,7 +21,7 @@ export default function KeynoteControls({ index, onChange, onOpen }) {
         >
           ←
         </button>
-        <button onClick={() => onOpen(slide.id)}>Read the project ↗</button>
+        <button onClick={() => onOpen(slide.id)}>Read the project <UiIcon /></button>
         <button
           aria-label="Next project slide"
           onClick={() => onChange((index + 1) % keynoteSlides.length)}

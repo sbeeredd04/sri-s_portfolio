@@ -7,10 +7,12 @@ export function listenForAudioActivation(target, start) {
       (event.type === "pointerdown" && event.pointerType === "mouse") ||
       (event.type === "pointerup" &&
         ["touch", "pen"].includes(event.pointerType)) ||
+      event.type === "click" ||
+      event.type === "touchend" ||
       (event.type === "keydown" && ["Enter", " "].includes(event.key));
     if (eligible) start(event);
   };
-  const events = ["pointerdown", "pointerup", "keydown"];
+  const events = ["pointerdown", "pointerup", "touchend", "click", "keydown"];
   // Capture also reaches interactions whose scene handler stops propagation.
   for (const name of events) target.addEventListener(name, activate, true);
   return () => {
@@ -19,7 +21,11 @@ export function listenForAudioActivation(target, start) {
 }
 // A newly created context can be suspended briefly even when autoplay is
 // permitted. Give resume() a bounded chance; blocked contexts never linger.
-export async function tryAudioAutoplay(context, timeoutMs = 600) {
+export async function tryAudioAutoplay(
+  context,
+  timeoutMs = 600,
+  closeOnFailure = true,
+) {
   let timer;
   try {
     const running = await Promise.race([
@@ -34,7 +40,7 @@ export async function tryAudioAutoplay(context, timeoutMs = 600) {
   } finally {
     clearTimeout(timer);
   }
-  await context.close().catch(() => {});
+  if (closeOnFailure) await context.close().catch(() => {});
   return false;
 }
 

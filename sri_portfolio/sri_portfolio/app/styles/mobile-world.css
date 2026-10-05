@@ -438,3 +438,20 @@
     right: auto;
   }
 }
+
+/* All navigation symbols use the same stroke artwork, including on iOS. */
+.ui-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+.planet-label.planet-label-compact > .ui-icon {
+  display: none;
+}
+@media (pointer: coarse) {
+  /* Scrolling panels do not need to re-blur the animated WebGL canvas. */
+  .experience-shell
+    :is(.place-tools, .world-settings > div, .spotlight, .window-panel) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

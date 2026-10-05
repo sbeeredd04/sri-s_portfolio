@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 
 export function linkFor(p) {
   if (!p.url) return null;
@@ -18,7 +19,7 @@ export default function WorkLink({ p, className }) {
     <a className={className} href={p.url} target="_blank" rel="noreferrer">
       {label}
       <span className="sr-only"> for {p.name}</span>{" "}
-      <span aria-hidden="true">↗</span>
+      <UiIcon />
     </a>
   );
 }

@@ -1,3 +1,4 @@
+import UiIcon from "./UiIcon";
 import ContactComposer from "./ContactComposer";
 import { history, projectCollections, projects } from "../../json/personal";
 
@@ -83,7 +84,7 @@ function Pinboard() {
               <span className="postcard-line">{card.line}</span>
               <span className="postcard-detail">{card.detail}</span>
               <span className="postcard-go" aria-hidden="true">
-                {card.external ? "↗" : "→"}
+                <UiIcon name={card.external ? "arrow" : "arrowRight"} />
               </span>
               {card.external && (
                 <span className="sr-only"> (opens in a new tab)</span>
@@ -123,7 +124,7 @@ function Correspondence() {
           target="_blank"
           rel="noreferrer"
         >
-          LinkedIn <span aria-hidden="true">↗</span>
+          LinkedIn <UiIcon />
         </a>
       </p>
     </div>

@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { useId, useRef, useState } from "react";
 import FieldnoteDoodle from "./FieldnoteDoodle";
 import {
@@ -79,7 +80,7 @@ export default function WritingRoom() {
                 <span>{note.category}</span>
                 <strong>{note.title}</strong>
                 <p>{note.summary}</p>
-                <small>{note.dateLabel} · Read on LinkedIn ↗</small>
+                <small>{note.dateLabel} · Read on LinkedIn <UiIcon /></small>
               </a>
             </li>
           ))}
@@ -235,7 +236,7 @@ export default function WritingRoom() {
           target="_blank"
           rel="noreferrer"
         >
-          Find me on LinkedIn <span aria-hidden="true">↗</span>
+          Find me on LinkedIn <UiIcon />
         </a>
       </footer>
       {opening && <div className="fn-page-turn" aria-hidden="true" />}
