@@ -228,7 +228,7 @@ export default function ExperienceShell() {
       sheet,
       roomDetail,
       weather,
-      { autoStart: true, introAutoplay: !returning },
+      { autoStart: true },
     ),
     returnFocus = useRef(null),
     chapterGuide = useRef(null),

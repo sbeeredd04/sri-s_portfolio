@@ -2,6 +2,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SoundEngine } from "../../lib/sound-engine.mjs";
 import {
+  listenForAudioActivation,
+  tryAudioAutoplay,
+} from "../../lib/audio-activation.mjs";
+import {
   sensoryDefaults,
   sensoryPreferences,
   hapticPulse,
@@ -21,7 +25,7 @@ export default function useSoundscape(
   section = null,
   detail = null,
   weather = null,
-  { autoStart = true, introAutoplay = false } = {},
+  { autoStart = true } = {},
 ) {
   const reading = Boolean(section);
   const destination = soundDestination(biome, section, detail);
@@ -112,9 +116,13 @@ export default function useSoundscape(
         context = new AudioContext();
         // A blocked autoplay attempt must not leave resume() pending forever or
         // make the UI claim it is playing. The first gesture retries normally.
-        if (automatic && context.state !== "running") {
-          await context.close();
-          return false;
+        if (automatic) {
+          if (!(await tryAudioAutoplay(context))) return false;
+          // A gesture, mute, or navigation may have won while autoplay waited.
+          if (!live.current || !settings.current.enabled || engine.current) {
+            await context.close();
+            return false;
+          }
         }
         current = new SoundEngine(context, {
           place: place.current,
@@ -210,7 +218,9 @@ export default function useSoundscape(
       setPreferences(saved);
     } catch {}
     changeStatus(settings.current.enabled ? "ready" : "off");
-    if (introAutoplay && settings.current.enabled) start(null, true);
+    // Try on every entry route, including a return from a full reading page.
+    // A saved mute wins; a browser-blocked attempt waits for activation below.
+    if (autoStart && settings.current.enabled) start(null, true);
     const beginOnGesture = (event) => {
       const inIntro = Boolean(event.target.closest?.(".world-loader"));
       if (
@@ -218,14 +228,12 @@ export default function useSoundscape(
         !settings.current.enabled ||
         engine.current ||
         event.target.closest?.("[data-audio-control],input,textarea") ||
-        (!inIntro && event.target.closest?.("[data-quiet]")) ||
-        (event.type === "keydown" && !["Enter", " "].includes(event.key))
+        (!inIntro && event.target.closest?.("[data-quiet]"))
       )
         return;
       start(inIntro ? null : "press");
     };
-    window.addEventListener("pointerdown", beginOnGesture);
-    window.addEventListener("keydown", beginOnGesture);
+    const removeActivation = listenForAudioActivation(window, beginOnGesture);
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     const coarse = matchMedia("(any-pointer: coarse)");
     const device = () => {
@@ -274,8 +282,7 @@ export default function useSoundscape(
     window.addEventListener("pagehide", pagehide);
     return () => {
       live.current = false;
-      window.removeEventListener("pointerdown", beginOnGesture);
-      window.removeEventListener("keydown", beginOnGesture);
+      removeActivation();
       motion.removeEventListener("change", device);
       coarse.removeEventListener("change", device);
       document.removeEventListener("visibilitychange", visibility);
@@ -286,7 +293,7 @@ export default function useSoundscape(
       } catch {}
       stop(true);
     };
-  }, [stop, changeStatus, start, autoStart, introAutoplay]);
+  }, [stop, changeStatus, start, autoStart]);
   useEffect(() => {
     engine.current?.update({ place: destination, ...focus.current });
   }, [destination, reading]);
