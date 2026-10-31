@@ -70,6 +70,18 @@ export function hedges() {
   return pieces;
 }
 
+// Shrub 02's measured source bounds; conservative circular footprint remains
+// inside each former 2.1 x 0.8m hedge, even after turning the plants.
+export const borderShrub = { width: 1.312, depth: 1.641, scale: 0.34 };
+export function borderPlants() {
+  return hedges().flatMap((h, row) => [-0.65, 0, 0.65].map((offset, i) => ({
+    x: h.x + Math.cos(h.yaw) * offset,
+    z: h.z - Math.sin(h.yaw) * offset,
+    yaw: h.yaw + (row * 2.399 + i * 0.7),
+    scale: borderShrub.scale * (0.92 + ((row + i) % 3) * 0.04),
+  })));
+}
+
 export const trees = [
   [-9.5, -6.5, 1.1],
   [9.2, -5.4, 1.0],
@@ -142,8 +154,9 @@ export const quarterViews = [
     target: [lookoutVista.focus[0], 1.2, lookoutVista.focus[2]],
     fov: 48,
     portrait: {
-      position: [0.9, 3.5, lookout.bench - 11],
-      target: lookoutVista.focus,
+      position: [0.9, 5.5, lookout.bench - 12],
+      // Frame the near seating above phone controls, with the sea beyond.
+      target: [0, 0.7, lookout.bench + 3],
       fov: 52,
     },
     content: "writing",

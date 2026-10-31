@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "id": "coastal-bench",
+  "source": "Original Sri portfolio model; scripts/blender/build_coastal_bench.py",
+  "license": "Project-owned original geometry",
+  "profile": "interactive",
+  "units": "metres",
+  "nodes": [
+    "coastal_bench",
+    "bench_visual",
+    "seat_anchor"
+  ],
+  "anchors": [
+    "seat_anchor"
+  ],
+  "parents": {
+    "bench_visual": "coastal_bench",
+    "seat_anchor": "coastal_bench"
+  },
+  "extras": {
+    "coastal_bench": {
+      "soundProfile": "wood-metal",
+      "seatHeight": 0.46
+    }
+  },
+  "footprint": {
+    "width": 1.8,
+    "depth": 0.67
+  },
+  "front": "+Z"
+}

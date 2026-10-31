@@ -335,6 +335,10 @@ def export_glb(path: Path, quality: int, compression: str) -> None:
 def main() -> None:
     args = parse_args()
     entry = load_entry(args)
+    # This pipeline flattens hierarchy and discards rig/behavior attributes.
+    # Reject semantic assets before loading or mutating their source scene.
+    from export_profiles import require_static_profile
+    require_static_profile(entry.get("export_profile", "static"))
     out_name = entry["out"]
     print(f"== {args.id} -> {out_name}")
     src = import_source(args.id)

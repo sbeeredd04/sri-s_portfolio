@@ -1,0 +1,74 @@
+{
+  "tool": "rea-agents@4.0.1",
+  "evidence_id": "ev_9db863aba5b37b94593b12f8f8069102c8ad3fab565b723f81e6ceaf828897de",
+  "source_commit": "41046b57eeed8d156d9c3fd7fa259900baef7816",
+  "subject": {
+    "name": "sources",
+    "digest": {
+      "sha256": "2ac295b2c996b1469560fcf86a752d6ba26305853cfb49d2502e0512c5ffc2af"
+    },
+    "format": "directory",
+    "architecture": null,
+    "local_path": "/private/tmp/sri-world-research/bruno/sources"
+  },
+  "statistics": {
+    "relevant_files": 127,
+    "nested_asar_containers": 0,
+    "text_bytes_read": 1057244,
+    "invalid_utf8_files": 0,
+    "parsed_javascript_files": 126,
+    "visited_ast_nodes": 145329,
+    "findings": 2327,
+    "modules": 0,
+    "parse_failures": 0,
+    "truncated_scopes": 0
+  },
+  "graph_node_count": 1081,
+  "graph_edge_count": 2581,
+  "graph_coverage": {
+    "status": "complete",
+    "truncated": false,
+    "omitted_count": 0,
+    "limits": []
+  },
+  "limitations": [
+    "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+    "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+    "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+    "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+    "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+  ],
+  "scope": "Static source analysis; no deployed-bundle identity comparison or runtime capture by REA. UI exploration performed separately through CUA.",
+  "weather_trace": {
+    "evidence_id": "ev_e38fe4c2816f09bce245b403cc4d9beb290b5e67c34f7c3dafc84d23800afc4b",
+    "seed": {
+      "kind": "module",
+      "value": "Game/Weather.js",
+      "match": null,
+      "case_sensitive": false
+    },
+    "direction": "outgoing",
+    "seed_matches": [
+      {
+        "node_id": "jag_node_759e2b62570ad753cb4df82c7c8b82dcf5cbc6a8ef83d6e3536c32c5ec31d173",
+        "kind": "javascript-module",
+        "basis": "label",
+        "field": "observations[0].label"
+      },
+      {
+        "node_id": "jag_node_f1ea9a1a030453aa0a90a2c1f7b106a1b4e0332b7f03632f0b3133ec5d271ec3",
+        "kind": "javascript-asset",
+        "basis": "label",
+        "field": "observations[0].label"
+      }
+    ],
+    "node_count": 1041,
+    "edge_count": 2406,
+    "limitations": [
+      "Artifact identity is unavailable for this observation.",
+      "A trace reports graph relationships, not proof that code executed or that a feature is reachable in every state.",
+      "Native handoffs never open a binary or invoke a provider automatically; snapshot reuse remains provider/profile/target exact.",
+      "Static, native, passive-runtime, inferred, and unknown facts retain their original authority in the returned graph."
+    ]
+  }
+}

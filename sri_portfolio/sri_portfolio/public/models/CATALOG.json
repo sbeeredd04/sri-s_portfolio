@@ -198,7 +198,7 @@
    "source_triangles": 6898,
    "bytes": 218852,
    "dimensions_m": {
-    "width_x": 2.0,
+    "width_x": 2,
     "depth_z": 0.947,
     "height_y": 0.788
    },
@@ -1546,7 +1546,7 @@
    "name": "Fire Hydrant",
    "group": "street",
    "source": "https://polyhaven.com/a/fire_hydrant",
-   "author": "Gon\u00e7alo Fel\u00edcio (All)",
+   "author": "Gonçalo Felício (All)",
    "license": "CC0 1.0 (public domain) via Poly Haven",
    "triangles": 4000,
    "lods": [
@@ -1626,6 +1626,60 @@
    ],
    "foliage": null,
    "use": "Street trash can / bin"
+  },
+  {
+   "file": "models/coastal-bench.glb",
+   "name": "Coastal slatted bench",
+   "group": "outdoor",
+   "source": "resources/authored/coastal-bench.blend",
+   "author": "Original Sri portfolio asset",
+   "license": "Project-owned original geometry",
+   "triangles": 5840,
+   "bytes": 428404,
+   "dimensions_m": {
+    "width_x": 1.7999999523162842,
+    "height_y": 0.9085666835308075,
+    "depth_z": 0.6663504987955093
+   },
+   "nodes": [
+    "bench_visual",
+    "seat_anchor",
+    "coastal_bench"
+   ],
+   "materials": [
+    {
+     "name": "oiled_ash_0",
+     "alphaMode": "OPAQUE",
+     "maps": []
+    },
+    {
+     "name": "oiled_ash_1",
+     "alphaMode": "OPAQUE",
+     "maps": []
+    },
+    {
+     "name": "oiled_ash_2",
+     "alphaMode": "OPAQUE",
+     "maps": []
+    },
+    {
+     "name": "oiled_ash_3",
+     "alphaMode": "OPAQUE",
+     "maps": []
+    },
+    {
+     "name": "graphite_powder_coat",
+     "alphaMode": "OPAQUE",
+     "maps": []
+    },
+    {
+     "name": "brushed_stainless",
+     "alphaMode": "OPAQUE",
+     "maps": []
+    }
+   ],
+   "use": "Fieldnotes sea lookout seating",
+   "export_profile": "interactive"
   }
  ],
  "sculpted": [
@@ -1910,8 +1964,8 @@
     "arm": "linear, R=AO G=rough B=metal (half res)"
    },
    "tile_size_m": [
-    2.0,
-    2.0
+    2,
+    2
    ],
    "tile_size_note": "Poly Haven measured real-world size",
    "bytes": 776540,
@@ -1948,8 +2002,8 @@
     "arm": "linear, R=AO G=rough B=metal (half res)"
    },
    "tile_size_m": [
-    2.0,
-    2.0
+    2,
+    2
    ],
    "tile_size_note": "Poly Haven measured real-world size",
    "bytes": 722594,
@@ -1967,8 +2021,8 @@
     "arm": "linear, R=AO G=rough B=metal (half res)"
    },
    "tile_size_m": [
-    3.0,
-    3.0
+    3,
+    3
    ],
    "tile_size_note": "estimate: ambientCG publishes no scale for this scan",
    "bytes": 379272,
@@ -2005,8 +2059,8 @@
     "arm": "linear, R=AO G=rough B=metal (half res)"
    },
    "tile_size_m": [
-    3.0,
-    3.0
+    3,
+    3
    ],
    "tile_size_note": "Poly Haven measured real-world size",
    "bytes": 722180,
@@ -2024,8 +2078,8 @@
     "arm": "linear, R=AO G=rough B=metal (half res)"
    },
    "tile_size_m": [
-    2.0,
-    2.0
+    2,
+    2
    ],
    "tile_size_note": "Poly Haven measured real-world size",
    "bytes": 454316,
@@ -2119,8 +2173,8 @@
     "arm": "linear, R=AO G=rough B=metal (half res)"
    },
    "tile_size_m": [
-    2.0,
-    2.0
+    2,
+    2
    ],
    "tile_size_note": "Poly Haven measured real-world size",
    "bytes": 240910,
@@ -2138,8 +2192,8 @@
     "arm": "linear, R=AO G=rough B=metal (half res)"
    },
    "tile_size_m": [
-    3.0,
-    3.0
+    3,
+    3
    ],
    "tile_size_note": "Poly Haven measured real-world size",
    "bytes": 264632,
@@ -2195,8 +2249,8 @@
     "arm": "linear, R=AO G=rough B=metal (half res)"
    },
    "tile_size_m": [
-    2.0,
-    2.0
+    2,
+    2
    ],
    "tile_size_note": "Poly Haven measured real-world size",
    "bytes": 250600,
@@ -2214,8 +2268,8 @@
     "arm": "linear, R=AO G=rough B=metal (half res)"
    },
    "tile_size_m": [
-    15.0,
-    15.0
+    15,
+    15
    ],
    "tile_size_note": "Poly Haven measured real-world size",
    "bytes": 502626,

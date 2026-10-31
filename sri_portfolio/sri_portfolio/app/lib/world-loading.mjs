@@ -56,3 +56,14 @@ export function entranceReadiness({ ready, progress }) {
   const available = Boolean(ready);
   return { available, progress: available ? 100 : Math.min(99, progress) };
 }
+
+// Recovery never claims the renderer is ready or advances progress.
+export const entranceRecoveryDelay = 15000;
+export function watchEntrancePreparation(
+  onSlow,
+  schedule = setTimeout,
+  cancel = clearTimeout,
+) {
+  const timer = schedule(onSlow, entranceRecoveryDelay);
+  return () => cancel(timer);
+}

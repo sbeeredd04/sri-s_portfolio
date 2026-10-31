@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { PerspectiveCamera, Vector3 } from "three";
 import { buildLookoutIsland, lookoutVista } from "../app/lib/lookout-vista.mjs";
 import { lookout, quarterViews } from "../app/lib/fieldnotes-quarter.mjs";
 import { fieldnotesPaths } from "../app/lib/fieldnotes-layout.mjs";
@@ -48,17 +49,31 @@ test("the seat has a clear sightline over the wall to the beacon", () => {
 test("desktop and phone cameras look past the garden at the actual island", () => {
   const view = quarterViews.find((v) => v.id === "lookout");
   for (const shot of [view, view.portrait]) {
-    assert.equal(shot.target[0], lookoutVista.center[0]);
-    assert.equal(shot.target[2], lookoutVista.center[1]);
+
     assert.ok(shot.position[2] < lookout.bench);
     for (let z = lookout.z; z < lookoutVista.center[1] - 6; z += 0.5) {
-      const t = (z - shot.position[2]) / (shot.target[2] - shot.position[2]);
-      const x = shot.position[0] + t * (shot.target[0] - shot.position[0]);
-      const y = shot.position[1] + t * (shot.target[1] - shot.position[1]);
+      const t = (z - shot.position[2]) / (lookoutVista.focus[2] - shot.position[2]);
+      const x = shot.position[0] + t * (lookoutVista.focus[0] - shot.position[0]);
+      const y = shot.position[1] + t * (lookoutVista.focus[1] - shot.position[1]);
       assert.ok(
         y > renderedSurfaceHeight("future", x, z) + 0.5,
         "terrain blocks the focal point",
       );
     }
+  }
+});
+
+
+test("phone lookout keeps seating above the navigation drawer", () => {
+  const shot = quarterViews.find((v) => v.id === "lookout").portrait;
+  const camera = new PerspectiveCamera(shot.fov, 390 / 844, 0.1, 1000);
+  camera.position.set(...shot.position);
+  camera.lookAt(...shot.target);
+  camera.updateMatrixWorld();
+  // Entire bench width and height, not merely its center.
+  for (const x of [-0.9, 0.9]) for (const y of [0, 0.95]) {
+    const p = new Vector3(x, y, lookout.bench).project(camera);
+    assert.ok(Math.abs(p.x) < 0.9, "seat outside phone sides");
+    assert.ok(p.y > -0.52 && p.y < 0.5, "seat hidden by phone chrome");
   }
 });

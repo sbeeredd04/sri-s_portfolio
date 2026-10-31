@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   hedges,
+  borderPlants,
+  borderShrub,
   lanternPosts,
   lookout,
   newsstand,
@@ -51,4 +53,16 @@ test("paper planes fly above head height and face their direction of travel", ()
 test("garden stops are listed in Fieldnotes", () => {
   const ids = placeStops.future.map((s) => s.id);
   for (const v of quarterViews) assert.ok(ids.includes(v.id));
+});
+
+
+test("rendered shrub footprints clear every garden walk", () => {
+  for (const p of borderPlants()) {
+    const radius = Math.hypot(borderShrub.width, borderShrub.depth) * p.scale / 2;
+    // Fill the conservative disk, not only the pivot or four corners.
+    for (let dx = -radius; dx <= radius; dx += 0.04)
+      for (let dz = -radius; dz <= radius; dz += 0.04)
+        if (dx * dx + dz * dz <= radius * radius)
+          assert.ok(!onFieldnotesPath(p.x + dx, p.z + dz, 0.1), "foliage overlaps paving");
+  }
 });

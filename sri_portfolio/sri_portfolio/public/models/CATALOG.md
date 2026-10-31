@@ -90,3 +90,5 @@ Each folder holds `color.webp` (sRGB), `normal.webp` (linear, OpenGL) and `arm.w
 | [hdri/sunset-sky.hdr](https://polyhaven.com/a/belfast_sunset_puresky) | 1162 | Greg Zaal (Processing), Dimitrios Savva (Photography), Jarod Guest (Sky edits) | Sunset / dusk sky (no ground, good for a spherical world) |
 | [hdri/clear-day-sky.hdr](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky) | 1401 | Greg Zaal (Original), Jarod Guest (Sky edits) | Clear daytime sky (no ground) |
 | [hdri/interior-studio.hdr](https://polyhaven.com/a/studio_small_09) | 1577 | Sergej Majboroda (All) | Interior / close-up exhibit lighting and reflections |
+
+Original asset: `coastal-bench.glb` — 5,840 triangles, 428,404 bytes, measured 1.800 × 0.909 × 0.666 m (width × height × depth). Editable master and preserving-export manifest: `resources/authored/coastal-bench.*`. Six untextured PBR materials; grain refinement pending. Fieldnotes lookout only.

@@ -93,6 +93,15 @@ void main() {
     }
   }
   float alpha=1.-transmittance;
+  // From the atlas, clouds describe weather without covering the destinations.
+  // Keep the limb banks fuller, and blend back to physical density on descent.
+  // Ray direction makes this work from any globe orbit, not just the home shot.
+  float atlas=smoothstep(${(WORLD_RADIUS * 1.6).toFixed(1)},${(WORLD_RADIUS * 2.6).toFixed(1)},length(cameraPosition));
+  float facing=max(0.,dot(normalize(cameraPosition+ray*max(start,firstCloud)),normalize(cameraPosition)));
+  float atlasTransmission=mix(.65,.28,smoothstep(.15,.8,facing));
+  float presentation=mix(1.,atlasTransmission,atlas);
+  scattering*=presentation;
+  alpha*=presentation;
   if(alpha<.004) discard;
   // Test the first occupied sample against the scene, not the far proxy
   // sphere or the empty front of the deck. No depth is written for later passes.

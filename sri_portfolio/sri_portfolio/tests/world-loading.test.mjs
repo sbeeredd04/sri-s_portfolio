@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {
   createWorldLoading,
   entranceReadiness,
+  watchEntrancePreparation,
+  entranceRecoveryDelay,
 } from "../app/lib/world-loading.mjs";
 import {
   createAssetPreloader,
@@ -128,4 +130,36 @@ test("real world readiness enables entry even while the optional intro plays", (
       progress: 100,
     },
   );
+});
+
+test("slow preparation offers recovery without changing readiness or progress", () => {
+  let callback, delay, cancelled;
+  let offered = false;
+  const loading = createWorldLoading();
+  loading.report({ terrain: true });
+  const before = loading.getSnapshot();
+  const stop = watchEntrancePreparation(
+    () => {
+      offered = true;
+    },
+    (fn, ms) => {
+      callback = fn;
+      delay = ms;
+      return 42;
+    },
+    (id) => {
+      cancelled = id;
+    },
+  );
+  assert.equal(delay, entranceRecoveryDelay);
+  assert.equal(offered, false);
+  callback();
+  assert.equal(offered, true);
+  assert.equal(loading.getSnapshot(), before);
+  assert.equal(
+    entranceReadiness({ ready: false, progress: before.progress }).available,
+    false,
+  );
+  stop();
+  assert.equal(cancelled, 42);
 });

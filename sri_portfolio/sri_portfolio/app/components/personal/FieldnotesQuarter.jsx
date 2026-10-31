@@ -5,11 +5,10 @@ import * as THREE from "three";
 import { Boxes } from "./ScenePrimitives";
 import ModelInstances from "./ModelInstances";
 import { useQuality } from "./Quality";
-import { roundedBox } from "../../lib/model-geometry.mjs";
 import { renderedSurfaceHeight } from "../../lib/terrain-geometry.mjs";
 import {
   LANTERN_HEIGHT,
-  hedges,
+  borderPlants,
   lanternPosts,
   lanterns,
   lookout,
@@ -246,34 +245,15 @@ function Lanterns({ night }) {
 }
 
 function Hedges() {
-  const pieces = useMemo(hedges, []);
-  const geometry = useMemo(() => roundedBox([2.1, 0.9, 0.8], 0.16), []);
-  useEffect(() => () => geometry.dispose(), [geometry]);
-  const ref = useRef();
-  useEffect(() => {
-    const o = new THREE.Object3D(),
-      c = new THREE.Color();
-    pieces.forEach((p, i) => {
-      o.position.set(p.x, ground(p.x, p.z) + 0.42, p.z);
-      o.rotation.set(0, p.yaw, 0);
-      o.scale.set(1, 0.9 + (i % 4) * 0.06, 1);
-      o.updateMatrix();
-      ref.current.setMatrixAt(i, o.matrix);
-      ref.current.setColorAt(i, c.set(i % 3 ? "#3f5a33" : "#476438"));
-    });
-    ref.current.instanceMatrix.needsUpdate = true;
-    ref.current.instanceColor.needsUpdate = true;
-    ref.current.computeBoundingSphere();
-  }, [pieces]);
+  const items = useMemo(() => borderPlants().map((p) => ({
+    position: [p.x, ground(p.x, p.z), p.z],
+    rotation: p.yaw,
+    scale: p.scale,
+  })), []);
   return (
-    <instancedMesh
-      ref={ref}
-      args={[geometry, undefined, pieces.length]}
-      castShadow
-      receiveShadow
-    >
-      <meshStandardMaterial roughness={0.95} />
-    </instancedMesh>
+    <Suspense fallback={null}>
+      <ModelInstances src="/models/shrub-sapling.glb" items={items} lod={1} />
+    </Suspense>
   );
 }
 
@@ -323,7 +303,7 @@ function Lookout({ night }) {
         <Boxes items={wall} color="#b9aa91" roughness={0.92} />
       </group>
       <Suspense fallback={null}>
-        <ModelInstances src="/models/bench-wooden.glb" items={bench} lod={0} />
+        <ModelInstances src="/models/coastal-bench.glb" items={bench} lod={0} />
         <ModelInstances
           src="/models/street-lamp.glb"
           items={lamp}

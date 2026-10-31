@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { CameraControls, CameraControlsImpl } from "@react-three/drei";
 import * as THREE from "three";
+import { advanceFlightTime } from "../../lib/camera-flight-time.mjs";
 import { streetStop } from "../../lib/street-view.mjs";
 import { placeStops } from "../../lib/place-stops.mjs";
 import {
@@ -91,6 +92,17 @@ export default function CameraRig({
       window.removeEventListener("keydown", skip);
     };
   }, [gl, invalidate]);
+
+  // Ignore time spent in a background tab and the first resumed frame's delta.
+  const resumeFrame = useRef(false);
+  useEffect(() => {
+    const visibility = () => {
+      resumeFrame.current = true;
+      if (!document.hidden) invalidate();
+    };
+    document.addEventListener("visibilitychange", visibility);
+    return () => document.removeEventListener("visibilitychange", visibility);
+  }, [invalidate]);
 
   const street = streetStop(world, stop);
   const roaming = stop.startsWith("roam");
@@ -321,7 +333,7 @@ export default function CameraRig({
           ? size.height / 2 - (start + room / 2)
           : world === "projects" && stop === "keynote" && size.width < 560
             ? -size.height * 0.1
-            : (world === "trail" && stop === "overlook") && size.width < 560
+            : world === "trail" && stop === "overlook" && size.width < 560
               ? size.height * 0.045
               : -size.height *
                 (stop !== "arrival"
@@ -446,7 +458,9 @@ export default function CameraRig({
 
   useFrame((_, delta) => {
     const c = controls.current;
-    if (!c) return;
+    if (!c || document.hidden) return;
+    const visibleDelta = resumeFrame.current ? 0 : delta;
+    resumeFrame.current = false;
     if (roaming) {
       camera.getWorldDirection(scratch.direction);
       scratch.target
@@ -463,8 +477,9 @@ export default function CameraRig({
     }
     if (flight.current) {
       const f = flight.current;
-      f.elapsed += animate ? Math.min(delta, 0.05) : 3;
-      const t = Math.min(f.elapsed / (street ? 1.15 : f.duration), 1),
+      const duration = street ? 1.15 : f.duration;
+      f.elapsed = advanceFlightTime(f.elapsed, visibleDelta, duration, animate);
+      const t = Math.min(f.elapsed / duration, 1),
         ease = f.arrival
           ? t * t * t * (t * (t * 6 - 15) + 10)
           : t * t * (3 - 2 * t);

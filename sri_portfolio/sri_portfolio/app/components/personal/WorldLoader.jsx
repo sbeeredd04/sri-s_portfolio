@@ -11,7 +11,11 @@ import { observeStartup } from "../../lib/entrance-diagnostics.mjs";
 import UiIcon from "./UiIcon";
 import PersonalSignature from "./PersonalSignature";
 import { playEntrance, entranceChapters } from "../../lib/entrance-motion.mjs";
-import { worldLoading, entranceReadiness } from "../../lib/world-loading.mjs";
+import {
+  worldLoading,
+  entranceReadiness,
+  watchEntrancePreparation,
+} from "../../lib/world-loading.mjs";
 import { biomeSkins } from "../../lib/biome-skins.mjs";
 
 // Prepare alongside the intro. Entry is a single gesture after real readiness;
@@ -35,6 +39,7 @@ export default function WorldLoader({
   const enterCallback = useRef(onEnter);
   enterCallback.current = onEnter;
   const finished = useRef(false);
+  const [slowPreparation, setSlowPreparation] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [settled, setSettled] = useState(false);
   const [replay, setReplay] = useState(0);
@@ -52,6 +57,14 @@ export default function WorldLoader({
     settled,
     progress: loading.progress,
   });
+
+  useEffect(() => {
+    if (ready) {
+      setSlowPreparation(false);
+      return;
+    }
+    return watchEntrancePreparation(() => setSlowPreparation(true));
+  }, [ready]);
 
   // Start the real scene alongside the score, not after its 5.9 second runtime.
   // ConnectedWorld still assembles one district per batch to yield between them.
@@ -311,11 +324,16 @@ export default function WorldLoader({
                 ? "Ready when you are."
                 : ready
                   ? "Finishing the introduction…"
-                  : loading.label}
+                  : slowPreparation
+                    ? "This is taking longer than expected. You can read the portfolio while the world prepares."
+                    : loading.label}
           </span>
         </div>
         <a className="entrance-story" href="/story" data-audio-control>
-          Read the story <UiIcon />
+          {slowPreparation && !ready
+            ? "Read the portfolio now"
+            : "Read the story"}{" "}
+          <UiIcon />
         </a>
       </footer>
     </dialog>
