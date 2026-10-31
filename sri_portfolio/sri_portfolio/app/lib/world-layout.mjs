@@ -1,4 +1,5 @@
 import { Vector3, Quaternion, MathUtils } from "three";
+import { fieldnotesCoastEdges } from "./fieldnotes-coast.mjs";
 import { carvedTrailHeight, valleyFloorWeight } from "./valley-layout.mjs";
 import { sfCoastFade, sfTerrainHeight } from "./sf-terrain.mjs";
 
@@ -154,8 +155,11 @@ export function planetRadiusAt(normal) {
     // visibility, but lifting that full footprint made the surrounding ocean
     // climb into a giant, solid-looking wave.
     const physicalOuter = r.shoreOuter || r.outer;
+    const edges = r.id === "future"
+      ? fieldnotesCoastEdges(x, z, r.inner, physicalOuter)
+      : [r.inner, physicalOuter];
     const blend =
-      1 - MathUtils.smoothstep(regionDistance(r, x, z), r.inner, physicalOuter);
+      1 - MathUtils.smoothstep(regionDistance(r, x, z), ...edges);
     if (!blend) continue;
     const height =
       r.id === "trail"

@@ -23,10 +23,10 @@ test("startup yields to input without changing a vertex, normal, UV or triangle"
     for (const name of ["position", "normal", "uv"])
       hash.update(Buffer.from(geometry.attributes[name].array.buffer));
     hash.update(Buffer.from(geometry.index.array.buffer));
-    // Captured from the complete synchronous mesh before this scheduling change.
+    // Captured from the synchronous mesh with the authored northern headland.
     assert.equal(
       hash.digest("hex"),
-      "ad6b057d3d0b08f949721897f36cd49d34f87fd57d1efacd9d403b689a5627ad",
+      "80078ccfa42341a0675bcf7f322877bd2a5835f38fecfaec531b1f3323e87882",
     );
     const next = createTerrainGeometry();
     assert.notEqual(next, geometry);
@@ -35,7 +35,7 @@ test("startup yields to input without changing a vertex, normal, UV or triangle"
       geometry.attributes.position.array,
     );
     geometry.dispose();
-    assert.equal(next.attributes.position.count, 143004);
+    assert.equal(next.attributes.position.count, 143130);
     next.dispose();
   } finally {
     clearInterval(timer);

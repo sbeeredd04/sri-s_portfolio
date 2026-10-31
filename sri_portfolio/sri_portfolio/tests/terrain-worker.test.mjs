@@ -19,7 +19,7 @@ test("transferred terrain preserves the exact rendered mesh and contact index", 
   hash.update(Buffer.from(mesh.index.array.buffer));
   assert.equal(
     hash.digest("hex"),
-    "ad6b057d3d0b08f949721897f36cd49d34f87fd57d1efacd9d403b689a5627ad",
+    "80078ccfa42341a0675bcf7f322877bd2a5835f38fecfaec531b1f3323e87882",
   );
   for (const [cell, triangles] of original.userData.refinedCells)
     assert.deepEqual([...mesh.userData.refinedCells.get(cell)], triangles);

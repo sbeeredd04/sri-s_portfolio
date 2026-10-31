@@ -9,6 +9,7 @@ import {
   isBayCrossing,
 } from "../../lib/world-paths.mjs";
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
+import { fieldnotesCoastGlsl } from "../../lib/fieldnotes-coast.mjs";
 import { streetsGlsl } from "../../lib/sf-streets.mjs";
 
 import { createTerrainGeometry } from "../../lib/terrain-geometry.mjs";
@@ -110,6 +111,7 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         float worldNoise(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);return mix(mix(mix(worldHash(i),worldHash(i+vec3(1,0,0)),f.x),mix(worldHash(i+vec3(0,1,0)),worldHash(i+vec3(1,1,0)),f.x),f.y),mix(mix(worldHash(i+vec3(0,0,1)),worldHash(i+vec3(1,0,1)),f.x),mix(worldHash(i+vec3(0,1,1)),worldHash(i+vec3(1,1,1)),f.x),f.y),f.z);}
         float worldFbm(vec3 p){return worldNoise(p)*.58+worldNoise(p*2.03)*.28+worldNoise(p*4.07)*.14;}
         ${streetsGlsl()}
+        ${fieldnotesCoastGlsl}
       ` +
         shader.fragmentShader
           .replace(
@@ -121,6 +123,9 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         vec3 meadow=vec3(.11,.14,.15);
         float best=0.;
         float city=0.;
+        float coastalGarden=0.;
+        float gardenShore=0.;
+        float gardenWater=0.;
         float cityRoad=0.;
         vec2 cityLocal=vec2(0.);
         float shoreVariation=(worldFbm(vSurface*.17)-.5)*7.;
@@ -132,6 +137,14 @@ export default function PlanetSurface({ surfaceRef, weather }) {
           float distance=length(local/uRegionShape[i])*asymmetry;
           float facing=step(.76,dot(p,uRegions[i]));
           float region=facing*(1.-smoothstep(uRegionEdges[i].x,uRegionEdges[i].y,distance+shoreVariation));
+          if(i==5){
+            vec2 edges=fieldnotesCoastEdges(local,uRegionEdges[i]-vec2(4.,3.));
+            distance=length(local);
+            region=facing*(1.-smoothstep(edges.x,edges.y,distance));
+            coastalGarden=facing;
+            gardenShore=smoothstep(edges.x+1.,edges.y-2.,distance)*region;
+            gardenWater=facing*(1.-smoothstep(edges.y-4.,edges.y+9.,distance));
+          }
           places=max(places,region);
           if(i==0){city=region;cityLocal=local+uLandCenter[i];}
           if(region>best){
@@ -171,11 +184,17 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         vec3 deep=vec3(.009,.021,.029);
         vec3 shallow=vec3(.025,.06,.07);
         vec3 ocean=mix(deep,shallow,shallows);
+        ocean=mix(ocean,vec3(.018,.075,.083),gardenWater*coastalGarden);
         float beach=smoothstep(.48,.53,coast)*(1.-smoothstep(.54,.58,coast));
         vec3 rock=vec3(.035,.044,.043)*( .9+terrain*.2 );
         float cliff=raised*(1.-smoothstep(.5,.67,coast));
         vec3 ground=mix(ocean,mix(meadow,rock,cliff),land);
         ground=mix(ground,vec3(.28,.31,.32),beach*.32);
+        // Sandy, weathered headland: dry upper shore to darker wet edge.
+        // Keep the garden lawn and every authored path on the original grass.
+        vec3 coastSand=mix(vec3(.18,.15,.10),vec3(.075,.085,.072),gardenShore);
+        coastSand*=.88+worldFbm(vSurface*1.3)*.24;
+        ground=mix(ground,coastSand,coastalGarden*gardenShore*land*.85);
         // Filter the fine grain out before it becomes sub-pixel from orbit.
         float footprint=max(length(dFdx(vSurface)),length(dFdy(vSurface)));
         float grain=(worldNoise(vSurface*16.)-.5)*.018*(1.-smoothstep(.035,.11,footprint));
@@ -183,8 +202,8 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         {
           // Breaking surf: crests march shoreward through the shallows and
           // fade before they alias from orbit. Rougher seas break harder.
-          float surf=shallows*(1.-land);
-          float crest=pow(.5+.5*sin(coast*190.-uSeaTime*1.7+worldNoise(vSurface*.35)*7.),5.);
+          float surf=max(shallows,gardenWater*coastalGarden)*(1.-land);
+          float crest=pow(.5+.5*sin(mix(coast*190.,gardenWater*45.,coastalGarden)-uSeaTime*1.7+worldNoise(vSurface*.35)*7.),5.);
           float froth=smoothstep(.42,.49,coast)*(1.-land)*(.6+worldNoise(vSurface*3.+uSeaTime*.4)*.8);
           float surfMask=max(surf*crest,froth)*(.25+uSeaState*.5)*(1.-smoothstep(.05,.35,footprint));
           diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.5,.55,.57),clamp(surfMask,0.,.85));
@@ -231,7 +250,7 @@ export default function PlanetSurface({ surfaceRef, weather }) {
             // The surface's low env intensity suits matte land; open water
             // mirrors the sky, so its image-based specular is lifted back up
             // near the camera. From orbit the blurred sky would read milky.
-            "#include <lights_fragment_maps>\nradiance*=mix(mix(3.2,1.,smoothstep(.06,.3,footprint)),1.,land);",
+            "#include <lights_fragment_maps>\nradiance*=mix(mix(mix(3.2,1.25,coastalGarden),1.,smoothstep(.06,.3,footprint)),1.,land);",
           )
           .replace(
             "#include <normal_fragment_maps>",
@@ -255,7 +274,7 @@ export default function PlanetSurface({ surfaceRef, weather }) {
     return applyTriplanar(m, {
       ...ground,
       mode: "detail",
-      mask: "land*(1.-cliff*.6)*(1.-city)",
+      mask: "land*(1.-cliff*.6)*(1.-city)*(1.-coastalGarden*gardenShore)",
       scale: 0.42,
       strength: 0.85,
       normalStrength: 0.9,
