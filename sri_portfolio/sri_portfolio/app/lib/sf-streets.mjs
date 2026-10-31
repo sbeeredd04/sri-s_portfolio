@@ -35,8 +35,19 @@ function inStreetPark(x, z) {
   );
 }
 
+// The built city ends at the inner plateau. Its outer shoulder is landscape,
+// not an infinite continuation of the street grid. Walkable runs stay fully
+// inside the solid urban band (coastDistance > 2.5m).
+export const urbanEdge = { end: -8, solid: 2 };
+export function urbanCoverage(x, z) {
+  const t = Math.max(0, Math.min(1,
+    (coastDistance(x, z) - urbanEdge.end) / (urbanEdge.solid - urbanEdge.end)));
+  return t * t * (3 - 2 * t);
+}
+
 // "road", "walk" or null at a point in studio tangent metres.
 export function streetAt(x, z) {
+  if (urbanCoverage(x, z) === 0) return null;
   if (inStreetPark(x, z)) return null;
   const { u, v, pitch } = gridCoords(x, z);
   const d = Math.min(lineDistance(u, pitch[0]), lineDistance(v, pitch[1]));
@@ -72,6 +83,7 @@ export function streetsGlsl() {
     )
     .join("\n");
   return `
+  float sfUrbanCoverage(float coast){return smoothstep(${f(urbanEdge.end)},${f(urbanEdge.solid)},coast);}
   float sfLine(float c,float pitch){return abs(fract(c/pitch+.5)-.5)*pitch;}
   vec4 sfStreets(vec2 p){
     ${parkChecks}

@@ -146,7 +146,10 @@ export default function PlanetSurface({ surfaceRef, weather }) {
             gardenWater=facing*(1.-smoothstep(edges.y-4.,edges.y+9.,distance));
           }
           places=max(places,region);
-          if(i==0){city=region;cityLocal=local+uLandCenter[i];}
+          if(i==0){
+            city=region*sfUrbanCoverage(uRegionEdges[i].x-4.-length(local));
+            cityLocal=local+uLandCenter[i];
+          }
           if(region>best){
             best=region;meadow=uRegionColor[i]*(.88+terrain*.23);
             if(i==2){
