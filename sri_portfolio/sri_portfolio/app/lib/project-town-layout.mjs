@@ -89,3 +89,11 @@ export const districtLamps = [
   [-3.8, 0, -8],
   [1.7, 0, -8],
 ];
+
+// Arrival frames the retained workshops and galleries. The removed ring
+// campus lived northwest of these buildings; its old target showed empty land.
+export const foundryArrival = {
+  position: [18.4, 19.4, 24.4],
+  target: [0, 1, -2],
+  portrait: { position: [19.8, 27.1, 34.9], target: [0, 1, -2], fov: 68 },
+};

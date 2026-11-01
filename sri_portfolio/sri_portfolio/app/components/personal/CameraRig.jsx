@@ -14,7 +14,7 @@ import {
 import { cameraLimits } from "../../lib/camera-limits.mjs";
 import { courtViews } from "../../lib/court-layout.mjs";
 import { trailView } from "../../lib/valley-layout.mjs";
-import { campusArrival } from "../../lib/campus-layout.mjs";
+import { foundryArrival } from "../../lib/project-town-layout.mjs";
 import { fieldnotesArrival } from "../../lib/fieldnotes-layout.mjs";
 import { wandererCamera } from "../../lib/resident-motion.mjs";
 import {
@@ -119,7 +119,7 @@ export default function CameraRig({
         : world === "studio" && stop === "arrival"
           ? studioArrival.portrait.fov
           : world === "projects" && stop === "arrival"
-            ? campusArrival.portrait.fov
+            ? foundryArrival.portrait.fov
             : world === "trail" && stop === "arrival"
               ? trailView().arrival.portrait.fov
               : placeStops[world]?.find((s) => s.id === stop)?.portrait?.fov) ||
@@ -190,7 +190,7 @@ export default function CameraRig({
         : id === "studio" && stop === "arrival"
           ? studioArrival
           : id === "projects" && stop === "arrival"
-            ? campusArrival
+            ? foundryArrival
             : id === "future" && stop === "arrival"
               ? fieldnotesArrival
               : placeStops[id]?.find((s) => s.id === stop);

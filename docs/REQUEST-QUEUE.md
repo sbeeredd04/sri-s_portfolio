@@ -736,3 +736,9 @@ The city street shader extended across the whole coastal shoulder, beyond the bu
 Moved overhead rafters and ridge into the existing roof fade group. Wall posts stay visible. Previously the roof skin disappeared while cross-room rafters continued to obscure the arrival view. This changes presentation only; dimensions, footprints, physics, and paths remain unchanged.
 
 Production build passes. Desktop and phone Home/desk screenshots inspected, with cleaner open-room arrival. Neighboring gables and front window framing still dominate parts of the portrait desk background; do not claim a general camera-occlusion system or complete architecture improvement. No new implementation-mirroring tests added for this grouping-only change. Exterior return verification and deployment recorded in implementation status.
+
+
+## Q80 — Foundry arrival follows the retained project town (2026-10-31)
+Removed CameraRig's active dependency on campusArrival. Q42 removed the ring campus, but arrival still aimed northwest toward that former site. New foundryArrival lives with the workshop layout, targets the retained town, and uses closer desktop/portrait positions. No removed campus, valley or courtyard restored; content IDs, routes and project interactions stay intact.
+
+295 tests and production build pass. First screenshots exposed excess empty space, so cameras were moved slightly closer and rebuilt. Phone final arrival shows all six workshop fronts above navigation. Aether branch state exercised successfully (Explore a city selected). Full visual gate and production release tracked in implementation status. Surrounding land and pavilion assets still require the planned landscape/material craft pass.
