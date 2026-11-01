@@ -27,12 +27,15 @@ function GardenMasonry({ built }) {
     scale: 0.7,
     strength: 0.7,
   });
+  const timber = useFinish("wood-table", "#ae865d", { scale: .65, strength: .35 });
   const pavers = useFinish("pavers", "#8d8373", {
     scale: 0.55,
     strength: 0.85,
   });
   return (
     <>
+      <mesh geometry={built.soffit} material={timber} castShadow receiveShadow />
+      <mesh geometry={built.joinery} material={timber} castShadow receiveShadow />
       <mesh geometry={built.paving} material={pavers} receiveShadow />
       <mesh
         geometry={built.terraces}
@@ -106,6 +109,7 @@ export default function FutureStudio({
         map: charred,
         roughness: 0.82,
       }),
+      roof: new MeshStandardMaterial({ color: "#505a5d", roughness: .62, metalness: .25 }),
       copper: new MeshStandardMaterial({
         color: "#7e9b90",
         roughness: 0.42,
@@ -150,6 +154,8 @@ export default function FutureStudio({
             {shell(built.paving, materials.paving)}
             {shell(built.terraces, materials.paving)}
             {shell(built.stone, materials.stone)}
+            {shell(built.soffit, materials.timber)}
+            {shell(built.joinery, materials.timber)}
           </>
         }
       >
@@ -169,7 +175,7 @@ export default function FutureStudio({
           else onStopSelect("writing");
         }}
       />
-      {shell(built.timber, materials.charcoal)}
+      {shell(built.timber, materials.roof)}
       {shell(built.charcoal, materials.charcoal)}
       {shell(built.copper, materials.copper)}
       {shell(built.garden, materials.garden)}

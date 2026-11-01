@@ -176,37 +176,53 @@ function addCanopy(timber) {
         [0, -1, 0],
       );
     }
-  const fascia = (u0, v0, u1, v1, outward) => {
-    const a = at(u0, v0, 0),
-      b = at(u1, v1, 0);
-    const dx = b[0] - a[0],
-      dz = b[2] - a[2];
-    const len = Math.hypot(dx, dz) || 1;
-    const ox = (-dz / len) * outward * 0.028,
-      oz = (dx / len) * outward * 0.028;
-    addQuad(
-      timber,
-      [a[0], a[1] - 0.08, a[2]],
-      [b[0], b[1] - 0.08, b[2]],
-      [b[0] + ox, b[1] - 0.08, b[2] + oz],
-      [a[0] + ox, a[1] - 0.08, a[2] + oz],
-      [ox, 0, oz],
-    );
-    addQuad(
-      timber,
-      [a[0], a[1], a[2]],
-      [b[0], b[1], b[2]],
-      [b[0] + ox, b[1], b[2] + oz],
-      [a[0] + ox, a[1], a[2] + oz],
-      [0, 1, 0],
-    );
+  // Close all four edges; the old pair of horizontal strips left the roof
+  // section open. The overhang is independent of the supporting wall face.
+  const fascia = (u0, v0, u1, v1, direction) => {
+    const a=at(u0,v0,0), b=at(u1,v1,0);
+    addQuad(timber, a,b,at(u1,v1,-thickness),at(u0,v0,-thickness),direction);
   };
-  for (let i = 0; i < nu; i++) fascia(i / nu, 1, (i + 1) / nu, 1, 1);
-  for (let j = 0; j < nv; j++) {
-    fascia(0, j / nv, 0, (j + 1) / nv, -1);
-    fascia(1, j / nv, 1, (j + 1) / nv, 1);
+  for (let i=0;i<nu;i++) {
+    fascia(i/nu,1,(i+1)/nu,1,[0,0,-1]);
+    fascia(i/nu,0,(i+1)/nu,0,[0,0,1]);
+  }
+  for (let j=0;j<nv;j++) {
+    fascia(0,j/nv,0,(j+1)/nv,[-1,0,0]);
+    fascia(1,j/nv,1,(j+1)/nv,[1,0,0]);
   }
 }
+
+function addSoffit(soffit) {
+  const c=fieldnotesCanopy;
+  // Narrow longitudinal boards follow the curved underside, with recessed
+  // joints. The 12mm boards sit below the roof body, never coplanar with it.
+  const count=22, pitch=(c.x1-c.x0)/count;
+  for(let i=0;i<count;i++) {
+    const x0=c.x0+i*pitch+.006, x1=c.x0+(i+1)*pitch-.006;
+    for(let j=0;j<8;j++) {
+      const z0=c.zFront+(c.zBack-c.zFront)*j/8;
+      const z1=c.zFront+(c.zBack-c.zFront)*(j+1)/8;
+      const at=(x,z,lift=0)=>[x,fieldnotesCanopyY(x,z)-c.thickness-.014+lift,z];
+      addQuad(soffit,at(x0,z0),at(x0,z1),at(x1,z1),at(x1,z0),[0,-1,0]);
+      addQuad(soffit,at(x0,z0),at(x0,z0,.012),at(x0,z1,.012),at(x0,z1),[-1,0,0]);
+      addQuad(soffit,at(x1,z0),at(x1,z1),at(x1,z1,.012),at(x1,z0,.012),[1,0,0]);
+      if(j===0) addQuad(soffit,at(x0,z0),at(x1,z0),at(x1,z0,.012),at(x0,z0,.012),[0,0,-1]);
+      if(j===7) addQuad(soffit,at(x0,z1),at(x0,z1,.012),at(x1,z1,.012),at(x1,z1),[0,0,1]);
+    }
+  }
+}
+function addWallJoinery(joinery) {
+  const w=fieldnotesWall, r=fieldnotesReturn;
+  // A skirting return protects the plaster at floor level; end jambs frame
+  // the open bay without obstructing its entrance or the writing surface.
+  roundedBox(joinery,(w.x0+w.x1)/2,.075,w.z-w.thickness/2-.012,w.x1-w.x0,.105,.022,.004);
+  roundedBox(joinery,r.x+r.thickness/2+.012,.075,(r.z0+r.z1)/2,.022,.105,r.z1-r.z0,.004);
+  for(const x of [w.x0+.035,w.x1-.035]) {
+    const top=fieldnotesCanopyY(x,w.z)-fieldnotesCanopy.thickness-.025;
+    roundedBox(joinery,x,(top+.022)/2,w.z-w.thickness/2-.018,.07,top-.022,.035,.005);
+  }
+}
+
 function addCopperDrip(copper) {
   const { x0, x1, zFront } = fieldnotesCanopy;
   const count = 10;
@@ -215,15 +231,15 @@ function addCopperDrip(copper) {
       u1 = (i + 1) / count;
     const xA = x0 + (x1 - x0) * u0,
       xB = x0 + (x1 - x0) * u1;
-    const yA = fieldnotesCanopyY(xA, zFront) - 0.09,
-      yB = fieldnotesCanopyY(xB, zFront) - 0.09;
+    const yA = fieldnotesCanopyY(xA, zFront) - fieldnotesCanopy.thickness - 0.006,
+      yB = fieldnotesCanopyY(xB, zFront) - fieldnotesCanopy.thickness - 0.006;
     addQuad(
       copper,
-      [xA, yA - 0.012, zFront + 0.02],
-      [xB, yB - 0.012, zFront + 0.02],
-      [xB, yB, zFront + 0.02],
-      [xA, yA, zFront + 0.02],
-      [0, 0, 1],
+      [xA, yA - 0.012, zFront - 0.02],
+      [xB, yB - 0.012, zFront - 0.02],
+      [xB, yB, zFront - 0.02],
+      [xA, yA, zFront - 0.02],
+      [0, 0, -1],
     );
   }
 }
@@ -435,6 +451,8 @@ function addGarden(garden, stone) {
 export function buildFieldnotesGeometry() {
   const stone = bucket(),
     timber = bucket(),
+    soffit = bucket(),
+    joinery = bucket(),
     charcoal = bucket(),
     copper = bucket(),
     garden = bucket(true);
@@ -460,6 +478,8 @@ export function buildFieldnotesGeometry() {
   addWalls(stone);
   addColumns(charcoal, stone);
   addCanopy(timber);
+  addSoffit(soffit);
+  addWallJoinery(joinery);
   addCopperDrip(copper);
   addDesk(desk, pages);
   addChair(chair);
@@ -471,6 +491,8 @@ export function buildFieldnotesGeometry() {
     terraces: toGeometry(terraces),
     stone: toGeometry(stone),
     timber: toGeometry(timber),
+    soffit: toGeometry(soffit),
+    joinery: toGeometry(joinery),
     charcoal: toGeometry(charcoal),
     copper: toGeometry(copper),
     garden: toGeometry(garden),

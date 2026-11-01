@@ -20,11 +20,11 @@ export const fieldnotesSpawn = [0, -7.2];
 export const fieldnotesLookoutZ = 17.2;
 
 export const fieldnotesCanopy = {
-  x0: -4.18,
-  x1: -0.22,
-  zBack: 3.98,
-  zFront: 2.1,
-  thickness: 0.04,
+  x0: -4.35,
+  x1: -0.05,
+  zBack: 4.2,
+  zFront: 1.92,
+  thickness: 0.14,
 };
 
 export const fieldnotesWall = {
@@ -148,12 +148,15 @@ export function fieldnotesDeckHeight() {
   return fieldnotesBridgeY();
 }
 
+export const fieldnotesRoofProfile = { height: 2.78, slope: .18, crown: .18, center: .28, taper: .25 };
+
 export function fieldnotesCanopyY(x, z) {
   const { x0, x1, zBack, zFront } = fieldnotesCanopy;
   const u = (x - x0) / (x1 - x0);
   const v = (z - zBack) / (zFront - zBack);
-  const fold = Math.cos((u - 0.28) * Math.PI) * 0.18;
-  return 2.78 - v * 0.4 + fold * (1 - v * 0.25);
+  const p = fieldnotesRoofProfile;
+  const fold = Math.cos((u - p.center) * Math.PI) * p.crown;
+  return p.height - v * p.slope + fold * (1 - v * p.taper);
 }
 
 export function fieldnotesColumnPoints() {
@@ -407,9 +410,9 @@ export const fieldnotesCameras = {
     portrait: { position: [7.3, 2.7, 2.5], target: [3.4, 1.05, 0.4] },
   },
   writing: {
-    position: [-2.15, 2.25, -2.2],
+    position: [-3.05, 1.8, -2.2],
     target: [-2.15, 1.3, 3.2],
-    portrait: { position: [-2.9, 2.1, -2], target: [-2.15, 1.3, 3.2] },
+    portrait: { position: [-2.9, 1.8, -2], target: [-2.15, 1.3, 3.2] },
   },
   collaborate: {
     position: [0.1, 1.95, -6.3],
@@ -434,4 +437,6 @@ export const fieldnotesMaterialNames = [
   "ivory",
   "garden",
   "paving",
+  "wood-finish",
+  "roof-metal",
 ];

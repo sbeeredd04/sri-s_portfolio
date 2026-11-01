@@ -3,7 +3,8 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useQuality } from "./Quality";
-import { WORLD_RADIUS } from "../../lib/world-layout.mjs";
+import { fieldnotesShelterGLSL } from "../../lib/fieldnotes-shelter.mjs";
+import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
 
 // Streaks per tier at full rain; lighter rain shows a share of them.
 const DROPS = { low: 1400, medium: 3600, high: 7000 };
@@ -41,8 +42,13 @@ export default function WeatherRain({ weather, animate }) {
     g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), Infinity);
     return g;
   }, [count]);
+  const shelterFrame = useMemo(() => {
+    const region=regions.find(r=>r.id==="future");
+    return new THREE.Matrix4().compose(region.center,region.rotation,new THREE.Vector3(1,1,1)).invert();
+  }, []);
   const uniforms = useMemo(
     () => ({
+      uFieldnotesInverse: { value: shelterFrame },
       uCam: { value: new THREE.Vector3() },
       uUp: { value: new THREE.Vector3(0, 1, 0) },
       uEast: { value: new THREE.Vector3(1, 0, 0) },
@@ -52,7 +58,7 @@ export default function WeatherRain({ weather, animate }) {
       uLean: { value: new THREE.Vector2() },
       uBox: { value: new THREE.Vector3(...BOX) },
     }),
-    [],
+    [shelterFrame],
   );
   const lines = useRef();
   const fall = useRef(0);
@@ -93,6 +99,7 @@ export default function WeatherRain({ weather, animate }) {
         depthWrite={false}
         uniforms={uniforms}
         vertexShader={`
+          ${fieldnotesShelterGLSL}
           attribute vec4 seed;
           uniform vec3 uCam, uUp, uEast, uNorth, uBox;
           uniform float uFall, uRain;
@@ -108,7 +115,8 @@ export default function WeatherRain({ weather, animate }) {
             p = mod(p, uBox) - uBox * .5;
             p -= fallDir * tail * (.22 + uRain * .2);
             vec3 world = uCam + uEast * p.x + uUp * p.y + uNorth * p.z;
-            float shown = step(pick, uRain);
+            vec3 fallWorld=uEast*fallDir.x+uUp*fallDir.y+uNorth*fallDir.z;
+            float shown = step(pick, uRain)*fieldnotesRainVisibility(world,fallWorld);
             vAlpha = shown * (1. - smoothstep(6., 16., length(p))) * (.22 + uRain * .2) * (1. - tail * .7);
             gl_Position = projectionMatrix * viewMatrix * vec4(world, 1.);
           }

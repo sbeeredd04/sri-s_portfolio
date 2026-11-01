@@ -215,8 +215,8 @@ test("architecture stays off the incoming bridge and under the triangle budget",
   const budget = fieldnotesMeshBudget(built);
   assert.ok(budget.triangles < 20000, `triangles ${budget.triangles}`);
   assert.ok(budget.triangles > 400);
-  assert.ok(budget.materials <= 8);
-  assert.equal(fieldnotesMaterialNames.length, 7);
+  assert.ok(budget.materials <= 9);
+  assert.equal(fieldnotesMaterialNames.length, 9);
   const source = readFileSync(
     new URL("../app/components/personal/FutureStudio.jsx", import.meta.url),
     "utf8",
