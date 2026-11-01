@@ -182,6 +182,7 @@ function context() {
     oscillators: [],
   };
   ctx.createMediaElementSource = () => new Node();
+  ctx.createStereoPanner = () => Object.assign(new Node(),{pan:new Param()});
   ctx.createGain =
     ctx.createConvolver =
     ctx.createBiquadFilter =
@@ -530,7 +531,16 @@ test("Fieldnotes chimes without the street hum following", () => {
     const before = ctx.oscillators.length;
     engine.nextCityCue = 0;
     engine.cityCues();
-    assert.ok(ctx.oscillators.length > before, "chimes rang");
+    assert.equal(ctx.oscillators.length, before, "no timer-generated phantom chimes");
+    const contact={source:'coastal-chime',tube:2,energy:.5,gain:.8,pan:-.4};
+    engine.environmentContact(contact);
+    assert.equal(ctx.oscillators.length,before+2,'one contact creates two brass partials');
+    engine.environmentContact(contact);
+    assert.equal(ctx.oscillators.length,before+2,'contact voices are bounded');
+    for(const change of [{reading:true},{reading:false,music:true},{music:false,preferences:{...sensoryDefaults,environmentLevel:0}},{preferences:{...sensoryDefaults,enabled:false}}]){
+      engine.update(change);ctx.currentTime+=2;engine.environmentContact(contact);
+      assert.equal(ctx.oscillators.length,before+2,'focus or mute suppresses contacts');
+    }
   } finally {
     engine.destroy(true);
   }

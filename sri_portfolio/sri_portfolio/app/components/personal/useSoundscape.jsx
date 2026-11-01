@@ -319,12 +319,14 @@ export default function useSoundscape(
       setForeground(focus.current.music);
       engine.current?.update(focus.current);
     };
+    const contact = (event) => engine.current?.environmentContact(event.detail);
     const pagehide = () => {
       stop(true);
       changeStatus("off");
     };
     document.addEventListener("visibilitychange", visibility);
     window.addEventListener("sri:music", music);
+    window.addEventListener("sri:environment-contact", contact);
     window.addEventListener("pagehide", pagehide);
     return () => {
       live.current = false;
@@ -333,6 +335,7 @@ export default function useSoundscape(
       coarse.removeEventListener("change", device);
       document.removeEventListener("visibilitychange", visibility);
       window.removeEventListener("sri:music", music);
+      window.removeEventListener("sri:environment-contact", contact);
       window.removeEventListener("pagehide", pagehide);
       try {
         cancelVibration();

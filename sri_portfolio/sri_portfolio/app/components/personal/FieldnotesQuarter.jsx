@@ -25,6 +25,7 @@ import { discover } from "../../lib/discoveries.mjs";
 import Signpost from "./Signpost";
 import { coastalWind } from "../../lib/wind-field.mjs";
 import LookoutVista from "./LookoutVista";
+import CoastalChime from "./CoastalChime";
 
 const ground = (x, z) => renderedSurfaceHeight("future", x, z);
 
@@ -396,6 +397,7 @@ export default function FieldnotesQuarter({
       <Lookout night={night} />
       <Suspense fallback={null}>
         <LookoutVista night={night} />
+        <CoastalChime windField={windField} animate={animate} detailed={detailed} />
       </Suspense>
       <Suspense fallback={null}>
         <ModelInstances

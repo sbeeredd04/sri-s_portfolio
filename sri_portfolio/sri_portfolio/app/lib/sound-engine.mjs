@@ -382,6 +382,21 @@ export class SoundEngine {
     this.track(source, [source, filter, gain]);
   }
 
+  environmentContact(event) {
+    if(event?.source !== 'coastal-chime' || this.place !== 'future' ||
+      this.hidden || this.disposed || this.context.state !== 'running' ||
+      this.focus.music || this.focus.reading || !this.preferences.enabled ||
+      !(this.preferences.environmentLevel > 0)) return;
+    if(!Number.isInteger(event.tube) || event.tube<0 || event.tube>5 ||
+      ![event.energy,event.gain,event.pan].every(Number.isFinite) || event.energy<=0 || event.gain<=0) return;
+    const now=this.context.currentTime;
+    if(now-(this.lastChimeContact ?? -Infinity)<.6) return;
+    this.lastChimeContact=now;
+    this.chimeStrike(now+.01,event.tube,
+      Math.max(0,Math.min(1,event.energy))*Math.max(0,Math.min(1,event.gain)),
+      Math.max(-1,Math.min(1,event.pan)));
+  }
+
   cityCues() {
     const { context } = this;
     const profile = soundPlaces[this.place] || soundPlaces.planet;
@@ -400,8 +415,7 @@ export class SoundEngine {
     if (profile.fire) return this.crackle(now + 0.05);
     if (now < this.nextCityCue) return;
     if (profile.chimes) {
-      this.chimes(now + 0.05);
-      this.nextCityCue = now + 9 + Math.random() * 16;
+      // The visible instrument now emits contacts from its wind-driven motion.
       return;
     }
     if (profile.hall) {

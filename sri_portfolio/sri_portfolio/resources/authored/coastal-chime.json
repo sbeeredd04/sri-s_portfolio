@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "coastal-chime",
+  "source": "Original Sri portfolio instrument; scripts/blender/build_coastal_chime.py",
+  "license": "Project-owned original geometry",
+  "profile": "interactive",
+  "units": "metres",
+  "nodes": [
+    "coastal_chime",
+    "clapper",
+    "tube_0",
+    "tube_1",
+    "tube_2",
+    "tube_3",
+    "tube_4",
+    "tube_5"
+  ],
+  "extras": {
+    "coastal_chime": {
+      "soundProfile": "brass_tube",
+      "interaction": "wind_contact"
+    }
+  },
+  "tubeFrequencies": [
+    880,
+    987.8,
+    1174.7,
+    1318.5,
+    1568,
+    1760
+  ]
+}

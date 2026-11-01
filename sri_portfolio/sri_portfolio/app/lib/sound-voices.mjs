@@ -149,30 +149,20 @@ export const voices = {
       }
   },
 
-  // A garden wind chime: a few pentatonic tubes knocked by the breeze.
-  chimes(at) {
-    const { context } = this;
-    const scale = [880, 987.8, 1174.7, 1318.5, 1568, 1760];
-    const knocks = 2 + Math.floor(Math.random() * 4);
-    for (let k = 0; k < knocks; k++) {
-      const hz = scale[Math.floor(Math.random() * scale.length)];
-      const start = at + k * (0.18 + Math.random() * 0.35);
-      for (const [ratio, level] of [
-        [1, 0.012],
-        [2.76, 0.004],
-      ]) {
-        const tone = context.createOscillator(),
-          gain = context.createGain();
-        tone.type = "sine";
-        tone.frequency.setValueAtTime(hz * ratio, start);
-        gain.gain.setValueAtTime(0, start);
-        gain.gain.linearRampToValueAtTime(level, start + 0.003);
-        gain.gain.exponentialRampToValueAtTime(0.0001, start + 2.6);
-        tone.connect(gain).connect(this.city);
-        tone.start(start);
-        tone.stop(start + 2.7);
-        this.track(tone, [tone, gain]);
-      }
+  // One brass-tube contact, synchronized to the visible clapper.
+  chimeStrike(at, tube, energy, pan) {
+    const {context}=this;
+    const hz=[880,987.8,1174.7,1318.5,1568,1760][tube];
+    const spatial=context.createStereoPanner();spatial.pan.value=pan;
+    spatial.connect(this.city);
+    for(const [ratio,level] of [[1,.025],[2.76,.008]]) {
+      const tone=context.createOscillator(),gain=context.createGain();
+      tone.type='sine';tone.frequency.setValueAtTime(hz*ratio,at);
+      gain.gain.setValueAtTime(0,at);
+      gain.gain.linearRampToValueAtTime(level*energy,at+.003);
+      gain.gain.exponentialRampToValueAtTime(.000001,at+2.6);
+      tone.connect(gain).connect(spatial);tone.start(at);tone.stop(at+2.7);
+      this.track(tone,[tone,gain,...(ratio===2.76?[spatial]:[])]);
     }
   },
 
