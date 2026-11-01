@@ -258,17 +258,11 @@ function Hedges() {
 }
 
 function Lookout({ night }) {
-  const wall = useMemo(
-    () => [
-      { position: [0, 0.4, 0], size: [lookout.width, 0.8, 0.45], radius: 0.04 },
-      {
-        position: [0, 0.84, 0],
-        size: [lookout.width + 0.2, 0.08, 0.55],
-        radius: 0.02,
-      },
-    ],
-    [],
-  );
+  const wall = useMemo(() => [{
+    position: [lookout.x, ground(lookout.x, lookout.z), lookout.z],
+    rotation: 0,
+    scale: 1,
+  }], []);
   const bench = useMemo(
     () => [
       {
@@ -299,10 +293,8 @@ function Lookout({ night }) {
   );
   return (
     <group>
-      <group position={[lookout.x, ground(lookout.x, lookout.z), lookout.z]}>
-        <Boxes items={wall} color="#b9aa91" roughness={0.92} />
-      </group>
       <Suspense fallback={null}>
+        <ModelInstances src="/models/coastal-wall.glb" items={wall} lod={0} />
         <ModelInstances src="/models/coastal-bench.glb" items={bench} lod={0} />
         <ModelInstances
           src="/models/street-lamp.glb"

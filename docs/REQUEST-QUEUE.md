@@ -742,3 +742,9 @@ Production build passes. Desktop and phone Home/desk screenshots inspected, with
 Removed CameraRig's active dependency on campusArrival. Q42 removed the ring campus, but arrival still aimed northwest toward that former site. New foundryArrival lives with the workshop layout, targets the retained town, and uses closer desktop/portrait positions. No removed campus, valley or courtyard restored; content IDs, routes and project interactions stay intact.
 
 295 tests and production build pass. First screenshots exposed excess empty space, so cameras were moved slightly closer and rebuilt. Phone final arrival shows all six workshop fronts above navigation. Aether branch state exercised successfully (Explore a city selected). Full visual gate and production release tracked in implementation status. Surrounding land and pavilion assets still require the planned landscape/material craft pass.
+
+
+## Q81 — Coastal seating material and construction pass (2026-10-31)
+Original bench now has metre-scaled timber UVs aligned to the long axis of each slat, with embedded existing CC0 base-color/normal/roughness maps. Material groups reduced from six to three. Original wall replaced by a capped, staggered-course model with eased joints and subtle mineral finish, within the old rendered envelope. First mottled concrete material rejected after reimport render; final finish is cleaner and quieter. Shared scene placement unchanged. Bench 557,732 bytes / 5,840 triangles; wall 511,256 bytes / 3,760 triangles.
+
+Shipped-GLB tests measure actual scene bounds, ground contact, bench-wall gap and the full wall footprint against walking paths, and enforce material/semantic/transfer contracts. Preserved sound metadata is not yet wired to live audio. Actual browser gate and release recorded in implementation status. This is a seating-area craft increment, not completion of the coastal biome or overall world.

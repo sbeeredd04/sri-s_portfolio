@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "id": "coastal-wall",
+  "source": "Original Sri portfolio model; scripts/blender/build_coastal_wall.py",
+  "license": "Project-owned original geometry; Poly Haven painted_plaster_wall maps CC0",
+  "profile": "interactive",
+  "units": "metres",
+  "nodes": [
+    "coastal_wall",
+    "wall_visual"
+  ],
+  "parents": {
+    "wall_visual": "coastal_wall"
+  },
+  "extras": {
+    "coastal_wall": {
+      "soundProfile": "stone"
+    }
+  },
+  "footprint": {
+    "width": 6.2,
+    "depth": 0.55
+  },
+  "front": "+Z"
+}

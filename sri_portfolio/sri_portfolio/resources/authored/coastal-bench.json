@@ -2,7 +2,7 @@
   "version": 1,
   "id": "coastal-bench",
   "source": "Original Sri portfolio model; scripts/blender/build_coastal_bench.py",
-  "license": "Project-owned original geometry",
+  "license": "Project-owned original geometry; Poly Haven wood_table_001 maps CC0",
   "profile": "interactive",
   "units": "metres",
   "nodes": [

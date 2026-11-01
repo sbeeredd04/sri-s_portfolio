@@ -1,5 +1,5 @@
 """Original contemporary waterfront bench; authored master + verified GLB.
-Curved slats, powder-coated steel runners, armrests, flush fasteners and
+Curved textured timber slats, powder-coated steel runners, armrests, flush fasteners and
 mounting feet. Blender Z up; exported front faces glTF +Z. Dimensions metres.
 """
 import json
@@ -10,6 +10,7 @@ import bpy
 from mathutils import Vector
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from export_authored import export_scene
+from coastal_materials import surface, metric_uv
 APP = Path(__file__).resolve().parents[2]
 bpy.ops.wm.read_factory_settings(use_empty=True)
 root = bpy.data.objects.new("coastal_bench", None)
@@ -27,7 +28,8 @@ def material(name, color, roughness, metal=0):
     p.inputs["Metallic"].default_value = metal
     return m
 
-woods = [material(f"oiled_ash_{i}",(0.29+i*.014,.16+i*.009,.075+i*.006),.58) for i in range(4)]
+wood = surface("oiled_timber", "wood-table", normal_strength=.18)
+woods = [wood] * 4
 steel = material("graphite_powder_coat",(.055,.07,.075),.42,.65)
 bolt = material("brushed_stainless",(.32,.35,.36),.28,.85)
 parts = []
@@ -41,6 +43,8 @@ def beam(name, location, dimensions, mat, angle=0, bevel=.008):
     bpy.context.view_layer.objects.active=o
     bpy.ops.object.modifier_apply(modifier=modifier.name)
     o.data.materials.append(mat); o.parent=root; parts.append(o)
+    if mat == wood:
+        metric_uv(o, tile=1.8, offset=len(parts)*.137, grain_axis=max(range(3), key=lambda a: dimensions[a]))
     return o
 
 # Seat front to rear, subtly dished with gaps for drainage.
@@ -73,7 +77,7 @@ bpy.context.view_layer.objects.active=parts[0]
 bpy.ops.object.join(); visual=bpy.context.object; visual.name="bench_visual"
 anchor=bpy.data.objects.new("seat_anchor",None); bpy.context.collection.objects.link(anchor)
 anchor.parent=root; anchor.location=(0,0,.46)
-manifest={"version":1,"id":"coastal-bench","source":"Original Sri portfolio model; scripts/blender/build_coastal_bench.py","license":"Project-owned original geometry","profile":"interactive","units":"metres","nodes":["coastal_bench","bench_visual","seat_anchor"],"anchors":["seat_anchor"],"parents":{"bench_visual":"coastal_bench","seat_anchor":"coastal_bench"},"extras":{"coastal_bench":{"soundProfile":"wood-metal","seatHeight":.46}},"footprint":{"width":1.8,"depth":.67},"front":"+Z"}
+manifest={"version":1,"id":"coastal-bench","source":"Original Sri portfolio model; scripts/blender/build_coastal_bench.py","license":"Project-owned original geometry; Poly Haven wood_table_001 maps CC0","profile":"interactive","units":"metres","nodes":["coastal_bench","bench_visual","seat_anchor"],"anchors":["seat_anchor"],"parents":{"bench_visual":"coastal_bench","seat_anchor":"coastal_bench"},"extras":{"coastal_bench":{"soundProfile":"wood-metal","seatHeight":.46}},"footprint":{"width":1.8,"depth":.67},"front":"+Z"}
 masters=APP/'resources'/'authored'; masters.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.save_as_mainfile(filepath=str(masters/'coastal-bench.blend'))
 (masters/'coastal-bench.json').write_text(json.dumps(manifest,indent=2))
