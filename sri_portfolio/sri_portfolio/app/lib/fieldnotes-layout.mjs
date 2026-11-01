@@ -417,7 +417,7 @@ export const fieldnotesCameras = {
   collaborate: {
     position: [0.1, 1.95, -6.3],
     target: [0.1, 0.7, -2.12],
-    portrait: { position: [1.6, 2.55, -7.1], target: [0.1, 0.65, -2.12] },
+    portrait: { position: [0.1, 3.0, -8.4], target: [0.1, 0.75, -2.12] },
   },
 };
 

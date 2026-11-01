@@ -9,6 +9,7 @@ import { renderedSurfaceHeight } from "../../lib/terrain-geometry.mjs";
 import {
   LANTERN_HEIGHT,
   borderPlants,
+  coastalTreeScale,
   lanternPosts,
   lanterns,
   lookout,
@@ -384,7 +385,7 @@ export default function FieldnotesQuarter({
       trees.map((t) => ({
         position: [t.x, ground(t.x, t.z) - 0.1, t.z],
         rotation: t.turn,
-        scale: 0.21 * t.s,
+        scale: coastalTreeScale * t.s,
       })),
     [],
   );
@@ -401,7 +402,7 @@ export default function FieldnotesQuarter({
       </Suspense>
       <Suspense fallback={null}>
         <ModelInstances
-          src="/models/tree-broadleaf.glb"
+          src="/models/coastal-tree.glb"
           windField={windField}
           windAmplitude={coastalWind.tree}
           items={treeItems}

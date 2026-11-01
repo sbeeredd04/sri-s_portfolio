@@ -74,14 +74,17 @@ export function hedges() {
 // inside each former 2.1 x 0.8m hedge, even after turning the plants.
 export const borderShrub = { width: 1.312, depth: 1.641, scale: 0.34 };
 export function borderPlants() {
-  return hedges().flatMap((h, row) => [-0.65, 0, 0.65].map((offset, i) => ({
-    x: h.x + Math.cos(h.yaw) * offset,
-    z: h.z - Math.sin(h.yaw) * offset,
-    yaw: h.yaw + (row * 2.399 + i * 0.7),
-    scale: borderShrub.scale * (0.92 + ((row + i) % 3) * 0.04),
-  })));
+  return hedges().flatMap((h, row) =>
+    [-0.65, 0, 0.65].map((offset, i) => ({
+      x: h.x + Math.cos(h.yaw) * offset,
+      z: h.z - Math.sin(h.yaw) * offset,
+      yaw: h.yaw + (row * 2.399 + i * 0.7),
+      scale: borderShrub.scale * (0.92 + ((row + i) % 3) * 0.04),
+    })),
+  );
 }
 
+export const coastalTreeScale = 0.94;
 export const trees = [
   [-9.5, -6.5, 1.1],
   [9.2, -5.4, 1.0],

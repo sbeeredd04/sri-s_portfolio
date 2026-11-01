@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "id": "coastal-tree",
+  "source": "Original geometry: scripts/blender/build_coastal_tree.py",
+  "license": "Project-owned original geometry",
+  "profile": "vegetation",
+  "units": "metres",
+  "nodes": [
+    "coastal_tree_LOD0",
+    "coastal_tree_LOD1"
+  ],
+  "purpose": "Coastal garden canopy; tapered branching and folded leaves",
+  "lod": "LOD1 retains alternate leaves enlarged to preserve crown coverage; no alpha cards"
+}

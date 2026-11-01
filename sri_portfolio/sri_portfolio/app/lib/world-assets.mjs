@@ -25,7 +25,8 @@ export function startupAssetsForTier(tier) {
 const compactModels = new Set(
   startupAssets
     .filter((url) => url.includes("/compact/"))
-    .map((url) => url.replace("/compact/", "/")),
+    .map((url) => url.replace("/compact/", "/"))
+    .concat("/models/coastal-tree.glb"),
 );
 export function modelSource(src, lod) {
   return lod > 0 && compactModels.has(src)
