@@ -41,14 +41,14 @@ export const grassProfile = {
     dry: "#8f9661",
     fade: 90,
   },
-  // Garden meadow with some height and seed heads.
+  // Composed coastal meadow; dense drifts with finer blades and open lawn.
   future: {
     extent: 20,
-    height: 0.38,
-    width: 0.04,
-    base: "#394a23",
-    tip: "#8ca04c",
-    dry: "#cdb27a",
+    height: 0.26,
+    width: 0.022,
+    base: "#536342",
+    tip: "#a2ae76",
+    dry: "#c1b28b",
     fade: 80,
   },
 };

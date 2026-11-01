@@ -11,47 +11,12 @@ import {
 } from "../../lib/grass.mjs";
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
 
+import { tuftGeometry } from "../../lib/grass-tuft.mjs";
+import { coastalMeadowSeeds } from "../../lib/coastal-meadow.mjs";
 import { windGLSL } from "../../lib/wind-field.mjs";
 
 const MAP = 512;
 const CLEAR = 0.012; // metres a surface may sit above the soil and still be ground (trail paving sits 2.7cm up)
-
-// A tuft of three curved, tapered blades (4 segments each). Each blade keeps
-// its own lean and offset in the attribute "tuft" so wind moves them apart.
-// Placement and wind happen on the GPU: tens of thousands of tufts cost one
-// draw call.
-function tuftGeometry() {
-  const segments = 4,
-    positions = [],
-    uvs = [],
-    tuft = [],
-    indices = [];
-  const blades = [
-    [0, 0, 0, 1],
-    [0.05, 0.035, 2.1, 0.8],
-    [-0.045, -0.03, 4.2, 0.65],
-  ];
-  blades.forEach(([ox, oz, turn, scale], b) => {
-    const base = positions.length / 3;
-    for (let i = 0; i <= segments; i++) {
-      const t = i / segments;
-      const w = 0.5 * (1 - t * 0.94);
-      positions.push(-w, t * scale, 0, w, t * scale, 0);
-      uvs.push(0, t, 1, t);
-      tuft.push(ox, oz, turn, t, ox, oz, turn, t);
-      if (i < segments) {
-        const a = base + i * 2;
-        indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
-      }
-    }
-  });
-  const g = new THREE.BufferGeometry();
-  g.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  g.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-  g.setAttribute("tuft", new THREE.Float32BufferAttribute(tuft, 4));
-  g.setIndex(indices);
-  return g;
-}
 
 // Renders the district from directly above twice: terrain alone and then
 // everything. Where the two heights agree the ground is open soil; anywhere a
@@ -186,11 +151,15 @@ function useGroundMaps(active, surfaceRef, anchorRef, extent) {
   return maps;
 }
 
-function seedGeometry(count, square) {
-  const g = new THREE.InstancedBufferGeometry().copy(tuftGeometry());
-  const seeds = new Float32Array(count * 4);
+function seedGeometry(count, square, meadowExtent = null) {
+  const g = new THREE.InstancedBufferGeometry().copy(
+    tuftGeometry(Boolean(meadowExtent)),
+  );
+  const seeds = meadowExtent
+    ? coastalMeadowSeeds(count, meadowExtent)
+    : new Float32Array(count * 4);
   const spacing = Math.sqrt(Math.PI / count);
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; !meadowExtent && i < count; i++) {
     if (square) {
       // Stratified square for the wrapping near layer.
       seeds[i * 4] = Math.random() * 2 - 1;
@@ -358,19 +327,29 @@ export default function GrassField({
   const mesh = useRef();
   const maps = useGroundMaps(enabled, surfaceRef, anchor, profile?.extent || 1);
   const geometry = useMemo(
-    () => (enabled ? seedGeometry(count, false) : null),
-    [enabled, count],
+    () =>
+      enabled
+        ? seedGeometry(
+            count + (biome === "future" ? near : 0),
+            false,
+            biome === "future" ? profile.extent : null,
+          )
+        : null,
+    [enabled, count, near, biome, profile],
   );
   const nearGeometry = useMemo(
-    () => (enabled && near ? seedGeometry(near, true) : null),
-    [enabled, near],
+    () =>
+      enabled && near && biome !== "future" ? seedGeometry(near, true) : null,
+    [enabled, near, biome],
   );
   const material = useMemo(
-    () => (profile ? grassMaterial(profile, maps, biome, false, windField) : null),
+    () =>
+      profile ? grassMaterial(profile, maps, biome, false, windField) : null,
     [profile, maps, biome, windField],
   );
   const nearMaterial = useMemo(
-    () => (profile ? grassMaterial(profile, maps, biome, true, windField) : null),
+    () =>
+      profile ? grassMaterial(profile, maps, biome, true, windField) : null,
     [profile, maps, biome, windField],
   );
   useEffect(() => () => geometry?.dispose(), [geometry]);
