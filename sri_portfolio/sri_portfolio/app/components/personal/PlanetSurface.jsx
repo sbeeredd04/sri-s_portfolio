@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
+import { useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
   walkingRoutes,
@@ -9,6 +10,7 @@ import {
   isBayCrossing,
 } from "../../lib/world-paths.mjs";
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
+import { coastalGround } from "../../lib/coastal-ground.mjs";
 import { seaSurfaceGLSL } from "../../lib/sea-surface.mjs";
 import { windGLSL } from "../../lib/wind-field.mjs";
 import { foundryCoastGLSL } from "../../lib/foundry-coast.mjs";
@@ -23,6 +25,12 @@ import usePbrSet from "./usePbrSet";
 export default function PlanetSurface({ surfaceRef, weather, windField, animate }) {
   const ground = usePbrSet("grass");
   const geometry = useMemo(createTerrainGeometry, []);
+  const cover = useTexture("/materials/coastal-cover.png");
+  // PNG rows store increasing local z; read as data rather than display color.
+  cover.flipY = false;
+  cover.colorSpace = THREE.NoColorSpace;
+  cover.minFilter = THREE.LinearFilter;
+  cover.magFilter = THREE.LinearFilter;
   const seaTime = windField.uWindTime;
   const seaState = windField.uWindStrength;
   const wet = useMemo(() => ({ value: 0 }), []);
@@ -45,6 +53,7 @@ export default function PlanetSurface({ surfaceRef, weather, windField, animate 
       shader.uniforms.uSeaTime = seaTime;
       shader.uniforms.uSeaState = seaState;
       shader.uniforms.uWet = wet;
+      shader.uniforms.uCoastalCover = { value: cover };
       shader.uniforms.uRegionCenter = { value: regions.map((r) => r.center) };
       shader.uniforms.uLandCenter = {
         value: regions.map(
@@ -101,6 +110,7 @@ export default function PlanetSurface({ surfaceRef, weather, windField, animate 
         `
         varying vec3 vSurface;
         uniform float uSeaTime, uSeaState, uWet;
+        uniform sampler2D uCoastalCover;
         uniform vec3 uRegions[${regions.length}];
         uniform vec3 uRegionCenter[${regions.length}];
         uniform vec2 uLandCenter[${regions.length}];
@@ -131,6 +141,7 @@ export default function PlanetSurface({ surfaceRef, weather, windField, animate 
         float coastalGarden=0.;
         float gardenShore=0.;
         float gardenWater=0.;
+        vec2 gardenLocal=vec2(0.);
         float waterDepth=50.;
         float closestWaterFrame=-2.;
         vec2 seaLocal=vSurface.xz;
@@ -155,6 +166,7 @@ export default function PlanetSurface({ surfaceRef, weather, windField, animate 
             distance=length(local);
             region=facing*(1.-smoothstep(edges.x,edges.y,distance));
             coastalGarden=facing;
+            gardenLocal=local+uLandCenter[i];
             gardenShore=smoothstep(edges.x+1.,edges.y-2.,distance)*region;
             gardenWater=facing*(1.-smoothstep(edges.y-4.,edges.y+9.,distance));
           }
@@ -222,6 +234,17 @@ export default function PlanetSurface({ surfaceRef, weather, windField, animate 
         vec3 coastSand=mix(vec3(.18,.15,.10),vec3(.075,.085,.072),gardenShore);
         coastSand*=.88+worldFbm(vSurface*1.3)*.24;
         ground=mix(ground,coastSand,coastalGarden*gardenShore*land*.85);
+        // Ground cover belongs to the authored garden, not a global noise wash.
+        float coverWindow=1.-step(${coastalGround.extent.toFixed(1)},max(abs(gardenLocal.x),abs(gardenLocal.y)));
+        vec3 coverData=texture2D(uCoastalCover,gardenLocal/${(coastalGround.extent*2).toFixed(1)}+.5).rgb;
+        float gardenLand=coastalGarden*land*(1.-gardenShore)*coverWindow;
+        float rootSoil=coverData.g*gardenLand;
+        float pathWear=coverData.b*gardenLand;
+        float meadowCover=coverData.r*gardenLand;
+        float groundMottle=worldNoise(vec3(gardenLocal*.7,3.));
+        ground=mix(ground,vec3(.068,.078,.035)*(.85+groundMottle*.3),meadowCover*.55);
+        ground=mix(ground,vec3(.074,.048,.025)*(.85+groundMottle*.3),rootSoil*.88);
+        ground=mix(ground,vec3(.12,.10,.066),pathWear*.48);
         // Filter the fine grain out before it becomes sub-pixel from orbit.
         float footprint=max(length(dFdx(vSurface)),length(dFdy(vSurface)));
         float grain=(worldNoise(vSurface*16.)-.5)*.018*(1.-smoothstep(.035,.11,footprint));
@@ -298,13 +321,13 @@ export default function PlanetSurface({ surfaceRef, weather, windField, animate 
     return applyTriplanar(m, {
       ...ground,
       mode: "detail",
-      mask: "land*(1.-cliff*.6)*(1.-city)*(1.-coastalGarden*gardenShore)",
+      mask: "land*(1.-cliff*.6)*(1.-city)*(1.-coastalGarden*gardenShore)*(1.-rootSoil*.9)*(1.-pathWear*.5)",
       scale: 0.42,
       strength: 0.85,
       normalStrength: 0.9,
       meanLuminance: 0.18,
     });
-  }, [ground, seaTime, seaState, wet, windField]);
+  }, [ground, seaTime, seaState, wet, windField, cover]);
   useEffect(
     () => () => {
       geometry.dispose();

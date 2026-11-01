@@ -2,6 +2,11 @@
 
 October 31, 2026. Proposed work, not implemented. This document makes [the main plan](WORLD-CRAFT-PLAN.md) concrete; its amendments take precedence where sequence or scope is more specific. Heavy improvement of the existing portfolio is the default, with selective geographic redesign. Retain the invented globe, SF clock, professional-first content and `/story`.
 
+## Active goal clarification — Sri, October 31
+Complete the full website update described in this plan and the supplied portfolio-handoff: biome/world improvements plus selective modern redesign. Individual coastal releases are progress, not completion. Current direction is contemporary architecture, clean materials and crisp lighting, while preserving the invented globe, SF time/climate, professional-first story and direct reading. The handoff's content questions must not be answered with invented personal stories. Current implementation/deployment authorization supersedes its historical access/workflow restrictions.
+
+The composition comparison, whole-world biome rollout and final validation remain open. Before further isolated polish, prioritize a coherent geographic and visual plan for all destinations, with Foundry/professional work first. See REQUEST-QUEUE.md Q92 for the explicit clarification and current status.
+
 ## 1. What the repository gives us
 
 The supplied `brunosimon/folio-2025` is the same repository already inspected at `41046b57eeed8d156d9c3fd7fa259900baef7816`. Reuse the existing REA analysis rather than reporting a duplicate scan as new research. A focused extraction of its asset-related module nodes and incident relationships is saved in [rea-asset-focus.json](../research/bruno-world-2026-10-31/rea-asset-focus.json); it is derived static evidence, not a new runtime trace. The original analysis parsed 126 JavaScript files. Source inspection below corroborates what those relationships mean.
