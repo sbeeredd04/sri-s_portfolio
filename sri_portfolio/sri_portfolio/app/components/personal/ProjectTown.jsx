@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useMemo, useEffect } from "react";
 import * as THREE from "three";
-import { Box, Boxes, Rods } from "./ScenePrimitives";
+import { Box } from "./ScenePrimitives";
 import {
   Sign,
   StreetLamp,
@@ -9,7 +9,7 @@ import {
   BotanicalPlant,
   PavedWalks,
 } from "./StreetFurniture";
-import { useRoomTexture } from "./RoomMaterials";
+import { Model } from "./ModelInstances";
 import ProjectDistricts from "./ProjectDistricts";
 import TechDistrict from "./TechDistrict";
 import Workbench from "./Workbench";
@@ -22,13 +22,6 @@ import {
   projectIndexPosition,
   projectTownWalks as walks,
 } from "../../lib/project-town-layout.mjs";
-const facadeSlats = [-1, 1].flatMap((side) =>
-  [0, 1, 2, 3, 4].map((i) => ({
-    position: [side * 1.66, 0.35 + i * 0.1, -0.6],
-    size: [0.03, 0.06, 1.4],
-    radius: 0.005,
-  })),
-);
 const roofColor = [
   "#667f98",
   "#6c8298",
@@ -98,24 +91,7 @@ function WorkshopRoof({ type }) {
 }
 // Slab, timber back wall and roof: textured shell, plain until maps load.
 function WorkshopShell({ type }) {
-  const slab = useFinish("concrete", "#7d858d", { scale: 0.45 });
-  const cladding = useFinish("wood-floor", "#7c6f63", { scale: 0.55 });
-  return (
-    <>
-      <FinishBox
-        position={[0, 0.08, 0]}
-        size={[3.45, 0.13, 3.2]}
-        material={slab}
-        radius={0.025}
-      />
-      <FinishBox
-        position={[0, 1.65, -1.4]}
-        size={[3.4, 3.1, 0.16]}
-        material={cladding}
-      />
-      <WorkshopRoof type={type} />
-    </>
-  );
+  return <><Model src="/models/workshop-shell.glb" /><WorkshopRoof type={type} /></>;
 }
 function PlainShell() {
   return (
@@ -146,7 +122,6 @@ function Workshop({
   value,
   onExhibitChange,
 }) {
-  const wood = useRoomTexture("wood", 2);
   const { position, rotation, color, type } = data;
   return (
     <group
@@ -175,34 +150,17 @@ function Workshop({
           <mesh position={[s * 1.65, 1.65, 0]} raycast={() => null}>
             <boxGeometry args={[0.07, 3.1, 2.8]} />
             <meshPhysicalMaterial
-              color="#a9c6db"
+              color="#d9e2df"
               transparent
-              opacity={0.2}
+              opacity={0.12}
               roughness={0.04}
               metalness={0.1}
-              envMapIntensity={1.6}
+              envMapIntensity={0.8}
               depthWrite={false}
             />
           </mesh>
-          <Rods
-            color="#8095a6"
-            segments={[-1.3, 0, 1.3].map((z) => ({
-              from: [s * 1.65, 0.14, z],
-              to: [s * 1.65, 3.18, z],
-              radius: 0.022,
-            }))}
-          />
-          <Box
-            position={[s * 1.38, 1.5, 1.4]}
-            size={[0.065, 2.8, 0.065]}
-            color="#a0aeb8"
-            metalness={0.8}
-            roughness={0.3}
-            radius={0.01}
-          />
         </group>
       ))}
-      <Boxes items={facadeSlats} color="#8a7e70" map={wood} />
       <mesh position={[0, 3.145, 0.3]} rotation={[Math.PI / 2, 0, 0]}>
         <planeGeometry args={[3.1, 2.8]} />
         <meshStandardMaterial
@@ -210,18 +168,6 @@ function Workshop({
           emissive="#f5c18a"
           emissiveIntensity={night ? 0.5 : 0.1}
           side={2}
-        />
-      </mesh>
-      <mesh position={[0, 1.65, 1.42]} raycast={() => null}>
-        <planeGeometry args={[3.1, 2.85]} />
-        <meshPhysicalMaterial
-          color={color}
-          transparent
-          opacity={0.08}
-          roughness={0.15}
-          metalness={0.15}
-          side={2}
-          depthWrite={false}
         />
       </mesh>
       <Sign

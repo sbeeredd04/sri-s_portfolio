@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "id": "workshop-shell",
+  "source": "Original Sri portfolio geometry; build_workshop_shell.py",
+  "license": "Project-owned geometry; existing Poly Haven maps CC0",
+  "profile": "interactive",
+  "units": "metres",
+  "nodes": [
+    "workshop_shell",
+    "shell_visual"
+  ],
+  "parents": {
+    "shell_visual": "workshop_shell"
+  },
+  "extras": {
+    "workshop_shell": {
+      "soundProfile": "wood",
+      "front": "+Z"
+    }
+  },
+  "front": "+Z",
+  "footprint": {
+    "width": 3.45,
+    "depth": 3.2
+  }
+}
