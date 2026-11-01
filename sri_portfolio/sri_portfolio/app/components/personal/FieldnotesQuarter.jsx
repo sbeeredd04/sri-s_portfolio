@@ -23,6 +23,7 @@ import {
 } from "../../lib/fieldnotes.mjs";
 import { discover } from "../../lib/discoveries.mjs";
 import Signpost from "./Signpost";
+import { coastalWind } from "../../lib/wind-field.mjs";
 import LookoutVista from "./LookoutVista";
 
 const ground = (x, z) => renderedSurfaceHeight("future", x, z);
@@ -244,7 +245,7 @@ function Lanterns({ night }) {
   );
 }
 
-function Hedges() {
+function Hedges({ windField }) {
   const items = useMemo(() => borderPlants().map((p) => ({
     position: [p.x, ground(p.x, p.z), p.z],
     rotation: p.yaw,
@@ -252,7 +253,7 @@ function Hedges() {
   })), []);
   return (
     <Suspense fallback={null}>
-      <ModelInstances src="/models/shrub-sapling.glb" items={items} lod={1} />
+      <ModelInstances src="/models/shrub-sapling.glb" items={items} lod={1} windField={windField} windAmplitude={coastalWind.shrub} />
     </Suspense>
   );
 }
@@ -370,6 +371,7 @@ function PaperPlanes({ animate }) {
 
 // The garden around the studio: the showcase stand, lights, framing and life.
 export default function FieldnotesQuarter({
+  windField,
   detailed,
   night,
   animate,
@@ -390,7 +392,7 @@ export default function FieldnotesQuarter({
       <Newsstand onOpen={onOpenWriting} />
       <Signpost biome="future" ground={ground} />
       <Lanterns night={night} />
-      <Hedges />
+      <Hedges windField={windField} />
       <Lookout night={night} />
       <Suspense fallback={null}>
         <LookoutVista night={night} />
@@ -398,6 +400,8 @@ export default function FieldnotesQuarter({
       <Suspense fallback={null}>
         <ModelInstances
           src="/models/tree-broadleaf.glb"
+          windField={windField}
+          windAmplitude={coastalWind.tree}
           items={treeItems}
           lod={detailed && tier !== "low" ? 0 : 1}
         />

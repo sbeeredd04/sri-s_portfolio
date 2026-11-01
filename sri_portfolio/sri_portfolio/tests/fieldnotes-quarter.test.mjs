@@ -13,6 +13,7 @@ import {
   trees,
 } from "../app/lib/fieldnotes-quarter.mjs";
 import { onFieldnotesPath } from "../app/lib/fieldnotes-layout.mjs";
+import { coastalWind } from "../app/lib/wind-field.mjs";
 import { placeStops } from "../app/lib/place-stops.mjs";
 
 test("garden props keep off every Fieldnotes walk", () => {
@@ -58,7 +59,7 @@ test("garden stops are listed in Fieldnotes", () => {
 
 test("rendered shrub footprints clear every garden walk", () => {
   for (const p of borderPlants()) {
-    const radius = Math.hypot(borderShrub.width, borderShrub.depth) * p.scale / 2;
+    const radius = Math.hypot(borderShrub.width, borderShrub.depth) * p.scale / 2 + coastalWind.shrub;
     // Fill the conservative disk, not only the pivot or four corners.
     for (let dx = -radius; dx <= radius; dx += 0.04)
       for (let dz = -radius; dz <= radius; dz += 0.04)

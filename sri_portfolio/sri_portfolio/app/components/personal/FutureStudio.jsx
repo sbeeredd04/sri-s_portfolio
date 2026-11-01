@@ -68,6 +68,7 @@ function GardenPlanting() {
 }
 
 export default function FutureStudio({
+  windField,
   detailed,
   night,
   animate,
@@ -158,6 +159,7 @@ export default function FutureStudio({
         <GardenPlanting />
       </Suspense>
       <FieldnotesQuarter
+        windField={windField}
         detailed={detailed}
         night={night}
         animate={animate}

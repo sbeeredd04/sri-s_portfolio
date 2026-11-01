@@ -4,6 +4,8 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { modelSource } from "../../lib/world-assets.mjs";
 
+import { applyVegetationWind, windShadowMaterials } from "../../lib/vegetation-wind.mjs";
+
 const lodPattern = /_LOD(\d)$/;
 
 // Picks the requested level of detail; assets without LOD nodes use all nodes.
@@ -49,6 +51,8 @@ export default function ModelInstances({
   envMapIntensity = 1,
   tint,
   glow,
+  windField,
+  windAmplitude = 0,
 }) {
   const { scene } = useGLTF(modelSource(src, lod));
   const parts = useMemo(() => {
@@ -58,6 +62,8 @@ export default function ModelInstances({
       // Meshes are placed relative to their LOD root: preview files may offset
       // LOD1 beside LOD0, but each level's pivot is the asset's ground contact.
       const rootInverse = new THREE.Matrix4().copy(root.matrixWorld).invert();
+      const bounds = windField && windAmplitude > 0
+        ? new THREE.Box3().setFromObject(root).applyMatrix4(rootInverse) : null;
       root.traverse((node) => {
         if (!node.isMesh) return;
         const local = new THREE.Matrix4().multiplyMatrices(
@@ -72,15 +78,29 @@ export default function ModelInstances({
           if (tint) p.color.multiply(new THREE.Color(tint));
           return p;
         });
-        out.push({
-          geometry: node.geometry,
-          material: Array.isArray(node.material) ? prepared : prepared[0],
-          local,
-        });
+        if (windField && windAmplitude > 0) {
+          // Split only wind-enabled multi-material primitives so each shadow
+          // pass uses the correct foliage alpha mask, without extra draws.
+          const groups = Array.isArray(node.material) ? node.geometry.groups : [null];
+          for (const group of groups) {
+            const material = prepared[group?.materialIndex ?? 0];
+            const geometry = group ? node.geometry.clone() : node.geometry;
+            if (group) {
+              geometry.clearGroups();
+              geometry.setDrawRange(group.start, group.count);
+            }
+            applyVegetationWind(material, windField, local, bounds, windAmplitude);
+            const shadows = windShadowMaterials(material, windField, local, bounds, windAmplitude);
+            out.push({ geometry, material, local, shadows, ownedGeometry: Boolean(group) });
+          }
+        } else {
+          out.push({ geometry: node.geometry,
+            material: Array.isArray(node.material) ? prepared : prepared[0], local });
+        }
       });
     }
     return out;
-  }, [scene, lod, envMapIntensity, tint, glow?.intensity, glow?.color]);
+  }, [scene, lod, envMapIntensity, tint, glow?.intensity, glow?.color, windField, windAmplitude]);
   const meshes = useMemo(() => {
     const object = new THREE.Object3D();
     const matrix = new THREE.Matrix4();
@@ -100,23 +120,35 @@ export default function ModelInstances({
         matrix.multiplyMatrices(object.matrix, part.local);
         mesh.setMatrixAt(i, matrix);
       });
+      if (part.shadows) {
+        mesh.customDepthMaterial = part.shadows.depth;
+        mesh.customDistanceMaterial = part.shadows.distance;
+      }
       mesh.count = items.length;
       mesh.castShadow = castShadow;
       mesh.receiveShadow = receiveShadow;
       mesh.instanceMatrix.needsUpdate = true;
       mesh.computeBoundingSphere();
       mesh.computeBoundingBox();
+      // Shader motion remains inside these conservative culling bounds.
+      if (windAmplitude > 0) {
+        mesh.boundingSphere.radius += windAmplitude;
+        mesh.boundingBox.expandByScalar(windAmplitude);
+      }
       return mesh;
     });
-  }, [parts, items, castShadow, receiveShadow]);
+  }, [parts, items, castShadow, receiveShadow, windAmplitude]);
   // Placement changes replace instance buffers, not shared materials. Disposing
   // those materials here used to force a shader recompile on ordinary renders.
   useEffect(() => () => meshes.forEach((m) => m.dispose()), [meshes]);
   useEffect(
     () => () =>
-      parts.forEach((p) =>
-        [p.material].flat().forEach((material) => material.dispose()),
-      ),
+      parts.forEach((p) => {
+        [p.material].flat().forEach((material) => material.dispose());
+        p.shadows?.depth.dispose();
+        p.shadows?.distance.dispose();
+        if (p.ownedGeometry) p.geometry.dispose();
+      }),
     [parts],
   );
   return (

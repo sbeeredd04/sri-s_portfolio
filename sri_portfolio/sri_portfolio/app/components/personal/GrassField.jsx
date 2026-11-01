@@ -11,6 +11,8 @@ import {
 } from "../../lib/grass.mjs";
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
 
+import { windGLSL } from "../../lib/wind-field.mjs";
+
 const MAP = 512;
 const CLEAR = 0.012; // metres a surface may sit above the soil and still be ground (trail paving sits 2.7cm up)
 
@@ -216,15 +218,14 @@ function seedGeometry(count, square) {
   return g;
 }
 
-function grassMaterial(profile, maps, biome, near) {
+function grassMaterial(profile, maps, biome, near, windField) {
   const m = new THREE.MeshStandardMaterial({
     side: THREE.DoubleSide,
     roughness: 0.78,
     metalness: 0,
   });
   const uniforms = {
-    uTime: { value: 0 },
-    uGust: { value: 1 },
+    ...windField,
     uExtent: { value: profile.extent },
     // Near layer: a dense square of tufts that recycles around the point
     // the camera is looking at, so close shots are full, not ribbons.
@@ -258,7 +259,8 @@ function grassMaterial(profile, maps, biome, near) {
         `#include <common>
           attribute vec4 seed;
           attribute vec4 tuft;
-          uniform float uTime, uGust, uExtent, uPlace, uNear, uHeight, uWidth, uReady, uClear, uFade, uR, uInner;
+          ${windGLSL}
+          uniform float uExtent, uPlace, uNear, uHeight, uWidth, uReady, uClear, uFade, uR, uInner;
           uniform sampler2D uSoil, uTop;
           uniform vec3 uCam; uniform vec2 uCenter;
           varying float vT; varying float vShade; varying float vDry;
@@ -304,13 +306,14 @@ function grassMaterial(profile, maps, biome, near) {
           float alive=step(.0005,h);
           vec3 transformed=vec3(position.x*uWidth*(.7+seed.w*.6)*alive,position.y*h,0.);
           // Natural lean plus travelling gusts; tips move most.
-          float gust=gn(local*.05+vec2(uTime*.35,uTime*.12));
-          float sway=(sin(uTime*1.9+local.x*.4+local.y*.3+seed.w*6.)*.12+gust*.55)*uGust;
           float tip=tuft.w;
-          float bend=(tip*tip)*(.25+sway+tuft.x*2.)*h;
+          float bend=(tip*tip)*(.25+tuft.x*2.)*h;
           transformed.z+=bend;
           transformed.y-=bend*bend*.35/max(h,.001);
           transformed=vec3(transformed.x*ca+transformed.z*sa,transformed.y,-transformed.x*sa+transformed.z*ca);
+          float windBend=tip*tip*h*.55*uWindStrength*worldWindGust(local);
+          transformed.xz += uWindDirection*windBend;
+          transformed.y -= windBend*windBend*.35/max(h,.001);
           transformed+=root+vec3(tuft.x,0.,tuft.y)*(.6+h);
           vT=tip; vShade=.65+clump*.35; vDry=smoothstep(.55,.95,gn(local*.03+3.));`,
       );
@@ -344,7 +347,7 @@ export default function GrassField({
   surfaceRef,
   animate,
   sun,
-  wind = 4,
+  windField,
 }) {
   const quality = useQuality();
   const profile = grassProfile[biome];
@@ -353,7 +356,6 @@ export default function GrassField({
   const enabled = Boolean(profile && count && active);
   const anchor = useRef();
   const mesh = useRef();
-  const time = useRef(0);
   const maps = useGroundMaps(enabled, surfaceRef, anchor, profile?.extent || 1);
   const geometry = useMemo(
     () => (enabled ? seedGeometry(count, false) : null),
@@ -364,12 +366,12 @@ export default function GrassField({
     [enabled, near],
   );
   const material = useMemo(
-    () => (profile ? grassMaterial(profile, maps, biome, false) : null),
-    [profile, maps, biome],
+    () => (profile ? grassMaterial(profile, maps, biome, false, windField) : null),
+    [profile, maps, biome, windField],
   );
   const nearMaterial = useMemo(
-    () => (profile ? grassMaterial(profile, maps, biome, true) : null),
-    [profile, maps, biome],
+    () => (profile ? grassMaterial(profile, maps, biome, true, windField) : null),
+    [profile, maps, biome, windField],
   );
   useEffect(() => () => geometry?.dispose(), [geometry]);
   useEffect(() => () => nearGeometry?.dispose(), [nearGeometry]);
@@ -385,7 +387,6 @@ export default function GrassField({
   );
   useFrame(({ camera }, dt) => {
     if (!enabled || !material) return;
-    if (animate) time.current += Math.min(dt, 0.05);
     // Where the view meets the ground (in the district frame), held within a
     // short distance in front of the camera for wide establishing shots.
     const group = anchor.current;
@@ -398,9 +399,6 @@ export default function GrassField({
     for (const m of [material, nearMaterial]) {
       if (!m) continue;
       const u = m.userData.uniforms;
-      u.uTime.value = time.current;
-      // Live wind: calm air barely stirs, a 12 m/s blow bends hard.
-      u.uGust.value = 0.35 + Math.min(wind, 14) * 0.13;
       u.uCam.value.copy(camera.position);
       u.uCenter.value.set(ray.hit.x, ray.hit.z);
       if (sun) u.uSun.value.copy(sun);

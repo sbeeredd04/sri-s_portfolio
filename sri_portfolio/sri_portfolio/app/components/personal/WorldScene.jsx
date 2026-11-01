@@ -17,6 +17,7 @@ import {
   WORLD_RADIUS,
   surfaceHeight,
 } from "../../lib/world-layout.mjs";
+import useWindField from "./useWindField";
 import GraphicsHealth, { GraphicsGate } from "./GraphicsHealth";
 import MaterialLighting from "./MaterialLighting";
 import WorldLighting from "./WorldLighting";
@@ -146,6 +147,7 @@ function ConnectedWorld({
   onWalkerStatus,
   onWalkExit,
 }) {
+  const windField = useWindField(animate, solar.weather);
   const planet = useRef(),
     lastNear = useRef("");
   const districtGroups = useRef({});
@@ -280,7 +282,7 @@ function ConnectedWorld({
             active={world === region.id}
             surfaceRef={planet}
             animate={animate}
-            wind={solar.weather?.wind}
+            windField={windField}
             sun={new THREE.Vector3(...solar.direction).applyQuaternion(
               region.rotation,
             )}
@@ -371,6 +373,7 @@ function ConnectedWorld({
             />
           ) : (
             <FutureStudio
+              windField={windField}
               stop={stop}
               detailed={near.future}
               animate={animate && near.future}
