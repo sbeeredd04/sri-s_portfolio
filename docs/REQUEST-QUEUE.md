@@ -784,3 +784,13 @@ Replaced independently moving noise normals with three metre-scaled wave bands d
 307 tests and production build pass (Node 24.22.2). Initial GPU validation caught a reserved GLSL variable name, corrected before release; final desktop/phone browser console captured no warnings/errors. Desktop and 390x844 arrival/lookout/return screenshots retained, keyboard selection and pause/resume exercised; paused frame pair retained. Existing paths and asset geometry are unchanged. Physical phones/older-M1 remain unverified.
 
 Open visual defects: shore bands still read too uniformly, lighthouse rock is angular, planting silhouettes and land-cover density remain weak, and atmospheric light obscures some surface contrast. This is a bounded water-system improvement, not the full requested environment quality. Further coast geometry, authored plants/rocks, material interactions/audio and broad occlusion remain open.
+
+
+## Q87 — Authored offshore reef (2026-10-31)
+Replaced the coarse runtime triangle shell under the lighthouse with an original editable Blender reef. Uses a rounded asymmetric plan, varied wave-cut ledges, recessed joints, elevation-based tidal staining and a level crown beneath the tower. First browser review found overly regular tiering; revised the ledge elevations/exposure and rechecked desktop and phone close views. Existing shared triplanar granite maps retained; no new texture downloads or extra material draw calls.
+
+Export: 4,892 triangles, 109,028 bytes, one mesh/material. Source script, .blend and semantic manifest retained; metadata is descriptive, not newly wired audio. Runtime geometry comes from the shared GLTF cache and is not disposed by individual consumers. Removed obsolete generated-island function.
+
+307 tests and production build passed; final asset adjustment passed its four affected tests. Tests inspect the shipped mesh for full garden-path clearance, submerged bottom, budget and crown radius, plus 32 downward raycasts around the tower's actual base to verify level support. Desktop and 390x844 arrival/close/return reviewed, day/night checked, keyboard selection/focus and pause/resume exercised. No captured browser warnings/errors. Physical phone and older-M1 performance remains unverified.
+
+Open: rock material remains repetitive at close range, beach bands are uniform, vegetation is sparse and camera/UI composition still needs broader refinement. This improves one focal asset; it does not complete the full biome or the world-quality goal.

@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "id": "beacon-reef",
+  "source": "Original Sri portfolio contour and bedding study; scripts/blender/build_beacon_reef.py",
+  "license": "Project-owned original geometry",
+  "profile": "interactive",
+  "units": "metres",
+  "nodes": [
+    "beacon_reef"
+  ],
+  "extras": {
+    "beacon_reef": {
+      "soundProfile": "stone",
+      "surfaceRole": "offshore_reef"
+    }
+  },
+  "attributes": {
+    "beacon_reef": [
+      "POSITION",
+      "NORMAL",
+      "COLOR_0"
+    ]
+  },
+  "towerSupport": {
+    "height": 0.9,
+    "radius": 1.75
+  },
+  "submergedBottom": -6.8
+}

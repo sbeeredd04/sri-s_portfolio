@@ -1,13 +1,32 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { PerspectiveCamera, Vector3 } from "three";
-import { buildLookoutIsland, lookoutVista } from "../app/lib/lookout-vista.mjs";
+import { PerspectiveCamera, Vector3, BufferGeometry, Float32BufferAttribute, Mesh, MeshBasicMaterial, Raycaster } from "three";
+import { lookoutVista } from "../app/lib/lookout-vista.mjs";
 import { lookout, quarterViews } from "../app/lib/fieldnotes-quarter.mjs";
 import { fieldnotesPaths } from "../app/lib/fieldnotes-layout.mjs";
 import { renderedSurfaceHeight } from "../app/lib/terrain-geometry.mjs";
 
-test("the entire offshore mesh clears garden walks and meets the sea", () => {
-  const mesh = buildLookoutIsland();
+test("the shipped offshore reef clears garden walks and meets the sea", async () => {
+  const { NodeIO } = await import('@gltf-transform/core');
+  const { ALL_EXTENSIONS } = await import('@gltf-transform/extensions');
+  const { stat } = await import('node:fs/promises');
+  const doc = await new NodeIO().registerExtensions(ALL_EXTENSIONS).read('public/models/beacon-reef.glb');
+  const primitive = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+  const mesh = new BufferGeometry();
+  mesh.setAttribute('position',new Float32BufferAttribute(primitive.getAttribute('POSITION').getArray(),3));
+  mesh.setIndex(Array.from(primitive.getIndices().getArray()));
+  const support = new Mesh(mesh,new MeshBasicMaterial());
+  for(let i=0;i<32;i++) {
+    const angle=i*Math.PI/16;
+    const ray=new Raycaster(new Vector3(Math.cos(angle)*1.38,2,Math.sin(angle)*1.38),new Vector3(0,-1,0));
+    const hit=ray.intersectObject(support)[0];
+    assert.ok(hit && Math.abs(hit.point.y-lookoutVista.top)<.001,'tower foot extends beyond level supporting stone');
+  }
+  support.material.dispose();
+  assert.ok(primitive.getIndices().getCount()/3 < 5500, 'reef exceeds authored geometry budget');
+  assert.ok((await stat('public/models/beacon-reef.glb')).size < 220000);
+  assert.ok(primitive.getAttribute('COLOR_0'), 'tidal stain missing');
+  console.log({reefTriangles:primitive.getIndices().getCount()/3,reefBytes:(await stat('public/models/beacon-reef.glb')).size});
   const p = mesh.attributes.position;
   // Include both ends and the full width of every rendered garden path.
   const pathEdge = Math.max(
@@ -34,7 +53,12 @@ test("the entire offshore mesh clears garden walks and meets the sea", () => {
     }
   }
   assert.ok(submerged > 0);
-  assert.ok(p.count / 3 < 700, "vista cliff exceeds its triangle budget");
+  // The crown must support the entire 1.38m tower base at its shared height.
+  const crown=[];
+  for(let i=0;i<p.count;i++) if(Math.abs(p.getY(i)-lookoutVista.top)<.001) crown.push(Math.hypot(p.getX(i),p.getZ(i)));
+  assert.ok(crown.length>=100);
+  assert.ok(Math.min(...crown)>1.7);
+  assert.ok(Math.max(...crown)<1.8);
   mesh.dispose();
 });
 

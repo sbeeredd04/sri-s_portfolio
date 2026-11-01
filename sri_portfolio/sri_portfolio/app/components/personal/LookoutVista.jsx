@@ -1,11 +1,11 @@
 "use client";
 import { useMemo, useEffect } from "react";
+import { useGLTF } from "@react-three/drei";
 import { Vector2, MeshStandardMaterial } from "three";
 import usePbrSet from "./usePbrSet";
 import { applyTriplanar } from "../../lib/triplanar.mjs";
 import { Boxes, Rods } from "./ScenePrimitives";
 import {
-  buildLookoutIsland,
   lookoutVista as vista,
 } from "../../lib/lookout-vista.mjs";
 
@@ -13,7 +13,8 @@ import {
 // gallery rail and an exposed rock shelf. Reuses the world’s granite set; no
 // shadow lights, transparency layers or continuous animation are required.
 export default function LookoutVista({ night }) {
-  const island = useMemo(buildLookoutIsland, []);
+  const { nodes } = useGLTF("/models/beacon-reef.glb");
+  const island = nodes.beacon_reef.geometry;
   const stone = usePbrSet("granite-cliff");
   const cliffMaterial = useMemo(() => {
     const material = new MeshStandardMaterial({
@@ -31,7 +32,7 @@ export default function LookoutVista({ night }) {
     return material;
   }, [stone]);
   useEffect(() => () => cliffMaterial.dispose(), [cliffMaterial]);
-  useEffect(() => () => island.dispose(), [island]);
+  // Geometry belongs to the shared GLTF cache; only our material is disposed.
   const profile = useMemo(
     () =>
       [
