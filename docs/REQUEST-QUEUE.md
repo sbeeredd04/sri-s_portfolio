@@ -730,3 +730,9 @@ Replaced the circular northern land shoulder with a smaller asymmetric headland:
 The city street shader extended across the whole coastal shoulder, beyond the building lots and walkable grid. Added one urban coverage policy: fully urban at 2m inside the inner plateau, fading out by 8m outside. Surface shader and street queries share the boundary values. The coastal shoulder now returns to landscape; no buildings, landmarks, hill relief or connecting roads moved.
 
 295 tests pass, including all lot corners, every city walking segment, landmark centers and a full outer ring with no phantom streets. Production build passes. Desktop globe/Home/desk and phone desk/return inspected. Broad shoulders, round terrain envelopes and primitive neighboring roofs remain unresolved. Next close-up priority: better roof/foreground visibility; do not conflate this boundary correction with complete city art.
+
+
+## Q79 — Complete the apartment roof cutaway (2026-10-31)
+Moved overhead rafters and ridge into the existing roof fade group. Wall posts stay visible. Previously the roof skin disappeared while cross-room rafters continued to obscure the arrival view. This changes presentation only; dimensions, footprints, physics, and paths remain unchanged.
+
+Production build passes. Desktop and phone Home/desk screenshots inspected, with cleaner open-room arrival. Neighboring gables and front window framing still dominate parts of the portrait desk background; do not claim a general camera-occlusion system or complete architecture improvement. No new implementation-mirroring tests added for this grouping-only change. Exterior return verification and deployment recorded in implementation status.

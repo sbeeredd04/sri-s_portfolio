@@ -171,37 +171,37 @@ export default function House({ children, animate, night, rain }) {
           metalness={0.5}
           radius={0.04}
         />
+        {/* Overhead structure belongs to the same cutaway as the roof skin.
+            Otherwise an invisible roof leaves rafters across the subject. */}
+        {[-3.95, 0.5, 4.96].flatMap((z) => [-1, 1].map((side) => (
+          <Box
+            key={`${z}:${side}`}
+            position={[(side * h.halfWidth) / 2, 4.09, z]}
+            rotation={[0, 0, -side * pitch]}
+            size={[6.57, 0.16, 0.16]}
+            map={wood}
+            color="#ac9077"
+            radius={0.008}
+          />
+        )))}
+        <Box
+          position={[0, 4.65, 0.5]}
+          size={[0.19, 0.19, 9.15]}
+          map={wood}
+          color="#ac9077"
+          radius={0.008}
+        />
       </group>
-      {/* Actual rafters join ridge, wall plates and posts. */}
-      {[-3.95, 0.5, 4.96].map((z) => (
-        <group key={z}>
-          {[-1, 1].map((side) => (
-            <group key={side}>
-              <Box
-                position={[(side * h.halfWidth) / 2, 4.09, z]}
-                rotation={[0, 0, -side * pitch]}
-                size={[6.57, 0.16, 0.16]}
-                map={wood}
-                color="#ac9077"
-                radius={0.008}
-              />
-              <Box
-                position={[side * 6.24, 1.84, z]}
-                size={[0.16, 3.4, 0.16]}
-                color="#3d4651"
-                radius={0.012}
-              />
-            </group>
-          ))}
-        </group>
-      ))}
-      <Box
-        position={[0, 4.65, 0.5]}
-        size={[0.19, 0.19, 9.15]}
-        map={wood}
-        color="#ac9077"
-        radius={0.008}
-      />
+      {/* Wall posts remain visible to retain the room's structural outline. */}
+      {[-3.95, 0.5, 4.96].flatMap((z) => [-1, 1].map((side) => (
+        <Box
+          key={`${z}:${side}`}
+          position={[side * 6.24, 1.84, z]}
+          size={[0.16, 3.4, 0.16]}
+          color="#3d4651"
+          radius={0.012}
+        />
+      )))}
       <Gable z={5} />
       <Gable z={-4} />
       <RainWindow animate={animate} night={night} rain={rain} />
