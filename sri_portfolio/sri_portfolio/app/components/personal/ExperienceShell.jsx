@@ -329,13 +329,14 @@ export default function ExperienceShell() {
     // keyboard focus in the local controls when the old target disappears.
     if (document.activeElement === document.body) {
       const target =
+        (phone && !toolsExpanded ? mobileToolsToggle.current : null) ||
         exploration.current?.querySelector('[aria-pressed="true"]') ||
         exploration.current?.querySelector(
           "button:not(:disabled):not([aria-disabled=true])",
-        );
+        ) || mobileToolsToggle.current;
       target?.focus({ preventScroll: true });
     }
-  }, [biome, stop, still]);
+  }, [biome, stop, still, phone, toolsExpanded]);
   useEffect(() => {
     const strip = exploration.current?.querySelector(".place-stops");
     if (!strip) return;
@@ -630,8 +631,9 @@ export default function ExperienceShell() {
   }, []);
   const chapter = allChapters.find((c) => c.id === biome),
     chapterId = biome === "entertainment" ? "court" : biome,
-    next =
-      chapters[
+    next = !chapter
+      ? chapters.find((c) => c.id === "projects")
+      : chapters[
         (chapters.findIndex((c) => c.id === chapterId) + 1) % chapters.length
       ];
   const street = streetStop(biome, stop);
@@ -856,12 +858,12 @@ export default function ExperienceShell() {
               <div className="intro-actions">
                 <button
                   className="primary-action"
-                  onClick={() => travel("studio")}
+                  onClick={() => travel("projects")}
                 >
-                  Start at home <UiIcon />
+                  Explore my work <UiIcon />
                 </button>
                 <button className="text-action" onClick={() => show("work")}>
-                  See my work
+                  Read the portfolio
                 </button>
               </div>
             )}
@@ -1330,7 +1332,7 @@ export default function ExperienceShell() {
           onClick={() => travel(next.id)}
           aria-label={`Continue to ${next.label}`}
         >
-          <span>{chapter ? "Keep exploring" : "Come on in"}</span>
+          <span>{chapter ? "Keep exploring" : "Explore my work"}</span>
           <UiIcon name="arrowRight" size={24} />
         </button>
       </footer>
