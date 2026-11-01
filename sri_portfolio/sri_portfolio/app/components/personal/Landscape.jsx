@@ -15,7 +15,7 @@ import GraniteValley from "./GraniteValley";
 import ModelInstances from "./ModelInstances";
 import { useQuality } from "./Quality";
 import ValleyDressing from "./ValleyDressing";
-import { foundryGroveTrees } from "../../lib/foundry-grove.mjs";
+import { foundryGroveTrees, foundryGroveScale } from "../../lib/foundry-grove.mjs";
 import ValleyCourse from "./ValleyCourse";
 import { inGraniteFootprint } from "../../lib/valley-layout.mjs";
 import { localTrailPaving } from "../../lib/trail-surface.mjs";
@@ -161,7 +161,7 @@ function TexturedGrove({
           ? items.map((item) => ({ ...item, scale: item.scale * 2 }))
           : biome === "projects"
             ? // Jacaranda crowns are ~24 m wide at scale 1; ~6 m here.
-              items.map((item) => ({ ...item, scale: item.scale * 0.72 }))
+              items.map((item,i) => ({ ...item, scale: foundryGroveScale(trees[i].s,i) }))
             : items
       }
       // Full-detail crowns only where the device tier can afford them; the

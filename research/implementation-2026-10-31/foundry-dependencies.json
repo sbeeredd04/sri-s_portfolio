@@ -1,0 +1,2233 @@
+{
+  "nodes": [
+    {
+      "id": "app_lib_world_layout_mjs",
+      "label": "world-layout.mjs",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_up",
+      "label": "up",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L14",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_regions",
+      "label": "regions",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L15",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_worldpoint",
+      "label": "worldPoint()",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L90",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_regiondistance",
+      "label": "regionDistance()",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L94",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_plateauradius",
+      "label": "plateauRadius()",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L101",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_trailheight",
+      "label": "trailHeight()",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L114",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_listeningshoreheight",
+      "label": "listeningShoreHeight()",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L132",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_planetradiusat",
+      "label": "planetRadiusAt()",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L146",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_surfaceheight",
+      "label": "surfaceHeight()",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L186",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_safecamerapoint",
+      "label": "safeCameraPoint()",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L213",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_groundcolliderdata",
+      "label": "groundColliderData()",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L222",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_mjs",
+      "label": "world-paths.mjs",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_connections",
+      "label": "connections",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L5",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_causeway",
+      "label": "causeway",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L14",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_walkingroutes",
+      "label": "walkingRoutes",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L15",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_baycrossing",
+      "label": "bayCrossing",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L31",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_isbaycrossing",
+      "label": "isBayCrossing()",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L39",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_crossinglift",
+      "label": "crossingLift()",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L42",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_pathsample",
+      "label": "pathSample()",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L50",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_pathhalfwidth",
+      "label": "pathHalfWidth()",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L64",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_pathpose",
+      "label": "pathPose()",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L74",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_walkwayplacements",
+      "label": "walkwayPlacements()",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L85",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_mjs",
+      "label": "terrain-geometry.mjs",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_terrainsegments",
+      "label": "terrainSegments",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L12",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_inbiomefootprint",
+      "label": "inBiomeFootprint()",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L25",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_studio",
+      "label": "studio",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L34",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_oncityhill",
+      "label": "onCityHill()",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L35",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_installterraingeometry",
+      "label": "installTerrainGeometry()",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L47",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_createterraingeometry",
+      "label": "createTerrainGeometry()",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L54",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_prepareterraingeometry",
+      "label": "prepareTerrainGeometry()",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L68",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_midpoint",
+      "label": "midpoint()",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L190",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_split",
+      "label": "split()",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L213",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_terrainvertices",
+      "label": "terrainVertices()",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L257",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_renderedsurfaceheight",
+      "label": "renderedSurfaceHeight()",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L266",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_project_town_layout_mjs",
+      "label": "project-town-layout.mjs",
+      "file_type": "code",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_project_town_layout_workshops",
+      "label": "workshops",
+      "file_type": "code",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L3",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_project_town_layout_projecttownwalks",
+      "label": "projectTownWalks",
+      "file_type": "code",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L55",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_project_town_layout_projectwalks",
+      "label": "projectWalks",
+      "file_type": "code",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L69",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_project_town_layout_projectlamps",
+      "label": "projectLamps",
+      "file_type": "code",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L74",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_project_town_layout_projectindexposition",
+      "label": "projectIndexPosition",
+      "file_type": "code",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L82",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_project_town_layout_projectgallerysites",
+      "label": "projectGallerySites",
+      "file_type": "code",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L84",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_project_town_layout_districtlamps",
+      "label": "districtLamps",
+      "file_type": "code",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L88",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_project_town_layout_foundryarrival",
+      "label": "foundryArrival",
+      "file_type": "code",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L95",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_mjs",
+      "label": "tech-plan.mjs",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_plaza",
+      "label": "plaza",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L10",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_tools",
+      "label": "tools",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L13",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_offices",
+      "label": "offices",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L27",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_booths",
+      "label": "booths",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L38",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_techwalks",
+      "label": "techWalks",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L44",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_techpalms",
+      "label": "techPalms()",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L59",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_techfootprints",
+      "label": "techFootprints()",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L79",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_intechfootprint",
+      "label": "inTechFootprint()",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L98",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_audiencebudget",
+      "label": "audienceBudget",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L105",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_audience",
+      "label": "audience()",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L106",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_strollbudget",
+      "label": "strollBudget",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L121",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_strollers",
+      "label": "strollers()",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L122",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_browserbudget",
+      "label": "browserBudget",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L154",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_browsers",
+      "label": "browsers()",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L155",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_techviews",
+      "label": "techViews",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L167",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_mjs",
+      "label": "amphitheatre.mjs",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_stage",
+      "label": "stage",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L9",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_bowl",
+      "label": "bowl",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L11",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_screen",
+      "label": "screen",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L20",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_sidescreens",
+      "label": "sideScreens",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L21",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_wall",
+      "label": "wall",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L30",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_canopy",
+      "label": "canopy",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L31",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_venuebounds",
+      "label": "venueBounds",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L44",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_polar",
+      "label": "polar()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L51",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_tierat",
+      "label": "tierAt()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L57",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_tierheight",
+      "label": "tierHeight()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L66",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_onstage",
+      "label": "onStage()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L70",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_standheight",
+      "label": "standHeight()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L74",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_speaker",
+      "label": "speaker",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L77",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_seats",
+      "label": "seats()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L80",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_bermrun",
+      "label": "bermRun()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L98",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_berm",
+      "label": "berm()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L100",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_buildamphitheatre",
+      "label": "buildAmphitheatre()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L119",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_canopyheight",
+      "label": "canopyHeight()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L182",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_canopysurface",
+      "label": "canopySurface()",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L188",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_worldpoint",
+      "label": "worldPoint",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L90",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_regiondistance",
+      "label": "regionDistance",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L94",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_trailheight",
+      "label": "trailHeight",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L114",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_listeningshoreheight",
+      "label": "listeningShoreHeight",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L132",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_planetradiusat",
+      "label": "planetRadiusAt",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L146",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_surfaceheight",
+      "label": "surfaceHeight",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L186",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_safecamerapoint",
+      "label": "safeCameraPoint",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L213",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_layout_groundcolliderdata",
+      "label": "groundColliderData",
+      "file_type": "code",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L222",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_isbaycrossing",
+      "label": "isBayCrossing",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L39",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_crossinglift",
+      "label": "crossingLift",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L42",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_pathsample",
+      "label": "pathSample",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L50",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_pathhalfwidth",
+      "label": "pathHalfWidth",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L64",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_pathpose",
+      "label": "pathPose",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L74",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_world_paths_walkwayplacements",
+      "label": "walkwayPlacements",
+      "file_type": "code",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L85",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_installterraingeometry",
+      "label": "installTerrainGeometry",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L47",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_createterraingeometry",
+      "label": "createTerrainGeometry",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L54",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_prepareterraingeometry",
+      "label": "prepareTerrainGeometry",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L68",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_terrain_geometry_renderedsurfaceheight",
+      "label": "renderedSurfaceHeight",
+      "file_type": "code",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L266",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_techpalms",
+      "label": "techPalms",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L59",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_techfootprints",
+      "label": "techFootprints",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L79",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_audience",
+      "label": "audience",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L106",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_strollers",
+      "label": "strollers",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L122",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_tech_plan_browsers",
+      "label": "browsers",
+      "file_type": "code",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L155",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_tierat",
+      "label": "tierAt",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L57",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_seats",
+      "label": "seats",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L80",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_buildamphitheatre",
+      "label": "buildAmphitheatre",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L119",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_canopyheight",
+      "label": "canopyHeight",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L182",
+      "_origin": "ast"
+    },
+    {
+      "id": "app_lib_amphitheatre_canopysurface",
+      "label": "canopySurface",
+      "file_type": "code",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L188",
+      "_origin": "ast"
+    }
+  ],
+  "edges": [
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "three",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_fieldnotes_coast_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_fieldnotes_coast_fieldnotescoastedges",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_valley_layout_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_valley_layout_carvedtrailheight",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_valley_layout_valleyfloorweight",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_sf_terrain_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_sf_terrain_sfcoastfade",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_sf_terrain_sfterrainheight",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_up",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_regions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_worldpoint",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_regiondistance",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_plateauradius",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_trailheight",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_listeningshoreheight",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_planetradiusat",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_surfaceheight",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L186",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_safecamerapoint",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L213",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_mjs",
+      "target": "app_lib_world_layout_groundcolliderdata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_planetradiusat",
+      "target": "app_lib_world_layout_regiondistance",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L162",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_planetradiusat",
+      "target": "app_lib_world_layout_trailheight",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_planetradiusat",
+      "target": "app_lib_world_layout_listeningshoreheight",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_planetradiusat",
+      "target": "app_lib_world_layout_plateauradius",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_surfaceheight",
+      "target": "app_lib_world_layout_worldpoint",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L190",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_surfaceheight",
+      "target": "app_lib_world_layout_planetradiusat",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L191",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_safecamerapoint",
+      "target": "app_lib_world_layout_planetradiusat",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L218",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_layout_groundcolliderdata",
+      "target": "app_lib_world_layout_surfaceheight",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-layout.mjs",
+      "source_location": "L230",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "three",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_court_layout_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_court_layout_courtentrance",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_layout_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_layout_worldpoint",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_layout_planetradiusat",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_layout_world_radius",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_connections",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_causeway",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_walkingroutes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_baycrossing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_isbaycrossing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_crossinglift",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_pathsample",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_pathhalfwidth",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_pathpose",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_mjs",
+      "target": "app_lib_world_paths_walkwayplacements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_crossinglift",
+      "target": "app_lib_world_paths_isbaycrossing",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_pathsample",
+      "target": "app_lib_world_paths_crossinglift",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_pathhalfwidth",
+      "target": "app_lib_world_paths_isbaycrossing",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_pathpose",
+      "target": "app_lib_world_paths_pathsample",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_walkwayplacements",
+      "target": "app_lib_world_paths_pathpose",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_walkwayplacements",
+      "target": "app_lib_world_paths_pathhalfwidth",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L99",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_walkwayplacements",
+      "target": "app_lib_world_paths_isbaycrossing",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "three",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_world_layout_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_world_layout_world_radius",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_world_layout_planetradiusat",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_world_layout_regions",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_world_layout_regiondistance",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_world_layout_surfaceheight",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_world_layout_worldpoint",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_sf_terrain_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_sf_terrain_sfterrainheight",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_terrainsegments",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_inbiomefootprint",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_studio",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_oncityhill",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_installterraingeometry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_createterraingeometry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_prepareterraingeometry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_midpoint",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L190",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_split",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L213",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_terrainvertices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L257",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_mjs",
+      "target": "app_lib_terrain_geometry_renderedsurfaceheight",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L266",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_split",
+      "target": "app_lib_terrain_geometry_midpoint",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L218",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_terrainvertices",
+      "target": "app_lib_terrain_geometry_createterraingeometry",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L259",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_renderedsurfaceheight",
+      "target": "app_lib_terrain_geometry_terrainvertices",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L281",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_tech_plan_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_tech_plan_techwalks",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_project_town_layout_workshops",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_project_town_layout_projecttownwalks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_project_town_layout_projectwalks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_project_town_layout_projectlamps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_project_town_layout_projectindexposition",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_project_town_layout_projectgallerysites",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_project_town_layout_districtlamps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_project_town_layout_mjs",
+      "target": "app_lib_project_town_layout_foundryarrival",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/project-town-layout.mjs",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_amphitheatre_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_amphitheatre_bowlouter",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_amphitheatre_seats",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_amphitheatre_stage",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_amphitheatre_venuebounds",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_plaza",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_tools",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_offices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_booths",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_techwalks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_techpalms",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_techfootprints",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_intechfootprint",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_audiencebudget",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_audience",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_strollbudget",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_strollers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_browserbudget",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L154",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_browsers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_tech_plan_techviews",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_intechfootprint",
+      "target": "app_lib_tech_plan_techfootprints",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L99",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_sf_buildings_mjs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_sf_buildings_rgb",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_stage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_bowl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_screen",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_sidescreens",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_wall",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_canopy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_venuebounds",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_polar",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_tierat",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_tierheight",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_onstage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_standheight",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_speaker",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_seats",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_bermrun",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_berm",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_buildamphitheatre",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L119",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_canopyheight",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L182",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_mjs",
+      "target": "app_lib_amphitheatre_canopysurface",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L188",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_tierheight",
+      "target": "app_lib_amphitheatre_tierat",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_standheight",
+      "target": "app_lib_amphitheatre_onstage",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_standheight",
+      "target": "app_lib_amphitheatre_tierheight",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_seats",
+      "target": "app_lib_amphitheatre_polar",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_berm",
+      "target": "app_lib_amphitheatre_bermrun",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_buildamphitheatre",
+      "target": "app_lib_amphitheatre_polar",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_buildamphitheatre",
+      "target": "app_lib_amphitheatre_berm",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_amphitheatre_canopysurface",
+      "target": "app_lib_amphitheatre_canopyheight",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/amphitheatre.mjs",
+      "source_location": "L211",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_mjs",
+      "target": "app_lib_amphitheatre_mjs",
+      "relation": "re_exports",
+      "context": "export",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_inbiomefootprint",
+      "target": "app_lib_world_layout_regiondistance",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_world_paths_pathsample",
+      "target": "app_lib_world_layout_planetradiusat",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/lib/world-paths.mjs",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_midpoint",
+      "target": "app_lib_world_layout_planetradiusat",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_renderedsurfaceheight",
+      "target": "app_lib_world_layout_surfaceheight",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L268",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_terrain_geometry_renderedsurfaceheight",
+      "target": "app_lib_world_layout_worldpoint",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/lib/terrain-geometry.mjs",
+      "source_location": "L269",
+      "weight": 1.0
+    },
+    {
+      "source": "app_lib_tech_plan_audience",
+      "target": "app_lib_amphitheatre_seats",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/lib/tech-plan.mjs",
+      "source_location": "L110",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

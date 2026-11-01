@@ -1,4 +1,5 @@
 import { Vector3, Quaternion, MathUtils } from "three";
+import { foundryCoastEdges } from "./foundry-coast.mjs";
 import { fieldnotesCoastEdges } from "./fieldnotes-coast.mjs";
 import { carvedTrailHeight, valleyFloorWeight } from "./valley-layout.mjs";
 import { sfCoastFade, sfTerrainHeight } from "./sf-terrain.mjs";
@@ -42,7 +43,7 @@ export const regions = [
     id: "projects",
     label: "The Foundry",
     normal: [-0.15, 0.55, 0.82],
-    // Shift the level pad north so the ring campus sits behind the workshops.
+    // Retain district coordinates; the northwest coast is carved separately.
     landCenter: [-7 * GROW, -10 * GROW],
     inner: 35 * GROW,
     // A wider coastal shoulder keeps the incoming bridge below an 18° grade.
@@ -157,7 +158,9 @@ export function planetRadiusAt(normal) {
     const physicalOuter = r.shoreOuter || r.outer;
     const edges = r.id === "future"
       ? fieldnotesCoastEdges(x, z, r.inner, physicalOuter)
-      : [r.inner, physicalOuter];
+      : r.id === "projects"
+        ? foundryCoastEdges(x-r.landCenter[0], z-r.landCenter[1], r.inner, physicalOuter)
+        : [r.inner, physicalOuter];
     const blend =
       1 - MathUtils.smoothstep(regionDistance(r, x, z), ...edges);
     if (!blend) continue;

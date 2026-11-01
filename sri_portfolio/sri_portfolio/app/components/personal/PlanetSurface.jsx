@@ -9,6 +9,7 @@ import {
   isBayCrossing,
 } from "../../lib/world-paths.mjs";
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
+import { foundryCoastGLSL } from "../../lib/foundry-coast.mjs";
 import { fieldnotesCoastGlsl } from "../../lib/fieldnotes-coast.mjs";
 import { streetsGlsl } from "../../lib/sf-streets.mjs";
 
@@ -112,6 +113,7 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         float worldFbm(vec3 p){return worldNoise(p)*.58+worldNoise(p*2.03)*.28+worldNoise(p*4.07)*.14;}
         ${streetsGlsl()}
         ${fieldnotesCoastGlsl}
+        ${foundryCoastGLSL}
       ` +
         shader.fragmentShader
           .replace(
@@ -137,6 +139,11 @@ export default function PlanetSurface({ surfaceRef, weather }) {
           float distance=length(local/uRegionShape[i])*asymmetry;
           float facing=step(.76,dot(p,uRegions[i]));
           float region=facing*(1.-smoothstep(uRegionEdges[i].x,uRegionEdges[i].y,distance+shoreVariation));
+          if(i==3){
+            vec2 edges=foundryCoastEdges(local,uRegionEdges[i]-vec2(4.,3.));
+            distance=length(local);
+            region=facing*(1.-smoothstep(edges.x,edges.y,distance));
+          }
           if(i==5){
             vec2 edges=fieldnotesCoastEdges(local,uRegionEdges[i]-vec2(4.,3.));
             distance=length(local);
