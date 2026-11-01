@@ -364,27 +364,28 @@
   outline: 2px solid #e1ecff;
   outline-offset: 3px;
 }
-.biome-pages-reveal {
-  display: grid;
-  grid-template-rows: 1fr;
-  opacity: 1;
-  transition:
-    grid-template-rows 240ms ease,
-    opacity 180ms ease;
-}
+/* Collapsing previews retains direct reading actions. The page rail is a
+   compact index by default, rather than a second wall over the environment. */
 .biome-pages-reveal > .biome-pages-list {
   min-height: 0;
 }
-.biome-pages-reveal[data-expanded="false"] {
-  grid-template-rows: 0fr;
-  opacity: 0;
+.biome-pages-reveal[data-expanded="false"] .biome-pages-list {
+  gap: 1px;
+  border: 1px solid var(--skin-line, #dce7f326);
 }
-.biome-pages-reveal[data-expanded="false"] > .biome-pages-list {
-  overflow: hidden;
+.biome-pages-reveal[data-expanded="false"] .biome-page {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
-.biome-pages:has([data-expanded="false"]) {
-  justify-self: end;
-  width: min(100%, 238px);
+.biome-pages-reveal[data-expanded="false"] .biome-page-actions {
+  margin-top: 0;
+  min-height: 52px;
+  padding: 4px 12px;
+}
+.biome-pages-reveal[data-expanded="false"] .biome-page-actions button {
+  min-height: 44px;
+  flex: 1;
 }
 @media (max-width: 700px) {
   .biome-pages-toggle {

@@ -18,7 +18,7 @@ export const allChapters = [
     number: "02",
     title: "An idea needs somewhere to go.",
     description:
-      "A conversation that branches. A museum you can explore. Small tools that make a day easier. Welcome to the things I’ve made.",
+      "AI systems, interactive experiments, and tools for everyday work. Step inside a studio.",
     action: "Explore the collection",
     content: "work",
     note: "A working campus for ideas. Step inside a studio.",

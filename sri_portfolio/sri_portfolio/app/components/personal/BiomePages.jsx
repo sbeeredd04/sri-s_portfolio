@@ -37,24 +37,21 @@ export default function BiomePages({
           {!expanded && <path d="M8 3v10" />}
         </svg>
       </button>
-      <div
-        className="biome-pages-reveal"
-        data-expanded={expanded}
-        inert={!expanded}
-        id={listId}
-      >
+      <div className="biome-pages-reveal" data-expanded={expanded} id={listId}>
         <div className="biome-pages-list">
           {ids.map((id) => {
             const room = readingSections.find((r) => r.id === id);
             return (
               <article className="biome-page" key={id}>
-                <button
-                  className="biome-page-preview"
-                  onClick={() => onOpen(id)}
-                  aria-label={`Read ${room.name}`}
-                >
-                  <RoomPreview id={id} />
-                </button>
+                {expanded && (
+                  <button
+                    className="biome-page-preview"
+                    onClick={() => onOpen(id)}
+                    aria-label={`Read ${room.name}`}
+                  >
+                    <RoomPreview id={id} />
+                  </button>
+                )}
                 <div className="biome-page-actions">
                   <button onClick={() => onOpen(id)}>
                     {room.name} <UiIcon />

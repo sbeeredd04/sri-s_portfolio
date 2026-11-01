@@ -142,7 +142,7 @@ export default function ExperienceShell() {
     [reset, setReset] = useState(0),
     [roomReset, setRoomReset] = useState(0),
     [sheet, setSheet] = useState(null),
-    [previewsExpanded, setPreviewsExpanded] = useState(true),
+    [previewsExpanded, setPreviewsExpanded] = useState(false),
     [phone, setPhone] = useState(false),
     [toolsExpanded, setToolsExpanded] = useState(false),
     [collection, setCollection] = useState("all"),
@@ -514,7 +514,7 @@ export default function ExperienceShell() {
     try {
       previouslyEntered = hasEnteredWorld(window.sessionStorage);
     } catch {}
-    if (!saved) setPreviewsExpanded(!matchMedia("(max-width: 700px)").matches);
+    if (!saved) setPreviewsExpanded(false);
     setEntered(Boolean(saved || previouslyEntered));
     setReturning(Boolean(saved || previouslyEntered));
     if (
@@ -539,7 +539,7 @@ export default function ExperienceShell() {
           : null,
       );
       setCollection(saved.collection || "all");
-      setPreviewsExpanded(saved.previewsExpanded !== false);
+      setPreviewsExpanded(saved.previewsExpanded === true);
       setPlaying(saved.playing === true);
       setStill(saved.still === true);
       if (["live", "day", "night"].includes(saved.lightMode))
