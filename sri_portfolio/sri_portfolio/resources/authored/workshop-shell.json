@@ -20,7 +20,11 @@
   },
   "front": "+Z",
   "footprint": {
-    "width": 3.45,
-    "depth": 3.2
+    "width": 3.69,
+    "depth": 3.32,
+    "center": [
+      0,
+      -0.06
+    ]
   }
 }

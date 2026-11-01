@@ -131,7 +131,8 @@ export default function InteractiveProjectExhibit({
           }}
         >
           <planeGeometry args={[2.56, 1.68]} />
-          <meshBasicMaterial map={screen} toneMapped={false} />
+          {/* Keep display whites below the night bloom threshold for readable text. */}
+          <meshBasicMaterial map={screen} color="#c8c8c8" toneMapped={false} />
         </mesh>
         <Rods segments={vents} color="#293847" />
         <mesh position={[0, 0.867, 0.06]}>

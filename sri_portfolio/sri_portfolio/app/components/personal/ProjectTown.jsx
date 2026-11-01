@@ -13,7 +13,6 @@ import { Model } from "./ModelInstances";
 import ProjectDistricts from "./ProjectDistricts";
 import TechDistrict from "./TechDistrict";
 import Workbench from "./Workbench";
-import { FinishBox, useFinish } from "./Finishes";
 import { Grove } from "./Landscape";
 import InteractiveProjectExhibit from "./InteractiveProjectExhibit";
 import {
@@ -22,76 +21,41 @@ import {
   projectIndexPosition,
   projectTownWalks as walks,
 } from "../../lib/project-town-layout.mjs";
-const roofColor = [
-  "#667f98",
-  "#6c8298",
-  "#6c8298",
-  "#877463",
-  "#698c91",
-  "#81738c",
-];
-function WorkshopRoof({ type }) {
-  const metal = useFinish("roof-metal", roofColor[type], { scale: 0.9 });
-  const timber = useFinish("wood-floor", roofColor[type], { scale: 0.6 });
-  const arch = useMemo(() => {
-    const shape = new THREE.Shape();
-    for (let i = 0; i <= 40; i++) {
-      const a = (i / 40) * Math.PI,
-        x = Math.cos(a) * 1.9,
-        y = 3.17 + Math.sin(a) * 0.9;
-      if (i === 0) shape.moveTo(x, y);
-      else shape.lineTo(x, y);
-    }
-    for (let i = 40; i >= 0; i--) {
-      const a = (i / 40) * Math.PI;
-      shape.lineTo(Math.cos(a) * 1.9, 3.09 + Math.sin(a) * 0.9);
-    }
-    shape.closePath();
-    return new THREE.ExtrudeGeometry(shape, {
-      depth: 3.65,
-      bevelEnabled: false,
-      curveSegments: 30,
-    });
-  }, []);
-  useEffect(() => () => arch.dispose(), [arch]);
-  if (type === 0 || type === 4)
-    return (
-      <mesh
-        geometry={arch}
-        material={metal}
-        position={[0, 0, -1.7]}
-        castShadow
-        receiveShadow
-      />
-    );
-  if (type === 3)
-    return (
-      <group>
-        {[-1, 1].map((side) => (
-          <FinishBox
-            key={side}
-            position={[side * 0.96, 3.5, 0.1]}
-            rotation={[0, 0, -side * 0.3]}
-            size={[2.08, 0.13, 3.65]}
-            material={timber}
-            radius={0.018}
-          />
-        ))}
-      </group>
-    );
-  return (
-    <FinishBox
-      position={[0, 3.28, 0.1]}
-      rotation={[0, 0, type === 1 ? -0.11 : 0]}
-      size={[3.8, 0.14, 3.65]}
-      material={metal}
-      radius={0.025}
-    />
-  );
+// One authored studio language: mineral entry portal, graphite shell and oak soffit.
+function WorkshopShell() {
+  return <Model src="/models/workshop-shell.glb" />;
 }
-// Slab, timber back wall and roof: textured shell, plain until maps load.
-function WorkshopShell({ type }) {
-  return <><Model src="/models/workshop-shell.glb" /><WorkshopRoof type={type} /></>;
+function StudioPlaque({ data, active }) {
+  const texture = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 768;
+    canvas.height = 192;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#252a30";
+    ctx.fillRect(0, 0, 768, 192);
+    ctx.fillStyle = "#f2f1ec";
+    ctx.font = "500 144px system-ui, sans-serif";
+    ctx.fillText(String(data.type + 1).padStart(2, "0"), 24, 151);
+    ctx.fillStyle = "#ffb444";
+    ctx.fillRect(231, 34, 34, 5);
+    ctx.fillStyle = "#f2f1ec";
+    ctx.font = "500 45px system-ui, sans-serif";
+    ctx.fillText(data.name, 231, 103, 506);
+    ctx.fillStyle = "#bec3c6";
+    ctx.font = "23px system-ui, sans-serif";
+    ctx.fillText(data.caption, 232, 148, 504);
+    const map = new THREE.CanvasTexture(canvas);
+    map.colorSpace = THREE.SRGBColorSpace;
+    map.anisotropy = 4;
+    return map;
+  }, [data.name, data.caption, data.type]);
+  useEffect(() => () => texture.dispose(), [texture]);
+  return (
+    <mesh visible={!active} position={[0, 3.65, 1.566]}>
+      <planeGeometry args={[3.12, 0.78]} />
+      <meshBasicMaterial map={texture} toneMapped={false} />
+    </mesh>
+  );
 }
 function PlainShell() {
   return (
@@ -122,7 +86,7 @@ function Workshop({
   value,
   onExhibitChange,
 }) {
-  const { position, rotation, color, type } = data;
+  const { position, rotation } = data;
   return (
     <group
       position={position}
@@ -143,12 +107,12 @@ function Workshop({
       onPointerOut={(e) => onHover("", e)}
     >
       <Suspense fallback={<PlainShell />}>
-        <WorkshopShell type={type} />
+        <WorkshopShell />
       </Suspense>
       {[-1, 1].map((s) => (
         <group key={s}>
-          <mesh position={[s * 1.65, 1.65, 0]} raycast={() => null}>
-            <boxGeometry args={[0.07, 3.1, 2.8]} />
+          <mesh position={[s * 1.65, 1.65, 0.475]} raycast={() => null}>
+            <boxGeometry args={[0.07, 3.1, 1.75]} />
             <meshPhysicalMaterial
               color="#d9e2df"
               transparent
@@ -161,8 +125,8 @@ function Workshop({
           </mesh>
         </group>
       ))}
-      <mesh position={[0, 3.145, 0.3]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[3.1, 2.8]} />
+      <mesh position={[0, 3.438, 0.3]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[2.8, 0.055]} />
         <meshStandardMaterial
           color="#d4bc99"
           emissive="#f5c18a"
@@ -170,14 +134,7 @@ function Workshop({
           side={2}
         />
       </mesh>
-      <Sign
-        visible={!active}
-        title={data.name}
-        subtitle={data.caption}
-        accent={color}
-        position={[0, 2.95, 1.91]}
-        size={[2.9, 0.65]}
-      />
+      <StudioPlaque data={data} active={active} />
       {detailed && (
         <InteractiveProjectExhibit
           id={data.id}
@@ -231,7 +188,16 @@ export default function ProjectTown({
         {...{ detailed, night, onProjectOpen, onContentOpen, onHover }}
       />
       <TechDistrict
-        {...{ detailed, night, animate, onContentOpen, onProjectOpen, onHover, activeProject, keynoteIndex }}
+        {...{
+          detailed,
+          night,
+          animate,
+          onContentOpen,
+          onProjectOpen,
+          onHover,
+          activeProject,
+          keynoteIndex,
+        }}
       />
       {workshops.map((w) => (
         <Workshop
