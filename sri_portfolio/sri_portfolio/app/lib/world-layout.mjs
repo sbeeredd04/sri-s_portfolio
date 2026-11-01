@@ -1,5 +1,5 @@
 import { Vector3, Quaternion, MathUtils } from "three";
-import { foundryCoastEdges } from "./foundry-coast.mjs";
+import { foundryCoastEdges, foundryLandCenter } from "./foundry-coast.mjs";
 import { fieldnotesCoastEdges } from "./fieldnotes-coast.mjs";
 import { carvedTrailHeight, valleyFloorWeight } from "./valley-layout.mjs";
 import { sfCoastFade, sfTerrainHeight } from "./sf-terrain.mjs";
@@ -44,7 +44,7 @@ export const regions = [
     label: "The Foundry",
     normal: [-0.15, 0.55, 0.82],
     // Retain district coordinates; the northwest coast is carved separately.
-    landCenter: [-7 * GROW, -10 * GROW],
+    landCenter: foundryLandCenter,
     inner: 35 * GROW,
     // A wider coastal shoulder keeps the incoming bridge below an 18° grade.
     outer: 68 * GROW,

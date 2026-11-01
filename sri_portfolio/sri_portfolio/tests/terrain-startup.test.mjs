@@ -23,10 +23,10 @@ test("startup yields to input without changing a vertex, normal, UV or triangle"
     for (const name of ["position", "normal", "uv"])
       hash.update(Buffer.from(geometry.attributes[name].array.buffer));
     hash.update(Buffer.from(geometry.index.array.buffer));
-    // Captured from the synchronous mesh with the Fieldnotes headland and Foundry northwest inlet.
+    // Captured from the synchronous mesh with the Fieldnotes headland and compact Foundry waterfront.
     assert.equal(
       hash.digest("hex"),
-      "6ac78d0da87d61110936aafe0388d077eb49dba00727c81f35e3cf5a84126bf8",
+      "f59ff3fd7bb76afed89df69aab5e3711d026fafee95805fdd2f7fa0ce3a000db",
     );
     const next = createTerrainGeometry();
     assert.notEqual(next, geometry);
@@ -35,7 +35,7 @@ test("startup yields to input without changing a vertex, normal, UV or triangle"
       geometry.attributes.position.array,
     );
     geometry.dispose();
-    assert.equal(next.attributes.position.count, 146120);
+    assert.equal(next.attributes.position.count, 149428);
     next.dispose();
   } finally {
     clearInterval(timer);
