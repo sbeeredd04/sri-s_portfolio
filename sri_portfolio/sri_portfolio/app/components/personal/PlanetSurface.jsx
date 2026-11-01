@@ -9,6 +9,8 @@ import {
   isBayCrossing,
 } from "../../lib/world-paths.mjs";
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
+import { seaSurfaceGLSL } from "../../lib/sea-surface.mjs";
+import { windGLSL } from "../../lib/wind-field.mjs";
 import { foundryCoastGLSL } from "../../lib/foundry-coast.mjs";
 import { fieldnotesCoastGlsl } from "../../lib/fieldnotes-coast.mjs";
 import { streetsGlsl } from "../../lib/sf-streets.mjs";
@@ -18,21 +20,19 @@ import { applyTriplanar } from "../../lib/triplanar.mjs";
 import usePbrSet from "./usePbrSet";
 
 // One designed landscape, with the same material scale from orbit to the garden.
-export default function PlanetSurface({ surfaceRef, weather }) {
+export default function PlanetSurface({ surfaceRef, weather, windField, animate }) {
   const ground = usePbrSet("grass");
   const geometry = useMemo(createTerrainGeometry, []);
-  const seaTime = useMemo(() => ({ value: 0 }), []);
-  const seaState = useMemo(() => ({ value: 0.3 }), []);
+  const seaTime = windField.uWindTime;
+  const seaState = windField.uWindStrength;
   const wet = useMemo(() => ({ value: 0 }), []);
   useFrame((_, dt) => {
+    if (!animate || document.hidden) return;
     const step = Math.min(dt, 0.05);
     // Live wind drives sea state (0 calm .. 1 at ~15 m/s); rain wets land.
     const blend = 1 - Math.exp(-step * 0.8);
-    seaState.value +=
-      (Math.min(1, (weather?.wind ?? 4) / 15) - seaState.value) * blend;
     wet.value += (((weather?.rain ?? 0) > 0.05 ? 1 : 0) - wet.value) * blend;
     wet.value = Math.min(1, Math.max(0, wet.value));
-    seaTime.value += step * (0.7 + seaState.value * 0.9);
   });
   const material = useMemo(() => {
     const m = new THREE.MeshStandardMaterial({
@@ -41,6 +41,7 @@ export default function PlanetSurface({ surfaceRef, weather }) {
       envMapIntensity: 0.35,
     });
     m.onBeforeCompile = (shader) => {
+      Object.assign(shader.uniforms,windField);
       shader.uniforms.uSeaTime = seaTime;
       shader.uniforms.uSeaState = seaState;
       shader.uniforms.uWet = wet;
@@ -114,6 +115,8 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         ${streetsGlsl()}
         ${fieldnotesCoastGlsl}
         ${foundryCoastGLSL}
+        ${windGLSL}
+        ${seaSurfaceGLSL}
       ` +
         shader.fragmentShader
           .replace(
@@ -128,6 +131,9 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         float coastalGarden=0.;
         float gardenShore=0.;
         float gardenWater=0.;
+        float waterDepth=50.;
+        float closestWaterFrame=-2.;
+        vec2 seaLocal=vSurface.xz;
         float cityRoad=0.;
         vec2 cityLocal=vec2(0.);
         float shoreVariation=(worldFbm(vSurface*.17)-.5)*7.;
@@ -152,6 +158,17 @@ export default function PlanetSurface({ surfaceRef, weather }) {
             gardenShore=smoothstep(edges.x+1.,edges.y-2.,distance)*region;
             gardenWater=facing*(1.-smoothstep(edges.y-4.,edges.y+9.,distance));
           }
+          float facingWater=dot(p,uRegions[i]);
+          if(facingWater>closestWaterFrame){
+            closestWaterFrame=facingWater;
+            seaLocal=local+uLandCenter[i];
+          }
+          // Authored submerged shelf, inferred from the same coastal edge.
+          // It controls optical absorption only; no claim of seabed collision.
+          float outerEdge=uRegionEdges[i].y-3.;
+          if(i==3) outerEdge=foundryCoastEdges(local,uRegionEdges[i]-vec2(4.,3.)).y;
+          if(i==5) outerEdge=fieldnotesCoastEdges(local,uRegionEdges[i]-vec2(4.,3.)).y;
+          if(facingWater>.76) waterDepth=min(waterDepth,max(.18,(distance-outerEdge+3.)*.45));
           places=max(places,region);
           if(i==0){
             city=region*sfUrbanCoverage(uRegionEdges[i].x-4.-length(local));
@@ -191,10 +208,10 @@ export default function PlanetSurface({ surfaceRef, weather }) {
         float shallows=smoothstep(.36,.49,coast);
         // Shader colours are linear. Keep the glacial palette subdued rather
         // than lifting sRGB values a second time and bleaching the landscape.
-        vec3 deep=vec3(.009,.021,.029);
-        vec3 shallow=vec3(.025,.06,.07);
-        vec3 ocean=mix(deep,shallow,shallows);
-        ocean=mix(ocean,vec3(.018,.075,.083),gardenWater*coastalGarden);
+        vec3 deep=vec3(.008,.026,.043);
+        vec3 shallow=vec3(.055,.19,.18);
+        vec3 transmission=exp(-vec3(.48,.19,.10)*waterDepth);
+        vec3 ocean=mix(deep,shallow,transmission);
         float beach=smoothstep(.48,.53,coast)*(1.-smoothstep(.54,.58,coast));
         vec3 rock=vec3(.035,.044,.043)*( .9+terrain*.2 );
         float cliff=raised*(1.-smoothstep(.5,.67,coast));
@@ -269,10 +286,7 @@ export default function PlanetSurface({ surfaceRef, weather }) {
               // Open water: travelling wind-wave normals so the sea carries a
               // moving sky reflection and sun glint instead of flat paint.
               float sea=1.-land;
-              vec3 wp=vSurface*.55;
-              float waves=(worldNoise(wp+vec3(uSeaTime*.35,0.,uSeaTime*.2))
-                +worldNoise(wp*2.3-vec3(0.,uSeaTime*.5,uSeaTime*.3))*.5
-                +worldNoise(wp*6.1+vec3(uSeaTime*.9,uSeaTime*.4,0.))*.2)*(.05+uSeaState*.1)*sea;
+              float waves=windSeaHeight(seaLocal,footprint)*sea;
               vec3 sx=dFdx(-vViewPosition), sy=dFdy(-vViewPosition);
               vec3 ay=cross(sy,normal), ax=cross(normal,sx);
               float det=dot(sx,ay)*faceDirection;
@@ -290,7 +304,7 @@ export default function PlanetSurface({ surfaceRef, weather }) {
       normalStrength: 0.9,
       meanLuminance: 0.18,
     });
-  }, [ground, seaTime, seaState, wet]);
+  }, [ground, seaTime, seaState, wet, windField]);
   useEffect(
     () => () => {
       geometry.dispose();

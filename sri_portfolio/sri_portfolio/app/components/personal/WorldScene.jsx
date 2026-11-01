@@ -255,7 +255,7 @@ function ConnectedWorld({
       <WeatherRain weather={solar.weather} animate={animate} />
       <Stars daylight={solar.daylight} />
       <Suspense fallback={null}>
-        <PlanetSurface surfaceRef={planet} weather={solar.weather} />
+        <PlanetSurface surfaceRef={planet} weather={solar.weather} windField={windField} animate={animate} />
       </Suspense>
       {assembly >= 1 && <Walkways daylight={solar.daylight} />}
       {assembly >= regions.length + 2 && (
