@@ -11,13 +11,15 @@ export const sensoryDefaults = {
 };
 export const soundPlaces = {
   planet: {
+    track: "world-thread",
     label: "A little further out",
-    description: "Soft chords, a little air, room to wander.",
+    description: "Deep warm bass, open chords, and a slow melodic pulse.",
     bed: "open-air",
     level: 0.16,
     score: 0.65,
   },
   studio: {
+    track: "world-thread",
     label: "The city outside",
     description:
       "Streets humming below, a cable-car bell, a foghorn when the fog is in.",
@@ -62,6 +64,7 @@ export const soundPlaces = {
     fire: true,
   },
   entertainment: {
+    track: "world-thread",
     label: "After hours",
     description: "Warm room tone and soft chords. Settle in for a while.",
     bed: "quiet-room",
@@ -69,6 +72,7 @@ export const soundPlaces = {
     score: 0.72,
   },
   court: {
+    track: "world-thread",
     label: "One more game",
     description: "Open air, a bounce, a return. The music takes a step back.",
     bed: "open-air",
@@ -151,8 +155,8 @@ const detailRooms = {
     1.04,
   ],
   writing: [
-    "An unwritten page",
-    "Sparse keys and quiet air for an unfinished thought.",
+    "Between the lines",
+    "Warm keys and quiet air, kept low while you read.",
     "paper-light",
     "open-air",
     0.12,
@@ -266,8 +270,10 @@ export function soundMix(
       : 0,
     environment:
       p.level * focus * (music ? 0 : 1) * (preferences.environmentLevel ?? 1),
+    // The 0–100% effects control spans the full, stronger interaction mix.
+    // Master volume, music ducking and the output limiter still apply.
     effects: preferences.effects
-      ? (music ? 0.3 : 0.92) * (preferences.effectsLevel ?? 1)
+      ? 2 * (music ? 0.3 : 1) * (preferences.effectsLevel ?? 1)
       : 0,
   };
 }
@@ -309,22 +315,78 @@ export function hapticPulse(
     : 0;
 }
 
-export const glassCues = {
-  ripple: { notes: [659.25, 440], spacing: 0.09, duration: 0.42, gain: 0.018 },
-  press: { notes: [220], spacing: 0, duration: 0.065, gain: 0.038 },
-  object: { notes: [587.33, 880], spacing: 0.022, duration: 0.14, gain: 0.025 },
-  open: { notes: [440, 659.25], spacing: 0.055, duration: 0.26, gain: 0.035 },
-  close: { notes: [440, 293.66], spacing: 0.03, duration: 0.16, gain: 0.023 },
-  travel: {
-    notes: [293.66, 440, 587.33],
-    spacing: 0.075,
+// Warm, rounded feedback: a low body plus a quieter audible harmonic.
+// Small speakers retain the gesture without relying on inaudible sub-bass.
+export const interactionCues = {
+  type: {
+    notes: [220],
+    spacing: 0,
+    attack: 0.012,
+    duration: 0.065,
+    gain: 0.017,
+  },
+  hover: {
+    notes: [196],
+    spacing: 0,
+    attack: 0.018,
+    duration: 0.1,
+    gain: 0.012,
+  },
+  reveal: {
+    notes: [196, 293.66],
+    spacing: 0.065,
+    attack: 0.026,
+    duration: 0.36,
+    gain: 0.03,
+  },
+  ripple: {
+    notes: [293.66, 196],
+    spacing: 0.085,
+    attack: 0.028,
+    duration: 0.46,
+    gain: 0.02,
+  },
+  press: {
+    notes: [130.81, 261.63],
+    weights: [1, 0.24],
+    spacing: 0,
+    attack: 0.016,
+    duration: 0.22,
+    gain: 0.13,
+  },
+  object: {
+    notes: [174.61, 261.63],
+    spacing: 0.04,
+    attack: 0.022,
+    duration: 0.28,
+    gain: 0.055,
+  },
+  open: {
+    notes: [196, 293.66],
+    spacing: 0.065,
+    attack: 0.025,
     duration: 0.38,
-    gain: 0.027,
+    gain: 0.05,
+  },
+  close: {
+    notes: [196, 130.81],
+    spacing: 0.045,
+    attack: 0.02,
+    duration: 0.3,
+    gain: 0.045,
+  },
+  travel: {
+    notes: [146.83, 220, 293.66],
+    spacing: 0.09,
+    attack: 0.03,
+    duration: 0.48,
+    gain: 0.035,
   },
   welcome: {
-    notes: [293.66, 440, 659.25],
+    notes: [146.83, 220, 329.63],
     spacing: 0.16,
-    duration: 0.65,
-    gain: 0.03,
+    attack: 0.035,
+    duration: 0.72,
+    gain: 0.035,
   },
 };

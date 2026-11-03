@@ -21,68 +21,15 @@ function line(x1, z1, x2, z2, thickness = 0.04) {
   };
 }
 const courtColor = {
-  badminton: "#577893",
-  volleyball: "#88807a",
-  basketball: "#567572",
+  badminton: "#a26650",
+  volleyball: "#728457",
+  basketball: "#587d9d",
 };
-// Photographed acrylic court and concrete apron (CC0) laid on in world space,
-// keeping each court's palette colour and adding real grain and wear.
-function TexturedSlab({ position, size, color, set, scale, strength }) {
-  const maps = usePbrSet(set);
-  const geometry = useMemo(() => roundedBox(size, 0.008), [size]);
-  const material = useMemo(
-    () =>
-      applyTriplanar(
-        new THREE.MeshStandardMaterial({ color, roughness: 0.9 }),
-        {
-          ...maps,
-          mode: "detail",
-          scale,
-          strength,
-          normalStrength: 0.8,
-          meanLuminance: 0.45,
-        },
-      ),
-    [maps, color, scale, strength],
-  );
-  useEffect(
-    () => () => {
-      geometry.dispose();
-      material.dispose();
-    },
-    [geometry, material],
-  );
-  return (
-    <mesh
-      geometry={geometry}
-      material={material}
-      position={position}
-      receiveShadow
-    />
-  );
-}
-function PlainSurface({ id, apron, play }) {
-  const texture = useRoomTexture("stone", 14);
+function PaintedSurface({ id, apron, play }) {
   return (
     <>
-      <Box
-        {...apron}
-        radius={0.01}
-        color="#3d4d5d"
-        roughness={0.98}
-        map={texture}
-        bumpMap={texture}
-        bumpScale={0.0015}
-      />
-      <Box
-        {...play}
-        radius={0.005}
-        color={courtColor[id]}
-        roughness={0.94}
-        map={texture}
-        bumpMap={texture}
-        bumpScale={0.001}
-      />
+      <Box {...apron} radius={0.01} color="#85847a" roughness={0.98} />
+      <Box {...play} radius={0.005} color={courtColor[id]} roughness={0.94} />
     </>
   );
 }
@@ -108,22 +55,7 @@ function Surface({ id, lines }) {
   );
   return (
     <>
-      <Suspense fallback={<PlainSurface {...{ id, apron, play }} />}>
-        <TexturedSlab
-          {...apron}
-          color="#48515a"
-          set="concrete"
-          scale={0.35}
-          strength={0.9}
-        />
-        <TexturedSlab
-          {...play}
-          color={courtColor[id]}
-          set="court-painted"
-          scale={0.6}
-          strength={0.7}
-        />
-      </Suspense>
+      <PaintedSurface {...{ id, apron, play }} />
       <Boxes items={lines} color="#e4e5de" />
     </>
   );

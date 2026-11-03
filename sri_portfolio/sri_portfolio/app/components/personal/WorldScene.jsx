@@ -8,7 +8,9 @@ import {
   useState,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Html } from "@react-three/drei";
+import { Html, useProgress } from "@react-three/drei";
+import { sampleSceneStartup } from "../../lib/scene-startup.mjs";
+import { worldLoading } from "../../lib/world-loading.mjs";
 import * as THREE from "three";
 import {
   regions,
@@ -29,14 +31,23 @@ import StreetViewMarkers from "./StreetViewMarkers";
 import VisitorWalker from "./VisitorWalker";
 import WalkingPaths from "./WalkingPaths";
 import CameraRig from "./CameraRig";
-import House from "./House";
-import SanFrancisco, { ApartmentBase } from "./SanFrancisco";
+import ScenePointer from "./ScenePointer";
+import UiIcon from "./UiIcon";
+import HomeRegion from "./HomeRegion";
 import { APARTMENT_LEVEL } from "../../lib/studio-layout.mjs";
-import { Workspace, Court, Trail } from "./BiomeScenes";
+import { Workspace, Court } from "./BiomeScenes";
+import OutThereRegion from "./OutThereRegion";
 import { Grove } from "./Landscape";
 import { Box } from "./ScenePrimitives";
 import TerrainPlanting from "./TerrainPlanting";
-import ProjectTown from "./ProjectTown";
+import MadeCampusRegion from "./MadeCampusRegion";
+import SharedIslandAsset from "./SharedIslandAsset";
+import BayTransport from "./BayTransport";
+import DistantIslets from "./DistantIslets";
+import {
+  afterHoursCoastSource,
+  legacyContentLift,
+} from "../../lib/authored-island-sites.mjs";
 import AfterHours from "./AfterHours";
 import FutureStudio from "./FutureStudio";
 import PreparedGroup from "./PreparedGroup";
@@ -44,90 +55,81 @@ import PostEffects from "./PostEffects";
 import WeatherRain from "./WeatherRain";
 import AtmosphereSky from "./AtmosphereSky";
 import GrassField from "./GrassField";
-import { QualityProvider } from "./Quality";
+import { QualityProvider, useQuality } from "./Quality";
 import { tierSettings } from "../../lib/device-tier.mjs";
 
-// Reports once the scene has actually drawn, after Suspense content resolves.
-function FirstFrame({ onReady }) {
-  const frames = useRef(0);
+
+
+// The procedural star field is already present at every tier. A phone does
+// not need a second 4K texture and three extra sky samples per pixel.
+function DesktopStarBackdrop({ daylight }) {
+  const { tier } = useQuality();
+  return tier === "low" ? null : (
+    <Suspense fallback={null}>
+      <StarSphere daylight={daylight} />
+    </Suspense>
+  );
+}
+
+// Warm the real render path, including late textures and environment lighting,
+// behind the entrance. Stop scheduling as soon as it is ready.
+function FirstFrame({ onReady, surfaceRef, assembled }) {
+  const sample = useRef(null);
+  const done = useRef(false);
+
   const state = useThree();
   useEffect(() => {
-    // Development-only handle for scripted rendering review.
     if (process.env.NODE_ENV === "development") window.__sriScene = state;
+    const resume = () => {
+      if (!document.hidden && !done.current) state.invalidate();
+    };
+    document.addEventListener("visibilitychange", resume);
+    return () => document.removeEventListener("visibilitychange", resume);
   }, [state]);
   useFrame(() => {
-    frames.current += 1;
-    if (frames.current === 3) onReady?.();
+    if (done.current || document.hidden) return;
+    sample.current = sampleSceneStartup(sample.current, {
+      now: performance.now(),
+      pending: useProgress.getState().active || !assembled,
+      surface: Boolean(surfaceRef.current),
+      lighting: Boolean(state.scene.environment),
+    });
+    if (sample.current.ready) {
+      done.current = true;
+      worldLoading.report({ ready: true });
+      onReady?.();
+    } else state.invalidate();
   });
   return null;
 }
 function AnimationDriver({ animate }) {
+  const { fps } = useQuality();
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
     if (!animate) return;
-    const timer = setInterval(invalidate, 1000 / 30);
-    return () => clearInterval(timer);
-  }, [animate, invalidate]);
+    let frame,
+      previous = 0;
+    const tick = (now) => {
+      // Leave GPU headroom on 120 Hz displays instead of rendering twice as
+      // many ambient frames. Camera controls still request frames as needed.
+      if (now - previous >= 1000 / fps - 0.5) {
+        invalidate();
+        previous = now;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [animate, invalidate, fps]);
   return null;
-}
-function Atmosphere({ animate, weather }) {
-  const clouds = useRef(),
-    time = useRef(0);
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uOpacity: { value: 1 },
-      uCover: { value: 0.3 },
-    }),
-    [],
-  );
-  useFrame(({ camera }, dt) => {
-    if (animate) time.current += Math.min(dt, 0.05);
-    uniforms.uTime.value = time.current;
-    uniforms.uCover.value +=
-      ((weather?.cloud ?? 0.3) - uniforms.uCover.value) *
-      (1 - Math.exp(-Math.min(dt, 0.1) * 2));
-    uniforms.uOpacity.value = THREE.MathUtils.smoothstep(
-      camera.position.length(),
-      WORLD_RADIUS + 6,
-      WORLD_RADIUS + 30,
-    );
-  });
-  const vertex = `varying vec3 vP;varying vec3 vN;varying vec3 vView;void main(){vP=position;vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vView=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}`;
-  return (
-    <>
-      <mesh userData={{ sky: true }}>
-        <sphereGeometry args={[WORLD_RADIUS + 1.1, 96, 64]} />
-        <shaderMaterial
-          transparent
-          depthWrite={false}
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-          vertexShader={vertex}
-          fragmentShader={`varying vec3 vN;varying vec3 vView;void main(){float rim=pow(1.-abs(dot(normalize(vN),normalize(vView))),3.);gl_FragColor=vec4(.46,.66,1.,rim*.14);}`}
-        />
-      </mesh>
-      <mesh ref={clouds} userData={{ sky: true }}>
-        <sphereGeometry args={[WORLD_RADIUS + 2.3, 96, 64]} />
-        <shaderMaterial
-          transparent
-          depthWrite={false}
-          uniforms={uniforms}
-          vertexShader={vertex}
-          fragmentShader={`varying vec3 vP;uniform float uTime;uniform float uOpacity;uniform float uCover;
-      float h(vec3 p){p=fract(p*.3183099+vec3(.1,.2,.3));p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
-      float n(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z);}
-      void main(){vec3 p=normalize(vP)*5.+vec3(uTime*.0015,0,0);float a=n(p)*.57+n(p*2.1)*.28+n(p*4.2)*.15;float lo=.66-uCover*.22;float cloud=smoothstep(lo,lo+.2,a);gl_FragColor=vec4(.78,.85,.96,cloud*(.05+uCover*.1)*uOpacity);}`}
-        />
-      </mesh>
-    </>
-  );
 }
 
 function ConnectedWorld({
+  onReady,
   introBottom,
   world,
   stop,
+  keynoteIndex,
   night,
   solar,
   visitorColor,
@@ -155,6 +157,44 @@ function ConnectedWorld({
   const planet = useRef(),
     lastNear = useRef("");
   const districtGroups = useRef({});
+  // Globe labels only need horizon occlusion. Raycasting the 272k-triangle
+  // contact terrain for every label, every frame is wasted main-thread work.
+  const labelOccluder = useMemo(() => {
+    const object = new THREE.Object3D();
+    const sphere = new THREE.Sphere(new THREE.Vector3(), WORLD_RADIUS);
+    const point = new THREE.Vector3();
+    object.raycast = (raycaster, hits) => {
+      if (!raycaster.ray.intersectSphere(sphere, point)) return;
+      const distance = raycaster.ray.origin.distanceTo(point);
+      if (distance >= raycaster.near && distance <= raycaster.far)
+        hits.push({ distance, point: point.clone(), object });
+    };
+    return { current: object };
+  }, []);
+  // Assemble one district at a time behind the entrance, after the actual
+  // sky lighting is ready. A single giant mount monopolized the main thread
+  // and compiled materials twice (before and after the environment arrived).
+  const [assembly, setAssembly] = useState(0);
+  const assemblyFrame = useRef(0);
+
+  useFrame(({ scene }) => {
+    if (
+      assembly >= regions.length + 2 ||
+      !planet.current ||
+      !scene.environment ||
+      useProgress.getState().active
+    )
+      return;
+    if (++assemblyFrame.current < 3) return;
+    assemblyFrame.current = 0;
+    // A step counts only after its geometry, lighting and asset batch settled.
+    worldLoading.report({
+      surface: true,
+      assembly,
+      total: regions.length + 2,
+    });
+    setAssembly((value) => Math.min(value + 1, regions.length + 2));
+  });
   const cameraDirection = useMemo(() => new THREE.Vector3(), []);
   const viewportWidth = useThree((s) => s.size.width);
   const viewportHeight = useThree((s) => s.size.height);
@@ -195,7 +235,7 @@ function ConnectedWorld({
       (viewportHeight * camera.projectionMatrix.elements[5] * WORLD_RADIUS) /
       (2 *
         Math.sqrt(Math.max(1, camera.position.lengthSq() - WORLD_RADIUS ** 2)));
-    next.compactLabels = viewportWidth < 560 && projectedRadius < 110;
+    next.compactLabels = viewportWidth < 560;
     const signature = Object.values(next).join(":");
     if (signature !== lastNear.current) {
       lastNear.current = signature;
@@ -205,29 +245,43 @@ function ConnectedWorld({
   });
   return (
     <>
+      <FirstFrame
+        onReady={onReady}
+        surfaceRef={planet}
+        assembled={assembly >= regions.length + 2}
+      />
       <AnimationDriver animate={animate} />
-      <MaterialLighting daylight={solar.daylight} />
+      <MaterialLighting daylight={solar.daylight} world={world} />
       <WorldLighting
         {...{ world, stop, night, animate, solar, residentClock }}
       />
       <SolarSky world={world} solar={solar} />
-      <Suspense fallback={null}>
-        <StarSphere daylight={solar.daylight} />
-      </Suspense>
-      <AtmosphereSky world={world} solar={solar} />
+      <DesktopStarBackdrop daylight={solar.daylight} />
+      <AtmosphereSky world={world} solar={solar} animate={animate} />
       <WeatherRain weather={solar.weather} animate={animate} />
       <Stars daylight={solar.daylight} />
       <Suspense fallback={null}>
-        <PlanetSurface surfaceRef={planet} weather={solar.weather} />
+        <PlanetSurface
+          surfaceRef={planet}
+          weather={solar.weather}
+          animate={animate}
+        />
       </Suspense>
-      <Walkways daylight={solar.daylight} />
-      <WorldResidents
-        {...{ animate, visitorColor, onHover, onCue }}
-        clock={residentClock}
-      />
-      <Atmosphere animate={animate} weather={solar.weather} />
+      {assembly >= 1 && (
+        <Walkways daylight={solar.daylight} animate={animate} wind={solar.weather?.wind}/>
+      )}
+      {assembly >= regions.length+2 && <Suspense fallback={null}>
+        <DistantIslets />
+        <BayTransport animate={animate} wind={solar.weather?.wind}/>
+      </Suspense>}
+      {assembly >= regions.length + 2 && (
+        <WorldResidents
+          {...{ animate, visitorColor, onHover, onCue }}
+          clock={residentClock}
+        />
+      )}
       <PostEffects world={world} daylight={solar.daylight} />
-      {regions.map((region) => (
+      {regions.slice(0, Math.max(0, assembly - 1)).map((region) => (
         <group
           key={region.id}
           ref={(node) => {
@@ -236,99 +290,80 @@ function ConnectedWorld({
           position={region.center}
           quaternion={region.rotation}
         >
-          <GrassField
-            biome={region.id}
-            active={world === region.id}
-            surfaceRef={planet}
-            animate={animate}
-            wind={solar.weather?.wind}
-            sun={new THREE.Vector3(...solar.direction).applyQuaternion(
-              region.rotation,
-            )}
-          />
-          {["court", "trail", "projects"].includes(region.id) && (
-            <TerrainPlanting
-              biome={region.id}
-              visible={near[region.id]}
-              animate={animate && near[region.id]}
-            />
-          )}
           {region.id === "studio" ? (
-            <>
-              <ApartmentBase night={night} />
-              <group position={[0, APARTMENT_LEVEL, 0]}>
-                <House
-                  animate={animate && near.studio}
-                  night={night}
-                  rain={solar.weather?.rain}
-                >
-                  {visitedHouse && (
-                    <PreparedGroup visible={near.studio}>
-                      <Workspace
-                        animate={animate && near.studio}
-                        reset={roomReset}
-                        night={night}
-                        onScreenClick={onScreenClick}
-                        onCue={onCue}
-                        onHover={onHover}
-                      />
-                    </PreparedGroup>
-                  )}
-                </House>
-              </group>
-              <SanFrancisco
-                night={night}
-                clockIso={solar.iso}
-                animate={animate && near.studio}
-              />
-            </>
-          ) : region.id === "court" ? (
-            <Court
-              animate={animate && near.court}
-              detailed={near.court}
-              ballRequests={ballRequests}
-              onCourtActivity={onCourtActivity}
-              onCourtPlay={onCourtPlay}
-              onHover={onHover}
-              onCue={onCue}
-              activeCourt={world === "court" ? stop : null}
-            />
-          ) : region.id === "trail" ? (
-            <Trail
-              animate={animate && near.trail}
-              detailed={near.trail}
+            <HomeRegion
+              animate={animate && near.studio}
               night={night}
-              onCue={onCue}
-              onHover={onHover}
-            />
-          ) : region.id === "projects" ? (
-            <ProjectTown
-              activeProject={world === "projects" ? stop : null}
-              exhibitValues={exhibitValues}
-              onExhibitChange={onExhibitChange}
-              onProjectVisit={(id) => {
-                onBiomeSelect("projects");
-                onStopSelect(id);
-              }}
-              detailed={near.projects}
-              animate={animate && near.projects}
-              night={night}
-              onProjectOpen={onProjectOpen}
-              onContentOpen={onContentOpen}
-              onHover={onHover}
-            />
-          ) : region.id === "entertainment" ? (
-            <AfterHours
-              channel={channel}
-              onChannelChange={onChannelChange}
-              detailed={near.entertainment}
-              animate={animate && near.entertainment}
-              night={night}
-              onContentOpen={onContentOpen}
-              onHover={onHover}
-              onCue={onCue}
+              visited={visitedHouse}
+              detailed={near.studio}
+              reset={roomReset}
               onStopSelect={onStopSelect}
+              {...{ onScreenClick, onCue, onHover }}
             />
+          ) : region.id === "court" ? (
+            <>
+              <Suspense fallback={null}>
+                <SharedIslandAsset source={afterHoursCoastSource} />
+              </Suspense>
+              <group position={[0, legacyContentLift.court, 0]}>
+                <Court
+                  authoredCoast
+                  animate={animate && near.court}
+                  detailed={near.court}
+                  ballRequests={ballRequests}
+                  onCourtActivity={onCourtActivity}
+                  onCourtPlay={onCourtPlay}
+                  onHover={onHover}
+                  onCue={onCue}
+                  activeCourt={world === "court" ? stop : null}
+                />
+              </group>
+            </>
+          ) : region.id === "trail" ? (
+            <Suspense fallback={null}>
+              <OutThereRegion
+                animate={animate && near.trail}
+                detailed={near.trail}
+                night={night}
+                stop={world === "trail" ? stop : null}
+                onJournalOpen={() => onContentOpen("notes")}
+                wind={solar.weather?.wind}
+              />
+            </Suspense>
+          ) : region.id === "projects" ? (
+            <Suspense fallback={null}>
+              <MadeCampusRegion
+                keynoteIndex={keynoteIndex}
+                activeProject={world === "projects" ? stop : null}
+                exhibitValues={exhibitValues}
+                onExhibitChange={onExhibitChange}
+                onVisit={(id) => {
+                  onBiomeSelect("projects");
+                  onStopSelect(id);
+                }}
+                onWorld={() => onBiomeSelect("planet")}
+                detailed={near.projects}
+                animate={animate && near.projects}
+                night={night}
+                onProjectOpen={onProjectOpen}
+                onHover={onHover}
+              />
+            </Suspense>
+          ) : region.id === "entertainment" ? (
+            <group position={[0, legacyContentLift.entertainment, 0]}>
+              <AfterHours
+                authoredCoast
+                channel={channel}
+                onChannelChange={onChannelChange}
+                detailed={near.entertainment}
+                animate={animate && near.entertainment}
+                night={night}
+                onContentOpen={onContentOpen}
+                onHover={onHover}
+                onCue={onCue}
+                onStopSelect={onStopSelect}
+              />
+            </group>
           ) : (
             <FutureStudio
               stop={stop}
@@ -351,7 +386,7 @@ function ConnectedWorld({
                   0,
                 ]}
                 center
-                occlude={planet.current ? [planet] : undefined}
+                occlude={[labelOccluder]}
                 zIndexRange={[5, 1]}
               >
                 <button
@@ -384,13 +419,13 @@ function ConnectedWorld({
                       }[region.id]
                     }
                   </span>
-                  <span aria-hidden="true">↗</span>
+                  <UiIcon />
                 </button>
               </Html>
             )}
         </group>
       ))}
-      <WalkingPaths />
+      {assembly >= regions.length + 2 && <WalkingPaths />}
       {stop.startsWith("roam") && (
         <VisitorWalker
           key={`${stop}:${reset}`}
@@ -441,16 +476,10 @@ export default function WorldScene(props) {
     },
     [onTier],
   );
-  useEffect(
-    () => () => {
-      document.body.style.cursor = "";
-    },
-    [],
-  );
   return (
     <GraphicsGate onUnavailable={props.onUnavailable}>
       <Canvas
-        shadows={props.tier !== "low"}
+        shadows={activeTier !== "low"}
         dpr={activeDpr || tierSettings[activeTier]?.dpr || 1}
         frameloop="demand"
         camera={{
@@ -460,6 +489,7 @@ export default function WorldScene(props) {
           far: 1200,
         }}
         gl={{
+          // Native edge AA also covers the low tier, which skips the composer.
           antialias: true,
           alpha: true,
           powerPreference: "high-performance",
@@ -472,8 +502,17 @@ export default function WorldScene(props) {
         }
       >
         <GraphicsHealth onUnavailable={props.onUnavailable} />
-        <QualityProvider ceiling={props.tier} onTier={reportTier}>
-          <FirstFrame onReady={props.onReady} />
+        <ScenePointer
+          enabled={props.pointerEnabled}
+          animate={props.animate}
+          cursor={props.hoverCursor}
+          onHover={props.onHover}
+        />
+        <QualityProvider
+          ceiling={props.tier}
+          onTier={reportTier}
+          active={props.animate}
+        >
           <RoomMaterialProvider>
             <ConnectedWorld {...props} />
           </RoomMaterialProvider>

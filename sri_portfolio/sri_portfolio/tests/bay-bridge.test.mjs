@@ -15,6 +15,8 @@ import {
 import { WORLD_RADIUS } from "../app/lib/world-layout.mjs";
 
 test("crossing ramps meet shore paths continuously and keep the deck above water", () => {
+  assert.equal(bayRoute.from, "projects");
+  assert.equal(bayRoute.to, "court");
   assert.equal(crossingLift(bayRoute, 0), 0);
   assert.equal(crossingLift(bayRoute, 1), 0);
   for (let i = 1; i <= 500; i++) {
@@ -62,7 +64,7 @@ test("the full structural geometry clears the pedestrian envelope and stays with
       let frame = frames[0],
         distance = Infinity;
       for (const f of frames) {
-        const along = Math.abs(v.clone().sub(f.position).dot(f.forward));
+        const along = (v.x - f.position.x) ** 2 + (v.z - f.position.z) ** 2;
         if (along < distance) {
           distance = along;
           frame = f;
@@ -85,14 +87,14 @@ test("the full structural geometry clears the pedestrian envelope and stays with
 test("bridge walking stays on its own deck route and does not jump into the apartment", async () => {
   const { streetRoutes, streetRange } =
     await import("../app/lib/street-view.mjs");
-  const indices = streetRoutes.studio
+  const indices = streetRoutes.projects
     .map((n, i) => (n.group === "bay" ? i : -1))
     .filter((i) => i >= 0);
   assert.equal(indices.length, 5);
-  assert.equal(streetRange("studio", "street:0").end, indices[0] - 1);
+  assert.equal(streetRange("projects", "street:0").end, indices[0] - 1);
   for (const i of indices) {
-    const node = streetRoutes.studio[i],
-      range = streetRange("studio", `street:${i}`);
+    const node = streetRoutes.projects[i],
+      range = streetRange("projects", `street:${i}`);
     assert.equal(range.start, indices[0]);
     assert.equal(range.end, indices.at(-1));
     const point = new Vector3(...node.worldPosition),
@@ -106,5 +108,45 @@ test("bridge walking stays on its own deck route and does not jump into the apar
       point.distanceTo(new Vector3(...node.worldLook)) < 5,
       "look toward the next deck section",
     );
+  }
+});
+
+test("bay overview uses the bridge deck vertical instead of the distant city vertical", async () => {
+  const { bridgeView } = await import("../app/lib/bay-bridge.mjs");
+  const up = new Vector3(...bridgeView.up),
+    deck = pathPose(bayRoute, 0.59);
+  assert.ok(up.distanceTo(deck.normal) < 1e-8);
+  assert.ok(Math.abs(up.dot(deck.right)) < 1e-8);
+  assert.ok(Math.abs(up.dot(deck.forward)) < 0.01);
+});
+
+test("both bay towers fit the desktop and portrait composition", async () => {
+  const { PerspectiveCamera } = await import("three");
+  const { bridgeView } = await import("../app/lib/bay-bridge.mjs");
+  const { worldPoint } = await import("../app/lib/world-layout.mjs");
+  for (const [width, height] of [
+    [1440, 900],
+    [390, 844],
+  ]) {
+    const view = width < 560 ? bridgeView.portrait : bridgeView;
+    const camera = new PerspectiveCamera(view.fov, width / height, 0.22, 3000);
+    camera.position.copy(worldPoint("projects", view.position));
+    camera.up.set(...bridgeView.up);
+    camera.lookAt(worldPoint("projects", view.target));
+    camera.updateMatrixWorld();
+    for (const t of bayCrossing.towers)
+      for (const side of [-2.6, 2.6])
+        for (const y of [-1.5, 13]) {
+          const point = bridgePoint(t, side, y).project(camera);
+          assert.ok(
+            Math.abs(point.x) < 0.8,
+            `${width}px clips a tower horizontally`,
+          );
+          assert.ok(
+            point.y > -0.4 && point.y < 0.3,
+            `${width}px tower is under navigation`,
+          );
+          assert.ok(point.z > -1 && point.z < 1);
+        }
   }
 });

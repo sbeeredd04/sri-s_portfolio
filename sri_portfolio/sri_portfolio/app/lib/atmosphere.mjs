@@ -3,19 +3,19 @@ import * as THREE from "three";
 // Linear-space sky palettes. Night is moonlit navy rather than black so
 // buildings stay readable; each biome gets its own haze character.
 const day = {
-  zenith: new THREE.Color(0.09, 0.25, 0.62),
-  horizon: new THREE.Color(0.6, 0.72, 0.86),
+  zenith: new THREE.Color("#679bbd"),
+  horizon: new THREE.Color("#bed5dd"),
   glow: new THREE.Color(1, 0.86, 0.64),
 };
 const dusk = {
-  zenith: new THREE.Color(0.12, 0.14, 0.34),
-  horizon: new THREE.Color(0.95, 0.52, 0.3),
+  zenith: new THREE.Color("#8092c2"),
+  horizon: new THREE.Color("#ffc18b"),
   glow: new THREE.Color(1, 0.55, 0.26),
 };
 const night = {
-  zenith: new THREE.Color(0.003, 0.006, 0.018),
-  horizon: new THREE.Color(0.035, 0.05, 0.09),
-  glow: new THREE.Color(0.12, 0.16, 0.26),
+  zenith: new THREE.Color("#142541"),
+  horizon: new THREE.Color("#50617b"),
+  glow: new THREE.Color(0, 0, 0),
 };
 
 // Haze per biome, as optical depth at the framed subject. Density is divided
@@ -24,12 +24,12 @@ const night = {
 // haziest so its granite walls fall back; the city keeps the clearest air.
 export const biomeHaze = {
   planet: 0,
-  studio: 0.17,
-  projects: 0.17,
-  court: 0.22,
-  entertainment: 0.24,
-  trail: 0.27,
-  future: 0.24,
+  studio: 0.12,
+  projects: 0.12,
+  court: 0.14,
+  entertainment: 0.16,
+  trail: 0.16,
+  future: 0.14,
 };
 const MIN_SHOT = 45;
 
@@ -38,20 +38,18 @@ export function fogDensity(world, focusDistance) {
 }
 // City light pollution warms the night horizon at home only.
 const nightTint = {
-  studio: new THREE.Color(0.07, 0.06, 0.08),
-  trail: new THREE.Color(0.025, 0.045, 0.06),
+  studio: new THREE.Color("#67627c"),
+  trail: new THREE.Color("#425c6b"),
 };
 
-// Share of the day sky replaced by marine-layer grey: the city is overcast.
-export const overcast = { studio: 0.62 };
 const cloudDeck = {
-  zenith: new THREE.Color(0.34, 0.37, 0.41),
-  horizon: new THREE.Color(0.58, 0.6, 0.62),
+  zenith: new THREE.Color("#6e8397"),
+  horizon: new THREE.Color("#bbcbd0"),
   glow: new THREE.Color(0.7, 0.68, 0.64),
 };
 
-// The sky fades in as the camera descends toward the surface; from orbit the
-// planet is seen against space, near the ground it has an atmosphere.
+// Close views use an altitude fade. The bounded overview keeps an atmospheric
+// backdrop around the invented sphere instead of dropping into black space.
 export const SKY_FADE = [70, 150];
 
 export function skyState({
@@ -66,12 +64,11 @@ export function skyState({
   const cloud = weather?.cloud ?? 0;
   const rain = weather?.rain ?? 0;
   const mist = weather?.fog ?? 0;
-  // The city keeps some marine layer even on a clear day; live cover adds
-  // to it everywhere.
-  const deck = Math.max((overcast[world] || 0) * 0.6, cloud * cloud * 0.9);
+  // Biome mood never invents weather: measured cloud cover controls the deck.
+  const deck = cloud * cloud * 0.9;
   const opacity =
     world === "planet"
-      ? 0
+      ? 0.88
       : 1 - THREE.MathUtils.smoothstep(altitude, SKY_FADE[0], SKY_FADE[1]);
   const dayAmount = THREE.MathUtils.clamp(daylight, 0, 1);
   const sunset = THREE.MathUtils.clamp(
@@ -90,7 +87,9 @@ export function skyState({
     key === "horizon" && nightTint[world]
       ? nightTint[world].clone()
       : night[key].clone();
-  const pick = (key) => nightColor(key).lerp(lit(key), dayAmount);
+  const twilight = Math.sin(Math.PI * dayAmount) * (1 - deck * 0.8);
+  const pick = (key) => nightColor(key).lerp(lit(key), dayAmount)
+    .lerp(dusk[key], twilight * (key === "glow" ? 0.12 : 0.9));
   return {
     zenith: pick("zenith"),
     horizon: pick("horizon"),

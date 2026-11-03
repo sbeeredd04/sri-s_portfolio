@@ -8,8 +8,7 @@ import {
 } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { walkingRoutes, pathPose, bayCrossing } from "./world-paths.mjs";
-import { WORLD_RADIUS } from "./world-layout.mjs";
-import { APARTMENT_LEVEL } from "./studio-layout.mjs";
+import { WORLD_RADIUS, worldPoint } from "./world-layout.mjs";
 
 export const bayRoute = walkingRoutes.find(
   (r) => r.from === bayCrossing.from && r.to === bayCrossing.to,
@@ -120,8 +119,8 @@ export function bridgeGeometry() {
     for (const t of [start, end]) {
       beam(
         "stone",
-        bridgePoint(t, side * 2.25, -1.4),
-        bridgePoint(t, side * 2.25, 1.25),
+        bridgePoint(t, side * 2.65, -1.4),
+        bridgePoint(t, side * 2.65, 1.25),
         1.25,
         1.7,
       );
@@ -129,7 +128,7 @@ export function bridgeGeometry() {
   }
   for (const t of towers) {
     const p = pathPose(bayRoute, t);
-    const footingHeight = p.position.length() - WORLD_RADIUS + 1.5;
+    const footingHeight = p.position.y - WORLD_RADIUS + 1.5;
     for (const side of [-1, 1]) {
       beam(
         "stone",
@@ -205,47 +204,53 @@ export function bridgeGeometry() {
   );
   return { geometries, members };
 }
-// Studio cameras use apartment-local height. Convert once here, while the
-// bridge itself remains in world coordinates shared with residents and paving.
-function studioCamera(v) {
-  return [v.x, v.y - WORLD_RADIUS - APARTMENT_LEVEL, v.z];
+// Cameras use Made-local metres; structure and walkers share the bay route.
+function madeCamera(v) {
+  return v
+    .clone()
+    .sub(worldPoint("projects", [0, 0, 0]))
+    .toArray();
 }
 const middle = pathPose(bayRoute, 0.59);
 export const bridgeView = {
-  position: studioCamera(
+  // The bridge has travelled around the globe: its local vertical is no
+  // longer the city normal. Share the deck frame with the camera.
+  up: middle.normal.toArray(),
+  fov: 55,
+  position: madeCamera(
     middle.position
       .clone()
-      .addScaledVector(middle.right, 76)
-      .addScaledVector(middle.normal, 39)
-      .addScaledVector(middle.forward, 9),
+      .addScaledVector(middle.right, 70)
+      .addScaledVector(middle.normal, 25)
+      .addScaledVector(middle.forward, 35),
   ),
-  target: studioCamera(
+  target: madeCamera(
     middle.position.clone().addScaledVector(middle.normal, 3.5),
   ),
   portrait: {
-    position: studioCamera(
+    position: madeCamera(
       middle.position
         .clone()
-        .addScaledVector(middle.right, 60)
-        .addScaledVector(middle.normal, 38)
-        .addScaledVector(middle.forward, 68),
+        .addScaledVector(middle.right, 55)
+        .addScaledVector(middle.normal, 35)
+        .addScaledVector(middle.forward, 70),
     ),
-    target: studioCamera(
+    target: madeCamera(
       middle.position.clone().addScaledVector(middle.normal, 4),
     ),
-    fov: 66,
+    fov: 60,
   },
 };
 
-export const bayWalkingNodes = [0.4, 0.48, 0.59, 0.7, 0.81].map((t, i) => {
+export const bayWalkingNodes = [0.17, 0.32, 0.51, 0.70, 0.87].map((t, i) => {
   const p = pathPose(bayRoute, t),
     ahead = pathPose(bayRoute, t + 0.012);
   return {
     label: [
-      "The city anchorage",
+      "The Made anchorage",
       "Under the first tower",
       "Above the bay",
-      "Toward the trails",
+      "Toward After hours",
       "The far anchorage",
     ][i],
     group: "bay",

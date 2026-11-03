@@ -72,20 +72,18 @@ export default function SriCharacter({
       position={position}
       rotation={[0, rotation, 0]}
       onClick={interactive ? wave : undefined}
-      onPointerOver={
+      onPointerMove={
         interactive
           ? (event) => {
               event.stopPropagation();
-              document.body.style.cursor = "pointer";
-              onHover?.("Say hi to Sri");
+              onHover?.("Say hi to Sri", event);
             }
           : undefined
       }
       onPointerOut={
         interactive
-          ? () => {
-              document.body.style.cursor = "";
-              onHover?.("");
+          ? (event) => {
+              onHover?.("", event);
             }
           : undefined
       }

@@ -13,6 +13,14 @@ import {
 import { cameraLimits } from "../../lib/camera-limits.mjs";
 import { courtViews } from "../../lib/court-layout.mjs";
 import { trailView } from "../../lib/valley-layout.mjs";
+import { outThereArrival, outThereStop } from "../../lib/out-there-site.mjs";
+import { madeStop } from "../../lib/made-campus-views.mjs";
+import { homeArrival, homePromenade, homeHarbor } from "../../lib/home-site.mjs";
+import {
+  afterHoursArrival,
+  raisedContentPoint,
+  legacyContentLift,
+} from "../../lib/authored-island-sites.mjs";
 import { campusArrival } from "../../lib/campus-layout.mjs";
 import { fieldnotesArrival } from "../../lib/fieldnotes-layout.mjs";
 import { wandererCamera } from "../../lib/resident-motion.mjs";
@@ -60,7 +68,17 @@ export default function CameraRig({
   const focused = useRef("planet"),
     lastRequest = useRef(null),
     exitDistance = useRef(75);
-  const { camera, invalidate, size, gl } = useThree();
+  const { camera, invalidate, size, gl, scene } = useThree();
+  const groundProbe = useMemo(
+    () => ({
+      ray: new THREE.Raycaster(),
+      origin: new THREE.Vector3(),
+      down: new THREE.Vector3(0, -1, 0),
+      name: null,
+      floor: -Infinity,
+    }),
+    [],
+  );
   const scratch = useMemo(
     () => ({
       position: new THREE.Vector3(),
@@ -95,25 +113,70 @@ export default function CameraRig({
   const street = streetStop(world, stop);
   const roaming = stop.startsWith("roam");
   const phone = size.width < 560;
+  const portraitFrame = phone || size.width < size.height;
+  const mapNear = phone ? 590 : 330;
+  const mapFar = phone ? 770 : 555;
   const shortPhone = phone && size.height <= 730;
   const globeTopGap = shortPhone ? 12 : 28;
   const globeFooterSpace = shortPhone ? 122 : 145;
   const followingWanderer = world === "studio" && stop === "walk";
   const landscape = size.width >= 600 && size.height < 560;
-  const fieldOfView = phone
-    ? (world === "court" && stop === "arrival"
-        ? courtViews.arrival.portrait.fov
-        : world === "studio" && stop === "arrival"
-          ? studioArrival.portrait.fov
-          : world === "projects" && stop === "arrival"
-            ? campusArrival.portrait.fov
-            : world === "trail" && stop === "arrival"
-              ? trailView().arrival.portrait.fov
-              : placeStops[world]?.find((s) => s.id === stop)?.portrait?.fov) ||
-      60
-    : landscape
-      ? 50
-      : 45;
+  const groundName = world === "trail"
+    ? "terrain"
+    : world === "studio" && ["arrival", "promenade"].includes(stop)
+      ? "Home_ContinuousHill"
+      : null;
+  function keepAboveGround(point) {
+    if (!groundName || point.y > WORLD_RADIUS + 48) return point;
+    if (
+      groundProbe.name === groundName &&
+      Math.hypot(point.x - groundProbe.origin.x, point.z - groundProbe.origin.z) < .14
+    ) {
+      point.y = Math.max(point.y, groundProbe.floor);
+      return point;
+    }
+    const ground = scene.getObjectByName(groundName);
+    if (!ground) return point;
+    groundProbe.name = groundName;
+    groundProbe.origin.set(point.x, WORLD_RADIUS + 80, point.z);
+    groundProbe.ray.set(groundProbe.origin, groundProbe.down);
+    const hit = groundProbe.ray.intersectObject(ground, true)[0];
+    groundProbe.floor = hit ? hit.point.y + .48 : -Infinity;
+    point.y = Math.max(point.y, groundProbe.floor);
+    return point;
+  }
+  const homeShot = world === "studio"
+    ? { arrival: homeArrival, promenade: homePromenade, harbor: homeHarbor }[stop]
+    : null;
+  const fieldOfView =
+    homeShot
+      ? (portraitFrame ? homeShot.portrait : homeShot).fov
+      : world === "court" && stop === "arrival"
+        ? portraitFrame
+          ? afterHoursArrival.portrait.fov
+          : afterHoursArrival.fov
+        : world === "projects" && madeStop(stop)
+          ? (portraitFrame
+              ? madeStop(stop).portrait?.fov
+              : madeStop(stop).fov) || 55
+          : world === "trail" && outThereStop(stop)
+            ? (portraitFrame
+                ? outThereStop(stop).portrait?.fov
+                : outThereStop(stop).fov) || 55
+            : portraitFrame
+              ? (world === "court" && stop === "arrival"
+                  ? courtViews.arrival.portrait.fov
+                  : world === "studio" && stop === "arrival"
+                    ? studioArrival.portrait.fov
+                    : world === "projects" && stop === "arrival"
+                      ? campusArrival.portrait.fov
+                      : world === "trail" && stop === "arrival"
+                        ? outThereArrival.portrait.fov
+                        : placeStops[world]?.find((s) => s.id === stop)
+                            ?.portrait?.fov) || 60
+              : landscape
+                ? 50
+                : placeStops[world]?.find((s) => s.id === stop)?.fov || 45;
   function destination(id) {
     if (street && id !== "planet") {
       if (street.worldPosition) {
@@ -132,60 +195,70 @@ export default function CameraRig({
       }
       const [x, z] = street.point;
       const y =
-        (id === "studio" ? APARTMENT_LEVEL + 0.15 : surfaceHeight(id, x, z)) +
-        1.68;
+        (id === "studio"
+          ? APARTMENT_LEVEL + 0.15
+          : (street.height ?? surfaceHeight(id, x, z))) +
+        1.68 +
+        (legacyContentLift[id] || 0);
       return {
-        position: worldPoint(id, [x, y, z]),
-        target: worldPoint(id, [street.look[0], y - 0.15, street.look[1]]),
+        position: worldPoint(
+          id,
+          id === "studio"
+            ? apartmentPoint([x, y - APARTMENT_LEVEL, z])
+            : [x, y, z],
+        ),
+        target: worldPoint(id, [
+          street.look[0] + (id === "studio" ? -3.5 : 0),
+          street.lookHeight != null ? street.lookHeight + 1.53 : y - 0.15,
+          street.look[1] + (id === "studio" ? -23.4 : 0),
+        ]),
         up: regions.find((r) => r.id === id).normal.clone(),
       };
     }
     if (id === "studio" && followingWanderer)
       return wandererCamera(residentClock.elapsed);
-    if (id === "planet") {
-      const small = size.width < 900 && !landscape;
-      const roomBelowIntro = Math.max(
-        80,
-        size.height - globeFooterSpace - introBottom - globeTopGap,
-      );
-      const radiusPixels = Math.max(
-        36,
-        Math.min(
-          size.width * (small ? 0.37 : 0.26),
-          small
-            ? roomBelowIntro * (shortPhone ? 0.47 : 0.44)
-            : size.height * 0.34,
-        ),
-      );
-      const halfAngle = Math.atan(
-        ((radiusPixels * 2) / size.height) *
-          Math.tan(THREE.MathUtils.degToRad(fieldOfView) / 2),
-      );
-      const distance = WORLD_RADIUS / Math.sin(halfAngle);
+    if (id === "studio" && homeShot) {
+      const view = portraitFrame ? homeShot.portrait : homeShot;
       return {
-        position: new THREE.Vector3(0, 0.93, 0.37)
-          .normalize()
-          .multiplyScalar(distance),
-        target: new THREE.Vector3(),
+        position: worldPoint(id, view.position),
+        target: worldPoint(id, view.target),
+        up: regions.find((r) => r.id === id).normal.clone(),
+      };
+    }
+    if (id === "planet") {
+      const target = new THREE.Vector3(4, WORLD_RADIUS + 4, 2);
+      return {
+        position: target
+          .clone()
+          .add(
+            new THREE.Vector3(
+              portraitFrame ? 107 : 93,
+              phone ? 368 : 222,
+              phone ? 588 : 343,
+            ),
+          ),
+        target,
         up: new THREE.Vector3(0, 1, 0),
       };
     }
     const region = regions.find((r) => r.id === id);
     const closeStop =
-      id === "court" && stop === "arrival"
-        ? courtViews.arrival
-        : id === "studio" && stop === "arrival"
-          ? studioArrival
-          : id === "projects" && stop === "arrival"
-            ? campusArrival
-            : id === "future" && stop === "arrival"
-              ? fieldnotesArrival
-              : placeStops[id]?.find((s) => s.id === stop);
-    const portrait = phone
+      id === "projects"
+        ? madeStop(stop)
+        : id === "trail"
+          ? outThereStop(stop)
+          : id === "court" && stop === "arrival"
+            ? afterHoursArrival
+            : id === "studio" && stop === "arrival"
+              ? studioArrival
+              : id === "projects" && stop === "arrival"
+                ? campusArrival
+                : id === "future" && stop === "arrival"
+                  ? fieldnotesArrival
+                  : placeStops[id]?.find((s) => s.id === stop);
+    const portrait = portraitFrame
       ? closeStop?.portrait ||
-        (id === "trail" && stop === "arrival"
-          ? trailView().arrival.portrait
-          : null)
+        (id === "trail" && stop === "arrival" ? outThereArrival.portrait : null)
       : null;
     const local =
       portrait?.position ||
@@ -201,7 +274,7 @@ export default function CameraRig({
               : id === "future"
                 ? fieldnotesArrival.position
                 : id === "trail"
-                  ? trailView().arrival.position
+                  ? outThereArrival.position
                   : [9, 10, 19]);
     const localTarget =
       portrait?.target ||
@@ -211,17 +284,19 @@ export default function CameraRig({
         : id === "court"
           ? courtViews.arrival.target
           : id === "trail"
-            ? trailView().arrival.target
+            ? outThereArrival.target
             : id === "entertainment"
               ? [2, 1.6, 0]
               : [0, 1, 0]);
     const target = worldPoint(
       id,
-      id === "studio" ? apartmentPoint(localTarget) : localTarget,
+      id === "studio"
+        ? apartmentPoint(localTarget)
+        : raisedContentPoint(id, localTarget),
     );
     const position = worldPoint(
       id,
-      id === "studio" ? apartmentPoint(local) : local,
+      id === "studio" ? apartmentPoint(local) : raisedContentPoint(id, local),
     );
     if (phone && !portrait) {
       const frameScale = THREE.MathUtils.clamp(
@@ -231,7 +306,13 @@ export default function CameraRig({
       );
       position.sub(target).multiplyScalar(frameScale).add(target);
     }
-    return { position, target, up: region.normal.clone() };
+    return {
+      position,
+      target,
+      up: closeStop?.up
+        ? new THREE.Vector3(...closeStop.up).normalize()
+        : region.normal.clone(),
+    };
   }
 
   function begin(id, immediate = false) {
@@ -246,11 +327,11 @@ export default function CameraRig({
     focused.current = id;
     controls.current.minDistance = 0.2;
     const limits = cameraLimits(destination("planet").position.length());
-    controls.current.maxDistance = limits.maxDistance;
+    controls.current.maxDistance = id === "planet" ? mapFar : limits.maxDistance;
     camera.far = limits.far;
     camera.updateProjectionMatrix();
     controls.current.minPolarAngle = 0.04;
-    controls.current.maxPolarAngle = Math.PI - 0.04;
+    controls.current.maxPolarAngle = id === "planet" ? Math.PI / 2.15 : Math.PI - 0.04;
     controls.current.setFocalOffset(0, 0, 0, false);
     if (immediate) {
       camera.up.copy(to.up);
@@ -261,7 +342,7 @@ export default function CameraRig({
         false,
       );
       controls.current.update(0);
-      controls.current.minDistance = id === "planet" ? WORLD_RADIUS + 1.5 : 3.2;
+      controls.current.minDistance = id === "planet" ? mapNear : 3.2;
       flight.current = null;
     } else {
       const from = camera.position.clone();
@@ -312,21 +393,12 @@ export default function CameraRig({
       const offset =
         world === "planet"
           ? size.height / 2 - (start + room / 2)
-          : world === "projects" && stop === "ring" && size.width < 560
-            ? size.height * 0.07
-            : ((world === "trail" && stop === "overlook") ||
-                  (world === "projects" && stop === "campus")) &&
-                size.width < 560
+          : world === "projects" && stop === "keynote" && size.width < 560
+            ? -size.height * 0.1
+            : world === "trail" && stop === "overlook" && size.width < 560
               ? size.height * 0.045
               : -size.height *
-                (stop !== "arrival"
-                  ? 0.025
-                  : (world === "trail" || world === "projects") &&
-                      size.width < 560
-                    ? 0.035
-                    : size.width < 560
-                      ? 0.135
-                      : 0.065);
+                (stop !== "arrival" ? 0.025 : size.width < 560 ? 0.035 : 0.065);
       camera.setViewOffset(
         size.width,
         size.height,
@@ -352,8 +424,15 @@ export default function CameraRig({
       focused.current === world &&
       lastRequest.current?.split(":").slice(1).join(":") ===
         key.split(":").slice(1).join(":");
+    const prior = lastRequest.current?.split(":");
     lastRequest.current = key;
-    if (!alreadyArrived) begin(world, !initialized.current || !animate);
+    const cutInterior =
+      (world === "projects" && stop === "aether") ||
+      (prior?.[0] === "projects" && prior[4] === "aether") ||
+      (world === "studio" && ["desk", "bookshelf"].includes(stop)) ||
+      (prior?.[0] === "studio" && ["desk", "bookshelf"].includes(prior[4]));
+    if (!alreadyArrived)
+      begin(world, !initialized.current || !animate || cutInterior);
     initialized.current = true;
   }, [
     world,
@@ -489,7 +568,7 @@ export default function CameraRig({
           .applyAxisAngle(f.up, swing);
         scratch.position.copy(f.target).add(scratch.offset);
       }
-      scratch.position.copy(safeCameraPoint(scratch.position));
+      scratch.position.copy(keepAboveGround(safeCameraPoint(scratch.position)));
       camera.up.lerpVectors(f.fromUp, f.up, ease).normalize();
       c.updateCameraUp();
       c.setLookAt(
@@ -500,7 +579,7 @@ export default function CameraRig({
       c.update(0);
       if (t === 1) {
         flight.current = null;
-        c.minDistance = focused.current === "planet" ? WORLD_RADIUS + 1.5 : 3.2;
+        c.minDistance = focused.current === "planet" ? mapNear : 3.2;
       } else invalidate();
       return;
     }
@@ -528,22 +607,20 @@ export default function CameraRig({
       c.update(0);
       return;
     }
-    const safe = safeCameraPoint(camera.position.clone());
+    const safe = keepAboveGround(safeCameraPoint(camera.position.clone()));
     if (safe.distanceToSquared(camera.position) > 0.0001) {
       c.setPosition(...safe.toArray(), false);
       c.update(0);
       invalidate();
     }
     if (!c.active) return;
-    if (
-      focused.current === "planet" &&
-      camera.position.length() < WORLD_RADIUS + 29
-    ) {
-      const normal = camera.position.clone().normalize();
+    if (focused.current === "planet" && camera.position.y < WORLD_RADIUS + 29) {
       const nearest = [...regions].sort(
-        (a, b) => normal.dot(b.normal) - normal.dot(a.normal),
+        (a, b) =>
+          camera.position.distanceToSquared(a.center) -
+          camera.position.distanceToSquared(b.center),
       )[0];
-      if (normal.dot(nearest.normal) > 0.84) {
+      if (camera.position.distanceTo(nearest.center) < nearest.inner) {
         begin(nearest.id);
         onArrive?.(nearest.id);
       }
@@ -580,13 +657,13 @@ export default function CameraRig({
         flight.current = null;
         if (controls.current)
           controls.current.minDistance =
-            focused.current === "planet" ? WORLD_RADIUS + 1.5 : 3.2;
+            focused.current === "planet" ? mapNear : 3.2;
       }}
       onControl={() => {
         flight.current = null;
         if (controls.current)
           controls.current.minDistance =
-            focused.current === "planet" ? WORLD_RADIUS + 1.5 : 3.2;
+            focused.current === "planet" ? mapNear : 3.2;
       }}
     />
   );

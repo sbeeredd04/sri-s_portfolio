@@ -1,0 +1,11 @@
+{
+  "source": "Original composition and synthesis, scripts/render-world-score.py. No third-party recordings or samples. Separate from Sri's v4.",
+  "metrics": {
+    "seconds": 57.6,
+    "beat_seconds": 0.9,
+    "peak_dbfs": -6.38,
+    "rms_dbfs": -17.5,
+    "loop_boundary_delta": 0.0013797618696207992,
+    "bytes": 392683
+  }
+}

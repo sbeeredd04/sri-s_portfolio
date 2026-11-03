@@ -1,0 +1,235 @@
+.made-visit {
+  position: relative;
+  height: 100svh;
+  min-height: 550px;
+  overflow: hidden;
+  background: #d4c4a8;
+  color: #302f2a;
+  font-family: var(--font-manrope), sans-serif;
+}
+.made-visit-canvas {
+  position: absolute;
+  inset: 0;
+}
+.made-visit-header {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  padding: 28px 36px;
+  background: linear-gradient(#eee7dbe8, transparent);
+}
+.made-wordmark {
+  font:
+    650 40px/0.9 var(--font-bricolage),
+    sans-serif;
+  letter-spacing: -3px;
+  text-decoration: none;
+  color: inherit;
+}
+.made-visit-header p {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  margin: 0 0 8px;
+}
+.made-visit-header h1 {
+  font:
+    500 25px/1 var(--font-bricolage),
+    sans-serif;
+  margin: 0;
+}
+.made-clock {
+  margin-left: auto;
+  display: grid;
+  gap: 4px;
+  text-align: right;
+  font-size: 10px;
+}
+.made-clock time {
+  font-size: 12px;
+}
+.made-visit-header > a:last-child {
+  font-size: 12px;
+  color: inherit;
+  text-underline-offset: 5px;
+  margin-left: 12px;
+}
+.made-project-caption {
+  position: absolute;
+  top: 140px;
+  left: 36px;
+  width: 245px;
+  pointer-events: none;
+}
+.made-project-caption > p:first-child {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+.made-project-caption h2 {
+  font:
+    500 32px/1.1 var(--font-bricolage),
+    sans-serif;
+  letter-spacing: -0.8px;
+  margin: 12px 0;
+}
+.made-project-caption > p:last-child {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.made-loading {
+  position: absolute;
+  top: 45%;
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+}
+.made-visit-footer {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 28px 36px 22px;
+  background: linear-gradient(transparent, #eee7dbdc);
+}
+.made-entry {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  justify-content: center;
+}
+.made-entry button,
+.made-visit-actions button {
+  font: inherit;
+  cursor: pointer;
+  padding: 12px 18px;
+  border: 1px solid #5f654b;
+  background: #4c5a42;
+  color: #f5eddf;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.made-entry button span {
+  margin-left: 32px;
+}
+.made-entry p {
+  font-size: 11px;
+  max-width: 240px;
+}
+.made-visit-actions {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-top: 24px;
+  font-size: 11px;
+}
+.made-visit-actions a {
+  color: inherit;
+  text-underline-offset: 5px;
+}
+.made-visit-actions a:first-child {
+  margin-right: auto;
+}
+.made-visit-actions button {
+  padding: 8px 12px;
+}
+.made-exhibit {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 14px 18px;
+  background: #eee7dbeb;
+  border: 1px solid #81715c55;
+  border-radius: 8px;
+}
+.made-exhibit-choices {
+  display: flex;
+  gap: 4px;
+}
+.made-exhibit-choices button {
+  flex: 1;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  border-radius: 5px;
+  padding: 10px 8px;
+  font: inherit;
+  font-size: 12px;
+  color: inherit;
+}
+.made-exhibit-choices button[aria-pressed="true"] {
+  color: #f5eddf;
+  background: #4c5a42;
+}
+.made-exhibit p {
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 12px 0 0;
+}
+.made-visit :is(a, button):focus-visible {
+  outline: 3px solid #986a2a;
+  outline-offset: 4px;
+}
+.made-visit button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+@media (max-width: 700px) {
+  .made-visit-header {
+    padding: 20px 18px;
+    gap: 20px;
+    min-height: 116px;
+    box-sizing: border-box;
+    background: linear-gradient(#eee7dbf5 65%, transparent);
+  }
+  .made-wordmark {
+    font-size: 34px;
+  }
+  .made-visit-header h1 {
+    font-size: 22px;
+  }
+  .made-clock {
+    font-size: 9px;
+  }
+  .made-visit-header > a:last-child {
+    position: absolute;
+    right: 18px;
+    top: 83px;
+    font-size: 11px;
+  }
+  .made-project-caption {
+    top: 128px;
+    left: 18px;
+    width: 210px;
+  }
+  .made-project-caption h2 {
+    font-size: 24px;
+    margin: 10px 0;
+  }
+  .made-project-caption > p:last-child {
+    display: none;
+  }
+  .made-visit-footer {
+    padding: 22px 18px;
+  }
+  .made-entry {
+    gap: 12px;
+    justify-content: space-between;
+  }
+  .made-entry p {
+    font-size: 10px;
+    max-width: 145px;
+  }
+  .made-visit-actions {
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 10px;
+  }
+  .made-visit-actions a:first-child {
+    margin-right: auto;
+  }
+  .made-exhibit {
+    padding: 12px;
+  }
+  .made-exhibit-choices button {
+    padding: 10px 3px;
+    font-size: 10px;
+  }
+}

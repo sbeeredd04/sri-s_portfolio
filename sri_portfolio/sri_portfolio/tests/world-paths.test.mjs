@@ -1,3 +1,4 @@
+import { Mesh, MeshBasicMaterial, Raycaster, Vector3, DoubleSide } from "three";
 import {
   courts,
   courtPaths,
@@ -15,25 +16,30 @@ import {
   pathSample,
   pathPose,
   crossingLift,
+  worldPavingGeometry,
 } from "../app/lib/world-paths.mjs";
 import {
   regions,
-  planetRadiusAt,
   regionDistance,
 } from "../app/lib/world-layout.mjs";
 
-test("walking paths follow the shared ground with orthogonal placement frames", () => {
+test("walking frames agree with the rendered deck and stay orthogonal", () => {
+  const geometry = worldPavingGeometry();
+  const material = new MeshBasicMaterial({ side: DoubleSide });
+  const mesh = new Mesh(geometry, material);
+  mesh.updateMatrixWorld();
+  const ray = new Raycaster();
   for (const route of walkingRoutes)
     for (let i = 0; i <= 40; i++) {
       const pose = pathPose(route, i / 40);
-      assert.ok(
-        Math.abs(
-          pose.position.length() -
-            planetRadiusAt(pose.normal) -
-            crossingLift(route, i / 40) -
-            0.08,
-        ) < 1e-8,
-      );
+      // The islands now share a sea plane above the globe: radial radius is
+      // not a contact surface. Probe the actual drawn ribbon instead.
+      if (!route.authored && i > 0 && i < 40) {
+        ray.set(pose.position.clone().add(new Vector3(0, 5, 0)), new Vector3(0, -1, 0));
+        const hit = ray.intersectObject(mesh)[0];
+        assert(hit, `${route.from}→${route.to} missing deck at${i}`);
+        assert(Math.abs(hit.point.y - pose.position.y) < .06, `${route.from}→${route.to} navigation left rendered deck at${i}`);
+      }
       assert.ok(Math.abs(pose.up.dot(pose.forward)) < 1e-8);
       assert.ok(Math.abs(pose.right.dot(pose.forward)) < 1e-8);
       // The two leisure neighborhoods share a tangent plane. A level promenade
@@ -52,6 +58,8 @@ test("walking paths follow the shared ground with orthogonal placement frames", 
         ) > 0.95,
       );
     }
+  geometry.dispose();
+  material.dispose();
 });
 test("every connecting road clears all three playing areas with its full width", () => {
   const region = regions.find((r) => r.id === "court");

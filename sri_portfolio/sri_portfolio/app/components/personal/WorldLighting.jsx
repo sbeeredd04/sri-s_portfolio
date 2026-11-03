@@ -3,14 +3,18 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useQuality } from "./Quality";
+import { illumination } from "../../lib/world-lighting.mjs";
 import { biomeMoods } from "../../lib/world-time.mjs";
-import { worldPoint, WORLD_RADIUS } from "../../lib/world-layout.mjs";
+import { worldPoint, WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
 import {
   residentRoutePose,
   localWandererIndex,
 } from "../../lib/resident-motion.mjs";
 
-import { apartmentPoint } from "../../lib/studio-layout.mjs";
+import { apartmentPoint, studioDeskLight } from "../../lib/studio-layout.mjs";
+import { outThereCamp } from "../../lib/out-there-site.mjs";
+import { madeSites, madeSitePoint } from "../../lib/made-campus-views.mjs";
+import { raisedContentPoint } from "../../lib/authored-island-sites.mjs";
 import { courtLamps } from "../../lib/court-layout.mjs";
 import { projectGallerySites } from "../../lib/project-town-layout.mjs";
 import { campusCenter } from "../../lib/campus-layout.mjs";
@@ -23,7 +27,19 @@ const practicals = {
   studio: [
     [[1.98, 2.78, -2.2], "#ffd19b", 8, 7],
     [[-0.48, 1.32, -0.98], "#b5d1f6", 1.4, 3],
-    [[-4.7, 3.34, -1.35], "#ffd6a6", 17, 9],
+    // The clamp lamp over the keyboard, brighter once the room is dark.
+    [
+      [
+        studioDeskLight.position[0],
+        studioDeskLight.position[1] - 0.06,
+        studioDeskLight.position[2] + 0.2,
+      ],
+      "#ffdeb0",
+      1.2,
+      1.9,
+      "lamp",
+    ],
+    [[-4.7, 2.14, -1.35], "#ffd6a6", 17, 9],
     [[-6.24, 2.4, 5.3], "#ffd6a6", 3, 5],
   ],
   entertainment: [
@@ -33,7 +49,17 @@ const practicals = {
     [[9, 2, -0.5], "#b5bddd", 5, 7],
   ],
   court: courtLamps.map((position) => [position, "#dce7ff", 110, 24]),
-  trail: [],
+  // The campfire only burns at night, and flickers.
+  trail: [
+    [
+      [outThereCamp.x, outThereCamp.y + 0.7, outThereCamp.z],
+      "#ffa04a",
+      5,
+      9,
+      "fire",
+    ],
+    [[2.05, 24.35, 0.45], "#ffd19a", 8, 11],
+  ],
   future: [
     [
       [
@@ -68,8 +94,12 @@ const exhibits = {
   campus: [campusCenter.x, campusCenter.z - 6],
 };
 
-// One key and five practical lights remain mounted for the whole journey.
-// Moving or dimming a light changes uniforms, not each material's shader variant.
+// One key and six practical lights remain mounted for the whole journey, and
+// no component mounts a light of its own. three.js compiles the light count
+// into every lit shader, so a light appearing or being culled with its biome
+// recompiled every material in the world (a multi-second freeze). Moving or
+// dimming a pooled light only changes uniforms.
+const POOL = 6;
 export default function WorldLighting({
   world,
   stop,
@@ -88,6 +118,8 @@ export default function WorldLighting({
   // sky fill through the glass is kept low so night reads warm, not blue.
   const interior =
     world === "studio" && (stop === "desk" || stop === "bookshelf");
+  const light = illumination(solar, interior);
+  const skyFill = useRef();
   const key = useRef(),
     points = useRef([]),
     time = useRef(0),
@@ -96,6 +128,7 @@ export default function WorldLighting({
   const scratch = useMemo(
     () => ({
       position: new THREE.Vector3(),
+      direction: new THREE.Vector3(),
       target: new THREE.Vector3(),
       color: new THREE.Color(),
     }),
@@ -103,21 +136,19 @@ export default function WorldLighting({
   );
   const lights = useMemo(() => {
     if (world === "projects") {
-      const [x, z] = exhibits[stop] || [0, 0];
+      const site = madeSites.find((s) => s.id === stop);
       return [
-        [[x, 2.8, z + 0.5], "#f0c9a1", stop === "ring" ? 18 : 11, 12],
-        [[-2, 2.4, 1.3], "#ffcf9d", 6, 8],
-        [[3.5, 2.4, 8.5], "#ffcf9d", 6, 8],
         [
-          [
-            projectGallerySites.hackathons.position[0],
-            2.9,
-            projectGallerySites.hackathons.position[2] + 1,
-          ],
-          "#edc5a5",
-          8,
-          9,
+          site ? madeSitePoint(site, [0, 3.65, -1]) : [0, 5.85, -6.5],
+          "#ffe1b2",
+          site ? 36 : 11,
+          12,
         ],
+        [[-18, 4.32, -9], "#ffcf9d", 32, 17],
+        [[18, 4.32, -9], "#ffcf9d", 32, 17],
+        [[-18, 4.32, 18], "#ffcf9d", 32, 17],
+        [[18, 4.32, 18], "#ffcf9d", 32, 17],
+        [[2, 4.32, 38.8], "#ffd4a3", 32, 17],
       ];
     }
     return practicals[world] || [];
@@ -135,24 +166,6 @@ export default function WorldLighting({
     )
       keyShadow.needsUpdate = true;
     if (animate) time.current += step;
-    scratch.position.copy(
-      close
-        ? worldPoint(
-            world,
-            daylight > 0.05
-              ? solar.direction.map((v, i) =>
-                  i === 1 ? Math.max(6, v * 45) : v * 45,
-                )
-              : valley
-                ? [-14, 28, 18]
-                : foundry
-                  ? [-8, 32, 16]
-                  : [3, 18, 6],
-          )
-        : new THREE.Vector3(
-            ...(daylight > 0.05 ? solar.direction : [-0.5, 0.8, 0.5]),
-          ).multiplyScalar(WORLD_RADIUS * 2),
-    );
     scratch.target.copy(
       close
         ? worldPoint(
@@ -165,34 +178,37 @@ export default function WorldLighting({
                   ? [-7, 1, -14]
                   : [0, 0, 0],
           )
-        : new THREE.Vector3(),
+        : new THREE.Vector3(0, WORLD_RADIUS, 0),
     );
     if (world === "studio" && stop === "walk") {
       const { pose } = residentRoutePose(
         residentClock.elapsed,
         localWandererIndex,
       );
-      scratch.position.add(pose.position).sub(scratch.target);
       scratch.target.copy(pose.position);
     }
+    // Directional light is a vector from its target, not an absolute world
+    // coordinate. A low sun at y=6 was below Home's 26m summit; in overview
+    // it was even below the 450m bay plane. Keep the solar angle at every
+    // camera/terrain height and centre the shadow volume on the subject.
+    scratch.direction.set(...(daylight > 0.05 ? solar.direction : [-0.5, 0.8, 0.5])).normalize();
+    const lightRegion = regions.find((r) => r.id === world);
+    if (lightRegion) scratch.direction.applyQuaternion(lightRegion.rotation);
+    scratch.position.copy(scratch.target).addScaledVector(scratch.direction, close ? 180 : WORLD_RADIUS * 2);
     const blend = animate ? 1 - Math.exp(-step * 5) : 1;
     key.current.position.lerp(scratch.position, blend);
     target.position.lerp(scratch.target, blend);
-    const keyIntensity = close
-      ? (valley ? 1.1 : foundry || fieldnotes ? 0.95 : 0.8) +
-        daylight * 3.6 * mood.exposure
-      : 1.2 + daylight;
+    const region = regions.find((r) => r.id === world);
+    if (region) skyFill.current.position.copy(region.normal);
+    else skyFill.current.position.set(0, 1, 0);
     key.current.intensity = THREE.MathUtils.lerp(
       key.current.intensity,
-      keyIntensity *
-        (interior ? 0.45 + daylight * 0.4 : 1) *
-        // Cloud cover dims direct sun; the sky light carries the scene.
-        (1 - (solar.weather?.cloud ?? 0) * daylight * 0.55),
+      light.direct * (close ? mood.exposure : 0.9),
       blend,
     );
     scratch.color.set(daylight > 0.05 ? mood.sun : "#b4c8ee");
     if (solar.warmth && daylight > 0.05)
-      scratch.color.lerp(new THREE.Color("#ffb67c"), solar.warmth * 0.5);
+      scratch.color.lerp(new THREE.Color("#ffb67c"), solar.warmth * (1 - (solar.weather?.cloud ?? 0) * 0.8) * 0.5);
     key.current.color.lerp(scratch.color, blend);
     const span = close
       ? foundry
@@ -212,13 +228,13 @@ export default function WorldLighting({
       shadow.top = span;
       shadow.bottom = -span;
       shadow.near = close ? 3 : 20;
-      shadow.far = close ? 110 : WORLD_RADIUS * 4;
+      shadow.far = close ? 400 : WORLD_RADIUS * 4;
       shadow.updateProjectionMatrix();
     }
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < POOL; i++) {
       const lamp = points.current[i];
       const item =
-        i === 4 && world === "studio"
+        i === POOL - 1 && world === "studio"
           ? [
               [0, 4, -5],
               "#dae9ff",
@@ -233,15 +249,26 @@ export default function WorldLighting({
         lamp.position.lerp(
           worldPoint(
             world,
-            world === "studio" ? apartmentPoint(item[0]) : item[0],
+            world === "studio"
+              ? apartmentPoint(item[0])
+              : raisedContentPoint(world, item[0]),
           ),
           blend,
         );
         scratch.color.set(item[1]);
         lamp.color.lerp(scratch.color, blend);
+        const kind = item[4];
+        const level =
+          kind === "fire"
+            ? (night ? 1 : 0) * (0.85 + Math.sin(time.current * 17) * 0.1)
+            : kind === "lamp"
+              ? night
+                ? 1
+                : 0.4
+              : light.practical * (interior ? 1.8 : 1);
         lamp.intensity = THREE.MathUtils.lerp(
           lamp.intensity,
-          item[2] * (1 - daylight * 0.72) * (interior ? 1.8 : 1),
+          item[2] * level,
           blend,
         );
         lamp.distance = item[3];
@@ -250,18 +277,13 @@ export default function WorldLighting({
   });
   return (
     <>
-      <ambientLight
-        intensity={
-          ((valley || foundry || fieldnotes ? 0.16 : 0.12) - daylight * 0.08) *
-          (interior ? 0.5 : 1)
-        }
-      />
+      <ambientLight intensity={light.ambient} />
       <hemisphereLight
+        ref={skyFill}
         args={[
-          mood.sky,
-          "#3b3a44",
-          ((valley || foundry || fieldnotes ? 0.5 : 0.42) - daylight * 0.12) *
-            (interior ? 0.4 + daylight * 0.4 : 1),
+          daylight < 0.4 ? "#91a8d0" : "#d2e3ed",
+          daylight < 0.4 ? "#29313f" : valley ? "#6d7255" : "#777469",
+          light.sky,
         ]}
       />
       <primitive object={target} />
@@ -276,7 +298,7 @@ export default function WorldLighting({
         shadow-normalBias={0.025}
         shadow-bias={-0.00025}
       />
-      {Array.from({ length: 5 }, (_, i) => (
+      {Array.from({ length: POOL }, (_, i) => (
         <pointLight
           key={i}
           ref={(node) => {

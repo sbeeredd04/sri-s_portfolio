@@ -7,6 +7,8 @@ import {
   fieldnotesRoute as route,
 } from "./fieldnotes-layout.mjs";
 
+import { lookoutVista } from "./lookout-vista.mjs";
+
 // The kiosk stands east of the entry walk, its counter facing the walker.
 export const newsstand = {
   x: 2.55,
@@ -134,17 +136,18 @@ export const quarterViews = [
   {
     id: "lookout",
     label: "The lookout",
-    // Three-quarters from behind the bench, looking down over the wall so
-    // the bench, wall and shore sit in frame with the water beyond.
-    position: [4.6, 2.5, lookout.bench - 3.6],
-    target: [-0.8, 0.7, lookout.z + 7],
+    // Look past the seat to the offshore beacon; keep the wall below the
+    // horizon and the focal point in the clear center of the interface.
+    position: [1.3, 4.2, lookout.bench - 12],
+    target: [lookoutVista.focus[0], 1.2, lookoutVista.focus[2]],
+    fov: 48,
     portrait: {
-      position: [2.2, 3.2, lookout.bench - 4.8],
-      target: [-0.2, 0.4, lookout.z + 6],
-      fov: 70,
+      position: [0.9, 3.5, lookout.bench - 11],
+      target: lookoutVista.focus,
+      fov: 52,
     },
     content: "writing",
     prompt: "Somewhere to think it through",
-    hint: "A bench, a wall and the water. Most notes start somewhere like this.",
+    hint: "A small light across the water. A little distance to think things through.",
   },
 ];

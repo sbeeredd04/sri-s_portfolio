@@ -1,0 +1,493 @@
+/* One mark, five chapters, one home. The sequence is finite and skippable. */
+.experience-shell[data-entry-pending="true"] {
+  visibility: hidden;
+}
+.experience-shell[data-entry-pending="true"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: #f1eee6;
+  visibility: visible;
+  z-index: 10000;
+}
+.world-loader {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  padding: clamp(20px, 3.4vw, 48px);
+  overflow: auto;
+  color: #302f2a;
+  background: #f1eee6;
+  font-family: var(--font-manrope), sans-serif;
+  color-scheme: light;
+  isolation: isolate;
+}
+.entrance-palettes {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.entrance-palette {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: opacity;
+}
+.entrance-palette-home {
+  opacity: 1;
+}
+.world-loader[data-settled="true"] .entrance-palettes {
+  display: none;
+}
+.entrance-chapter {
+  will-change: opacity, transform;
+}
+.world-loader[open] {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+}
+.world-loader:focus {
+  outline: none;
+}
+.world-loader::backdrop {
+  background: #f1eee6;
+}
+.entrance-masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+.entrance-masthead > span {
+  padding: 8px 10px;
+  color: inherit;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+}
+.entrance-replay {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11px;
+  padding: 8px 12px;
+  min-height: 44px;
+  color: inherit;
+  background: transparent;
+  border-radius: 999px;
+}
+.entrance-utilities {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.entrance-sound {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+}
+.entrance-sound[aria-pressed="true"] {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  border-color: currentColor;
+}
+/* Do not let the world skin's button transitions chase animated ink. */
+.experience-shell .world-loader button {
+  transition:
+    transform 160ms,
+    background-color 160ms;
+}
+.world-loader[data-settled="false"]
+  :is(.entrance-signature, #entrance-title, .entrance-description) {
+  opacity: 0;
+}
+.entrance-composition {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+.entrance-stage {
+  width: 100%;
+  aspect-ratio: 660 / 340;
+  position: relative;
+  isolation: isolate;
+}
+.entrance-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.entrance-material,
+.entrance-object {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.entrance-material {
+  fill: #302f2a;
+  rx: 48px;
+  transform: translate(90px, 90px) scale(0.25);
+}
+.entrance-detail {
+  opacity: 0;
+  stroke: #fffaf0;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.entrance-detail-build {
+  stroke: #09172b;
+  stroke-width: 2.5;
+}
+.entrance-detail-play {
+  stroke: #352419;
+  stroke-width: 1;
+}
+.entrance-halo {
+  position: absolute;
+  inset: -4% 10%;
+  background: radial-gradient(ellipse, currentColor -200%, transparent 68%);
+  opacity: 0;
+  pointer-events: none;
+}
+.entrance-chapter {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 45%;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  opacity: 0;
+}
+.entrance-chapter-word {
+  font-size: clamp(56px, 10.8vw, 92px);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+.entrance-chapter-label {
+  font:
+    10px/1.5 var(--font-manrope),
+    sans-serif;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.entrance-chapter-home {
+  font-family: var(--font-bricolage), sans-serif;
+  font-weight: 500;
+}
+.entrance-chapter-build {
+  font-family: var(--font-jetbrains), monospace;
+  font-weight: 500;
+}
+.entrance-chapter-play {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-weight: 650;
+}
+.entrance-chapter-play .entrance-chapter-label {
+  font-style: normal;
+}
+.entrance-chapter-wander {
+  font-family: var(--font-caveat), cursive;
+  font-weight: 500;
+}
+.entrance-chapter-wander .entrance-chapter-word {
+  font-size: clamp(65px, 12vw, 108px);
+}
+.entrance-chapter-write {
+  font-family: var(--font-newsreader), Georgia, serif;
+}
+.entrance-signature {
+  position: absolute;
+  left: 30%;
+  top: 22.941176%;
+  width: 40%;
+  color: #302f2a;
+}
+.entrance-signature .personal-signature {
+  color: inherit;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.entrance-signature .signature-stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.entrance-signature .signature-i-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* The travelling object supplies the period, so there is only ever one dot. */
+.entrance-signature .signature-period {
+  visibility: hidden;
+}
+.world-loader h2 {
+  margin: -14% 0 0;
+  font:
+    400 clamp(24px, 3vw, 34px)/1.2 var(--font-bricolage),
+    sans-serif;
+  letter-spacing: -0.04em;
+}
+.entrance-description {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.entrance-footer {
+  text-align: center;
+}
+.entrance-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.entrance-actions button {
+  min-height: 50px;
+  padding: 0 24px;
+  font-size: 12px;
+  border-radius: 999px;
+  transition:
+    transform 160ms,
+    background 160ms;
+}
+.entrance-actions .entrance-audio {
+  position: relative;
+  width: 280px;
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+  color: #302f2a;
+  background: #e6e0d5;
+  border: 1px solid #7f7a6c;
+}
+.entrance-button-content {
+  min-height: 50px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+.entrance-button-end {
+  min-width: 3ch;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.entrance-fill {
+  position: absolute;
+  inset: 0;
+  background: #302f2a;
+  color: #fffaf0;
+  pointer-events: none;
+  transition: clip-path 220ms ease-out;
+}
+.entrance-audio:disabled {
+  cursor: wait;
+}
+.entrance-quiet:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.entrance-audio svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  fill: none;
+}
+.entrance-audio:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+.entrance-quiet {
+  color: inherit;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+}
+.entrance-quiet:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.world-loader button:focus-visible,
+.world-loader a:focus-visible {
+  outline: 2px solid #64718c;
+  outline-offset: 5px;
+}
+.entrance-readiness {
+  min-height: 28px;
+  max-width: 320px;
+  margin: 16px auto 0;
+  font-size: 10px;
+}
+.entrance-story {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 44px;
+  color: inherit;
+  font-size: 11px;
+  text-underline-offset: 4px;
+}
+.entrance-story:hover {
+  text-decoration: underline;
+}
+.world-loader[data-leaving="true"] {
+  animation: entrance-depart 500ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+.world-loader[data-leaving="true"]::backdrop {
+  animation: entrance-backdrop 500ms ease forwards;
+}
+@keyframes entrance-depart {
+  to {
+    opacity: 0;
+    transform: translateY(-12px) scale(1.02);
+  }
+}
+@keyframes entrance-backdrop {
+  to {
+    opacity: 0;
+  }
+}
+@media (max-width: 600px) {
+  .entrance-masthead {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .entrance-utilities {
+    flex-direction: row;
+    gap: 12px;
+    justify-content: space-between;
+  }
+  .entrance-sound {
+    font-size: 10px;
+  }
+  .world-loader {
+    padding: max(12px, env(safe-area-inset-top)) 20px
+      max(12px, env(safe-area-inset-bottom));
+  }
+  .entrance-masthead > span {
+    padding: 4px 0;
+    font-size: 9px;
+    letter-spacing: 0.13em;
+  }
+  .entrance-replay {
+    font-size: 10px;
+  }
+  .entrance-stage {
+    width: calc(100% + 24px);
+    margin-left: -12px;
+  }
+  .entrance-chapter {
+    gap: 10px;
+  }
+  .entrance-chapter-label {
+    font-size: 8px;
+    letter-spacing: 0.06em;
+  }
+  .world-loader h2 {
+    margin-top: 12px;
+  }
+  .entrance-description {
+    font-size: 11px;
+  }
+  .entrance-actions {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .entrance-actions .entrance-audio {
+    width: min(100%, 340px);
+  }
+  .entrance-actions .entrance-quiet {
+    min-height: 44px;
+    border-color: transparent;
+    background: transparent;
+    color: inherit;
+    font-size: 11px;
+  }
+  .entrance-readiness {
+    margin-top: 5px;
+    min-height: 23px;
+  }
+  .entrance-composition {
+    max-width: 430px;
+  }
+  .world-loader[open] {
+    gap: 10px;
+  }
+  .entrance-story {
+    min-height: 44px;
+  }
+}
+@media (max-height: 650px) and (min-width: 601px) {
+  .world-loader {
+    padding: 12px 24px;
+  }
+  .world-loader[open] {
+    gap: 5px;
+  }
+  /* Do not let the world skin's button transitions chase animated ink. */
+  .experience-shell .world-loader button {
+    transition:
+      transform 160ms,
+      background-color 160ms;
+  }
+  .world-loader[data-settled="false"]
+    :is(.entrance-signature, #entrance-title, .entrance-description) {
+    opacity: 0;
+  }
+  .entrance-composition {
+    max-width: 460px;
+  }
+  .entrance-chapter-word {
+    font-size: 64px;
+  }
+  .entrance-chapter-wander .entrance-chapter-word {
+    font-size: 74px;
+  }
+  .world-loader h2 {
+    font-size: 24px;
+  }
+  .entrance-description {
+    margin-top: 6px;
+  }
+  .entrance-readiness {
+    margin-top: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-loader,
+  .world-loader *,
+  .world-loader::backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+  .entrance-audio:hover,
+  .entrance-quiet:hover:not(:disabled) {
+    transform: none;
+  }
+}

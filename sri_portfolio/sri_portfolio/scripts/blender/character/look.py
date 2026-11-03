@@ -18,13 +18,26 @@ SHIRT_DEFAULT = (0.11, 0.11, 0.12)                    # near-black tee like the 
 TROUSERS = (0.085, 0.09, 0.105)
 HAIR_DARK = (0.12, 0.085, 0.066)
 
+SRI = {  # sRGB colours for the default build; build.py --variant swaps in another palette
+    "prefix": "sri",
+    "skin": (0.7, 0.48, 0.34),
+    "skin_map": SKIN,
+    "blush": BLUSH,
+    "lash": (0.07, 0.045, 0.035),
+    "brow": HAIR_DARK,
+    "iris": ((0.07, 0.04, 0.025), (0.3, 0.17, 0.09)),
+    "hair": ((0.11, 0.075, 0.055), (0.23, 0.155, 0.105)),
+    "shirt": SHIRT_DEFAULT,
+    "trousers": TROUSERS,
+}
+
 
 def _blob(pos, centre, radius):
     d = np.linalg.norm(pos - np.asarray(centre, np.float32), axis=-1)
     return np.exp(-(d / radius) ** 2)
 
 
-def skin_maps(pos, mask, ao):
+def skin_maps(pos, mask, ao, skin=SKIN, blush=BLUSH):
     flat = pos.reshape(-1, 3)
     noise = value_noise(flat, 40, 11).reshape(pos.shape[:2]) * 0.5 + value_noise(flat, 140, 12).reshape(pos.shape[:2]) * 0.25
     warm = np.zeros(pos.shape[:2], np.float32)
@@ -35,13 +48,13 @@ def skin_maps(pos, mask, ao):
     warm += 0.4 * _blob(pos, (0.0, -0.172, 0.972), 0.016)               # nose tip
     warm += 0.12 * _blob(pos, (0.0, -0.15, 1.1), 0.05)                  # forehead
     warm = np.clip(warm, 0, 0.75)[..., None]
-    col = SKIN * (1 - warm) + BLUSH * warm
+    col = skin * (1 - warm) + blush * warm
     col = col * (1 + 0.035 * noise[..., None])
     lin = T.srgb_to_linear(col) * (0.5 + 0.5 * np.clip(ao, 0, 1))[..., None]
     col = M.linear_to_srgb(lin)
     rough = 0.6 - 0.12 * _blob(pos, (0.0, -0.17, 0.975), 0.02) - 0.07 * _blob(pos, (0.0, -0.15, 1.1), 0.05)
     rough = rough + 0.04 * noise
-    col[~mask] = SKIN
+    col[~mask] = skin
     return col, np.repeat(np.clip(rough, 0.3, 0.9)[..., None], 3, axis=2)
 
 
@@ -72,15 +85,17 @@ def linen(size=512):
     return img
 
 
-def dress(objs: dict, sizes: dict | None = None) -> None:
+def dress(objs: dict, sizes: dict | None = None, palette: dict = SRI) -> None:
     sizes = {"skin": 1024, "cloth": 512, "shoes": 512, **(sizes or {})}
-    body, face, hair, shirt, trousers, shoes, watch = (objs[k] for k in ("Body", "Face", "Hair", "Shirt", "Trousers", "Shoes", "Watch"))
-    skin = M.principled("skin", (0.7, 0.48, 0.34), 0.58, **{"Subsurface Weight": 0.0})
+    pal, pre = palette, palette["prefix"]
+    body, face, hair, shirt, trousers, shoes = (objs[k] for k in ("Body", "Face", "Hair", "Shirt", "Trousers", "Shoes"))
+    watch = objs.get("Watch")
+    skin = M.principled("skin", pal["skin"], 0.58, **{"Subsurface Weight": 0.0})
     body.data.materials.append(skin)
     for name, col, rough, extra in (
         ("eye", (1, 1, 1), 0.1, {"Coat Weight": 0.25, "Coat Roughness": 0.08}),
-        ("lash", (0.07, 0.045, 0.035), 0.55, {}),
-        ("brow", HAIR_DARK, 0.75, {}),
+        ("lash", pal["lash"], 0.55, {}),
+        ("brow", pal["brow"], 0.75, {}),
         ("mouth", (1, 1, 1), 0.45, {}),
     ):
         face.data.materials.append(M.principled(name, col, rough, **extra))
@@ -94,41 +109,42 @@ def dress(objs: dict, sizes: dict | None = None) -> None:
         mat = M.principled(name, (1, 1, 1), rough)
         if name not in shoes.data.materials:
             shoes.data.materials.append(mat)
-    watch.data.materials.append(M.principled("watch", (0.035, 0.035, 0.04), 0.38, **{"Coat Weight": 0.3}))
+    if watch is not None:
+        watch.data.materials.append(M.principled("watch", (0.035, 0.035, 0.04), 0.38, **{"Coat Weight": 0.3}))
 
     # skin: position-driven colour + roughness with baked occlusion
     pos, mask = M.bake_positions(body, sizes["skin"])
     face.hide_render = True  # eyes must not shadow the skin that shows when they blink
     ao = M.bake_ao(body, sizes["skin"])
     face.hide_render = False
-    col, rough = skin_maps(pos, mask, ao)
-    M.set_albedo(skin, M.save("sri_skin_color", col))
+    col, rough = skin_maps(pos, mask, ao, np.asarray(pal["skin_map"], np.float32), np.asarray(pal["blush"], np.float32))
+    M.set_albedo(skin, M.save(f"{pre}_skin_color", col))
     small = rough[::2, ::2] if sizes["skin"] > 512 else rough
-    M.set_roughness(skin, M.save("sri_skin_rough", small, "Non-Color"))
+    M.set_roughness(skin, M.save(f"{pre}_skin_rough", small, "Non-Color"))
 
     # face details
-    M.set_albedo(face.data.materials["eye"], M.save("sri_eye", T.eye_texture(256)))
-    M.set_albedo(face.data.materials["mouth"], M.save("sri_mouth", mouth_texture()))
+    M.set_albedo(face.data.materials["eye"], M.save(f"{pre}_eye", T.eye_texture(256, *pal["iris"])))
+    M.set_albedo(face.data.materials["mouth"], M.save(f"{pre}_mouth", mouth_texture()))
 
     # hair strands
-    hcol, hnor = T.hair_textures()
-    M.set_albedo(hair_mat, M.save("sri_hair_color", hcol))
-    M.set_normal(hair_mat, M.save("sri_hair_normal", hnor, "Non-Color"), strength=0.35)
+    hcol, hnor = T.hair_textures(base=pal["hair"][0], tip=pal["hair"][1])
+    M.set_albedo(hair_mat, M.save(f"{pre}_hair_color", hcol))
+    M.set_normal(hair_mat, M.save(f"{pre}_hair_normal", hnor, "Non-Color"), strength=0.35)
 
     # garments: occlusion albedo x recolourable factor, tiled linen weave normal
     weave = linen()
-    for obj, mat, tint, tile in ((shirt, shirt_mat, SHIRT_DEFAULT, 9.0), (trousers, trousers_mat, TROUSERS, 11.0)):
+    for obj, mat, tint, tile in ((shirt, shirt_mat, pal["shirt"], 9.0), (trousers, trousers_mat, pal["trousers"], 11.0)):
         ao = M.bake_ao(obj, sizes["cloth"])
         pos, _ = M.bake_positions(obj, sizes["cloth"])
         mottle = 0.04 * value_noise(pos.reshape(-1, 3), 30, 5).reshape(ao.shape)
-        M.set_albedo(mat, M.save(f"sri_{mat.name}_ao", ao_albedo(ao, 0.5, mottle)), tint)
+        M.set_albedo(mat, M.save(f"{pre}_{mat.name}_ao", ao_albedo(ao, 0.5, mottle)), tint)
         M.set_normal(mat, weave, strength=0.8, uv_scale=tile)
 
     # shoes: shared occlusion/detail atlas, per-part tint
     ao = M.bake_ao(shoes, sizes["shoes"])
     pos, _ = M.bake_positions(shoes, sizes["shoes"])
     detail = shoe_detail(pos)
-    img = M.save("sri_shoes_ao", ao_albedo(ao, 0.6) * detail[..., None])
+    img = M.save(f"{pre}_shoes_ao", ao_albedo(ao, 0.6) * detail[..., None])
     for name, tint in (("shoe_sole", (0.96, 0.95, 0.93)), ("shoe_upper", (0.93, 0.92, 0.89)), ("shoe_lace", (0.97, 0.97, 0.96))):
         M.set_albedo(shoes.data.materials[name], img, tint)
 

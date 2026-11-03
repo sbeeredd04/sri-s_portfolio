@@ -1,3 +1,4 @@
+import { homeSite } from "./home-site.mjs";
 // Shared by the rendered furniture, collision world, and integration tests.
 export const studioSurfaces = {
   floor: { position: [0, -0.2, 0.5], size: [13, 0.38, 9] },
@@ -89,5 +90,9 @@ export const studioDeskLight = {
 };
 
 // The same apartment level is used by the model, lights, cameras and physics.
-export const APARTMENT_LEVEL = 9.6;
-export const apartmentPoint = ([x, y, z]) => [x, y + APARTMENT_LEVEL, z];
+export const APARTMENT_LEVEL = homeSite.anchors.Summit_EntryAnchor[1] + 3.45;
+export const apartmentPoint = ([x, y, z]) => [
+  x - 3.5,
+  y + APARTMENT_LEVEL,
+  z - 23.4,
+];

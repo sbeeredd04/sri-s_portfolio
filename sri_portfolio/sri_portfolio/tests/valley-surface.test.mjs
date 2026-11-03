@@ -13,7 +13,6 @@ import {
   outdoorsLift,
   wall,
   wallOutward,
-  overlookDeck,
   graniteForms,
 } from "../app/lib/valley-layout.mjs";
 import {
@@ -22,10 +21,9 @@ import {
 } from "../app/lib/terrain-geometry.mjs";
 import {
   localTrailGround,
-  trailFootHeight,
 } from "../app/lib/trail-surface.mjs";
 import { makeWalkNetwork, nearestWalk } from "../app/lib/walk-network.mjs";
-import { worldPoint, regions } from "../app/lib/world-layout.mjs";
+import { worldPoint } from "../app/lib/world-layout.mjs";
 
 test("the valley floor blend is finite and confined to its intended region", () => {
   assert.equal(valleyFloorWeight(-4, -10), 1);
@@ -135,28 +133,86 @@ test("the stream clears the actual refined terrain across its full wet channel",
   terrain.dispose();
 });
 
-test("the visitor feet and level overlook agree with the rendered platform", () => {
-  const mesh = new Mesh(buildDeck(localTrailGround), new MeshBasicMaterial());
-  mesh.updateMatrixWorld();
-  const deck = overlookDeck(),
-    ray = new Raycaster(new Vector3(deck.x, 10, deck.z), new Vector3(0, -1, 0));
-  const hit = ray.intersectObject(mesh)[0];
-  assert.ok(hit);
-  const foot = trailFootHeight(deck.x, deck.z) - outdoorsLift;
-  assert.ok(foot >= hit.point.y && foot - hit.point.y < 0.012);
-  const network = makeWalkNetwork(),
-    region = regions.find((r) => r.id === "trail");
-  const location = nearestWalk(
-    worldPoint("trail", [deck.x, foot + outdoorsLift, deck.z]),
-    network,
-  );
-  const actual =
-    location.center.clone().sub(region.center).dot(region.normal) -
-    outdoorsLift;
-  assert.ok(
-    actual >= hit.point.y && actual - hit.point.y < 0.025,
-    `feet ${actual}, platform ${hit.point.y}`,
-  );
-  mesh.geometry.dispose();
-  mesh.material.dispose();
+test("authored trail feet and full paving widths agree with the current decoded GLB", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { createHash } = await import("node:crypto");
+  const { NodeIO } = await import("@gltf-transform/core");
+  const { ALL_EXTENSIONS } = await import("@gltf-transform/extensions");
+  const { MeshoptDecoder } = await import("meshoptimizer");
+  const { Matrix4, Triangle } = await import("three");
+  const { outThereWalkSource, outThereWalks } = await import("../app/lib/out-there-walk-runtime.mjs");
+  const { outThereLiveSource } = await import("../app/lib/out-there-site.mjs");
+  const audit = JSON.parse(await readFile(new URL("../app/lib/out-there-refined-walk-profiles.json", import.meta.url)));
+  const bytes = await readFile(new URL("../public/models/islands/out-there-refined.glb", import.meta.url));
+  const digest = createHash("sha256").update(bytes).digest("hex");
+  assert.equal(audit.modelSha256, digest, "the clearance certificate must cover the model actually shipped");
+  assert.equal(outThereWalkSource, digest);
+  assert.ok(outThereLiveSource.endsWith(digest.slice(0, 16)));
+  await MeshoptDecoder.ready;
+  const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ "meshopt.decoder": MeshoptDecoder });
+  const doc = await io.readBinary(bytes);
+  const cells = new Map();
+  const size = 2;
+  for (const node of doc.getRoot().listNodes()) {
+    if (!node.getMesh()) continue;
+    let owner = node;
+    while (!owner.getName() && owner.getParentNode()) owner = owner.getParentNode();
+    if (owner.getName() !== "trail_continuous") continue;
+    const matrix = new Matrix4().fromArray(node.getWorldMatrix());
+    for (const p of node.getMesh().listPrimitives()) {
+      const position = p.getAttribute("POSITION"), indices = p.getIndices();
+      const point = (i) => new Vector3().fromArray(position.getElement(indices ? indices.getScalar(i) : i, [])).applyMatrix4(matrix).add(new Vector3(0, 6, 0)).multiplyScalar(1 / 1.56);
+      for (let i = 0; i < (indices?.getCount() ?? position.getCount()); i += 3) {
+        const triangle = new Triangle(point(i), point(i + 1), point(i + 2));
+        if (triangle.getNormal(new Vector3()).y < 0.2) continue;
+        const vertices = [triangle.a, triangle.b, triangle.c];
+        for (let x = Math.floor(Math.min(...vertices.map((p) => p.x)) / size); x <= Math.floor(Math.max(...vertices.map((p) => p.x)) / size); x++)
+          for (let z = Math.floor(Math.min(...vertices.map((p) => p.z)) / size); z <= Math.floor(Math.max(...vertices.map((p) => p.z)) / size); z++) {
+            const key = `${x},${z}`;
+            if (!cells.has(key)) cells.set(key, []);
+            cells.get(key).push(triangle);
+          }
+      }
+    }
+  }
+  const support = (x, y, z) => {
+    for (const t of cells.get(`${Math.floor(x / size)},${Math.floor(z / size)}`) || []) {
+      const a = t.a, b = t.b, c = t.c;
+      const den = (b.z - c.z) * (a.x - c.x) + (c.x - b.x) * (a.z - c.z);
+      if (Math.abs(den) < 1e-10) continue;
+      const u = ((b.z - c.z) * (x - c.x) + (c.x - b.x) * (z - c.z)) / den;
+      const v = ((c.z - a.z) * (x - c.x) + (a.x - c.x) * (z - c.z)) / den;
+      if (Math.min(u, v, 1 - u - v) >= -1e-5 && Math.abs(u * a.y + v * b.y + (1 - u - v) * c.y - y) < 0.23) return true;
+    }
+    return false;
+  };
+  const network = makeWalkNetwork().filter((s) => s.world === "trail" && !s.connection);
+  const reachable = new Set(["ENTRY"]);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const p of audit.profiles.filter((p) => p.usable))
+      if (reachable.has(p.from) || reachable.has(p.to))
+        for (const node of [p.from, p.to]) if (!reachable.has(node)) { reachable.add(node); changed = true; }
+  }
+  assert.deepEqual(outThereWalks.map((w) => w.id).sort(), audit.profiles.filter((p) => p.usable && reachable.has(p.from)).map((p) => p.id).sort());
+  let probes = 0;
+  for (const walk of outThereWalks) {
+    const profile = audit.profiles.find((p) => p.id === walk.id);
+    assert.equal(profile.usable, true);
+    assert.deepEqual(profile.problems, []);
+    assert.deepEqual(profile.obstacles, []);
+    assert.equal(walk.points.length, profile.points.length);
+    for (let i = 0; i < walk.points.length; i++) {
+      const point = profile.points[i], [x, y, z] = point.position;
+      assert.deepEqual(walk.points[i], [...point.position, point.halfWidth]);
+      for (let offset = -point.rawPavingHalfWidth; offset <= point.rawPavingHalfWidth + 0.00001; offset += 0.1) {
+        assert.ok(support(x + point.normalXZ[0] * offset, y, z + point.normalXZ[1] * offset), `${walk.id} full paving width lacks support at ${i}/${offset}`);
+        probes++;
+      }
+      const foot = worldPoint("trail", [x, y + 0.004, z]);
+      assert.ok(nearestWalk(foot, network).distance < 1e-10, `${walk.id} foot datum diverges from exported paving`);
+    }
+  }
+  assert.ok(probes > 15000, "the whole enabled paving width must be sampled");
 });

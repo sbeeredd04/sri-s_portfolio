@@ -1,12 +1,26 @@
 "use client";
+import { lightModes, resolveWorldLight } from "../../lib/world-lighting.mjs";
 import dynamic from "next/dynamic";
-import { Component, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import UiIcon from "./UiIcon";
+import MorphHeading from "./MorphHeading";
+import { skinIdentity } from "../../lib/biome-morph.mjs";
+import { biomeSkinStyle } from "../../lib/biome-skins.mjs";
 import WalkingControls from "./WalkingControls";
 import DiscoveryToast from "./DiscoveryToast";
 import { discover } from "../../lib/discoveries.mjs";
 import CommandBar from "./CommandBar";
+import BiomePages from "./BiomePages";
+import KeynoteControls from "./KeynoteControls";
 import { COMMAND_EVENT } from "./command-events";
-import PhysicsCursor from "./PhysicsCursor";
+import { emptyHover, nextHover } from "../../lib/scene-hover.mjs";
 import ReadingSheet from "./ReadingSheet";
 import PersonalSignature from "./PersonalSignature";
 import SettingsPopover from "./SettingsPopover";
@@ -17,7 +31,7 @@ import useSoundscape from "./useSoundscape";
 import SoundPreferences from "./SoundPreferences";
 import useWorldTime from "./useWorldTime";
 import useWeather from "./useWeather";
-import { fallbackWeather, weatherLabel } from "../../lib/weather.mjs";
+import { weatherLabel } from "../../lib/weather.mjs";
 import { biomeMoods } from "../../lib/world-time.mjs";
 import { linkedProjectId, projectId } from "../../lib/project-library.mjs";
 import {
@@ -35,26 +49,67 @@ import { placeStops } from "../../lib/place-stops.mjs";
 import { roomWorldDestination } from "../../lib/reading-rooms.mjs";
 import { allProjects, shows } from "../../json/personal";
 import WorldLoader from "./WorldLoader";
-import { initialTier } from "./Quality";
+import {
+  worldReturnState,
+  withWorldReturn,
+  hasEnteredWorld,
+  rememberWorldEntry,
+} from "../../lib/world-return.mjs";
+import {
+  PHONE_LAYOUT_QUERY,
+  navigationStop,
+} from "../../lib/mobile-navigation.mjs";
+import { initialTier } from "../../lib/device-tier.mjs";
+import { worldLoading } from "../../lib/world-loading.mjs";
+import {
+  createAssetPreloader,
+  startupAssetsForTier,
+} from "../../lib/world-assets.mjs";
 function footEntry(biome, stop) {
+  if (biome === "projects" && stop === "bay")
+    return `street:${streetRoutes.projects.findIndex((node) => node.group === "bay")}`;
   if (
     biome === "future" &&
     ["writing", "socials", "collaborate"].includes(stop)
   )
     return `roam:${stop}`;
   if (biome === "trail" && stop === "overlook") return "roam:overlook";
-  if (biome === "projects" && (stop === "campus" || stop === "ring"))
-    return `roam:${stop}`;
   return biome === "studio" && stop !== "bay" ? "roam:roof" : "roam";
 }
-const WorldScene = dynamic(() => import("./WorldScene"), {
-  ssr: false,
-  loading: () => null,
-});
+let terrainPreparation;
+const assetPreloaders = new Map();
+function preloadAssets(tier) {
+  if (!assetPreloaders.has(tier))
+    assetPreloaders.set(
+      tier,
+      createAssetPreloader({
+        assets: startupAssetsForTier(tier),
+        onProgress: worldLoading.report,
+      }),
+    );
+  return assetPreloaders.get(tier)();
+}
+function prepareWorldTerrain() {
+  return (terrainPreparation ||= (async () => {
+    const { prepareTerrainInBackground } =
+      await import("../../lib/terrain-preparation.mjs");
+    const terrainMethod = await prepareTerrainInBackground();
+    worldLoading.report({ terrain: true, terrainMethod });
+  })());
+}
+const WorldScene = dynamic(
+  async () => {
+    await prepareWorldTerrain();
+    const scene = await import("./WorldScene");
+    worldLoading.report({ code: true });
+    return scene;
+  },
+  { ssr: false, loading: () => null },
+);
 function clearProjectLink() {
   if (linkedProjectId(window.location.hash))
     window.history.replaceState(
-      null,
+      window.history.state,
       "",
       window.location.pathname + window.location.search,
     );
@@ -90,20 +145,70 @@ export default function ExperienceShell() {
     [reset, setReset] = useState(0),
     [roomReset, setRoomReset] = useState(0),
     [sheet, setSheet] = useState(null),
+    [previewsExpanded, setPreviewsExpanded] = useState(false),
+    [phone, setPhone] = useState(false),
+    [toolsExpanded, setToolsExpanded] = useState(false),
     [collection, setCollection] = useState("all"),
     [still, setStill] = useState(false),
     [graphicsError, setGraphicsError] = useState(false),
-    [hint, setHint] = useState(""),
+    [hover, setHover] = useState(emptyHover),
     [introBottom, setIntroBottom] = useState(0),
     [tierCeiling, setTierCeiling] = useState(null),
-    [activeTier, setActiveTier] = useState(null),
-    [sceneReady, setSceneReady] = useState(false);
+    [sceneReady, setSceneReady] = useState(false),
+    [prepareWorld, setPrepareWorld] = useState(false),
+    [entered, setEntered] = useState(null),
+    [returning, setReturning] = useState(false);
   useEffect(() => {
     setTierCeiling(initialTier());
     const light = new URLSearchParams(location.search).get("light");
-    if (light === "day" || light === "night") setLightMode(light);
+    if (lightModes.includes(light)) setLightMode(light);
+  }, []);
+  const mobileTools = useRef(null);
+  const restoredTools = useRef(null);
+  const mobileToolsToggle = useRef(null);
+  useEffect(() => {
+    const mq = matchMedia(PHONE_LAYOUT_QUERY);
+    const update = () => setPhone(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  const collapseTools = useCallback(() => {
+    // Selecting a view must never leave focus inside the now-inert drawer.
+    if (mobileTools.current?.contains(document.activeElement))
+      mobileToolsToggle.current?.focus({ preventScroll: true });
+    setToolsExpanded(false);
+  }, []);
+  useEffect(() => {
+    if (restoredTools.current !== null) {
+      setToolsExpanded(restoredTools.current);
+      restoredTools.current = null;
+      return;
+    }
+    collapseTools();
+    if (
+      stop.startsWith("roam") ||
+      stop.startsWith("street:") ||
+      (!phone &&
+        biome === "projects" &&
+        (projectExhibits[stop] || stop === "keynote"))
+    )
+      setToolsExpanded(true);
+  }, [biome, stop, collapseTools, phone]);
+  useEffect(() => {
+    // Resizing or returning from a full page must not revive phone walking.
+    const nextStop = navigationStop(biome, stop, phone);
+    if (nextStop !== stop) {
+      setStop(nextStop);
+      setReset((value) => value + 1);
+    }
+  }, [biome, stop, phone]);
+  const hint = hover.text;
+  const setHint = useCallback((text, event, cursor) => {
+    setHover((current) => nextHover(current, text, event, cursor));
   }, []);
   const markReady = useCallback(() => setSceneReady(true), []);
+  const prepareScene = useCallback(() => setPrepareWorld(true), []);
   const visitedScreens = useRef(new Set());
   const [walkerStatus, setWalkerStatus] = useState({
     distance: 0,
@@ -119,9 +224,11 @@ export default function ExperienceShell() {
     setReset((n) => n + 1);
   }, [biome, stop]);
   const [exhibitValues, setExhibitValues] = useState({});
+  const [keynoteIndex, setKeynoteIndex] = useState(0);
   const [visitorColor, setVisitorColor] = useState(0);
   const [entertainmentChannel, setEntertainmentChannel] = useState(0);
   const [roomDetail, setRoomDetail] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [ballRequests, setBallRequests] = useState({});
   const [courtActivity, setCourtActivity] = useState({});
   const reportCourtActivity = useCallback((id, busy) => {
@@ -154,27 +261,11 @@ export default function ExperienceShell() {
   }, []);
   const liveTime = useWorldTime();
   const weather = useWeather();
-  const daylight =
-    lightMode === "live"
-      ? (liveTime?.daylight ?? 0)
-      : lightMode === "day"
-        ? 1
-        : 0;
+  const solar = resolveWorldLight(lightMode, liveTime, weather);
+  const daylight = solar.daylight;
   const night = daylight < 0.4;
-  const solar = {
-    ...liveTime,
-    daylight,
-    direction:
-      lightMode === "live"
-        ? liveTime?.direction || [0, -1, 0]
-        : lightMode === "day"
-          ? [-0.6, 0.7, -0.38]
-          : [0, -1, 0],
-    warmth: lightMode === "live" ? liveTime?.warmth || 0 : 0,
-    weather: weather || fallbackWeather,
-  };
   const audio = useSoundscape(
-      biome === "studio" &&
+      biome === "projects" &&
         (stop === "bay" || streetStop(biome, stop)?.group === "bay")
         ? "bay"
         : biome === "projects" && stop === "keynote"
@@ -185,11 +276,43 @@ export default function ExperienceShell() {
       sheet,
       roomDetail,
       weather,
+      { autoStart: true },
     ),
     returnFocus = useRef(null),
     chapterGuide = useRef(null),
     introduction = useRef(null),
     exploration = useRef(null);
+  useEffect(() => {
+    if (!playing || audio.reducedMotion) audio.cue("cancel-morph");
+  }, [playing, audio.reducedMotion, audio.cue]);
+  useLayoutEffect(() => {
+    const guide = chapterGuide.current;
+    const measure = () => {
+      const selected = guide?.querySelector('[aria-current="location"]');
+      if (!selected) return;
+      guide.style.setProperty("--route-x", `${selected.offsetLeft}px`);
+      guide.style.setProperty("--route-y", `${selected.offsetTop}px`);
+      guide.style.setProperty("--route-width", `${selected.offsetWidth}px`);
+      guide.style.setProperty("--route-height", `${selected.offsetHeight}px`);
+      if (guide.scrollWidth > guide.clientWidth) {
+        guide.scrollTo({
+          left:
+            selected.offsetLeft -
+            (guide.clientWidth - selected.offsetWidth) / 2,
+          behavior: "instant",
+        });
+      }
+    };
+    const observer = new ResizeObserver(measure);
+    if (guide) {
+      observer.observe(guide);
+      guide
+        .querySelectorAll("button")
+        .forEach((button) => observer.observe(button));
+    }
+    measure();
+    return () => observer.disconnect();
+  }, [biome]);
   useEffect(() => {
     // A stop selector or its Back control can unmount on navigation. Keep
     // keyboard focus in the local controls when the old target disappears.
@@ -255,10 +378,15 @@ export default function ExperienceShell() {
     setStill(true);
     setHint("");
   }, []);
+  const preloadScene = useCallback(() => {
+    preloadAssets(tierCeiling || initialTier());
+    prepareWorldTerrain().catch(graphicsUnavailable);
+  }, [graphicsUnavailable, tierCeiling]);
   useEffect(() => {
     const mq = matchMedia("(prefers-reduced-motion: reduce)");
     const update = () =>
       setPlaying(!mq.matches && !navigator.connection?.saveData);
+    // A return restores the visitor's explicit pause choice below.
     update();
     mq.addEventListener("change", update);
     const visibility = () => setVisible(!document.hidden);
@@ -269,6 +397,7 @@ export default function ExperienceShell() {
     };
   }, []);
   const open = useCallback((id) => {
+    setEntered(true);
     if (id !== "work") clearProjectLink();
     setRoomDetail(null);
     setSheet(id);
@@ -285,7 +414,6 @@ export default function ExperienceShell() {
   }
   function close() {
     clearProjectLink();
-    audio.cue("close");
     setSheet(null);
     requestAnimationFrame(() => {
       const previous = returnFocus.current;
@@ -299,12 +427,18 @@ export default function ExperienceShell() {
   }
   const arrive = useCallback(
     (id) => {
-      audio.cue("travel");
+      const morph =
+        biome !== "planet" &&
+        id !== "planet" &&
+        skinIdentity(biome) !== skinIdentity(id) &&
+        playing &&
+        !audio.reducedMotion;
+      audio.cue(morph ? "morph" : "travel", { destination: id });
       setBiome(id);
       setStop("arrival");
       setHint("");
     },
-    [audio.cue],
+    [audio.cue, audio.reducedMotion, biome, playing],
   );
   function travel(id) {
     clearProjectLink();
@@ -315,24 +449,9 @@ export default function ExperienceShell() {
   function explore(id) {
     audio.cue("travel");
     setHint("");
-    setStop(id);
+    setStop(navigationStop(biome, id, phone));
     setReset((n) => n + 1);
   }
-  // On a phone, a room left open for a few seconds releases the world: the
-  // scene unmounts (freeing GPU memory) and returns when the room closes.
-  const [worldResting, setWorldResting] = useState(false);
-  useEffect(() => {
-    if (!sheet) {
-      setWorldResting(false);
-      return;
-    }
-    const small = window.matchMedia(
-      "(max-width: 700px), (pointer: coarse)",
-    ).matches;
-    if (!small) return;
-    const timer = setTimeout(() => setWorldResting(true), 4000);
-    return () => clearTimeout(timer);
-  }, [sheet]);
   // Terminals (the "/" bar, the Discoveries console) act through one event.
   const commandAction = useRef(null);
   commandAction.current = (action) => {
@@ -377,6 +496,47 @@ export default function ExperienceShell() {
         open("work");
       }
     };
+    const url =
+      window.location.pathname + window.location.search + window.location.hash;
+    const saved = worldReturnState(window.history.state, url);
+    let previouslyEntered = false;
+    try {
+      previouslyEntered = hasEnteredWorld(window.sessionStorage);
+    } catch {}
+    if (!saved) setPreviewsExpanded(false);
+    setEntered(Boolean(saved || previouslyEntered));
+    setReturning(Boolean(saved || previouslyEntered));
+    if (
+      saved &&
+      (saved.biome === "planet" ||
+        allChapters.some((c) => c.id === saved.biome))
+    ) {
+      restoredTools.current = saved.toolsExpanded === true;
+      setToolsExpanded(restoredTools.current);
+      setBiome(saved.biome);
+      setStop(
+        navigationStop(
+          saved.biome,
+          saved.stop,
+          matchMedia(PHONE_LAYOUT_QUERY).matches,
+        ),
+      );
+      setSheet(
+        saved.sheet === "index" ||
+          readingSections.some((r) => r.id === saved.sheet)
+          ? saved.sheet
+          : null,
+      );
+      setCollection(saved.collection || "all");
+      setPreviewsExpanded(saved.previewsExpanded !== false);
+      setPlaying(saved.playing === true);
+      setStill(saved.still === true);
+      if (lightModes.includes(saved.lightMode))
+        setLightMode(saved.lightMode);
+      // Do not replay an old ?room= link over the restored camera or sheet.
+      window.addEventListener("hashchange", follow);
+      return () => window.removeEventListener("hashchange", follow);
+    }
     const params = new URLSearchParams(window.location.search);
     const requestedRoom = params.get("room");
     if (readingSections.some((s) => s.id === requestedRoom)) {
@@ -394,6 +554,69 @@ export default function ExperienceShell() {
     window.addEventListener("hashchange", follow);
     return () => window.removeEventListener("hashchange", follow);
   }, [open]);
+  const returnSnapshot = useRef(null);
+  returnSnapshot.current = {
+    entered,
+    biome,
+    stop,
+    sheet,
+    collection,
+    previewsExpanded,
+    toolsExpanded,
+    playing,
+    still,
+    lightMode,
+  };
+  useEffect(() => {
+    if (entered) {
+      try {
+        rememberWorldEntry(window.sessionStorage);
+      } catch {}
+    }
+  }, [entered]);
+  useEffect(() => {
+    const save = () => {
+      const snapshot = returnSnapshot.current;
+      if (!snapshot?.entered) return;
+      try {
+        const url =
+          window.location.pathname +
+          window.location.search +
+          window.location.hash;
+        window.history.replaceState(
+          withWorldReturn(window.history.state, snapshot, url),
+          "",
+          url,
+        );
+      } catch {
+        /* Navigation must work even when the browser denies storage. */
+      }
+    };
+    const leaving = (event) => {
+      const link = event.target.closest?.("a[href]");
+      if (
+        !link ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        link.target === "_blank"
+      )
+        return;
+      if (
+        link.origin === window.location.origin &&
+        link.pathname !== window.location.pathname
+      )
+        save();
+    };
+    document.addEventListener("click", leaving, true);
+    window.addEventListener("pagehide", save);
+    return () => {
+      document.removeEventListener("click", leaving, true);
+      window.removeEventListener("pagehide", save);
+    };
+  }, []);
   const chapter = allChapters.find((c) => c.id === biome),
     chapterId = biome === "entertainment" ? "court" : biome,
     next =
@@ -408,11 +631,12 @@ export default function ExperienceShell() {
   return (
     <div
       data-biome={biome}
+      data-entry-pending={entered === null}
+      style={biomeSkinStyle(biome)}
       onClick={audio.press}
       className={`experience-shell ${night ? "shell-night" : ""} ${playing ? "" : "is-paused"}`}
     >
       <DiscoveryToast onOpen={() => show("discoveries")} />
-      <PhysicsCursor enabled={playing && visible && !sheet} hint={hint} />
       <a className="skip-link" href="/story">
         Read the accessible story
       </a>
@@ -438,28 +662,28 @@ export default function ExperienceShell() {
           <button onClick={() => show("work")}>Work</button>
           <a href="/resume">Résumé</a>
           <button className="index-button" onClick={() => show("index")}>
-            Index <span aria-hidden="true">≡</span>
+            Index <UiIcon name="menu" />
           </button>
         </nav>
       </header>
       <main className="immersive-main" aria-label="Explore Sri’s world">
         <div className="immersive-canvas">
-          {!still && tierCeiling && !worldResting ? (
+          {!still && tierCeiling && (entered || prepareWorld) ? (
             <WorldBoundary onFailure={graphicsUnavailable}>
               <WorldScene
                 tier={tierCeiling}
-                onTier={setActiveTier}
                 onReady={markReady}
                 introBottom={introBottom}
                 world={biome}
                 stop={stop}
+                keynoteIndex={keynoteIndex}
                 night={night}
                 solar={solar}
                 visitorColor={visitorColor}
                 residentClock={residentClock.current}
                 reset={reset}
                 roomReset={roomReset}
-                animate={playing && visible && !sheet}
+                animate={entered && playing && visible && !sheet && !searchOpen}
                 onScreenClick={(i) => {
                   if (i < 3) visitedScreens.current.add(i);
                   if (visitedScreens.current.size === 3)
@@ -478,6 +702,8 @@ export default function ExperienceShell() {
                   } else show(["work", "journey"][i]);
                 }}
                 onHover={setHint}
+                pointerEnabled={entered && visible && !sheet && !searchOpen}
+                hoverCursor={hover.cursor}
                 onUnavailable={graphicsUnavailable}
                 onBiomeSelect={arrive}
                 onWalkerStatus={reportWalker}
@@ -506,8 +732,34 @@ export default function ExperienceShell() {
             </div>
           ) : null}
         </div>
-        {!still && !graphicsError && (
-          <WorldLoader ready={sceneReady} tier={activeTier || tierCeiling} />
+        {entered === false && (
+          <WorldLoader
+            onPreload={preloadScene}
+            onPrepare={prepareScene}
+            ready={sceneReady || still || graphicsError}
+            soundEnabled={audio.enabled}
+            soundPreferred={audio.preferences.enabled}
+            soundStatus={audio.status}
+            onIntroSound={async () => {
+              if (audio.enabled) {
+                audio.disable();
+                return false;
+              }
+              return audio.enable(null);
+            }}
+            onIntroPlayback={audio.introduction}
+            onChooseAudio={(withAudio) =>
+              withAudio ? audio.enable() : audio.disable()
+            }
+            onEnter={() => {
+              setEntered(true);
+              requestAnimationFrame(() =>
+                introduction.current
+                  ?.querySelector("button")
+                  ?.focus({ preventScroll: true }),
+              );
+            }}
+          />
         )}
         {graphicsError && (
           <div className="graphics-notice" role="status">
@@ -524,303 +776,419 @@ export default function ExperienceShell() {
             >
               Try 3D again
             </button>
-            <a href="/story">Read the story ↗</a>
+            <a href="/story">
+              Read the story <UiIcon />
+            </a>
           </div>
         )}
-        <section
-          ref={introduction}
-          className={`narrative-heading ${biome === "planet" ? "intro-heading" : "place-heading"} ${activeStop || street || roaming ? "has-stop" : ""} ${activeStop?.compact ? "title-only" : ""} ${roaming ? "walking-heading-card" : ""}`}
-          key={biome}
+        <div
+          className={
+            chapter
+              ? `place-story ${activeStop || street || roaming ? "is-close" : ""}`
+              : "world-story"
+          }
         >
-          <p className="eyebrow">
-            {chapter
-              ? `${chapter.number} / ${chapter.label}`
-              : "SRI UJJWAL REDDY · SAN FRANCISCO"}
-          </p>
-          <h1>
-            {(roaming
-              ? stop === "roam:roof"
-                ? "Make yourself at home."
-                : "A little wander."
-              : null) ||
-              street?.label ||
-              activeStop?.label ||
-              chapter?.title || (
-                <>
-                  I build things.
-                  <br />
-                  <span>And a life around them.</span>
-                </>
-              )}
-          </h1>
-          <p className="narrative-copy">
-            {chapter?.description ||
-              "Founding Engineer at Offseason, making an AI agent for personal wellness. Curious about the way things work. Particular about the way they feel."}
-          </p>
-          {chapter ? (
-            <button
-              className="text-action"
-              onClick={() => show(chapter.content)}
-            >
-              {chapter.action} <span>↗</span>
-            </button>
-          ) : (
-            <div className="intro-actions">
-              <button
-                className="primary-action"
-                onClick={() => travel("studio")}
-              >
-                Start at home <span>↗</span>
-              </button>
-              <button className="text-action" onClick={() => show("work")}>
-                See my work
-              </button>
-            </div>
-          )}
-        </section>
-        {chapter && (
-          <div
-            ref={exploration}
-            className={`place-exploration ${activeExhibit || atWorkbench ? "has-exhibit" : ""}`}
+          <section
+            ref={introduction}
+            className={`narrative-heading ${biome === "planet" ? "intro-heading" : "place-heading"} ${activeStop || street || roaming ? "has-stop" : ""} ${activeStop?.compact ? "title-only" : ""} ${roaming ? "walking-heading-card" : ""}`}
           >
-            {roaming ? (
-              <WalkingControls
-                status={walkerStatus}
-                roof={stop === "roam:roof"}
-                paused={!playing}
-                onExit={exitWalking}
-                onOutside={() => explore("roam")}
-                onRead={() =>
-                  show(
-                    placeStops[biome]?.find((s) => s.id === stop.slice(5))
-                      ?.content || chapter.content,
-                  )
+            {chapter ? (
+              <MorphHeading
+                biome={biome}
+                stop={stop}
+                motion={playing}
+                eyebrow={`${chapter.number} / ${chapter.label}`}
+                title={
+                  (roaming
+                    ? stop === "roam:roof"
+                      ? "Make yourself at home."
+                      : "A little wander."
+                    : null) ||
+                  street?.label ||
+                  activeStop?.label ||
+                  chapter.title
                 }
+                description={chapter.description}
+                compact={Boolean(activeStop || street || roaming)}
               />
-            ) : street ? (
-              <div className="street-controls">
-                <p className="eyebrow">
-                  ON FOOT ·{" "}
-                  {streetIndex(stop) - streetRange(biome, stop).start + 1} /{" "}
-                  {streetRange(biome, stop).end -
-                    streetRange(biome, stop).start +
-                    1}
-                </p>
-                <p>Look around. Follow a pavement arrow.</p>
-                <div
-                  className="street-look"
-                  role="group"
-                  aria-label="Look around"
-                >
-                  {[
-                    [-1, 0, "Look left", "↶"],
-                    [1, 0, "Look right", "↷"],
-                    [0, -1, "Look up", "↑"],
-                    [0, 1, "Look down", "↓"],
-                  ].map(([x, y, label, icon]) => (
-                    <button
-                      key={label}
-                      aria-label={label}
-                      onClick={() =>
-                        window.dispatchEvent(
-                          new CustomEvent("sri:look", { detail: { x, y } }),
-                        )
-                      }
-                    >
-                      {icon}
-                    </button>
-                  ))}
-                </div>
-                <div>
-                  <button
-                    aria-disabled={
-                      streetIndex(stop) === streetRange(biome, stop).start
-                    }
-                    onClick={() =>
-                      streetIndex(stop) > streetRange(biome, stop).start &&
-                      explore(`street:${streetIndex(stop) - 1}`)
-                    }
-                  >
-                    ← Back
-                  </button>
-                  <button
-                    aria-disabled={
-                      streetIndex(stop) === streetRange(biome, stop).end
-                    }
-                    onClick={() =>
-                      streetIndex(stop) < streetRange(biome, stop).end &&
-                      explore(`street:${streetIndex(stop) + 1}`)
-                    }
-                  >
-                    Walk on →
-                  </button>
-                  <button
-                    onClick={() =>
-                      explore(street.group === "bay" ? "bay" : "arrival")
-                    }
-                  >
-                    See the place ↗
-                  </button>
-                </div>
-                {street.group === "bay" &&
-                  streetIndex(stop) === streetRange(biome, stop).end && (
-                    <button onClick={() => travel("trail")}>
-                      On to the outdoors →
-                    </button>
-                  )}
-                {biome === "court" &&
-                  streetIndex(stop) === streetRoutes.court.length - 1 && (
-                    <button
-                      onClick={() => {
-                        arrive("entertainment");
-                        setStop("street:0");
-                      }}
-                    >
-                      To music & cinema →
-                    </button>
-                  )}
-              </div>
-            ) : activeExhibit ? (
-              <ProjectExhibitControls
-                id={stop}
-                value={exhibitValues[stop]}
-                onChange={changeExhibit}
-                onBack={() => explore("arrival")}
-              />
-            ) : atWorkbench ? (
-              <div className="exhibit-controls notebook-controls">
-                <button
-                  className="exhibit-back"
-                  onClick={() => explore("arrival")}
-                >
-                  <span aria-hidden="true">←</span> The Foundry
-                </button>
-                <p className="exhibit-invitation">Pick up an idea.</p>
-                <div
-                  className="exhibit-steps"
-                  role="group"
-                  aria-label="Read a workbench notebook"
-                >
-                  {workbenchNotebooks.map((book, i) => (
-                    <button
-                      key={book.id}
-                      data-project={book.id}
-                      onClick={() => openProject(book.id)}
-                    >
-                      <span aria-hidden="true">0{i + 1}</span>
-                      {book.name}
-                    </button>
-                  ))}
-                </div>
-                <p className="exhibit-result">
-                  Small products, first attempts, and the things I learned by
-                  making them.
-                </p>
-              </div>
             ) : (
               <>
-                <div className="explore-mode">
-                  <span className="eyebrow">LOOK A LITTLE CLOSER</span>
-                  {!still && (
-                    <button
-                      className="walk-here"
-                      onClick={() => explore(footEntry(biome, stop))}
-                    >
-                      Explore on foot ↗
-                    </button>
-                  )}
-                </div>
-                <div
-                  className="place-stops"
-                  role="group"
-                  aria-label={`Explore ${chapter.label}`}
-                >
-                  <button
-                    aria-pressed={stop === "arrival"}
-                    onClick={() => explore("arrival")}
-                  >
-                    Take it in
-                  </button>
-                  {(biome === "court" || biome === "entertainment") && (
-                    <button
-                      onClick={() =>
-                        travel(biome === "court" ? "entertainment" : "court")
-                      }
-                    >
-                      {biome === "court" ? "Music & cinema ↗" : "The courts ↗"}
-                    </button>
-                  )}
-                  {placeStops[biome]?.map((s) => (
-                    <button
-                      key={s.id}
-                      aria-pressed={stop === s.id}
-                      onClick={() => explore(s.id)}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
+                <p className="eyebrow">
+                  {chapter
+                    ? `${chapter.number} / ${chapter.label}`
+                    : "SRI UJJWAL REDDY · SAN FRANCISCO"}
+                </p>
+                <h1>
+                  {(roaming
+                    ? stop === "roam:roof"
+                      ? "Make yourself at home."
+                      : "A little wander."
+                    : null) ||
+                    street?.label ||
+                    activeStop?.label ||
+                    chapter?.title || (
+                      <>
+                        I build things.
+                        <br />
+                        <span>And a life around them.</span>
+                      </>
+                    )}
+                </h1>
+                <p className="narrative-copy">
+                  {phone
+                    ? "Founding Engineer at Offseason. I build AI agents and the systems that make them useful."
+                    : "Founding Engineer at Offseason. I build AI agents, the context they work with, and the harnesses that turn model capability into useful products."}
+                </p>
               </>
             )}
-            {activeStop && (
-              <div className="stop-actions">
+            {!chapter && (
+              <div className="intro-actions">
                 <button
-                  className="stop-story"
-                  onClick={() =>
-                    activeStop.project
-                      ? openProject(activeStop.project)
-                      : show(
-                          activeStop.content || chapter.content,
-                          activeStop.collection || "all",
-                        )
-                  }
+                  className="primary-action"
+                  onClick={() => travel("projects")}
                 >
-                  {activeStop.prompt} <span>↗</span>
+                  Explore Made <UiIcon />
                 </button>
-                {biome === "studio" && stop === "walk" && !still && playing && (
-                  <button
-                    className="stop-story greeting-action"
-                    onClick={() => {
-                      residentClock.current.waveAt =
-                        residentClock.current.elapsed;
-                      audio.cue("object");
-                    }}
-                  >
-                    Say hello
-                  </button>
-                )}
-                {biome === "entertainment" && stop === "cinema" && !still && (
-                  <button
-                    className="stop-story greeting-action"
-                    onClick={() =>
-                      changeChannel((entertainmentChannel + 1) % shows.length)
-                    }
-                  >
-                    Next show <span aria-hidden="true">→</span>
-                  </button>
-                )}
-                {biome === "court" &&
-                  ["basketball", "volleyball"].includes(stop) &&
-                  !still &&
-                  playing && (
-                    <button
-                      className="stop-story greeting-action"
-                      aria-disabled={Boolean(courtActivity[stop])}
-                      onClick={() => {
-                        if (!courtActivity[stop]) playCourt(stop);
-                      }}
-                    >
-                      {courtActivity[stop]
-                        ? stop === "basketball"
-                          ? "Shot in play"
-                          : "Rally in play"
-                        : stop === "basketball"
-                          ? "Take a shot"
-                          : "Serve the ball"}
-                    </button>
-                  )}
+                <button className="text-action" onClick={() => show("work")}>
+                  See my work
+                </button>
               </div>
             )}
+          </section>
+        </div>
+        {chapter && (
+          <div
+            className="place-tools"
+            data-expanded={toolsExpanded}
+            onKeyDown={(event) => {
+              if (event.key === "Escape" && toolsExpanded) {
+                event.preventDefault();
+                event.stopPropagation();
+                collapseTools();
+              }
+            }}
+          >
+            <button
+              className="mobile-tools-toggle"
+              ref={mobileToolsToggle}
+              aria-expanded={toolsExpanded}
+              aria-controls="place-tools-content"
+              onClick={() => setToolsExpanded((value) => !value)}
+            >
+              <span>
+                <strong>
+                  {toolsExpanded
+                    ? "Back to the view"
+                    : `Explore ${chapter.short}`}
+                </strong>
+                <small>
+                  {toolsExpanded ? chapter.label : "Views & stories"}
+                </small>
+              </span>
+              <UiIcon name={toolsExpanded ? "chevronDown" : "chevronUp"} />
+            </button>
+            <div
+              className="place-tools-reveal"
+              id="place-tools-content"
+              inert={phone && !toolsExpanded}
+              ref={mobileTools}
+            >
+              <div className="place-tools-content">
+                <p className="mobile-place-description">
+                  {chapter.description}
+                </p>
+                {biome === "projects" && stop === "keynote" && (
+                  <KeynoteControls
+                    index={keynoteIndex}
+                    onChange={setKeynoteIndex}
+                    onOpen={openProject}
+                  />
+                )}
+                {chapter && (
+                  <div
+                    ref={exploration}
+                    className={`place-exploration ${activeExhibit || atWorkbench ? "has-exhibit" : ""}`}
+                  >
+                    {roaming ? (
+                      <WalkingControls
+                        status={walkerStatus}
+                        roof={stop === "roam:roof"}
+                        paused={!playing}
+                        onExit={exitWalking}
+                        onOutside={() => explore("roam")}
+                        onRead={() =>
+                          show(
+                            placeStops[biome]?.find(
+                              (s) => s.id === stop.slice(5),
+                            )?.content || chapter.content,
+                          )
+                        }
+                      />
+                    ) : street ? (
+                      <div className="street-controls">
+                        <p className="eyebrow">
+                          ON FOOT ·{" "}
+                          {streetIndex(stop) -
+                            streetRange(biome, stop).start +
+                            1}{" "}
+                          /{" "}
+                          {streetRange(biome, stop).end -
+                            streetRange(biome, stop).start +
+                            1}
+                        </p>
+                        <p>Look around. Follow a pavement arrow.</p>
+                        <div
+                          className="street-look"
+                          role="group"
+                          aria-label="Look around"
+                        >
+                          {[
+                            [-1, 0, "Look left", "↶"],
+                            [1, 0, "Look right", "↷"],
+                            [0, -1, "Look up", "↑"],
+                            [0, 1, "Look down", "↓"],
+                          ].map(([x, y, label, icon]) => (
+                            <button
+                              key={label}
+                              aria-label={label}
+                              onClick={() =>
+                                window.dispatchEvent(
+                                  new CustomEvent("sri:look", {
+                                    detail: { x, y },
+                                  }),
+                                )
+                              }
+                            >
+                              {icon}
+                            </button>
+                          ))}
+                        </div>
+                        <div>
+                          <button
+                            aria-disabled={
+                              streetIndex(stop) ===
+                              streetRange(biome, stop).start
+                            }
+                            onClick={() =>
+                              streetIndex(stop) >
+                                streetRange(biome, stop).start &&
+                              explore(`street:${streetIndex(stop) - 1}`)
+                            }
+                          >
+                            ← Back
+                          </button>
+                          <button
+                            aria-disabled={
+                              streetIndex(stop) === streetRange(biome, stop).end
+                            }
+                            onClick={() =>
+                              streetIndex(stop) <
+                                streetRange(biome, stop).end &&
+                              explore(`street:${streetIndex(stop) + 1}`)
+                            }
+                          >
+                            Walk on →
+                          </button>
+                          <button
+                            onClick={() =>
+                              explore(
+                                street.group === "bay" ? "bay" : "arrival",
+                              )
+                            }
+                          >
+                            See the place <UiIcon />
+                          </button>
+                        </div>
+                        {street.group === "bay" &&
+                          streetIndex(stop) ===
+                            streetRange(biome, stop).end && (
+                            <button onClick={() => travel("court")}>
+                              On to After hours →
+                            </button>
+                          )}
+                        {biome === "court" &&
+                          streetIndex(stop) ===
+                            streetRoutes.court.length - 1 && (
+                            <button
+                              onClick={() => {
+                                arrive("entertainment");
+                                setStop("street:0");
+                              }}
+                            >
+                              To music & cinema →
+                            </button>
+                          )}
+                      </div>
+                    ) : activeExhibit ? (
+                      <ProjectExhibitControls
+                        id={stop}
+                        value={exhibitValues[stop]}
+                        onChange={changeExhibit}
+                        onBack={() => explore("arrival")}
+                      />
+                    ) : atWorkbench ? (
+                      <div className="exhibit-controls notebook-controls">
+                        <button
+                          className="exhibit-back"
+                          onClick={() => explore("arrival")}
+                        >
+                          <UiIcon name="arrowLeft" /> The Foundry
+                        </button>
+                        <p className="exhibit-invitation">Pick up an idea.</p>
+                        <div
+                          className="exhibit-steps"
+                          role="group"
+                          aria-label="Read a workbench notebook"
+                        >
+                          {workbenchNotebooks.map((book, i) => (
+                            <button
+                              key={book.id}
+                              data-project={book.id}
+                              onClick={() => openProject(book.id)}
+                            >
+                              <span aria-hidden="true">0{i + 1}</span>
+                              {book.name}
+                            </button>
+                          ))}
+                        </div>
+                        <p className="exhibit-result">
+                          Small products, first attempts, and the things I
+                          learned by making them.
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        {!phone && (
+                          <div className="explore-mode">
+                            <span className="eyebrow">
+                              LOOK A LITTLE CLOSER
+                            </span>
+                            {!still && (
+                              <button
+                                className="walk-here"
+                                onClick={() => explore(footEntry(biome, stop))}
+                              >
+                                Explore on foot <UiIcon />
+                              </button>
+                            )}
+                          </div>
+                        )}
+                        <div
+                          className="place-stops"
+                          role="group"
+                          aria-label={`Explore ${chapter.label}`}
+                        >
+                          <button
+                            aria-pressed={stop === "arrival"}
+                            onClick={() => explore("arrival")}
+                          >
+                            Take it in
+                          </button>
+                          {(biome === "court" || biome === "entertainment") && (
+                            <button
+                              onClick={() =>
+                                travel(
+                                  biome === "court" ? "entertainment" : "court",
+                                )
+                              }
+                            >
+                              {biome === "court"
+                                ? "Music & cinema"
+                                : "The courts"}{" "}
+                              <UiIcon />
+                            </button>
+                          )}
+                          {!(biome === "projects" && stop === "keynote") &&
+                            placeStops[biome]?.map((s) => (
+                              <button
+                                key={s.id}
+                                aria-pressed={stop === s.id}
+                                onClick={() => explore(s.id)}
+                              >
+                                {s.label}
+                              </button>
+                            ))}
+                        </div>
+                      </>
+                    )}
+                    {activeStop && stop !== "keynote" && (
+                      <div className="stop-actions">
+                        {activeStop.prompt && <button
+                          className="stop-story"
+                          onClick={() =>
+                            activeStop.project
+                              ? openProject(activeStop.project)
+                              : show(
+                                  activeStop.content || chapter.content,
+                                  activeStop.collection || "all",
+                                )
+                          }
+                        >
+                          {activeStop.prompt} <UiIcon />
+                        </button>}
+                        {biome === "studio" &&
+                          stop === "walk" &&
+                          !still &&
+                          playing && (
+                            <button
+                              className="stop-story greeting-action"
+                              onClick={() => {
+                                residentClock.current.waveAt =
+                                  residentClock.current.elapsed;
+                                audio.cue("object");
+                              }}
+                            >
+                              Say hello
+                            </button>
+                          )}
+                        {biome === "entertainment" &&
+                          stop === "cinema" &&
+                          !still && (
+                            <button
+                              className="stop-story greeting-action"
+                              onClick={() =>
+                                changeChannel(
+                                  (entertainmentChannel + 1) % shows.length,
+                                )
+                              }
+                            >
+                              Next show <UiIcon name="arrowRight" />
+                            </button>
+                          )}
+                        {biome === "court" &&
+                          ["basketball", "volleyball"].includes(stop) &&
+                          !still &&
+                          playing && (
+                            <button
+                              className="stop-story greeting-action"
+                              aria-disabled={Boolean(courtActivity[stop])}
+                              onClick={() => {
+                                if (!courtActivity[stop]) playCourt(stop);
+                              }}
+                            >
+                              {courtActivity[stop]
+                                ? stop === "basketball"
+                                  ? "Shot in play"
+                                  : "Rally in play"
+                                : stop === "basketball"
+                                  ? "Take a shot"
+                                  : "Serve the ball"}
+                            </button>
+                          )}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {!(biome === "projects" && stop === "keynote") && (
+                  <BiomePages
+                    biome={biome}
+                    onOpen={show}
+                    expanded={phone || previewsExpanded}
+                    onExpandedChange={setPreviewsExpanded}
+                  />
+                )}
+              </div>
+            </div>
           </div>
         )}
         <div className="world-caption" aria-live="polite">
@@ -829,7 +1197,7 @@ export default function ExperienceShell() {
             : hint) ||
             (chapter
               ? street?.group === "bay"
-                ? "City behind you. Trails ahead. Take your time crossing."
+                ? "Made behind you. After hours ahead. Take your time crossing."
                 : activeStop?.hint || chapter.note
               : "A small world. A few sides of me. Drag to look around.")}
         </div>
@@ -838,7 +1206,7 @@ export default function ExperienceShell() {
             <SoundPreferences audio={audio} />
             <details className="view-preferences">
               <summary>
-                View &amp; motion <span aria-hidden="true">⌄</span>
+                View &amp; motion <UiIcon name="chevronDown" />
               </summary>
               <div className="view-options">
                 <div className="light-mode-control">
@@ -852,6 +1220,7 @@ export default function ExperienceShell() {
                     {[
                       ["live", "Live SF"],
                       ["day", "Day"],
+                      ["dusk", "Dusk"],
                       ["night", "Night"],
                     ].map(([id, label]) => (
                       <button
@@ -864,7 +1233,7 @@ export default function ExperienceShell() {
                     ))}
                   </div>
                   <small>
-                    {biome === "studio" &&
+                    {biome === "projects" &&
                     (stop === "bay" || street?.group === "bay")
                       ? "Open air above the water"
                       : biomeMoods[biome].label}
@@ -910,7 +1279,7 @@ export default function ExperienceShell() {
                     if (biome === "studio") setRoomReset((n) => n + 1);
                   }}
                 >
-                  Reset this view ↺
+                  Reset this view <UiIcon name="replay" />
                 </button>
               </div>
             </details>
@@ -924,14 +1293,10 @@ export default function ExperienceShell() {
           onClick={() => travel("planet")}
           aria-label="See the whole world"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="8" />
-            <ellipse cx="12" cy="12" rx="3.5" ry="8" />
-            <path d="M4 12h16" />
-          </svg>
+          <UiIcon name="globe" size={24} />
           <span>World</span>
         </button>
-        <CommandBar biome={biome} />
+        <CommandBar biome={biome} onOpenChange={setSearchOpen} />
         <nav
           ref={chapterGuide}
           className="chapter-route"
@@ -944,7 +1309,9 @@ export default function ExperienceShell() {
               onClick={() => travel(c.id)}
             >
               <small>{c.upcoming ? "◌" : c.number}</small>
-              <span>{c.short}</span>
+              <span className="skin-nav-label" key={`${biome}-${c.id}`}>
+                {c.short}
+              </span>
             </button>
           ))}
         </nav>
@@ -954,7 +1321,7 @@ export default function ExperienceShell() {
           aria-label={`Continue to ${next.label}`}
         >
           <span>{chapter ? "Keep exploring" : "Come on in"}</span>
-          <b aria-hidden="true">→</b>
+          <UiIcon name="arrowRight" size={24} />
         </button>
       </footer>
       <button

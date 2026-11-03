@@ -13,6 +13,7 @@ export function applyTriplanar(
     albedo,
     normal,
     roughness,
+    anisotropy = 8,
     scale = 0.25, // repeats per metre
     tint = "#ffffff",
     strength = 1, // albedo replacement amount (0 keeps procedural colour)
@@ -29,7 +30,7 @@ export function applyTriplanar(
   for (const t of [albedo, normal, roughness]) {
     if (!t) continue;
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    t.anisotropy = Math.max(t.anisotropy, 8);
+    t.anisotropy = anisotropy;
   }
   if (albedo) albedo.colorSpace = THREE.SRGBColorSpace;
   const uniforms = {
@@ -42,7 +43,9 @@ export function applyTriplanar(
     uTriNormalStrength: { value: normalStrength },
     uTriSharp: { value: sharpness },
     uTriMean: { value: meanLuminance },
-    uTriBase: { value: material.color ? material.color.clone() : new THREE.Color(1, 1, 1) },
+    uTriBase: {
+      value: material.color ? material.color.clone() : new THREE.Color(1, 1, 1),
+    },
   };
   material.userData.triplanar = uniforms;
   const previous = material.onBeforeCompile;

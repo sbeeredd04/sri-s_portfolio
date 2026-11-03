@@ -250,7 +250,15 @@ function Fireplace({ animate }) {
     </group>
   );
 }
-function ListeningHouse({ detailed, animate, night, onOpen, onHover, onCue }) {
+function ListeningHouse({
+  detailed,
+  animate,
+  night,
+  onOpen,
+  onHover,
+  onCue,
+  authoredCoast,
+}) {
   const wood = useRoomTexture("walnut", 1),
     fabric = useRoomTexture("fabric", 8),
     roof = useRef(),
@@ -276,74 +284,78 @@ function ListeningHouse({ detailed, animate, night, onOpen, onHover, onCue }) {
   });
   return (
     <group ref={root}>
-      <Box
-        position={[0, 0.05, 0]}
-        size={[10, 0.14, 7.5]}
-        color="#493c35"
-        roughness={0.68}
-        radius={0.02}
-      />
-      <WoodFloor />
-      <Box
-        position={[0, 0.3, -3.65]}
-        size={[10, 0.4, 0.08]}
-        color="#2e4052"
-        radius={0.01}
-      />
-      <mesh position={[0, 2, -3.59]}>
-        <planeGeometry args={[9.7, 3.5]} />
-        <meshPhysicalMaterial
-          color="#56839f"
-          roughness={0.18}
-          metalness={0.45}
-          transparent
-          opacity={0.11}
-          depthWrite={false}
-        />
-      </mesh>
-      {[-4.9, -2.5, 0, 2.5, 4.9].map((x) => (
-        <Rod
-          key={x}
-          from={[x, 0.15, -3.48]}
-          to={[x, 4, -3.48]}
-          radius={0.026}
-          color="#1f2c3b"
-        />
-      ))}
-      <Box
-        position={[-4.95, 2, 0]}
-        size={[0.1, 3.9, 7.5]}
-        color="#465063"
-        map={wood}
-        radius={0.015}
-      />
-      <group ref={roof}>
-        <Box
-          position={[0, 4.1, 0]}
-          size={[10.6, 0.2, 8.2]}
-          color="#3a4b62"
-          metalness={0.25}
-          roughness={0.6}
-          radius={0.025}
-        />
-      </group>
-      <mesh
-        position={[0, 3.96, 0]}
-        rotation={[Math.PI / 2, 0, 0]}
-        castShadow
-        receiveShadow
-      >
-        <planeGeometry args={[10, 7.5]} />
-        <meshStandardMaterial color="#c6b39b" map={wood} roughness={0.78} />
-      </mesh>
-      <Rods
-        color="#405161"
-        segments={[-4.85, 4.85].map((x) => ({
-          from: [x, 0.15, 3.65],
-          to: [x, 4.1, 3.65],
-          radius: 0.035,
-        }))}
-      />
+      {!authoredCoast && (
+        <>
+          <Box
+            position={[0, 0.05, 0]}
+            size={[10, 0.14, 7.5]}
+            color="#493c35"
+            roughness={0.68}
+            radius={0.02}
+          />
+          <WoodFloor />
+          <Box
+            position={[0, 0.3, -3.65]}
+            size={[10, 0.4, 0.08]}
+            color="#2e4052"
+            radius={0.01}
+          />
+          <mesh position={[0, 2, -3.59]}>
+            <planeGeometry args={[9.7, 3.5]} />
+            <meshPhysicalMaterial
+              color="#56839f"
+              roughness={0.18}
+              metalness={0.45}
+              transparent
+              opacity={0.11}
+              depthWrite={false}
+            />
+          </mesh>
+          {[-4.9, -2.5, 0, 2.5, 4.9].map((x) => (
+            <Rod
+              key={x}
+              from={[x, 0.15, -3.48]}
+              to={[x, 4, -3.48]}
+              radius={0.026}
+              color="#1f2c3b"
+            />
+          ))}
+          <Box
+            position={[-4.95, 2, 0]}
+            size={[0.1, 3.9, 7.5]}
+            color="#465063"
+            map={wood}
+            radius={0.015}
+          />
+          <group ref={roof}>
+            <Box
+              position={[0, 4.1, 0]}
+              size={[10.6, 0.2, 8.2]}
+              color="#3a4b62"
+              metalness={0.25}
+              roughness={0.6}
+              radius={0.025}
+            />
+          </group>
+          <mesh
+            position={[0, 3.96, 0]}
+            rotation={[Math.PI / 2, 0, 0]}
+            castShadow
+            receiveShadow
+          >
+            <planeGeometry args={[10, 7.5]} />
+            <meshStandardMaterial color="#c6b39b" map={wood} roughness={0.78} />
+          </mesh>
+          <Rods
+            color="#405161"
+            segments={[-4.85, 4.85].map((x) => ({
+              from: [x, 0.15, 3.65],
+              to: [x, 4.1, 3.65],
+              radius: 0.035,
+            }))}
+          />
+        </>
+      )}
       <Sign
         title="Side B"
         subtitle="THE LISTENING HOUSE"
@@ -541,6 +553,7 @@ export default function AfterHours({
   onCue,
   channel,
   onChannelChange,
+  authoredCoast = false,
 }) {
   return (
     <group>
@@ -557,9 +570,10 @@ export default function AfterHours({
         color="#747c86"
         radius={0.015}
       />
-      <Lake animate={animate} position={[-2, -0.08, -11]} />
-      <Grove biome="entertainment" detailed={detailed} />
-      {detailed &&
+      {!authoredCoast && <Lake animate={animate} position={[-2, -0.08, -11]} />}
+      {!authoredCoast && <Grove biome="entertainment" detailed={detailed} />}
+      {!authoredCoast &&
+        detailed &&
         Array.from({ length: 12 }, (_, i) => {
           const x = -2 + Math.sin(i * 2.4) * 8,
             z = -11 + Math.cos(i * 2.4) * 8;
@@ -577,6 +591,7 @@ export default function AfterHours({
           );
         })}
       <ListeningHouse
+        authoredCoast={authoredCoast}
         detailed={detailed}
         animate={animate}
         night={night}

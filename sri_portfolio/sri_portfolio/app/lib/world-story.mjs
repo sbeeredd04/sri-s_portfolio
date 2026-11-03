@@ -6,7 +6,7 @@ export const allChapters = [
     number: "01",
     title: "Usually making something.",
     description:
-      "Three screens above the city. Rain on the windows. An idea I want to see through. Come up to my little corner of San Francisco.",
+      "Three screens, an open project, and San Francisco outside. An idea I want to see through. Come up to my little corner of San Francisco.",
     action: "What I’m working on",
     content: "journey",
     note: "Try the screens. There’s a story behind each one.",

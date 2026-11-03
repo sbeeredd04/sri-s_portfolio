@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import "./walking.css";
 const send = (detail) =>
   window.dispatchEvent(new CustomEvent("sri:walk", { detail }));
@@ -91,11 +92,11 @@ export default function WalkingControls({
               : "Follow the paths. Drag to look around."}
       </p>
       <div className="walking-actions">
-        <button onClick={onExit}>See the place ↗</button>
+        <button onClick={onExit}>See the place <UiIcon /></button>
         <button onClick={onRead}>
-          {roof ? "My work" : "Read this place"} ↗
+          {roof ? "My work" : "Read this place"} <UiIcon />
         </button>
-        {roof && <button onClick={onOutside}>Walk outside ↗</button>}
+        {roof && <button onClick={onOutside}>Walk outside <UiIcon /></button>}
       </div>
     </div>
   );

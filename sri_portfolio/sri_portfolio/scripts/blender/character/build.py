@@ -1,7 +1,10 @@
 """Blender headless: author, rig, animate and export the chibi Sri character.
 
   blender -b --python scripts/blender/character/build.py -- [--out public/models/characters/sri.glb]
-      [--blend /tmp/sri.blend] [--no-anim]
+      [--blend /tmp/sri.blend] [--no-anim] [--variant visitor]
+
+--variant visitor builds visitor.glb: the same skeleton, clips and material
+names with a different look (hoodie, beanie, curls, backpack; see visitor.py).
 
 Pipeline: SDF body parts -> OpenVDB meshing -> decimation to budget -> face
 features + hair strands -> humanoid armature -> heat weights (arms, clothing)
@@ -30,6 +33,7 @@ import hair as HAIR  # noqa: E402
 import look  # noqa: E402
 import materials as M  # noqa: E402
 import rig as RIG  # noqa: E402
+import visitor as VIS  # noqa: E402
 from sdf import decimate, mesh_sdf  # noqa: E402
 
 APP = Path(__file__).resolve().parents[3]
@@ -38,12 +42,15 @@ APP = Path(__file__).resolve().parents[3]
 def parse_args() -> argparse.Namespace:
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     p = argparse.ArgumentParser()
-    p.add_argument("--out", type=Path, default=APP / "public" / "models" / "characters" / "sri.glb")
+    p.add_argument("--variant", choices=("sri", "visitor"), default="sri")
+    p.add_argument("--out", type=Path, help="default public/models/characters/<variant>.glb")
     p.add_argument("--blend", type=Path)
     p.add_argument("--no-anim", action="store_true")
     p.add_argument("--no-export", action="store_true")
     p.add_argument("--stats", type=Path, help="write triangle/bone/clip stats JSON here")
-    return p.parse_args(argv)
+    args = p.parse_args(argv)
+    args.out = args.out or APP / "public" / "models" / "characters" / f"{args.variant}.glb"
+    return args
 
 
 SHOE_SCALE = 1.12
@@ -101,6 +108,15 @@ def trim_hidden(parts):
     delete_verts(parts["head"], lambda co: co[2] < 0.79)
 
 
+def fit_shoes(parts):
+    for key, s in (("shoe_L", 1), ("shoe_R", -1)):
+        x = float(A.leg(s)["ankle"][0])
+        for name in ("shoe_sole", "shoe_upper", "shoe_lace"):
+            parts[key].data.materials.append(M.principled(name))
+        geometry.assign_parts(parts[key], B.shoe_part(geometry.face_centers(parts[key]), x))
+        scale_about(parts[key], (x, -0.02, 0.0), SHOE_SCALE)
+
+
 def assemble():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     parts = geometry.build()
@@ -109,12 +125,7 @@ def assemble():
     clumps, cap = HAIR.build_clumps(), HAIR.build_cap()
     for obj in (parts["head"], face, clumps, cap):
         scale_about(obj, A.HEAD_BASE, A.HEAD_SCALE)
-    for key, s in (("shoe_L", 1), ("shoe_R", -1)):
-        x = float(A.leg(s)["ankle"][0])
-        for name in ("shoe_sole", "shoe_upper", "shoe_lace"):
-            parts[key].data.materials.append(M.principled(name))
-        geometry.assign_parts(parts[key], B.shoe_part(geometry.face_centers(parts[key]), x))
-        scale_about(parts[key], (x, -0.02, 0.0), SHOE_SCALE)
+    fit_shoes(parts)
     watch = mesh_sdf("Watch", *B.watch(1))
     decimate(watch, 500)
     trim_hidden(parts)
@@ -133,13 +144,58 @@ def assemble():
             "Trousers": parts["trousers"], "Shoes": shoes, "Watch": watch}
 
 
+def head_scaled(*pts):
+    base = np.asarray(A.HEAD_BASE, np.float32)
+    return [base + (np.asarray(p, np.float32) - base) * A.HEAD_SCALE for p in pts]
+
+
+def assemble_visitor():
+    """Sri's body under a hoodie, beanie, curls and a backpack (no watch: the cuffs cover it)."""
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    hood = VIS.hoodie()
+    parts = geometry.build(overrides={"shirt": (hood["spec"], VIS.TRIS["hoodie"])})
+    head_fn = B.head_skin()[0]
+    face = FACE.build(head_fn)
+    curls, cap = mesh_sdf("HairCurls", *VIS.curls(head_fn)), HAIR.build_cap()
+    decimate(curls, VIS.TRIS["curls"])
+    decimate(cap, VIS.TRIS["cap"])
+    beanie = mesh_sdf("Beanie", *VIS.beanie())
+    decimate(beanie, VIS.TRIS["beanie"])
+    for obj in (parts["head"], face, curls, cap, beanie):
+        scale_about(obj, A.HEAD_BASE, A.HEAD_SCALE)
+    fit_shoes(parts)
+    for key in ("arm_L", "arm_R"):
+        delete_verts(parts[key], lambda co: VIS.hidden_arm_skin(co[None], hood)[0])
+    delete_verts(parts["head"], lambda co: co[2] < 0.79)
+    pack_fn = VIS.backpack(hood["fn"])[0]
+    pack = mesh_sdf("Backpack", *VIS.backpack(hood["fn"]))
+    decimate(pack, VIS.TRIS["pack"])
+    pack = join([pack, VIS.build_straps(hood["fn"])], "Backpack")
+    shoes = join([parts["shoe_L"], parts["shoe_R"]], "Shoes")
+    body = join([parts["head"], parts["arm_L"], parts["arm_R"]], "Body")
+    parts["shirt"].name = "Shirt"
+    parts["trousers"].name = "Trousers"
+    for obj in (body, parts["shirt"], parts["trousers"], shoes, cap, pack, curls):
+        look.unwrap(obj, 0.008)
+    VIS.beanie_uv(beanie, *head_scaled(VIS.SKULL_C, VIS.POM_C), 0.042)
+    squeeze_uv(cap, (0.03, 0.2), 0.02)
+    squeeze_uv(curls, (0.45, 0.72), 0.03)
+    hair = join([curls, cap], "Hair")
+    for obj in (body, parts["shirt"], parts["trousers"], shoes, hair, face, beanie, pack):
+        select_only(obj)
+        bpy.ops.object.shade_smooth()
+    objs = {"Body": body, "Face": face, "Hair": hair, "Beanie": beanie, "Shirt": parts["shirt"],
+            "Trousers": parts["trousers"], "Shoes": shoes, "Backpack": pack}
+    return objs, pack_fn
+
+
 ALLOWED = {
     "Shirt": ("hips", "spine", "chest", "neck", "shoulder_", "upper_arm_", "lower_arm_L", "lower_arm_R"),
     "Trousers": ("hips", "spine", "upper_leg_", "lower_leg_", "foot_"),
 }
 
 
-def weight(objs, rig):
+def weight(objs, rig, pack_fn=None):
     body = objs["Body"]
     for key in ("Body", "Shirt", "Trousers"):
         RIG.auto_weights(objs[key], rig)
@@ -158,8 +214,9 @@ def weight(objs, rig):
         for i in np.nonzero(head_island & (w > 1e-4))[0]:
             vg.add([int(i)], float(w[i]), "REPLACE")
     split_twist(body, co)
-    for key in ("Face", "Hair"):
-        RIG.set_weights(objs[key], {"head": np.ones(len(objs[key].data.vertices), np.float32)})
+    for key in ("Face", "Hair", "Beanie"):
+        if key in objs:
+            RIG.set_weights(objs[key], {"head": np.ones(len(objs[key].data.vertices), np.float32)})
     sco = RIG.verts(objs["Shoes"])
     w = {}
     for s, sfx in ((1, "L"), (-1, "R")):
@@ -167,7 +224,10 @@ def weight(objs, rig):
         for name, arr in RIG.shoe_weights(sco, sfx).items():
             w[name] = arr * side
     RIG.set_weights(objs["Shoes"], w)
-    RIG.set_weights(objs["Watch"], {"lower_arm_twist_L": np.ones(len(objs["Watch"].data.vertices), np.float32)})
+    if "Watch" in objs:
+        RIG.set_weights(objs["Watch"], {"lower_arm_twist_L": np.ones(len(objs["Watch"].data.vertices), np.float32)})
+    if "Backpack" in objs:
+        VIS.weight_backpack(objs["Backpack"], objs["Shirt"], pack_fn)
     for obj in objs.values():
         RIG.bind(obj, rig)
         RIG.clean(obj)
@@ -217,10 +277,15 @@ def export(path: Path, rig) -> None:
 
 def main() -> None:
     args = parse_args()
-    objs = assemble()
+    visitor = args.variant == "visitor"
+    objs, pack_fn = assemble_visitor() if visitor else (assemble(), None)
     rig = RIG.build_armature()
-    weight(objs, rig)
-    look.dress(objs)
+    if visitor:
+        rig.name, rig.data.name = "Visitor", "VisitorRig"
+    weight(objs, rig, pack_fn)
+    look.dress(objs, palette=VIS.PALETTE if visitor else look.SRI)
+    if visitor:
+        VIS.dress_extras(objs)
     clips = {} if args.no_anim else animate.bake_all(rig, objs["Face"])
     stats = {
         "triangles": {k: tri_count(o) for k, o in objs.items()},

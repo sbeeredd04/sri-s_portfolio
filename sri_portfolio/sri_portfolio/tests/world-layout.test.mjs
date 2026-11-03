@@ -51,51 +51,54 @@ test("camera collision correction stays outside terrain even at the planet cente
     if (point.length() > WORLD_RADIUS) assert.ok(safe.distanceTo(point) < 1e-8);
   }
 });
-test("the lake basin lies below the water while its shore stays above it", () => {
-  assert.ok(surfaceHeight("trail", -8, -3) < -1);
-  assert.ok(surfaceHeight("trail", -1, -3) > -0.02);
-});
-
-test("the listening house stays dry while its lake sits in the shared terrain", () => {
-  for (const x of [-4.9, 0, 4.9])
-    for (const z of [-3.6, 0, 3.6])
-      assert.ok(Math.abs(surfaceHeight("entertainment", x, z)) < 0.02);
-  assert.ok(surfaceHeight("entertainment", -2, -11) < -0.5);
-  for (let i = 0; i < 24; i++) {
-    const a = (i / 24) * Math.PI * 2;
-    assert.ok(
-      surfaceHeight(
-        "entertainment",
-        -2 + Math.cos(a) * 6.7,
-        -11 + Math.sin(a) * 6.7,
-      ) > -0.08,
-    );
+// Dry relief now belongs to authored island meshes. The old procedural basins,
+// Coit hills and listening ridge must not distort their common sea datum.
+test("authored island frames share a level sea without legacy basins or ridges", () => {
+  for (const id of [
+    "trail",
+    "entertainment",
+    "court",
+    "future",
+    "studio",
+    "projects",
+  ]) {
+    for (let x = -35; x <= 35; x += 5)
+      for (let z = -30; z <= 30; z += 5) {
+        const height = surfaceHeight(id, x, z);
+        assert.ok(
+          Math.abs(height) < 0.002,
+          `${id}: sea distorted at ${x},${z}`,
+        );
+        const point = worldPoint(id, [x, height, z]);
+        assert.ok(
+          Math.abs(point.length() - planetRadiusAt(point.clone().normalize())) <
+            0.005,
+        );
+      }
   }
 });
 
-test("the After Hours headland rejoins the globe before open water", () => {
-  const region = regions.find((r) => r.id === "entertainment");
-  const z = region.shoreOuter + 6;
-  const point = worldPoint("entertainment", [0, surfaceHeight("entertainment", 0, z), z]);
+test("the shared bay eases continuously back into a spherical world", () => {
+  let previousDrop = 0;
+  for (let d = 255; d <= 495; d += 2) {
+    const direction = new Vector3(d, WORLD_RADIUS, 0).normalize();
+    const radius = planetRadiusAt(direction);
+    assert.ok(radius >= WORLD_RADIUS && radius <= WORLD_RADIUS / direction.y);
+    const blend =
+      (WORLD_RADIUS / direction.y - radius) /
+      (WORLD_RADIUS / direction.y - WORLD_RADIUS);
+    assert.ok(blend >= previousDrop - 1e-10, "bay shoulder folds outward");
+    previousDrop = blend;
+  }
+  for (const direction of [
+    new Vector3(600, 450, 0),
+    new Vector3(0, 0, 1),
+    new Vector3(0, -1, 0),
+  ]) {
+    assert.equal(planetRadiusAt(direction.normalize()), WORLD_RADIUS);
+  }
+  const bayEdge = new Vector3(255, WORLD_RADIUS, 0).normalize();
   assert.ok(
-    Math.abs(planetRadiusAt(point.clone().normalize()) - WORLD_RADIUS) < 0.02,
-    "open water must not inherit an invisible raised terrain shoulder",
+    Math.abs(planetRadiusAt(bayEdge) * bayEdge.y - WORLD_RADIUS) < 0.002,
   );
-});
-
-test("trees on the listening-room ridges stay on the radial terrain", () => {
-  assert.ok(surfaceHeight("entertainment", -9, -23) > 4);
-  for (let x = -16; x <= 16; x += 2)
-    for (let z = -30; z <= -18; z += 2) {
-      const point = worldPoint("entertainment", [
-        x,
-        surfaceHeight("entertainment", x, z),
-        z,
-      ]);
-      assert.ok(
-        Math.abs(point.length() - planetRadiusAt(point.clone().normalize())) <
-          0.005,
-        `ridge mismatch at ${x}, ${z}`,
-      );
-    }
 });

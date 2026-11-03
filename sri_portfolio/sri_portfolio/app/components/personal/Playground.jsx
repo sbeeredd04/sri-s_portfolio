@@ -47,6 +47,7 @@ export default function Playground({
   onHover,
   onCue,
   activeCourt,
+  authoredCoast = false,
 }) {
   return (
     <group>
@@ -72,7 +73,7 @@ export default function Playground({
         onCue={onCue}
         audible={activeCourt === "basketball"}
       />
-      <Grove park detailed={detailed} />
+      {!authoredCoast && <Grove park detailed={detailed} />}
       {detailed && <CourtCrowd animate={animate} />}
       <Suspense fallback={null}>
         <ModelInstances

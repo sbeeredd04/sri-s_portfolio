@@ -1,39 +1,73 @@
-import { Vector3, Quaternion, MathUtils } from "three";
-import { courtEntrance } from "./court-layout.mjs";
-import { worldPoint, planetRadiusAt, WORLD_RADIUS } from "./world-layout.mjs";
+import {
+  Vector3,
+  Quaternion,
+  CatmullRomCurve3,
+  MathUtils,
+  BufferGeometry,
+  Float32BufferAttribute,
+  Color,
+} from "three";
+import { worldPoint, WORLD_RADIUS } from "./world-layout.mjs";
+import { outThereEntry } from "./out-there-walk-runtime.mjs";
 
 export const connections = [
-  ["studio", "court", [5.5, 0, 7], courtEntrance],
-  ["studio", "trail", [-4, 0, 10], [2, 0, 9]],
-  ["studio", "projects", [0, 0, 9], [0, 0, -16]],
-  ["trail", "future", [2, 0, 9], [0, 0, -8]],
-  ["court", "entertainment", [24, 0, 13], [24, 0, 7]],
+  ["studio", "court", [61.4, 2.63, 30], [-40.5, 2.821, 12.3]],
+  // The red span joins the working waterfront to the After hours west landing.
+  ["projects", "court", [37, 2.224, -38], [-40.5, 2.821, 12.3]],
+  ["trail", "projects", outThereEntry, [-44, 2.2, -34]],
+  ["trail", "future", outThereEntry, [0, 0.1149818314670128, -8]],
+  ["court", "entertainment", [24, 2.8, 13], [24, 2.8, 7]],
 ];
 
 // The coast shader and the rendered causeway share the same shoulder widths.
 export const causeway = { solidHalfWidth: 1.75, shoreHalfWidth: 3.0 };
+// Made branches from the existing south-water approach. One physical trunk
+// serves both destinations, instead of laying two almost-coincident decks.
+const trailApproach = new CatmullRomCurve3([
+  worldPoint("trail", outThereEntry),
+  ...[[-126,4.05,25],[-132,4.2,34],[-130,3.9,49]].map(([x,y,z]) => new Vector3(x,WORLD_RADIUS+y,z)),
+  worldPoint("future", connections.find(([a,b]) => a === "trail" && b === "future")[3]),
+]);
 export const walkingRoutes = connections.map(
   ([from, to, startLocal, endLocal]) => {
-    const start = worldPoint(from, startLocal).normalize();
-    const end = worldPoint(to, endLocal).normalize();
+    const branches = from === "trail" && to === "projects";
+    const startPoint = branches ? trailApproach.getPointAt(.20) : worldPoint(from, startLocal);
+    const endPoint = worldPoint(to, endLocal);
+    const start = startPoint.clone().normalize();
+    const end = endPoint.clone().normalize();
+    const turns = {
+      "trail:projects": [[-120, 4.1, 43], [-80, 4.1, 40], [-46, 3.6, 25], [-36.9, 3.2, 26.3], [-36.8, 2.9, 30.2]],
+      "trail:future": [[-126, 4.05, 25], [-132, 4.2, 34], [-130, 3.9, 49]],
+    }[`${from}:${to}`] ?? [];
+    const pts = [
+      startPoint,
+      ...turns.map(([x, y, z]) => new Vector3(x, WORLD_RADIUS + y, z)),
+      endPoint,
+    ];
+    const curve = from === "trail" && to === "future" ? trailApproach : new CatmullRomCurve3(pts);
     return {
       from,
       to,
+      joinsRoute: branches ? { from: "trail", to: "future", t: .20 } : null,
       start,
       end,
+      startPoint,
+      endPoint,
+      curve,
+      authored: from === "court" && to === "entertainment",
       turn: new Quaternion().setFromUnitVectors(start, end),
       axis: new Vector3().crossVectors(start, end).normalize(),
-      length: start.angleTo(end) * WORLD_RADIUS,
+      length: curve.getLength(),
     };
   },
 );
 
 export const bayCrossing = {
-  from: "studio",
-  to: "trail",
-  start: 0.36,
+  from: "projects",
+  to: "court",
+  start: 0.17,
   end: 0.87,
-  towers: [0.44, 0.74],
+  towers: [0.32, 0.70],
   halfWidth: 1.4,
 };
 export function isBayCrossing(route) {
@@ -42,23 +76,21 @@ export function isBayCrossing(route) {
 export function crossingLift(route, t) {
   return isBayCrossing(route)
     ? 3.2 *
-        MathUtils.smoothstep(t, 0.25, 0.43) *
-        (1 - MathUtils.smoothstep(t, 0.75, 0.94))
-    : 0;
+        MathUtils.smoothstep(t, 0, 0.36) *
+        (1 - MathUtils.smoothstep(t, 0.64, 1))
+    : route.to === "court"
+      ? 1.5 * Math.sin(Math.PI * t) ** 2
+      : 0;
 }
 
 export function pathSample(route, t, lane = 0, lift = 0.08) {
-  const rotation = new Quaternion().identity().slerp(route.turn, t);
-  const normal = route.start.clone().applyQuaternion(rotation);
-  normal
-    .addScaledVector(
-      route.axis,
-      Math.sin(t * Math.PI * 2) * 0.018 + lane / WORLD_RADIUS,
-    )
-    .normalize();
-  const position = normal
-    .clone()
-    .multiplyScalar(planetRadiusAt(normal) + crossingLift(route, t) + lift);
+  const normal = new Vector3(0, 1, 0);
+  const position = route.curve.getPointAt(t);
+  const tangent = route.curve.getTangentAt(t);
+  const side = new Vector3().crossVectors(normal, tangent).normalize();
+  position.addScaledVector(side, lane);
+  position.y +=
+    crossingLift(route, t) + lift - (route.authored ? 0.093 : 0.115);
   return { position, normal };
 }
 export function pathHalfWidth(route, t) {
@@ -66,7 +98,7 @@ export function pathHalfWidth(route, t) {
     0.95 +
     (isBayCrossing(route)
       ? (bayCrossing.halfWidth - 0.95) *
-        MathUtils.smoothstep(t, 0.31, bayCrossing.start) *
+        MathUtils.smoothstep(t, 0, bayCrossing.start) *
         (1 - MathUtils.smoothstep(t, bayCrossing.end, 0.92))
       : 0)
   );
@@ -81,6 +113,55 @@ export function pathPose(route, t, lane = 0, lift = 0.08) {
   return { ...sample, forward, right, up };
 }
 
+// A continuous bevelled surface following the exact navigation curve.
+// Four across the top keeps each triangle small without stacked tile boxes.
+export function worldPavingGeometry(routes = walkingRoutes) {
+  const positions = [],
+    colors = [],
+    indices = [];
+  const color = new Color("#b7a48b"),
+    edge = new Color("#9d8d77");
+  for (const route of routes) {
+    if (route.authored) continue;
+    const steps = Math.ceil(route.length / 0.72);
+    const origin = positions.length / 3;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps,
+        half = pathHalfWidth(route, t);
+      const rows = [
+        [-half - 0.055, 0.048],
+        [-half, 0.115],
+        [-half * 0.34, 0.116],
+        [half * 0.34, 0.116],
+        [half, 0.115],
+        [half + 0.055, 0.048],
+      ];
+      rows.forEach(([lane, lift], j) => {
+        const p = pathSample(route, t, lane, lift).position;
+        positions.push(p.x, p.y, p.z);
+        const c = (j === 0 || j === 5 ? edge : color)
+          .clone()
+          .multiplyScalar(0.98 + 0.02 * Math.sin(i * 0.41 + j * 1.2));
+        colors.push(c.r, c.g, c.b);
+        if (i < steps && j < 5) {
+          const a = origin + i * 6 + j,
+            b = a + 1,
+            c = a + 6,
+            d = c + 1;
+          indices.push(a, c, b, b, c, d);
+        }
+      });
+    }
+  }
+  const g = new BufferGeometry();
+  g.setAttribute("position", new Float32BufferAttribute(positions, 3));
+  g.setAttribute("color", new Float32BufferAttribute(colors, 3));
+  g.setIndex(indices);
+  // Arc offset side points have the same up orientation as pathPose.
+  g.computeVertexNormals();
+  return g;
+}
+
 // The same slab, curb and lamp footprints drive rendering and clearance checks.
 export function walkwayPlacements() {
   const tiles = [],
@@ -88,7 +169,9 @@ export function walkwayPlacements() {
     posts = [],
     lamps = [],
     footings = [];
+  const piers=[];
   for (const route of walkingRoutes) {
+    if (route.authored) continue;
     const count = Math.ceil(route.length / 0.85);
     for (let i = 0; i < count; i++) {
       const t = (i + 0.5) / count;
@@ -133,6 +216,14 @@ export function walkwayPlacements() {
       lamps.push(raised(0.87, [0.135, 0.15, 0.135]));
       posts.push(raised(0.97, [0.19, 0.055, 0.19]));
     }
+    const countPiers=Math.max(1,Math.ceil(route.length/7.2));
+    for(let i=0;i<countPiers;i++){
+      const t=(i+.5)/countPiers;
+      if(t<.12||t>.90||(isBayCrossing(route)&&t>bayCrossing.start&&t<bayCrossing.end))continue;
+      const pose=pathPose(route,t);
+      const length=Math.max(.2,pose.position.y-WORLD_RADIUS+.65);
+      piers.push({...pose,position:pose.position.clone().add(new Vector3(0,-length/2,0)),right:new Vector3(1,0,0),up:new Vector3(0,1,0),forward:new Vector3(0,0,1),size:[.72,length,.72]});
+    }
   }
-  return { tiles, edge, posts, lamps, footings };
+  return { tiles, edge, posts, lamps, footings, piers };
 }

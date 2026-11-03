@@ -43,11 +43,6 @@ export const workStories = {
         "I also led hands-on technical workshops with the team, covering Docker, Flask, and Chrome extensions. Building for the community and teaching with it were both part of the role.",
       ],
     ],
-    image: {
-      src: "/aboutMe/soda-presentation.webp",
-      alt: "Sri and a fellow presenter at a SoDA student event",
-      caption: "From the original site’s photo collection: a moment at SoDA.",
-    },
     link: { label: "Explore the SoDA platform", href: "#project-soda" },
   },
   "Mesa Historical Museum": {

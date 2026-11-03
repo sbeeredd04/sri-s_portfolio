@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { useEffect, useId, useRef, useState } from "react";
 import { claimMedia, releaseMedia } from "../../lib/media-focus.mjs";
 
@@ -65,7 +66,7 @@ export default function RemoteVideo({
         target="_blank"
         rel="noreferrer"
       >
-        {source ? `${source} · Watch on YouTube` : "Open on YouTube"} ↗
+        {source ? `${source} · Watch on YouTube` : "Open on YouTube"} <UiIcon />
       </a>
       <p className="video-footnote">
         {loaded

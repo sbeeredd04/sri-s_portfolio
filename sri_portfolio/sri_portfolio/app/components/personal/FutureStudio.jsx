@@ -1,20 +1,19 @@
 "use client";
 import { Suspense, useEffect, useMemo } from "react";
-import { MeshStandardMaterial } from "three";
+import { DoubleSide, MeshStandardMaterial } from "three";
 import { Sign, StreetLamp } from "./StreetFurniture";
 import { Box, Rod } from "./ScenePrimitives";
 import { LoungeChair } from "./ListeningFurniture";
 import { useRoomTexture } from "./RoomMaterials";
 import { useFinish } from "./Finishes";
-import ModelInstances from "./ModelInstances";
 import FieldnotesQuarter from "./FieldnotesQuarter";
+import FieldnotesCoast from "./FieldnotesCoast";
 import {
   fieldnotesLounge,
   fieldnotesLoungeScale,
   fieldnotesLamp,
   fieldnotesDeskLamp,
   fieldnotesSignPoses,
-  fieldnotesPlants,
 } from "../../lib/fieldnotes-layout.mjs";
 import {
   buildFieldnotesGeometry,
@@ -49,24 +48,6 @@ function GardenMasonry({ built }) {
     </>
   );
 }
-const plantKinds = [...new Set(fieldnotesPlants.map((p) => p.kind))];
-function GardenPlanting() {
-  return plantKinds.map((kind) => (
-    <ModelInstances
-      key={kind}
-      src={`/models/${kind}.glb`}
-      items={fieldnotesPlants
-        .filter((p) => p.kind === kind)
-        .map((p) => ({
-          position: [p.x, 0.055, p.z],
-          rotation: p.turn,
-          scale: p.s,
-        }))}
-      envMapIntensity={0.7}
-    />
-  ));
-}
-
 export default function FutureStudio({
   detailed,
   night,
@@ -111,6 +92,15 @@ export default function FutureStudio({
         metalness: 0.72,
       }),
       ivory: new MeshStandardMaterial({ color: "#f4f0e6", roughness: 0.9 }),
+      glass: new MeshStandardMaterial({
+        color: "#c3dfd6",
+        roughness: 0.16,
+        metalness: 0.18,
+        transparent: true,
+        opacity: 0.13,
+        depthWrite: false,
+        side: DoubleSide,
+      }),
       garden: new MeshStandardMaterial({
         color: "#ffffff",
         roughness: 0.92,
@@ -155,7 +145,11 @@ export default function FutureStudio({
         <GardenMasonry built={built} />
       </Suspense>
       <Suspense fallback={null}>
-        <GardenPlanting />
+        <FieldnotesCoast
+          night={night}
+          onOpenLookout={open("lookout", "writing")}
+          onHover={onHover}
+        />
       </Suspense>
       <FieldnotesQuarter
         detailed={detailed}
@@ -167,7 +161,14 @@ export default function FutureStudio({
           else onStopSelect("writing");
         }}
       />
-      {shell(built.timber, materials.charcoal)}
+      {shell(built.timber, materials.stone)}
+      {shell(built.interiorWood, materials.timber)}
+      {shell(built.books, materials.garden)}
+      <mesh
+        geometry={built.glass}
+        material={materials.glass}
+        raycast={() => null}
+      />
       {shell(built.charcoal, materials.charcoal)}
       {shell(built.copper, materials.copper)}
       {shell(built.garden, materials.garden)}
@@ -178,8 +179,11 @@ export default function FutureStudio({
       />
       <group
         onClick={open("writing", "writing")}
-        onPointerOver={() => onHover?.("The writing studio · coming soon")}
-        onPointerOut={() => onHover?.("")}
+        onPointerMove={(e) => {
+          e.stopPropagation();
+          onHover?.("Open the writing room", e);
+        }}
+        onPointerOut={(e) => onHover?.("", e)}
       >
         {shell(built.desk, materials.timber)}
         {shell(built.chair, materials.charcoal)}
@@ -232,8 +236,11 @@ export default function FutureStudio({
       </group>
       <group
         onClick={open("socials", "socials")}
-        onPointerOver={() => onHover?.("Find me around the internet")}
-        onPointerOut={() => onHover?.("")}
+        onPointerMove={(e) => {
+          e.stopPropagation();
+          onHover?.("Find me around the internet", e);
+        }}
+        onPointerOut={(e) => onHover?.("", e)}
       >
         {shell(built.plinth, materials.stone)}
         {shell(built.panel, materials.ivory)}
@@ -252,10 +259,11 @@ export default function FutureStudio({
       </group>
       <group
         onClick={open("collaborate", "contact")}
-        onPointerOver={() =>
-          onHover?.("Pull up a chair · start a conversation")
-        }
-        onPointerOut={() => onHover?.("")}
+        onPointerMove={(e) => {
+          e.stopPropagation();
+          onHover?.("Pull up a chair · start a conversation", e);
+        }}
+        onPointerOut={(e) => onHover?.("", e)}
       >
         {fieldnotesLounge.map((seat) => (
           <group

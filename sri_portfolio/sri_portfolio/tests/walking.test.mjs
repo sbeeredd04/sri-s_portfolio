@@ -19,7 +19,6 @@ import {
 } from "../app/lib/trail-layout.mjs";
 import {
   distanceToOverlook,
-  overlookPolyline,
 } from "../app/lib/valley-layout.mjs";
 import { pavingCells, pavingSize } from "../app/lib/paving-layout.mjs";
 import { workshops, projectWalks } from "../app/lib/project-town-layout.mjs";
@@ -39,7 +38,8 @@ test("brisk walking is frame-rate independent, stops smoothly and cannot leave a
   const a = simulate(30),
     b = simulate(120);
   assert.ok(a.position.distanceTo(b.position) < 0.09);
-  assert.ok(a.distance > 7.8 && a.distance < 8.5);
+  // Brisk 3 m/s travel covers ~5.8 m after the short acceleration ramp.
+  assert.ok(a.distance > 5.65 && a.distance < 6.05);
   for (let i = 0; i < 120; i++)
     advanceWalker(a, new Vector3(), 1 / 60, network);
   assert.ok(a.velocity.length() < 0.001);
@@ -68,7 +68,9 @@ test("every causeway and bridge deck belongs to the continuous pedestrian networ
       [1, route.to],
     ]) {
       const point = pathPose(route, t, 0, 0.115).position;
-      const local = network.filter((s) => s.world === id && !s.connection);
+      const local = network.filter((s) => s.world === id &&
+        (!s.connection || (t === 0 && route.joinsRoute &&
+          s.connection === `${route.joinsRoute.from}:${route.joinsRoute.to}`)));
       assert.ok(
         Math.sqrt(nearestWalk(point, local).distance) < 0.25,
         `${id} path join`,
@@ -118,36 +120,37 @@ test("all Foundry paving including new connection clears workshop footprints", (
         `${p.id} collision`,
       );
 });
-test("the overlook deck is on the continuous trail", () => {
-  const deck = overlookPolyline().at(-1);
-  const region = regions.find((item) => item.id === "trail");
-  const localOf = (position) => {
-    const relative = position.clone().sub(region.center);
-    return [relative.dot(region.east), relative.dot(region.north)];
-  };
-  const state = walkStart("trail");
-  const steer = (dx, dz) => {
-    const desired = region.east
-      .clone()
-      .multiplyScalar(dx)
-      .add(region.north.clone().multiplyScalar(dz));
-    if (desired.lengthSq() > 0) desired.normalize();
-    advanceWalker(state, desired, 1 / 60, network);
-  };
-  for (let i = 0; i < 900; i++) {
-    if (localOf(state.position)[1] < -0.7) break;
-    steer(0, -1);
+test("every enabled authored trail branch is reachable on foot from the entry", async () => {
+  const { outThereWalks } = await import("../app/lib/out-there-walk-runtime.mjs");
+  const trailNetwork = network.filter((s) => s.world === "trail" && !s.connection);
+  const region = regions.find((r) => r.id === "trail");
+  const visited = new Map([["ENTRY", walkStart("trail")]]);
+  const pending = new Set(outThereWalks);
+  while (pending.size) {
+    let progressed = false;
+    for (const walk of pending) {
+      const [from, to] = walk.id.split("__");
+      const start = visited.get(from) || visited.get(to);
+      if (!start) continue;
+      const destination = visited.has(from) ? to : from;
+      const points = visited.has(from) ? walk.points : [...walk.points].reverse();
+      const state = { ...start, position: start.position.clone(), velocity: new Vector3(), forward: start.forward.clone(), up: start.up.clone() };
+      for (const point of points) {
+        const target = region.center.clone().addScaledVector(region.east, point[0]).addScaledVector(region.normal, point[1] + 0.004).addScaledVector(region.north, point[2]);
+        for (let frame = 0; frame < 90 && state.position.distanceTo(target) > 0.09; frame++) {
+          const desired = target.clone().sub(state.position).normalize();
+          advanceWalker(state, desired, 1 / 60, trailNetwork);
+        }
+        assert.ok(state.position.distanceTo(target) < 0.14, `${walk.id} blocked at ${point.slice(0, 3)}`);
+      }
+      visited.set(destination, state);
+      pending.delete(walk);
+      progressed = true;
+    }
+    assert.ok(progressed, "An enabled trail branch is disconnected from ENTRY");
   }
-  assert.ok(localOf(state.position)[1] < 0, "walker did not reach the spur");
-  for (let i = 0; i < 420; i++) {
-    const [x, z] = localOf(state.position);
-    steer(deck[0] - x, deck[1] - z);
-  }
-  const [x, z] = localOf(state.position);
-  assert.ok(
-    Math.hypot(x - deck[0], z - deck[1]) < 1.45,
-    `overlook deck not reached (${x.toFixed(2)}, ${z.toFixed(2)})`,
-  );
+  assert.ok(visited.has("CAMP") && visited.has("W2"), "camp and lakeside destinations must be reached");
+  assert.ok(trailNetwork.every((segment) => segment.authoredPath), "obsolete procedural overlook must not create an invisible path");
 });
 test("typing and open dialogs retain keyboard ownership", () => {
   assert.equal(isWalkingInputTarget({ closest: () => ({}) }), true);

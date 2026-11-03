@@ -46,7 +46,8 @@ export default function StreetViewMarkers({ world, stop, onSelect, onHover }) {
                       node.point[0],
                       (world === "studio"
                         ? APARTMENT_LEVEL + 0.15
-                        : surfaceHeight(world, ...node.point)) + 0.18,
+                        : (node.height ??
+                          surfaceHeight(world, ...node.point))) + 0.18,
                       node.point[1],
                     ])
               }

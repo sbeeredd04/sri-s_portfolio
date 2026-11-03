@@ -3,7 +3,12 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useQuality } from "./Quality";
-import { grassProfile, grassCount, nearGrassCount, NEAR_EXTENT } from "../../lib/grass.mjs";
+import {
+  grassProfile,
+  grassCount,
+  nearGrassCount,
+  NEAR_EXTENT,
+} from "../../lib/grass.mjs";
 import { WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
 
 const MAP = 512;
@@ -81,7 +86,9 @@ function useGroundMaps(active, surfaceRef, anchorRef, extent) {
     if (!anchor || !surface) return;
     const origin = new THREE.Vector3(),
       up = new THREE.Vector3();
-    const heightMaterial = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+    const heightMaterial = new THREE.MeshBasicMaterial({
+      side: THREE.DoubleSide,
+    });
     const uniforms = { uOrigin: { value: origin }, uUp: { value: up } };
     heightMaterial.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, uniforms);
@@ -113,8 +120,15 @@ function useGroundMaps(active, surfaceRef, anchorRef, extent) {
       up.set(0, 1, 0).transformDirection(anchor.matrixWorld);
       camera.position.copy(origin).addScaledVector(up, 80);
       camera.quaternion
-        .setFromRotationMatrix(new THREE.Matrix4().extractRotation(anchor.matrixWorld))
-        .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2));
+        .setFromRotationMatrix(
+          new THREE.Matrix4().extractRotation(anchor.matrixWorld),
+        )
+        .multiply(
+          new THREE.Quaternion().setFromAxisAngle(
+            new THREE.Vector3(1, 0, 0),
+            -Math.PI / 2,
+          ),
+        );
       camera.updateMatrixWorld();
       const previous = {
         target: gl.getRenderTarget(),
@@ -161,7 +175,7 @@ function useGroundMaps(active, surfaceRef, anchorRef, extent) {
       invalidate();
     };
     // Districts stream in behind Suspense; refresh as their models settle.
-    const timers = [120, 900, 2600, 6000].map((t) => setTimeout(capture, t));
+    const timers = [900, 3200].map((t) => setTimeout(capture, t));
     return () => {
       timers.forEach(clearTimeout);
       heightMaterial.dispose();
@@ -203,45 +217,45 @@ function seedGeometry(count, square) {
 }
 
 function grassMaterial(profile, maps, biome, near) {
-    const m = new THREE.MeshStandardMaterial({
-      side: THREE.DoubleSide,
-      roughness: 0.78,
-      metalness: 0,
-    });
-    const uniforms = {
-      uTime: { value: 0 },
-      uGust: { value: 1 },
-      uExtent: { value: profile.extent },
-      // Near layer: a dense square of tufts that recycles around the point
-      // the camera is looking at, so close shots are full, not ribbons.
-      uPlace: { value: near ? NEAR_EXTENT : profile.extent },
-      uCenter: { value: new THREE.Vector2() },
-      uNear: { value: near ? 1 : 0 },
-      uHeight: { value: profile.height },
-      uWidth: { value: profile.width * (near ? 0.8 : 1) },
-      uBase: { value: new THREE.Color(profile.base) },
-      uTip: { value: new THREE.Color(profile.tip) },
-      uDry: { value: new THREE.Color(profile.dry) },
-      uSoil: { value: maps.soil.texture },
-      uTop: { value: maps.top.texture },
-      uReady: maps.ready,
-      uClear: { value: CLEAR },
-      uR: { value: WORLD_RADIUS },
-      uInner: {
-        value: (regions.find((r) => r.id === biome)?.inner || 0) - 1,
-      },
-      uCam: { value: new THREE.Vector3() },
-      uFade: { value: profile.fade },
-      uSun: { value: new THREE.Vector3(0, 1, 0) },
-    };
-    m.userData.uniforms = uniforms;
-    m.userData.maps = maps;
-    m.onBeforeCompile = (shader) => {
-      Object.assign(shader.uniforms, uniforms);
-      shader.vertexShader = shader.vertexShader
-        .replace(
-          "#include <common>",
-          `#include <common>
+  const m = new THREE.MeshStandardMaterial({
+    side: THREE.DoubleSide,
+    roughness: 0.78,
+    metalness: 0,
+  });
+  const uniforms = {
+    uTime: { value: 0 },
+    uGust: { value: 1 },
+    uExtent: { value: profile.extent },
+    // Near layer: a dense square of tufts that recycles around the point
+    // the camera is looking at, so close shots are full, not ribbons.
+    uPlace: { value: near ? NEAR_EXTENT : profile.extent },
+    uCenter: { value: new THREE.Vector2() },
+    uNear: { value: near ? 1 : 0 },
+    uHeight: { value: profile.height },
+    uWidth: { value: profile.width * (near ? 0.8 : 1) },
+    uBase: { value: new THREE.Color(profile.base) },
+    uTip: { value: new THREE.Color(profile.tip) },
+    uDry: { value: new THREE.Color(profile.dry) },
+    uSoil: { value: maps.soil.texture },
+    uTop: { value: maps.top.texture },
+    uReady: maps.ready,
+    uClear: { value: CLEAR },
+    uR: { value: WORLD_RADIUS },
+    uInner: {
+      value: (regions.find((r) => r.id === biome)?.inner || 0) - 1,
+    },
+    uCam: { value: new THREE.Vector3() },
+    uFade: { value: profile.fade },
+    uSun: { value: new THREE.Vector3(0, 1, 0) },
+  };
+  m.userData.uniforms = uniforms;
+  m.userData.maps = maps;
+  m.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, uniforms);
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        "#include <common>",
+        `#include <common>
           attribute vec4 seed;
           attribute vec4 tuft;
           uniform float uTime, uGust, uExtent, uPlace, uNear, uHeight, uWidth, uReady, uClear, uFade, uR, uInner;
@@ -250,15 +264,15 @@ function grassMaterial(profile, maps, biome, near) {
           varying float vT; varying float vShade; varying float vDry;
           float gh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
           float gn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(gh(i),gh(i+vec2(1,0)),f.x),mix(gh(i+vec2(0,1)),gh(i+vec2(1,1)),f.x),f.y);}`,
-        )
-        .replace(
-          "#include <beginnormal_vertex>",
-          `#include <beginnormal_vertex>
+      )
+      .replace(
+        "#include <beginnormal_vertex>",
+        `#include <beginnormal_vertex>
           objectNormal=vec3(0.,1.,0.);`,
-        )
-        .replace(
-          "#include <begin_vertex>",
-          `vec2 local=seed.xy*uPlace;
+      )
+      .replace(
+        "#include <begin_vertex>",
+        `vec2 local=seed.xy*uPlace;
           float edge=1.;
           if(uNear>.5){
             local=mod(local-uCenter+uPlace,vec2(2.*uPlace))-uPlace+uCenter;
@@ -299,29 +313,29 @@ function grassMaterial(profile, maps, biome, near) {
           transformed=vec3(transformed.x*ca+transformed.z*sa,transformed.y,-transformed.x*sa+transformed.z*ca);
           transformed+=root+vec3(tuft.x,0.,tuft.y)*(.6+h);
           vT=tip; vShade=.65+clump*.35; vDry=smoothstep(.55,.95,gn(local*.03+3.));`,
-        );
-      shader.fragmentShader = shader.fragmentShader
-        .replace(
-          "#include <common>",
-          `#include <common>
+      );
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        "#include <common>",
+        `#include <common>
           uniform vec3 uBase,uTip,uDry,uSun; varying float vT; varying float vShade; varying float vDry;`,
-        )
-        .replace(
-          "#include <color_fragment>",
-          `#include <color_fragment>
+      )
+      .replace(
+        "#include <color_fragment>",
+        `#include <color_fragment>
           vec3 blade=mix(uBase,mix(uTip,uDry,vDry),smoothstep(0.,1.,vT));
           diffuseColor.rgb=blade*vShade*(.55+.45*vT);`,
-        )
-        .replace(
-          "#include <emissivemap_fragment>",
-          `#include <emissivemap_fragment>
+      )
+      .replace(
+        "#include <emissivemap_fragment>",
+        `#include <emissivemap_fragment>
           // Light scattering through thin blades toward a low sun.
           vec3 viewDir=normalize(vViewPosition);
           float back=pow(max(dot(-viewDir,normalize((viewMatrix*vec4(uSun,0.)).xyz)),0.),4.);
           totalEmissiveRadiance+=mix(uTip,uDry,vDry)*back*vT*vT*.45;`,
-        );
-    };
-    return m;
+      );
+  };
+  return m;
 }
 
 export default function GrassField({

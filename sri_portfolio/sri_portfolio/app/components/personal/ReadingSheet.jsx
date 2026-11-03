@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { useEffect, useRef, useState } from "react";
 import AppContent from "./AppContent";
 import RoomSoundControls from "./RoomSoundControls";
@@ -18,6 +19,28 @@ export default function ReadingSheet({
   onSoundRoomChange,
 }) {
   const dialog = useRef(null);
+  const [closing, setClosing] = useState(false);
+  const exitTimer = useRef(null);
+  const exitAction = useRef(null);
+  const finishClose = () => {
+    clearTimeout(exitTimer.current);
+    const action = exitAction.current;
+    exitAction.current = null;
+    action?.();
+  };
+  const requestClose = (action = onClose) => {
+    if (exitAction.current) return;
+    audio?.cue("close");
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      action();
+      return;
+    }
+    exitAction.current = action;
+    setClosing(true);
+    // A fallback covers background tabs and browsers that cancel animations.
+    exitTimer.current = setTimeout(finishClose, 240);
+  };
+  useEffect(() => () => clearTimeout(exitTimer.current), []);
   const [projectLocation, setProjectLocation] = useState({
     collection,
     hash: null,
@@ -45,11 +68,19 @@ export default function ReadingSheet({
     <dialog
       ref={dialog}
       data-section={id}
+      data-closing={closing}
+      onAnimationEnd={(event) => {
+        if (
+          event.target === dialog.current &&
+          event.animationName === "sheet-depart"
+        )
+          finishClose();
+      }}
       className={`app-window reading-sheet ${id === "index" ? "index-sheet" : ""}`}
       aria-label={name}
       onCancel={(e) => {
         e.preventDefault();
-        onClose();
+        requestClose();
       }}
       onClick={(e) => {
         if (e.target === dialog.current) {
@@ -60,7 +91,7 @@ export default function ReadingSheet({
             e.clientY < r.top ||
             e.clientY > r.bottom
           )
-            onClose();
+            requestClose();
         }
       }}
     >
@@ -83,9 +114,9 @@ export default function ReadingSheet({
           <button
             className="sheet-close"
             aria-label={`Close ${name}`}
-            onClick={onClose}
+            onClick={() => requestClose()}
           >
-            ×
+            <UiIcon name="close" size={20} />
           </button>
         </div>
       </div>
@@ -111,7 +142,7 @@ export default function ReadingSheet({
                     <strong>{s.name}</strong>
                     <small>{s.caption}</small>
                   </span>
-                  <span aria-hidden="true">→</span>
+                  <UiIcon name="arrowRight" />
                 </button>
               ))}
             </div>
@@ -121,7 +152,10 @@ export default function ReadingSheet({
             <h3>Go somewhere</h3>
             <div className="index-places">
               {chapters.map((c) => (
-                <button key={c.id} onClick={() => onTravel(c.id)}>
+                <button
+                  key={c.id}
+                  onClick={() => requestClose(() => onTravel(c.id))}
+                >
                   <span>{c.label}</span>
                   <small>{c.upcoming ? "Not open yet" : c.number}</small>
                 </button>
@@ -149,7 +183,7 @@ export default function ReadingSheet({
                   <span className="continuation-label">
                     {continuations[id].label}
                   </span>
-                  <span aria-hidden="true">→</span>
+                  <UiIcon name="arrowRight" />
                 </button>
               </footer>
             )}

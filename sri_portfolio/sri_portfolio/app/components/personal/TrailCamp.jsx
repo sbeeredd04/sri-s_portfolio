@@ -6,11 +6,17 @@ import Crowd from "./Crowd";
 import Signpost from "./Signpost";
 import { useQuality } from "./Quality";
 import { groundHeight } from "./Landscape";
-import { campFire, campTent, trailLife } from "../../lib/trail-life.mjs";
+import {
+  campFire,
+  campTent,
+  trailLife,
+  campers,
+} from "../../lib/trail-life.mjs";
 import { campsite } from "../../lib/valley-layout.mjs";
+import SoftHuman from "./SoftHuman";
 
 // A two-person ridge tent: two pitched panels, a ridge pole and a sheet.
-function Tent() {
+function Tent({ ground }) {
   const { x, z, yaw } = campTent;
   const parts = useMemo(() => {
     const fly = [],
@@ -36,7 +42,7 @@ function Tent() {
     return { fly, dark };
   }, []);
   return (
-    <group position={[x, groundHeight(x, z), z]} rotation={[0, yaw, 0]}>
+    <group position={[x, ground(x, z), z]} rotation={[0, yaw, 0]}>
       <Boxes items={parts.fly} color="#c9713f" roughness={0.8} />
       <Boxes items={parts.dark} color="#2e3430" roughness={0.9} />
     </group>
@@ -44,7 +50,7 @@ function Tent() {
 }
 
 // A stone ring, crossed logs, and flames that flicker while animating.
-function Fire({ night, animate }) {
+function Fire({ night, animate, ground }) {
   const { x, z } = campFire;
   const stones = useMemo(
     () =>
@@ -83,7 +89,6 @@ function Fire({ night, animate }) {
     [],
   );
   const flames = [useRef(), useRef(), useRef()];
-  const light = useRef();
   useFrame(({ clock }) => {
     if (!animate) return;
     const t = clock.elapsedTime;
@@ -96,12 +101,9 @@ function Fire({ night, animate }) {
       f.current.scale.set(1, k, 1);
       f.current.rotation.y = t * (0.6 + i * 0.2);
     });
-    if (light.current)
-      light.current.intensity =
-        (night ? 5 : 0) * (0.85 + Math.sin(t * 17) * 0.1);
   });
   return (
-    <group position={[x, groundHeight(x, z), z]}>
+    <group position={[x, ground(x, z), z]}>
       <Boxes items={stones} color="#7c776e" roughness={0.95} />
       <Boxes items={logs} color="#5b3f2a" roughness={0.9} />
       {[
@@ -120,54 +122,67 @@ function Fire({ night, animate }) {
           />
         </mesh>
       ))}
-      {night && (
-        <pointLight
-          ref={light}
-          position={[0, 0.7, 0]}
-          color="#ffa04a"
-          distance={9}
-          decay={2}
-          intensity={5}
-        />
-      )}
     </group>
   );
 }
 
-function TrailPeople({ animate }) {
+function TrailPeople({ animate, ground, campOnly }) {
   const { tier } = useQuality();
-  const agents = useMemo(() => trailLife(tier), [tier]);
+  const agents = useMemo(
+    () => (campOnly ? campers() : trailLife(tier)),
+    [tier, campOnly],
+  );
+  if (campOnly)
+    return agents.map((person, i) => (
+      <group
+        key={i}
+        position={[person.x, ground(person.x, person.z), person.z]}
+        rotation={[0, person.yaw, 0]}
+      >
+        <SoftHuman
+          animate={animate}
+          phase={i * 0.92}
+          color={["#cfa277", "#a4b7be", "#beb68b"][i]}
+        />
+      </group>
+    ));
   return (
     <Crowd
       src="/models/characters/crowd.glb"
       agents={agents}
-      ground={groundHeight}
+      ground={ground}
       animate={animate}
     />
   );
 }
 
 // Trampled ground under the camp; sitting above the soil clears the grass.
-function Clearing() {
+function Clearing({ ground }) {
   const { x, z, radius } = campsite;
   return (
-    <mesh position={[x, groundHeight(x, z) + 0.015, z]} receiveShadow>
+    <mesh position={[x, ground(x, z) + 0.015, z]} receiveShadow>
       <cylinderGeometry args={[radius, radius + 0.25, 0.05, 40]} />
       <meshStandardMaterial color="#7d6a52" roughness={1} />
     </mesh>
   );
 }
 
-export default function TrailCamp({ night, animate, detailed }) {
+export default function TrailCamp({
+  night,
+  animate,
+  detailed,
+  ground = groundHeight,
+  campOnly = false,
+}) {
   return (
     <group>
-      <Clearing />
-      <Signpost biome="trail" ground={groundHeight} />
-      <Tent />
-      <Fire night={night} animate={animate} />
+      {!campOnly && <Clearing ground={ground} />}
+      {!campOnly && <Signpost biome="trail" ground={ground} />}
+      <Tent ground={ground} />
+      <Fire night={night} animate={animate} ground={ground} />
       {detailed && (
         <Suspense fallback={null}>
-          <TrailPeople animate={animate} />
+          <TrailPeople animate={animate} ground={ground} campOnly={campOnly} />
         </Suspense>
       )}
     </group>

@@ -8,7 +8,53 @@ import {
   hapticPulse,
   soundPlaces,
 } from "../app/lib/sensory-design.mjs";
-import { SoundEngine } from "../app/lib/sound-engine.mjs";
+import { SoundEngine as BaseSoundEngine } from "../app/lib/sound-engine.mjs";
+import { FakeAudio } from "./helpers/fake-media.mjs";
+class SoundEngine extends BaseSoundEngine {
+  constructor(ctx, options) {
+    super(ctx, { ...options, createAudio: () => new FakeAudio() });
+  }
+}
+import { entranceNotes } from "../app/lib/entrance-sound.mjs";
+
+test("introduction is synchronized, resumes from its offset, and follows the music bus", () => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  engine.introduction({ playing: true, position: 0 });
+  assert.equal(ctx.oscillators.length, entranceNotes.length);
+  assert.ok(ctx.oscillators.some((source) => source.frequency.value < 30));
+  assert.ok(entranceNotes.some(([at, , duration]) => at + duration > 8));
+  engine.introduction({ playing: false, position: 2700 });
+  assert.ok(ctx.oscillators.every((source) => source.stopped));
+  const previous = ctx.oscillators.length;
+  engine.introduction({ playing: true, position: 2700 });
+  assert.equal(
+    ctx.oscillators.length - previous,
+    entranceNotes.filter(([at, , duration]) => at + duration > 2.7).length,
+  );
+  engine.preferences = { ...sensoryDefaults, music: false };
+  engine.mix();
+  assert.equal(engine.introBus.gain.value, 0);
+  engine.destroy(true);
+  assert.ok(ctx.oscillators.every((source) => source.stopped));
+});
+
+test("world score is an original compact loop with bass headroom", () => {
+  const { metrics } = JSON.parse(
+    readFileSync(new URL("../public/audio/world-thread.json", import.meta.url)),
+  );
+  assert.equal(metrics.beat_seconds, 0.9);
+  assert.ok(metrics.seconds > 55);
+  assert.ok(metrics.peak_dbfs < -6);
+  assert.ok(metrics.loop_boundary_delta < 0.005);
+  assert.ok(
+    statSync(new URL("../public/audio/world-thread.mp3", import.meta.url))
+      .size < 500000,
+  );
+});
 
 test("saved mute survives and invalid mixer levels are bounded", () => {
   assert.deepEqual(sensoryPreferences(null), sensoryDefaults);
@@ -135,6 +181,7 @@ function context() {
     sources: [],
     oscillators: [],
   };
+  ctx.createMediaElementSource = () => new Node();
   ctx.createGain =
     ctx.createConvolver =
     ctx.createBiquadFilter =
@@ -208,28 +255,29 @@ test("late asset loads cannot restore the sound of a place the visitor already l
   const loading = engine.prepare();
   engine.update({ place: "trail" });
   pending.get("/audio/lakeside.mp3")();
-  pending.get("/audio/shoreline.mp3")();
-  pending.get("/audio/somewhere-soft.mp3")();
+  assert.equal(engine.score.track, "shoreline");
+  assert.equal(engine.score.audio.paused, false);
   await flush();
   pending.get("/audio/open-air.mp3")();
   await loading;
   await flush();
-  assert.equal(engine.loops.get("open-air").gain.gain.value, 0);
+  assert.equal(engine.loops.has("open-air"), false);
   assert.ok(engine.loops.get("lakeside").gain.gain.value > 0);
   assert.equal(engine.weather.gain.value, 1);
   engine.update({ reading: true });
   assert.ok(engine.weather.gain.value < 0.5);
   engine.update({ place: "planet", weather: { kind: "clear", rain: 0 } });
-  assert.equal(engine.loops.get("lakeside").gain.gain.value, 0);
+  assert.equal(engine.loops.has("lakeside"), false);
   assert.equal(
     engine.weather.gain.value,
     0,
     "thunder must fade once the storm passes",
   );
+  pending.get("/audio/open-air.mp3")();
   await engine.prepare();
   assert.equal(
-    requests.filter((url) => url.includes("somewhere-soft")).length,
-    1,
+    requests.filter((url) => url.includes("world-thread")).length,
+    0,
   );
 });
 
@@ -250,10 +298,12 @@ test("muting during a load cannot create late audio sources", async (t) => {
       preferences: { ...sensoryDefaults, music: false },
     });
   const loading = engine.prepare();
+  const beforeMute = ctx.sources.length;
   engine.destroy(true);
   release();
   await loading;
-  assert.equal(ctx.sources.length, 0);
+  assert.equal(ctx.sources.length, beforeMute);
+  assert.ok(ctx.sources.every((source) => source.stopped));
   assert.equal(ctx.state, "closed");
   assert.equal(engine.abort.signal.aborted, true);
 });
@@ -271,11 +321,11 @@ test("a semantic cue and the click fallback sound once, and effects respect mute
   assert.equal(ctx.oscillators.length, count);
   ctx.currentTime += 0.1;
   engine.cue("press");
-  assert.equal(ctx.oscillators.length, count + 1);
+  assert.equal(ctx.oscillators.length, count + 2);
   engine.preferences = { ...sensoryDefaults, effects: false };
   ctx.currentTime += 0.2;
   engine.cue("travel");
-  assert.equal(ctx.oscillators.length, count + 1);
+  assert.equal(ctx.oscillators.length, count + 2);
 });
 
 test("hidden audio suspends and destruction closes the entire graph", async (t) => {
@@ -376,17 +426,17 @@ test("late room scores stay silent after leaving and independent music mute wins
   t.after(() => engine.destroy(true));
   const load = engine.prepare();
   engine.update({ place: "room-about" });
-  for (const name of ["quiet-room", "rain-window", "paper-light"])
+  for (const name of ["quiet-room", "rain-window"])
     pending.get(`/audio/${name}.mp3`)();
   await flush();
-  pending.get("/audio/workbench.mp3")();
   await load;
   await flush();
-  assert.equal(engine.loops.get("workbench").gain.gain.value, 0);
-  assert.equal(engine.loops.get("quiet-room").gain.gain.value, 0);
-  assert.ok(engine.loops.get("paper-light").gain.gain.value > 0);
+  assert.equal(engine.loops.has("quiet-room"), false);
+  assert.equal(engine.score.track, "paper-light");
+  assert.ok(engine.score.gain.gain.value > 0);
   engine.update({ preferences: { ...sensoryDefaults, music: false } });
-  assert.equal(engine.loops.get("paper-light").gain.gain.value, 0);
+  assert.equal(engine.score.gain.gain.value, 0);
+  assert.equal(engine.score.audio.paused, true);
   assert.ok(engine.loops.get("rain-window").gain.gain.value > 0);
   engine.update({ music: true });
   assert.equal(engine.loops.get("rain-window").gain.gain.value, 0);
@@ -484,4 +534,210 @@ test("Fieldnotes chimes without the street hum following", () => {
   } finally {
     engine.destroy(true);
   }
+});
+
+test("first interaction has an audible bus before background downloads finish", (t) => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  assert.equal(engine.master.gain.value, sensoryDefaults.volume);
+  assert.ok(engine.effects.gain.value > 0);
+  engine.cue("press");
+  assert.equal(ctx.oscillators.length, 2);
+  assert.ok(ctx.oscillators.every((source) => source.type === "sine"));
+  assert.equal(engine.loaded.size, 0);
+  ctx.currentTime += 1;
+  engine.preferences.enabled = false;
+  engine.cue("press");
+  assert.equal(
+    ctx.oscillators.length,
+    2,
+    "remembered master mute suppresses interaction sounds",
+  );
+});
+
+test("micro sounds never swallow a click and rapid typing stays bounded", (t) => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "studio",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  engine.cue("type");
+  const typed = ctx.oscillators.length;
+  for (let i = 0; i < 30; i++) engine.cue("type");
+  assert.equal(ctx.oscillators.length, typed);
+  engine.cue("press");
+  assert.equal(ctx.oscillators.length, typed + 2);
+});
+
+test("travel has low body, finite sources, and follows the effects mute", (t) => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  engine.cue("travel");
+  assert.ok(ctx.oscillators.some((node) => node.frequency.value < 100));
+  assert.ok(ctx.oscillators.every((node) => node.stopped));
+  const count = ctx.oscillators.length;
+  engine.preferences.effects = false;
+  ctx.currentTime += 2;
+  engine.cue("welcome");
+  assert.equal(ctx.oscillators.length, count);
+});
+
+// Unlike the basic fake, this clock keeps scheduled notes alive until onended.
+function scheduledContext() {
+  const ctx = context();
+  for (const method of ["createOscillator", "createBufferSource"]) {
+    const create = ctx[method];
+    ctx[method] = () => {
+      const node = create();
+      node.start = (at) => {
+        node.startsAt = at;
+      };
+      node.stop = (at = ctx.currentTime) => {
+        node.stopsAt = at;
+      };
+      return node;
+    };
+  }
+  return ctx;
+}
+
+test("morph sound follows the decode score, has a bass octave and a bounded voice count", () => {
+  const ctx = scheduledContext();
+  const engine = new SoundEngine(ctx, {
+    place: "studio",
+    preferences: sensoryDefaults,
+  });
+  engine.cue("morph", { destination: "projects" });
+  assert.equal(ctx.oscillators.length, 4);
+  assert.equal(ctx.sources.length, 1);
+  assert.ok(ctx.oscillators[0].frequency.value < 100);
+  assert.equal(
+    ctx.oscillators[1].frequency.value,
+    ctx.oscillators[0].frequency.value * 2,
+  );
+  assert.equal(ctx.oscillators[2].startsAt, ctx.currentTime + 0.72);
+  assert.ok(
+    [...ctx.oscillators, ...ctx.sources].every(
+      (n) => n.stopsAt <= ctx.currentTime + 1.1,
+    ),
+  );
+  const count = ctx.oscillators.length;
+  engine.cue("press"); // Bubbling click must not double the score.
+  assert.equal(ctx.oscillators.length, count);
+  [...ctx.oscillators, ...ctx.sources].forEach((n) => n.onended());
+  assert.equal(engine.nodes.size, 0);
+  engine.destroy(true);
+});
+
+test("rapid biome changes cancel the old resolution; pause and effects mute cancel pending notes", async (t) => {
+  const ctx = scheduledContext();
+  const engine = new SoundEngine(ctx, {
+    place: "studio",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  engine.prepare = async () => {};
+  engine.cue("morph", { destination: "projects" });
+  const first = [...ctx.oscillators, ...ctx.sources];
+  ctx.currentTime += 0.02; // Faster than the ordinary click rate limit.
+  engine.cue("morph", { destination: "court" });
+  assert.ok(first.every((n) => n.stopsAt <= ctx.currentTime + 0.085));
+  assert.equal(ctx.oscillators.length, 8);
+  engine.cue("cancel-morph");
+  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.085));
+  ctx.currentTime += 1;
+  engine.cue("morph", { destination: "trail" });
+  engine.update({ preferences: { ...sensoryDefaults, effects: false } });
+  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.085));
+  const mutedCount = ctx.oscillators.length;
+  engine.cue("morph", { destination: "future" });
+  assert.equal(ctx.oscillators.length, mutedCount);
+  engine.update({ preferences: sensoryDefaults });
+  engine.cue("morph", { destination: "future" });
+  await engine.setHidden(true);
+  assert.ok(ctx.oscillators.every((n) => n.stopsAt <= ctx.currentTime + 0.085));
+  engine.destroy(true);
+});
+
+test("a failed streamed bed cannot silence working cues or a loaded score", async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async (url) => ({
+    ok: !url.includes(soundPlaces.planet.bed),
+    arrayBuffer: async () => new ArrayBuffer(8),
+  });
+  let released = 0;
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+    onDispose: () => released++,
+  });
+  try {
+    await engine.prepare();
+    assert.equal(engine.disposed, false);
+    assert.equal(engine.score.track, soundPlaces.planet.track);
+    assert.equal(engine.score.audio.paused, false);
+    assert.ok(!engine.loaded.has(soundPlaces.planet.bed));
+    engine.cue("press");
+    assert.ok(ctx.oscillators.length > 0);
+  } finally {
+    engine.destroy(true);
+    await Promise.resolve();
+    await Promise.resolve();
+    assert.equal(released, 1);
+    globalThis.fetch = original;
+  }
+});
+
+test("leaving a destination stops and releases its decoded ambience", async (t) => {
+  t.mock.method(globalThis, "fetch", async () => ({
+    ok: true,
+    arrayBuffer: async () => new ArrayBuffer(8),
+  }));
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  await engine.prepare();
+  const previous = engine.loops.get("open-air");
+  engine.update({ place: "trail" });
+  await engine.prepare();
+  assert.deepEqual([...engine.loops.keys()], ["lakeside"]);
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  assert.equal(previous.source.stopped, true);
+  assert.equal(previous.source.buffer, null);
+  assert.equal(previous.warmth.disconnected, true);
+  assert.equal(engine.loaded.size, 0);
+});
+
+test("rapid interaction bursts are bounded while semantic cues still win", (t) => {
+  const ctx = context();
+  const engine = new SoundEngine(ctx, {
+    place: "planet",
+    preferences: sensoryDefaults,
+  });
+  t.after(() => engine.destroy(true));
+  engine.cue("open");
+  const first = ctx.oscillators.length;
+  for (let i = 0; i < 8; i++) {
+    ctx.currentTime += 0.01;
+    engine.cue("press");
+  }
+  assert.equal(ctx.oscillators.length, first);
+  ctx.currentTime += 0.02;
+  engine.cue("press");
+  assert.equal(ctx.oscillators.length, first + 2);
+  assert.equal(engine.effectsCompressor.threshold.value, -20);
+  assert.ok(engine.effectsCompressor.knee.value > 10);
 });

@@ -17,7 +17,10 @@ import { useQuality } from "./Quality";
 import ValleyDressing from "./ValleyDressing";
 import { foundryGroveTrees } from "../../lib/foundry-grove.mjs";
 import ValleyCourse from "./ValleyCourse";
-import { inGraniteFootprint } from "../../lib/valley-layout.mjs";
+import {
+  inGraniteFootprint,
+  redwoodBenchmark,
+} from "../../lib/valley-layout.mjs";
 import { localTrailPaving } from "../../lib/trail-surface.mjs";
 import { renderedSurfaceHeight } from "../../lib/terrain-geometry.mjs";
 export const groundHeight = (x, z) => renderedSurfaceHeight("trail", x, z);
@@ -310,9 +313,36 @@ export default function Landscape({ animate, detailed = true, onCue }) {
     },
     [path, pathMaterial],
   );
+  const redwood = useMemo(() => {
+    const { x, z, rootRadius } = redwoodBenchmark;
+    let ground = renderedSurfaceHeight("trail", x, z);
+    for (let i = 0; i < 8; i++) {
+      const a = (Math.PI * 2 * i) / 8;
+      ground = Math.min(
+        ground,
+        renderedSurfaceHeight(
+          "trail",
+          x + Math.cos(a) * rootRadius * 0.72,
+          z + Math.sin(a) * rootRadius * 0.72,
+        ),
+      );
+    }
+    return [{
+      position: [x, ground - 0.04, z],
+      rotation: redwoodBenchmark.turn,
+      scale: redwoodBenchmark.scale,
+    }];
+  }, []);
   return (
     <group>
       <mesh geometry={path} material={pathMaterial} receiveShadow />
+      <Suspense fallback={null}>
+        <ModelInstances
+          src="/models/redwood-hero.glb"
+          items={redwood}
+          envMapIntensity={0.55}
+        />
+      </Suspense>
       <Grove detailed={detailed} />
       <ValleyDressing detailed={detailed} />
       <ValleyCourse animate={animate} />

@@ -303,7 +303,7 @@ def duplicate(obj: bpy.types.Object, name: str) -> bpy.types.Object:
 
 # ---------------------------------------------------------------- export
 
-def export_glb(path: Path, quality: int, compression: str) -> None:
+def export_glb(path: Path, quality: int, compression: str, vertex_colors: bool = False) -> None:
     props = {p.identifier for p in bpy.ops.export_scene.gltf.get_rna_type().properties}
     kwargs = {
         "filepath": str(path),
@@ -317,7 +317,7 @@ def export_glb(path: Path, quality: int, compression: str) -> None:
         "export_texcoords": True,
         "export_normals": True,
         "export_tangents": False,
-        "export_vertex_color": "NONE",
+        "export_vertex_color": "ACTIVE" if vertex_colors else "NONE",
         "export_attributes": False,
         "export_animations": False,
         "export_skins": False,

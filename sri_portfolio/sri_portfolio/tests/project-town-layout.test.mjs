@@ -19,26 +19,9 @@ test("every external Foundry paving cell clears the workshop footprint", () => {
         `${p.id} at ${stone.x},${stone.z}`,
       );
 });
-test("the entire guided Foundry walk clears workshop walls", () => {
-  const route = streetRoutes.projects;
-  for (let i = 1; i < route.length; i++)
-    for (let j = 0; j <= 80; j++)
-      for (const p of workshops) {
-        const t = j / 80,
-          a = route[i - 1].point,
-          b = route[i].point;
-        assert.ok(
-          !crosses(
-            a[0] + (b[0] - a[0]) * t,
-            a[1] + (b[1] - a[1]) * t,
-            0.25,
-            0.25,
-            p,
-          ),
-          `walk enters ${p.id}`,
-        );
-      }
-});
+// The live guided journey uses authored Made geometry and is covered in
+// authored-connections.test.mjs. The remaining tests retain the old kit's
+// isolated geometry invariants without confusing it with the mounted campus.
 
 test("paving clears lamp bases and the index pedestal", () => {
   for (const stone of pavingCells(projectWalks)) {

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -7,8 +7,27 @@ import {
   walkStart,
   advanceWalker,
   isWalkingInputTarget,
+  WALK_SPEED,
 } from "../../lib/walk-network.mjs";
-import WalkingCharacter from "./WalkingCharacter";
+import SoftHuman from "./SoftHuman";
+import { useQuality } from "./Quality";
+
+const contactVertex = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+const contactFragment = `
+varying vec2 vUv;
+void main() {
+  vec2 p = vUv * 2.0 - 1.0;
+  float shade = 1.0 - smoothstep(0.05, 1.0, dot(p, p));
+  gl_FragColor = vec4(0.05, 0.04, 0.03, 0.25 * shade);
+  #include <colorspace_fragment>
+}
+`;
 
 const movementKeys = new Set([
   "w",
@@ -32,10 +51,11 @@ export default function VisitorWalker({
   onExit,
 }) {
   const { camera, gl, invalidate, scene, size } = useThree();
+  const { shadows } = useQuality();
   const network = useMemo(() => makeWalkNetwork(roof), [roof]);
   const state = useRef(null),
     avatar = useRef(),
-    motion = useRef({ gait: 0, stride: 0 });
+    motion = useRef({ gait: 0, stride: 0, speed: 0 });
   const controls = useRef({
     keys: new Set(),
     cruise: false,
@@ -245,6 +265,7 @@ export default function VisitorWalker({
         c.heading.clone().multiplyScalar(drive),
         dt,
         network,
+        roof ? 1.55 : WALK_SPEED,
       );
       const speed = before.distanceTo(s.position) / Math.max(dt, 0.001);
       if (drive > 0 && !turn && speed > 0.2)
@@ -256,12 +277,20 @@ export default function VisitorWalker({
       }
 
       motion.current.gait = s.distance * 5.6;
+      motion.current.speed = THREE.MathUtils.lerp(
+        motion.current.speed,
+        speed,
+        1 - Math.exp(-dt * 10),
+      );
       motion.current.stride = THREE.MathUtils.lerp(
         motion.current.stride,
         Math.min(1, speed / 2.6),
         1 - Math.exp(-dt * 16),
       );
-    } else motion.current.stride = 0;
+    } else {
+      motion.current.stride = 0;
+      motion.current.speed = 0;
+    }
     const forward = s.forward
         .clone()
         .addScaledVector(s.up, -s.forward.dot(s.up))
@@ -330,10 +359,24 @@ export default function VisitorWalker({
   });
   return (
     <group ref={avatar} userData={{ walker: true }}>
-      <WalkingCharacter
-        motion={motion}
-        color={["#7f9ec9", "#8f86b6", "#93aaa1", "#ca927b"][color % 4]}
-      />
+      {!shadows && (
+        <mesh position={[0, 0.018, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[0.79, 1.08]} />
+          <shaderMaterial
+            vertexShader={contactVertex}
+            fragmentShader={contactFragment}
+            transparent
+            depthWrite={false}
+          />
+        </mesh>
+      )}
+      <Suspense fallback={null}>
+        <SoftHuman
+          animate={enabled}
+          motion={motion}
+          color={["#7f9ec9", "#8f86b6", "#93aaa1", "#ca927b"][color % 4]}
+        />
+      </Suspense>
     </group>
   );
 }

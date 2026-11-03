@@ -2,6 +2,7 @@
 import { useEffect, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { modelSource } from "../../lib/world-assets.mjs";
 
 const lodPattern = /_LOD(\d)$/;
 
@@ -22,7 +23,11 @@ function prepareMaterial(material, { envMapIntensity, glow }) {
     m.emissiveIntensity = glow.intensity;
     m.toneMapped = true;
   }
-  if (m.alphaTest > 0 || m.transparent || /foliage|leaf|leaves|card|needle/i.test(m.name)) {
+  if (
+    m.alphaTest > 0 ||
+    m.transparent ||
+    /foliage|leaf|leaves|card|needle/i.test(m.name)
+  ) {
     // Foliage cards: cutout instead of blending keeps sorting and shadows exact.
     m.transparent = false;
     m.alphaTest = Math.max(m.alphaTest, 0.45);
@@ -45,7 +50,7 @@ export default function ModelInstances({
   tint,
   glow,
 }) {
-  const { scene } = useGLTF(src);
+  const { scene } = useGLTF(modelSource(src, lod));
   const parts = useMemo(() => {
     scene.updateMatrixWorld(true);
     const out = [];
@@ -104,14 +109,15 @@ export default function ModelInstances({
       return mesh;
     });
   }, [parts, items, castShadow, receiveShadow]);
+  // Placement changes replace instance buffers, not shared materials. Disposing
+  // those materials here used to force a shader recompile on ordinary renders.
+  useEffect(() => () => meshes.forEach((m) => m.dispose()), [meshes]);
   useEffect(
-    () => () => {
-      meshes.forEach((m) => m.dispose());
+    () => () =>
       parts.forEach((p) =>
         [p.material].flat().forEach((material) => material.dispose()),
-      );
-    },
-    [meshes, parts],
+      ),
+    [parts],
   );
   return (
     <group>
@@ -123,7 +129,18 @@ export default function ModelInstances({
 }
 
 // A single placed copy (furniture). Clones so materials can be tuned per use.
-export function Model({ src, position, rotation = 0, scale = 1, envMapIntensity = 1, castShadow = true, receiveShadow = true, lod = 0, glow, ...props }) {
+export function Model({
+  src,
+  position,
+  rotation = 0,
+  scale = 1,
+  envMapIntensity = 1,
+  castShadow = true,
+  receiveShadow = true,
+  lod = 0,
+  glow,
+  ...props
+}) {
   const items = useMemo(
     () => [{ position: position || [0, 0, 0], rotation, scale }],
     [position?.[0], position?.[1], position?.[2], rotation, String(scale)],

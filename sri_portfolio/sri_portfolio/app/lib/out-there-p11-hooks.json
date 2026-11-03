@@ -1,0 +1,1082 @@
+{
+ "units": "final world units, 1 m = 1.56 u; Blender z-up (x,y,z) -> three.js (x, z, -y)",
+ "path_nodes": {
+  "ENTRY": {
+   "blender": [
+    14.0,
+    -68.6,
+    0.193
+   ],
+   "three": [
+    14.0,
+    0.193,
+    68.6
+   ]
+  },
+  "J1": {
+   "blender": [
+    24.0,
+    -45.2,
+    0.898
+   ],
+   "three": [
+    24.0,
+    0.898,
+    45.2
+   ]
+  },
+  "T1": {
+   "blender": [
+    32.2,
+    -32.6,
+    1.307
+   ],
+   "three": [
+    32.2,
+    1.307,
+    32.6
+   ]
+  },
+  "T2": {
+   "blender": [
+    39.6,
+    -7.2,
+    1.98
+   ],
+   "three": [
+    39.6,
+    1.98,
+    7.2
+   ]
+  },
+  "T3": {
+   "blender": [
+    47.4,
+    24.8,
+    2.648
+   ],
+   "three": [
+    47.4,
+    2.648,
+    -24.8
+   ]
+  },
+  "J2": {
+   "blender": [
+    51.2,
+    38.8,
+    2.902
+   ],
+   "three": [
+    51.2,
+    2.902,
+    -38.8
+   ]
+  },
+  "S1": {
+   "blender": [
+    49.0,
+    63.0,
+    0.934
+   ],
+   "three": [
+    49.0,
+    0.934,
+    -63.0
+   ]
+  },
+  "S2": {
+   "blender": [
+    41.0,
+    36.0,
+    4.542
+   ],
+   "three": [
+    41.0,
+    4.542,
+    -36.0
+   ]
+  },
+  "S3": {
+   "blender": [
+    36.0,
+    62.0,
+    10.963
+   ],
+   "three": [
+    36.0,
+    10.963,
+    -62.0
+   ]
+  },
+  "S4": {
+   "blender": [
+    28.0,
+    34.0,
+    17.648
+   ],
+   "three": [
+    28.0,
+    17.648,
+    -34.0
+   ]
+  },
+  "S5": {
+   "blender": [
+    22.0,
+    55.0,
+    23.174
+   ],
+   "three": [
+    22.0,
+    23.174,
+    -55.0
+   ]
+  },
+  "TARN_VIEW": {
+   "blender": [
+    16.4,
+    30.0,
+    22.732
+   ],
+   "three": [
+    16.4,
+    22.732,
+    -30.0
+   ]
+  },
+  "J3": {
+   "blender": [
+    3.2,
+    18.0,
+    23.475
+   ],
+   "three": [
+    3.2,
+    23.475,
+    -18.0
+   ]
+  },
+  "STAIR_TOP": {
+   "blender": [
+    3.2,
+    8.8,
+    28.51
+   ],
+   "three": [
+    3.2,
+    28.51,
+    -8.8
+   ]
+  },
+  "DOOR": {
+   "blender": [
+    3.2,
+    4.68,
+    28.6
+   ],
+   "three": [
+    3.2,
+    28.6,
+    -4.68
+   ]
+  },
+  "L1": {
+   "blender": [
+    8.0,
+    -50.0,
+    0.223
+   ],
+   "three": [
+    8.0,
+    0.223,
+    50.0
+   ]
+  },
+  "L2": {
+   "blender": [
+    -12.0,
+    -50.8,
+    0.198
+   ],
+   "three": [
+    -12.0,
+    0.198,
+    50.8
+   ]
+  },
+  "BRIDGE": {
+   "blender": [
+    -40.6,
+    -42.0,
+    0.74
+   ],
+   "three": [
+    -40.6,
+    0.74,
+    42.0
+   ]
+  },
+  "L3": {
+   "blender": [
+    -47.2,
+    -32.0,
+    0.876
+   ],
+   "three": [
+    -47.2,
+    0.876,
+    32.0
+   ]
+  },
+  "J4": {
+   "blender": [
+    -46.0,
+    -22.0,
+    0.46
+   ],
+   "three": [
+    -46.0,
+    0.46,
+    22.0
+   ]
+  },
+  "DOCK": {
+   "blender": [
+    -37.0,
+    -16.4,
+    1.2
+   ],
+   "three": [
+    -37.0,
+    1.2,
+    16.4
+   ]
+  },
+  "TARN_SHORE": {
+   "blender": [
+    -6.0,
+    21.8,
+    22.224
+   ],
+   "three": [
+    -6.0,
+    22.224,
+    -21.8
+   ]
+  },
+  "W1": {
+   "blender": [
+    -45.0,
+    7.0,
+    0.223
+   ],
+   "three": [
+    -45.0,
+    0.223,
+    -7.0
+   ]
+  },
+  "W2": {
+   "blender": [
+    -39.0,
+    20.0,
+    0.51
+   ],
+   "three": [
+    -39.0,
+    0.51,
+    -20.0
+   ]
+  },
+  "W2B": {
+   "blender": [
+    -33.6,
+    44.0,
+    7.191
+   ],
+   "three": [
+    -33.6,
+    7.191,
+    -44.0
+   ]
+  },
+  "W2C": {
+   "blender": [
+    -27.2,
+    27.2,
+    15.678
+   ],
+   "three": [
+    -27.2,
+    15.678,
+    -27.2
+   ]
+  },
+  "W3": {
+   "blender": [
+    -22.8,
+    37.2,
+    21.189
+   ],
+   "three": [
+    -22.8,
+    21.189,
+    -37.2
+   ]
+  },
+  "FB_W": {
+   "blender": [
+    -17.2,
+    25.8,
+    21.99
+   ],
+   "three": [
+    -17.2,
+    21.99,
+    -25.8
+   ]
+  },
+  "FB_E": {
+   "blender": [
+    -9.8,
+    24.0,
+    21.99
+   ],
+   "three": [
+    -9.8,
+    21.99,
+    -24.0
+   ]
+  },
+  "J5": {
+   "blender": [
+    19.2,
+    28.4,
+    22.843
+   ],
+   "three": [
+    19.2,
+    22.843,
+    -28.4
+   ]
+  },
+  "STATION": {
+   "blender": [
+    21.288,
+    21.108,
+    22.053
+   ],
+   "three": [
+    21.288,
+    22.053,
+    -21.108
+   ]
+  },
+  "E1": {
+   "blender": [
+    44.0,
+    -80.0,
+    0.234
+   ],
+   "three": [
+    44.0,
+    0.234,
+    80.0
+   ]
+  },
+  "EAST_HEAD": {
+   "blender": [
+    94.797,
+    -63.813,
+    0.86
+   ],
+   "three": [
+    94.797,
+    0.86,
+    63.813
+   ]
+  },
+  "CENTRE_LINK": {
+   "blender": [
+    141.748,
+    -73.793,
+    1.36
+   ],
+   "three": [
+    141.748,
+    1.36,
+    73.793
+   ]
+  }
+ },
+ "path_edges": [
+  [
+   "ENTRY",
+   "J1",
+   "trail"
+  ],
+  [
+   "J1",
+   "T1",
+   "trail"
+  ],
+  [
+   "T1",
+   "T2",
+   "trail"
+  ],
+  [
+   "T2",
+   "T3",
+   "trail"
+  ],
+  [
+   "T3",
+   "J2",
+   "trail"
+  ],
+  [
+   "J2",
+   "S1",
+   "trail"
+  ],
+  [
+   "S1",
+   "S2",
+   "switchback"
+  ],
+  [
+   "S2",
+   "S3",
+   "switchback"
+  ],
+  [
+   "S3",
+   "S4",
+   "switchback"
+  ],
+  [
+   "S4",
+   "S5",
+   "switchback"
+  ],
+  [
+   "S5",
+   "TARN_VIEW",
+   "trail"
+  ],
+  [
+   "J3",
+   "STAIR_TOP",
+   "stair"
+  ],
+  [
+   "STAIR_TOP",
+   "DOOR",
+   "terrace"
+  ],
+  [
+   "J3",
+   "TARN_SHORE",
+   "spur"
+  ],
+  [
+   "J1",
+   "L1",
+   "lakeshore"
+  ],
+  [
+   "L1",
+   "L2",
+   "lakeshore"
+  ],
+  [
+   "L2",
+   "BRIDGE",
+   "lakeshore"
+  ],
+  [
+   "BRIDGE",
+   "L3",
+   "lakeshore"
+  ],
+  [
+   "L3",
+   "J4",
+   "lakeshore"
+  ],
+  [
+   "J4",
+   "DOCK",
+   "dock path"
+  ],
+  [
+   "TARN_VIEW",
+   "J5",
+   "trail"
+  ],
+  [
+   "J5",
+   "J3",
+   "trail"
+  ],
+  [
+   "J5",
+   "STATION",
+   "spur"
+  ],
+  [
+   "J4",
+   "W1",
+   "lakeshore"
+  ],
+  [
+   "W1",
+   "W2",
+   "lakeshore"
+  ],
+  [
+   "W2",
+   "W2B",
+   "climb"
+  ],
+  [
+   "W2B",
+   "W2C",
+   "climb"
+  ],
+  [
+   "W2C",
+   "W3",
+   "climb"
+  ],
+  [
+   "W3",
+   "FB_W",
+   "spur"
+  ],
+  [
+   "FB_W",
+   "FB_E",
+   "footbridge"
+  ],
+  [
+   "FB_E",
+   "TARN_SHORE",
+   "spur"
+  ],
+  [
+   "ENTRY",
+   "E1",
+   "trail"
+  ],
+  [
+   "E1",
+   "EAST_HEAD",
+   "trail"
+  ],
+  [
+   "EAST_HEAD",
+   "CENTRE_LINK",
+   "arch bridge"
+  ]
+ ],
+ "trail_markers": [
+  {
+   "id": "marker_J2",
+   "kind": "junction signpost (finger sign + orange band)",
+   "at_node": "J2",
+   "blender": [
+    53.2,
+    39.4,
+    -0.128
+   ],
+   "three": [
+    53.2,
+    -0.128,
+    -39.4
+   ]
+  },
+  {
+   "id": "marker_J3",
+   "kind": "junction signpost (finger sign + orange band)",
+   "at_node": "J3",
+   "blender": [
+    5.2,
+    18.6,
+    22.986
+   ],
+   "three": [
+    5.2,
+    22.986,
+    -18.6
+   ]
+  },
+  {
+   "id": "marker_J4",
+   "kind": "junction signpost (finger sign + orange band)",
+   "at_node": "J4",
+   "blender": [
+    -44.0,
+    -21.4,
+    0.491
+   ],
+   "three": [
+    -44.0,
+    0.491,
+    21.4
+   ]
+  },
+  {
+   "id": "totem_0",
+   "kind": "carved totem + orange band + trail sign (target-frame post)",
+   "blender": [
+    17.127,
+    -41.575,
+    -0.07
+   ],
+   "three": [
+    17.127,
+    -0.07,
+    41.575
+   ]
+  },
+  {
+   "id": "totem_1",
+   "kind": "carved totem + orange band + trail sign (target-frame post)",
+   "blender": [
+    47.919,
+    -31.248,
+    1.082
+   ],
+   "three": [
+    47.919,
+    1.082,
+    31.248
+   ]
+  }
+ ],
+ "interactables": {
+  "lookout": {
+   "role": "OUT THERE content panel (the dome-top lookout = the island's content hook; open the Out there section on click / on entering)",
+   "centre": {
+    "blender": [
+     3.2,
+     -0.903,
+     33.505
+    ],
+    "three": [
+     3.2,
+     33.505,
+     0.903
+    ]
+   },
+   "bbox_blender": [
+    [
+     -6.39,
+     -7.97,
+     27.94
+    ],
+    [
+     12.79,
+     6.16,
+     39.07
+    ]
+   ],
+   "door": {
+    "blender": [
+     3.2,
+     4.68,
+     28.6
+    ],
+    "three": [
+     3.2,
+     28.6,
+     -4.68
+    ]
+   },
+   "meshes": [
+    "lookout_vc",
+    "lookout_glass",
+    "lookout_metal",
+    "lookout_glow"
+   ],
+   "light": "lookout_warm"
+  },
+  "dock": {
+   "role": "lake dock (rowboats; optional 'row out' / photo spot)",
+   "node": "DOCK",
+   "blender": [
+    -37.0,
+    -16.4,
+    1.2
+   ],
+   "three": [
+    -37.0,
+    1.2,
+    16.4
+   ]
+  },
+  "cable_station": {
+   "role": "Hill Line cable car station -> link to next island",
+   "node": "STATION",
+   "blender": [
+    21.288,
+    21.108,
+    22.053
+   ],
+   "three": [
+    21.288,
+    22.053,
+    -21.108
+   ]
+  },
+  "trailhead": {
+   "role": "trail entry from the L2 footbridge (spawn point)",
+   "node": "ENTRY",
+   "blender": [
+    14.0,
+    -68.6,
+    0.193
+   ],
+   "three": [
+    14.0,
+    0.193,
+    68.6
+   ]
+  },
+  "tarn_view": {
+   "role": "upper tarn viewpoint",
+   "node": "TARN_VIEW",
+   "blender": [
+    16.4,
+    30.0,
+    22.732
+   ],
+   "three": [
+    16.4,
+    22.732,
+    -30.0
+   ]
+  },
+  "bridge": {
+   "role": "plank bridge over the lake outflow",
+   "node": "BRIDGE",
+   "blender": [
+    -40.6,
+    -42.0,
+    0.74
+   ],
+   "three": [
+    -40.6,
+    0.74,
+    42.0
+   ]
+  },
+  "east_head": {
+   "role": "arched bridge headland",
+   "node": "EAST_HEAD",
+   "blender": [
+    94.797,
+    -63.813,
+    0.86
+   ],
+   "three": [
+    94.797,
+    0.86,
+    63.813
+   ]
+  },
+  "stair_top": {
+   "role": "crown stair top / lookout porch",
+   "node": "STAIR_TOP",
+   "blender": [
+    3.2,
+    8.8,
+    28.51
+   ],
+   "three": [
+    3.2,
+    28.51,
+    -8.8
+   ]
+  },
+  "waterfall": {
+   "role": "waterfall (sound source / ambient)",
+   "top": {
+    "blender": [
+     -0.656,
+     -14.104,
+     20.0
+    ],
+    "three": [
+     -0.656,
+     20.0,
+     14.104
+    ]
+   },
+   "base": {
+    "blender": [
+     -0.656,
+     -14.104,
+     0.4
+    ],
+    "three": [
+     -0.656,
+     0.4,
+     14.104
+    ]
+   }
+  }
+ },
+ "animals": {
+  "bird_perched_0": {
+   "clips": [
+    "bird_perched_0_peck"
+   ],
+   "blender": [
+    53.2,
+    39.4,
+    1.967
+   ],
+   "three": [
+    53.2,
+    1.967,
+    -39.4
+   ]
+  },
+  "bird_perched_1": {
+   "clips": [
+    "bird_perched_1_peck"
+   ],
+   "blender": [
+    -44.0,
+    -21.4,
+    1.95
+   ],
+   "three": [
+    -44.0,
+    1.95,
+    21.4
+   ]
+  },
+  "bird_perched_2": {
+   "clips": [
+    "bird_perched_2_peck"
+   ],
+   "blender": [
+    -14.944,
+    -14.884,
+    4.089
+   ],
+   "three": [
+    -14.944,
+    4.089,
+    14.884
+   ]
+  },
+  "bird_perched_3": {
+   "clips": [
+    "bird_perched_3_peck"
+   ],
+   "blender": [
+    1.21,
+    -11.666,
+    20.965
+   ],
+   "three": [
+    1.21,
+    20.965,
+    11.666
+   ]
+  },
+  "bird_perched_4": {
+   "clips": [
+    "bird_perched_4_peck"
+   ],
+   "blender": [
+    4.091,
+    -18.583,
+    2.513
+   ],
+   "three": [
+    4.091,
+    2.513,
+    18.583
+   ]
+  },
+  "bird_perched_5": {
+   "clips": [
+    "bird_perched_5_peck"
+   ],
+   "blender": [
+    -9.707,
+    -15.293,
+    1.031
+   ],
+   "three": [
+    -9.707,
+    1.031,
+    15.293
+   ]
+  },
+  "deer_0": {
+   "clips": [
+    "deer_0_graze"
+   ],
+   "blender": [
+    -14.0,
+    27.8,
+    20.599
+   ],
+   "three": [
+    -14.0,
+    20.599,
+    -27.8
+   ]
+  },
+  "gull_0_orbit": {
+   "clips": [
+    "gull_0_circle",
+    "gull_0_flapL",
+    "gull_0_flapR"
+   ],
+   "blender": [
+    -14.876,
+    -27.142,
+    34.0
+   ],
+   "three": [
+    -14.876,
+    34.0,
+    27.142
+   ]
+  },
+  "gull_1_orbit": {
+   "clips": [
+    "gull_1_circle",
+    "gull_1_flapL",
+    "gull_1_flapR"
+   ],
+   "blender": [
+    -4.876,
+    -33.142,
+    40.0
+   ],
+   "three": [
+    -4.876,
+    40.0,
+    33.142
+   ]
+  },
+  "gull_2_orbit": {
+   "clips": [
+    "gull_2_circle",
+    "gull_2_flapL",
+    "gull_2_flapR"
+   ],
+   "blender": [
+    8.0,
+    -36.0,
+    30.0
+   ],
+   "three": [
+    8.0,
+    30.0,
+    36.0
+   ]
+  },
+  "rabbit_0": {
+   "clips": [
+    "rabbit_0_hop"
+   ],
+   "blender": [
+    15.694,
+    -49.823,
+    -0.133
+   ],
+   "three": [
+    15.694,
+    -0.133,
+    49.823
+   ]
+  },
+  "rabbit_1": {
+   "clips": [
+    "rabbit_1_hop"
+   ],
+   "blender": [
+    19.315,
+    -53.41,
+    -0.007
+   ],
+   "three": [
+    19.315,
+    -0.007,
+    53.41
+   ]
+  },
+  "rabbit_2": {
+   "clips": [
+    "rabbit_2_hop"
+   ],
+   "blender": [
+    2.779,
+    -44.932,
+    0.08
+   ],
+   "three": [
+    2.779,
+    0.08,
+    44.932
+   ]
+  },
+  "rabbit_3": {
+   "clips": [
+    "rabbit_3_hop"
+   ],
+   "blender": [
+    0.621,
+    26.879,
+    18.71
+   ],
+   "three": [
+    0.621,
+    18.71,
+    -26.879
+   ]
+  },
+  "rabbit_4": {
+   "clips": [
+    "rabbit_4_hop"
+   ],
+   "blender": [
+    99.961,
+    -57.918,
+    0.35
+   ],
+   "three": [
+    99.961,
+    0.35,
+    57.918
+   ]
+  },
+  "rabbit_5": {
+   "clips": [
+    "rabbit_5_hop"
+   ],
+   "blender": [
+    9.929,
+    23.564,
+    22.785
+   ],
+   "three": [
+    9.929,
+    22.785,
+    -23.564
+   ]
+  }
+ },
+ "camera_presets": {}
+}

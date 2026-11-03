@@ -1,10 +1,12 @@
+import PersonalSignature from "./PersonalSignature";
+
 // One header for every reading page. Rooms change its materials, not its shape.
 export default function SiteHeader({ place, worldHref = "/", children }) {
   return (
     <header className="site-header">
       <div className="site-header-inner">
         <a className="site-mark" href="/" aria-label="Sri — enter the world">
-          sri.
+          <PersonalSignature />
         </a>
         {place && (
           <span className="site-place">

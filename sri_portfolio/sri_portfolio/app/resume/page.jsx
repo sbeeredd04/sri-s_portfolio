@@ -7,7 +7,7 @@ import "./resume.css";
 export const metadata = pageMetadata({
   title: "Résumé — Sri Ujjwal Reddy",
   description:
-    "Founding Engineer at Offseason. Experience, projects, hackathons and the toolkit behind them.",
+    "Founding Engineer at Offseason · AI Engineering. Experience, projects, hackathons and the toolkit behind them.",
   path: "/resume",
 });
 export default function ResumePage() {
@@ -21,7 +21,7 @@ export default function ResumePage() {
           <p className="eyebrow">ENGINEERING · PRODUCT · DESIGN</p>
           <h1>Sri Ujjwal Reddy</h1>
           <p className="resume-intro">
-            Founding Engineer at Offseason.
+            Founding Engineer at Offseason · AI Engineering.
             <br />I build useful things and care about how they feel.
           </p>
           <div className="resume-contact">

@@ -5,18 +5,15 @@ import * as THREE from "three";
 import { Boxes } from "./ScenePrimitives";
 import ModelInstances from "./ModelInstances";
 import { useQuality } from "./Quality";
-import { roundedBox } from "../../lib/model-geometry.mjs";
-import { renderedSurfaceHeight } from "../../lib/terrain-geometry.mjs";
+import { fieldnotesCoastGroundY } from "../../lib/fieldnotes-coast-site.mjs";
 import {
   LANTERN_HEIGHT,
-  hedges,
   lanternPosts,
   lanterns,
   lookout,
   newsstand,
   paperPlanes,
   planePose,
-  trees,
 } from "../../lib/fieldnotes-quarter.mjs";
 import {
   fieldnoteShelves,
@@ -24,8 +21,9 @@ import {
 } from "../../lib/fieldnotes.mjs";
 import { discover } from "../../lib/discoveries.mjs";
 import Signpost from "./Signpost";
+import LookoutVista from "./LookoutVista";
 
-const ground = (x, z) => renderedSurfaceHeight("future", x, z);
+const ground = () => fieldnotesCoastGroundY;
 
 function canvasTexture(width, height, draw) {
   const c = document.createElement("canvas");
@@ -153,7 +151,7 @@ function Newsstand({ onOpen }) {
   );
   return (
     <group
-      position={[x, ground(x, z), z]}
+      position={[x, fieldnotesCoastGroundY, z]}
       rotation={[0, yaw, 0]}
       onClick={(e) => {
         e.stopPropagation();
@@ -207,7 +205,7 @@ function Lanterns({ night }) {
       );
     });
     posts.forEach(([x, z], i) => {
-      o.position.set(x, ground(x, z) + LANTERN_HEIGHT / 2, z);
+      o.position.set(x, fieldnotesCoastGroundY + LANTERN_HEIGHT / 2, z);
       o.updateMatrix();
       postRef.current.setMatrixAt(i, o.matrix);
     });
@@ -244,38 +242,6 @@ function Lanterns({ night }) {
   );
 }
 
-function Hedges() {
-  const pieces = useMemo(hedges, []);
-  const geometry = useMemo(() => roundedBox([2.1, 0.9, 0.8], 0.16), []);
-  useEffect(() => () => geometry.dispose(), [geometry]);
-  const ref = useRef();
-  useEffect(() => {
-    const o = new THREE.Object3D(),
-      c = new THREE.Color();
-    pieces.forEach((p, i) => {
-      o.position.set(p.x, ground(p.x, p.z) + 0.42, p.z);
-      o.rotation.set(0, p.yaw, 0);
-      o.scale.set(1, 0.9 + (i % 4) * 0.06, 1);
-      o.updateMatrix();
-      ref.current.setMatrixAt(i, o.matrix);
-      ref.current.setColorAt(i, c.set(i % 3 ? "#3f5a33" : "#476438"));
-    });
-    ref.current.instanceMatrix.needsUpdate = true;
-    ref.current.instanceColor.needsUpdate = true;
-    ref.current.computeBoundingSphere();
-  }, [pieces]);
-  return (
-    <instancedMesh
-      ref={ref}
-      args={[geometry, undefined, pieces.length]}
-      castShadow
-      receiveShadow
-    >
-      <meshStandardMaterial roughness={0.95} />
-    </instancedMesh>
-  );
-}
-
 function Lookout({ night }) {
   const wall = useMemo(
     () => [
@@ -291,7 +257,7 @@ function Lookout({ night }) {
   const bench = useMemo(
     () => [
       {
-        position: [0, ground(0, lookout.bench), lookout.bench],
+        position: [0, fieldnotesCoastGroundY, lookout.bench],
         rotation: 0,
         scale: 1,
       },
@@ -301,7 +267,7 @@ function Lookout({ night }) {
   const lamp = useMemo(
     () => [
       {
-        position: [-2.4, ground(-2.4, lookout.bench), lookout.bench],
+        position: [-2.4, fieldnotesCoastGroundY, lookout.bench],
         rotation: 0,
         scale: 0.85,
       },
@@ -318,7 +284,7 @@ function Lookout({ night }) {
   );
   return (
     <group>
-      <group position={[lookout.x, ground(lookout.x, lookout.z), lookout.z]}>
+      <group position={[lookout.x, fieldnotesCoastGroundY, lookout.z]}>
         <Boxes items={wall} color="#b9aa91" roughness={0.92} />
       </group>
       <Suspense fallback={null}>
@@ -402,24 +368,14 @@ export default function FieldnotesQuarter({
   animate,
   onOpenWriting,
 }) {
-  const treeItems = useMemo(
-    () =>
-      trees.map((t) => ({
-        position: [t.x, ground(t.x, t.z) - 0.1, t.z],
-        rotation: t.turn,
-        scale: 0.21 * t.s,
-      })),
-    [],
-  );
   return (
     <group>
       <Newsstand onOpen={onOpenWriting} />
       <Signpost biome="future" ground={ground} />
       <Lanterns night={night} />
-      <Hedges />
       <Lookout night={night} />
       <Suspense fallback={null}>
-        <ModelInstances src="/models/tree-broadleaf.glb" items={treeItems} />
+        <LookoutVista night={night} />
       </Suspense>
       {detailed && <PaperPlanes animate={animate} />}
     </group>

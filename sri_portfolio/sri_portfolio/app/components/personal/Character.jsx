@@ -1,6 +1,6 @@
 "use client";
 import { discover } from "../../lib/discoveries.mjs";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { Box, Rod } from "./ScenePrimitives";
@@ -29,15 +29,6 @@ export default function Character({
     leftEye = useRef(),
     rightEye = useRef();
   const wave = useRef(-100);
-  useEffect(
-    () => () => {
-      if (interactive) {
-        document.body.style.cursor = "";
-        onHover?.("");
-      }
-    },
-    [interactive, onHover],
-  );
   const elapsed = useRef(phase),
     idlePose = useRef({}),
     pose = externalPose ?? idlePose;
@@ -90,16 +81,14 @@ export default function Character({
         wave.current = elapsed.current;
         discover("hello-world");
       }}
-      onPointerOver={(e) => {
+      onPointerMove={(e) => {
         if (!interactive || !animate) return;
         e.stopPropagation();
-        document.body.style.cursor = "pointer";
-        onHover?.("Say hi to Sri");
+        onHover?.("Say hi to Sri", e);
       }}
-      onPointerOut={() => {
+      onPointerOut={(e) => {
         if (interactive) {
-          document.body.style.cursor = "";
-          onHover?.("");
+          onHover?.("", e);
         }
       }}
     >

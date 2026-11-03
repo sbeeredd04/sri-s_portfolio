@@ -74,11 +74,11 @@ export default function DeskTablet({ onOpen, onHover }) {
         e.stopPropagation();
         onOpen?.();
       }}
-      onPointerOver={(e) => {
+      onPointerMove={(e) => {
         e.stopPropagation();
-        onHover?.("Open the writing room");
+        onHover?.("Open the writing room", e);
       }}
-      onPointerOut={() => onHover?.("")}
+      onPointerOut={(e) => onHover?.("", e)}
     >
       <Box
         position={[0, 0.004, 0]}

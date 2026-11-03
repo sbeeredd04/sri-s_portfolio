@@ -1,10 +1,13 @@
 import {
-  glassCues,
+  interactionCues,
   soundMix,
   soundPlaces,
   sensoryPreferences,
 } from "./sensory-design.mjs";
+import { playMorph } from "./morph-sound.mjs";
 import { voices } from "./sound-voices.mjs";
+import { StreamingScore } from "./streaming-score.mjs";
+import { playEntranceSound } from "./entrance-sound.mjs";
 
 function soften(parameter, value, now, time = 0.65) {
   if (parameter.cancelAndHoldAtTime) parameter.cancelAndHoldAtTime(now);
@@ -29,6 +32,8 @@ export class SoundEngine {
       music = false,
       weather = null,
       onError = () => {},
+      onDispose = () => {},
+      createAudio,
     },
   ) {
     this.context = context;
@@ -37,15 +42,22 @@ export class SoundEngine {
     this.focus = { reading, music };
     this.weatherState = weather;
     this.onError = onError;
+    this.onDispose = onDispose;
     this.disposed = false;
     this.hidden = false;
     this.loaded = new Map();
     this.loops = new Map();
     this.nodes = new Set();
+    this.cancelMorph = null;
+    this.cancelIntroduction = null;
+    this.introActive = false;
     this.abort = new AbortController();
     this.lastCue = -Infinity;
+    this.lastMicroCue = -Infinity;
     this.master = context.createGain();
-    this.master.gain.value = 0;
+    // Synthesised interaction feedback must not wait for streamed ambience.
+    const initialMix = soundMix(place, this.preferences, this.focus);
+    this.master.gain.value = initialMix.master;
     const limiter = context.createDynamicsCompressor();
     limiter.threshold.value = -8;
     limiter.knee.value = 6;
@@ -53,8 +65,39 @@ export class SoundEngine {
     limiter.attack.value = 0.005;
     limiter.release.value = 0.18;
     this.master.connect(limiter).connect(context.destination);
+    this.score = new StreamingScore(context, this.master, createAudio);
     this.effects = context.createGain();
-    this.effects.connect(this.master);
+    this.effects.gain.value = initialMix.effects;
+    // Shape and compress only interaction sounds; music keeps its own dynamics.
+    const effectsHighpass = context.createBiquadFilter();
+    effectsHighpass.type = "highpass";
+    effectsHighpass.frequency.value = 45;
+    effectsHighpass.Q.value = 0.5;
+    const effectsLowpass = context.createBiquadFilter();
+    effectsLowpass.type = "lowpass";
+    effectsLowpass.frequency.value = 1800;
+    effectsLowpass.Q.value = 0.5;
+    this.effectsCompressor = context.createDynamicsCompressor();
+    this.effectsCompressor.threshold.value = -20;
+    this.effectsCompressor.knee.value = 18;
+    this.effectsCompressor.ratio.value = 3;
+    this.effectsCompressor.attack.value = 0.012;
+    this.effectsCompressor.release.value = 0.22;
+    // Web Audio compression applies automatic makeup gain; compensate before
+    // the shared mix so a softer envelope does not become a louder button.
+    const effectsOutput = context.createGain();
+    effectsOutput.gain.value = 0.35;
+    this.effects
+      .connect(effectsHighpass)
+      .connect(effectsLowpass)
+      .connect(this.effectsCompressor)
+      .connect(effectsOutput)
+      .connect(this.master);
+    this.introBus = context.createGain();
+    this.introBus.gain.value = this.preferences.music
+      ? this.preferences.musicLevel
+      : 0;
+    this.introBus.connect(this.master);
     this.weather = context.createGain();
     this.weather.gain.value = 0;
     this.weather.connect(this.master);
@@ -76,7 +119,7 @@ export class SoundEngine {
       wet = context.createGain();
     const impulse = context.createBuffer(
       2,
-      Math.floor(context.sampleRate * 0.65),
+      Math.floor(context.sampleRate * 0.55),
       context.sampleRate,
     );
     let seed = 4561;
@@ -90,8 +133,16 @@ export class SoundEngine {
       }
     }
     room.buffer = impulse;
+    const tailFilter = context.createBiquadFilter();
+    tailFilter.type = "lowpass";
+    tailFilter.frequency.value = 900;
+    tailFilter.Q.value = 0.5;
     wet.gain.value = 0.12;
-    this.effects.connect(room).connect(wet).connect(this.master);
+    effectsOutput
+      .connect(room)
+      .connect(tailFilter)
+      .connect(wet)
+      .connect(this.master);
     this.noise = context.createBuffer(
       1,
       context.sampleRate,
@@ -106,6 +157,12 @@ export class SoundEngine {
       this.master,
       limiter,
       this.effects,
+      effectsHighpass,
+      effectsLowpass,
+      this.effectsCompressor,
+      effectsOutput,
+      tailFilter,
+      this.introBus,
       this.weather,
       this.city,
       this.hall,
@@ -129,6 +186,7 @@ export class SoundEngine {
   }
 
   async loop(name) {
+    if (this.loops.has(name)) return;
     if (this.loaded.has(name)) return this.loaded.get(name);
     const pending = (async () => {
       const response = await fetch(`/audio/${name}.mp3`, {
@@ -136,19 +194,24 @@ export class SoundEngine {
       });
       if (!response.ok) throw new Error("The atmosphere could not load.");
       const data = await response.arrayBuffer();
-      if (this.disposed) return;
+      if (this.disposed || !this.requiredBeds().has(name)) return;
       const buffer = await this.context.decodeAudioData(data);
-      if (this.disposed) return;
+      if (this.disposed || !this.requiredBeds().has(name)) return;
       const source = this.context.createBufferSource(),
         gain = this.context.createGain();
       source.buffer = buffer;
       source.loop = true;
       gain.gain.value = 0;
-      source.connect(gain).connect(this.master);
-      this.loops.set(name, { source, gain });
+      const warmth = this.context.createBiquadFilter();
+      warmth.type = "lowshelf";
+      warmth.frequency.value = 180;
+      warmth.gain.value = 2.5;
+      source.connect(warmth).connect(gain).connect(this.master);
+      this.loops.set(name, { source, gain, warmth });
       source.start();
       this.mix();
     })();
+    pending.finally(() => this.loaded.delete(name)).catch(() => {});
     this.loaded.set(name, pending);
     return pending;
   }
@@ -159,15 +222,39 @@ export class SoundEngine {
     return rain > 0.05 ? Math.min(1, 0.35 + rain) : 0;
   }
 
-  async prepare() {
+  requiredBeds() {
+    if (!this.preferences.environmentLevel) return new Set();
     const profile = soundPlaces[this.place] || soundPlaces.planet;
-    await Promise.all([
-      this.loop(profile.bed),
-      this.rainLevel() ? this.loop(RAIN_BED) : Promise.resolve(),
-      this.preferences.music
-        ? this.loop(profile.track || "somewhere-soft")
-        : Promise.resolve(),
-    ]);
+    return new Set([profile.bed, ...(this.rainLevel() ? [RAIN_BED] : [])]);
+  }
+
+  activate() {
+    this.mix();
+    return this.score.play();
+  }
+
+  async prepare() {
+    if (this.disposed) return;
+    this.mix();
+    const required = this.requiredBeds();
+    // Old destinations used to run forever at zero gain and retain every PCM
+    // buffer. Release them after a short fade; never accumulate visited rooms.
+    for (const [name, loop] of this.loops) {
+      if (required.has(name)) continue;
+      this.loops.delete(name);
+      soften(loop.gain.gain, 0, this.context.currentTime, 0.04);
+      setTimeout(() => {
+        try {
+          loop.source.stop();
+        } catch {}
+        loop.source.disconnect();
+        loop.gain.disconnect();
+        loop.warmth.disconnect();
+        loop.source.buffer = null;
+      }, 180);
+    }
+    this.score.play().catch(() => {});
+    await Promise.allSettled([...required].map((name) => this.loop(name)));
     if (!this.disposed) this.mix();
   }
 
@@ -183,6 +270,8 @@ export class SoundEngine {
     this.weatherState = weather;
     this.preferences = sensoryPreferences(preferences);
     this.focus = { reading, music };
+    if (!this.preferences.enabled || !this.preferences.effects)
+      this.cancelMorph?.();
     this.mix();
     this.prepare().catch((error) => {
       if (!this.disposed) this.onError(error);
@@ -195,9 +284,24 @@ export class SoundEngine {
     const levels = soundMix(this.place, this.preferences, this.focus);
     const profile = soundPlaces[this.place] || soundPlaces.planet;
     const bed = profile.bed;
-    const score = profile.track || "somewhere-soft";
+    this.score.select(
+      profile.track || "somewhere-soft",
+      Boolean(levels.score && !this.hidden),
+    );
+    soften(
+      this.score.gain.gain,
+      levels.score * (this.introActive ? 0.12 : 1),
+      now,
+      0.4,
+    );
     soften(this.master.gain, this.hidden ? 0 : levels.master, now, 0.15);
     soften(this.effects.gain, levels.effects, now, 0.06);
+    soften(
+      this.introBus.gain,
+      this.preferences.music ? this.preferences.musicLevel : 0,
+      now,
+      0.025,
+    );
     // Even an already-rumbling storm follows departure and reading/music focus.
     soften(
       this.weather.gain,
@@ -222,13 +326,11 @@ export class SoundEngine {
     for (const [name, { gain }] of this.loops)
       soften(
         gain.gain,
-        name === score
-          ? levels.score
-          : name === bed
-            ? Math.max(levels.environment, name === RAIN_BED ? rain * 0.5 : 0)
-            : name === RAIN_BED
-              ? (levels.environment / (profile.level || 0.3)) * rain * 0.45
-              : 0,
+        name === bed
+          ? Math.max(levels.environment, name === RAIN_BED ? rain * 0.5 : 0)
+          : name === RAIN_BED
+            ? (levels.environment / (profile.level || 0.3)) * rain * 0.45
+            : 0,
         now,
       );
   }
@@ -239,6 +341,19 @@ export class SoundEngine {
       this.nodes.delete(source);
       for (const node of nodes) node.disconnect();
     };
+  }
+
+  introduction({ playing, position = 0 }) {
+    // Let the resolved phrase ring into the world score. Replay/Skip use a
+    // shorter release; neither hard-cuts the low waveform at a visual boundary.
+    this.cancelIntroduction?.(position >= 5900 ? 1.8 : 0.18);
+    this.cancelIntroduction = null;
+    this.introActive = Boolean(
+      playing && !this.disposed && this.preferences.enabled,
+    );
+    if (this.introActive)
+      this.cancelIntroduction = playEntranceSound(this, position);
+    this.mix();
   }
 
   noiseCue(
@@ -262,7 +377,7 @@ export class SoundEngine {
     gain.gain.linearRampToValueAtTime(level, now + attack);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     source.connect(filter).connect(gain).connect(destination);
-    source.start();
+    source.start(now);
     source.stop(now + duration + 0.02);
     this.track(source, [source, filter, gain]);
   }
@@ -276,6 +391,7 @@ export class SoundEngine {
       this.disposed ||
       context.state !== "running" ||
       this.focus.music ||
+      !this.preferences.enabled ||
       !this.preferences.effects
     )
       return;
@@ -299,18 +415,39 @@ export class SoundEngine {
     this.nextCityCue = now + 24 + Math.random() * 30;
   }
 
-  cue(kind) {
+  cue(kind, { destination } = {}) {
     const { context } = this;
+    if (["morph", "travel", "cancel-morph"].includes(kind))
+      this.cancelMorph?.();
+    if (kind === "cancel-morph") return;
     if (
       this.disposed ||
       this.hidden ||
       context.state !== "running" ||
+      !this.preferences.enabled ||
       !this.preferences.effects
     )
       return;
     const now = context.currentTime;
-    if (now - this.lastCue < 0.065) return;
-    this.lastCue = now;
+    // Micro feedback cannot swallow the next intentional click. A ceiling also
+    // bounds rapid navigation and release tails on slower devices.
+    const micro = kind === "type" || kind === "hover";
+    if (this.nodes.size > 32) return;
+    if (micro) {
+      if (now - this.lastMicroCue < 0.12 || now - this.lastCue < 0.1) return;
+      this.lastMicroCue = now;
+    } else {
+      if (kind !== "morph" && now - this.lastCue < 0.09) return;
+      this.lastCue = now;
+    }
+    if (kind === "morph") {
+      this.cancelMorph = playMorph(this, destination || this.place);
+      return;
+    }
+    if (["welcome", "travel", "open", "close"].includes(kind)) {
+      this.bodyCue(kind, now);
+      this.noiseCue(kind === "close" ? 280 : 480, 0.34, 0.006, 0.045);
+    }
     if (["swish", "volley-hit", "basket-bounce", "ball-catch"].includes(kind)) {
       this.noiseCue(
         kind === "swish" ? 4200 : kind === "basket-bounce" ? 290 : 850,
@@ -320,23 +457,23 @@ export class SoundEngine {
       if (kind !== "basket-bounce") return;
       kind = "press";
     }
-    const cue = glassCues[kind] || glassCues.press;
+    const cue = interactionCues[kind] || interactionCues.press;
     cue.notes.forEach((hz, i) => {
       const source = context.createOscillator(),
         gain = context.createGain();
-      const start = now + i * cue.spacing;
+      const start = now + 0.006 + i * cue.spacing;
       source.type = "sine";
       const pitch = (soundPlaces[this.place] || soundPlaces.planet).pitch || 1;
       source.frequency.setValueAtTime(hz * pitch, start);
       if (kind === "press")
         source.frequency.exponentialRampToValueAtTime(
-          130 * pitch,
+          hz * pitch * 0.94,
           start + cue.duration,
         );
       gain.gain.setValueAtTime(0, start);
       gain.gain.linearRampToValueAtTime(
-        cue.gain / (1 + i * 0.3),
-        start + 0.009,
+        cue.gain * (cue.weights?.[i] ?? 1 / (1 + i * 0.5)),
+        start + cue.attack,
       );
       gain.gain.exponentialRampToValueAtTime(0.0001, start + cue.duration);
       source.connect(gain).connect(this.effects);
@@ -346,18 +483,46 @@ export class SoundEngine {
     });
   }
 
+  bodyCue(kind, now) {
+    const duration = kind === "welcome" ? 1.35 : kind === "travel" ? 0.8 : 0.38;
+    // A mono low fundamental with an audible octave, so phone speakers retain
+    // some body. Both follow the effects mixer and the existing master limiter.
+    [36.71, 73.42, 146.83].forEach((hz, i) => {
+      const source = this.context.createOscillator();
+      const gain = this.context.createGain();
+      source.type = "sine";
+      source.frequency.setValueAtTime(hz * (kind === "close" ? 0.75 : 1), now);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(
+        [0.07, 0.11, 0.055][i] *
+          (kind === "open" || kind === "close" ? 0.55 : 1),
+        now + 0.035,
+      );
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      source.connect(gain).connect(this.effects);
+      source.start(now);
+      source.stop(now + duration + 0.03);
+      this.track(source, [source, gain]);
+    });
+  }
+
   async setHidden(hidden) {
     if (this.disposed) return;
     this.hidden = hidden;
     clearTimeout(this.suspendTimer);
     if (hidden) {
+      this.cancelMorph?.();
+      this.score.pause();
       soften(this.master.gain, 0, this.context.currentTime, 0.015);
       this.suspendTimer = setTimeout(() => {
         if (this.hidden && !this.disposed)
           this.context.suspend().catch(this.onError);
       }, 90);
     } else {
-      await this.context.resume();
+      const resume = this.context.resume();
+      this.mix();
+      this.score.play().catch(() => {});
+      await resume;
       if (!this.disposed && !this.hidden) this.mix();
     }
   }
@@ -365,28 +530,36 @@ export class SoundEngine {
   destroy(immediate = false) {
     if (this.disposed) return;
     this.disposed = true;
+    this.cancelMorph?.();
+    this.cancelIntroduction?.();
     clearInterval(this.thunder);
     clearInterval(this.cityClock);
     clearTimeout(this.suspendTimer);
     this.abort.abort();
+    this.score.destroy();
     const dispose = () => {
       for (const source of this.nodes) {
         try {
           source.stop();
         } catch {}
       }
-      for (const { source, gain } of this.loops.values()) {
+      for (const { source, gain, warmth } of this.loops.values()) {
         try {
           source.stop();
         } catch {}
         source.disconnect();
         gain.disconnect();
+        warmth.disconnect();
+        source.buffer = null;
       }
       for (const node of this.owned) node.disconnect();
       this.loops.clear();
       this.loaded.clear();
       this.nodes.clear();
-      this.context.close().catch(() => {});
+      this.context
+        .close()
+        .catch(() => {})
+        .finally(this.onDispose);
     };
     if (immediate || this.context.state !== "running") dispose();
     else {

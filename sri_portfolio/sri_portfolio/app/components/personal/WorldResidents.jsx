@@ -254,15 +254,16 @@ export default function WorldResidents({
           ]}
           frustumCulled={false}
           castShadow
-          onPointerOver={(event) => {
+          onPointerMove={(event) => {
             event.stopPropagation();
             onHover?.(
               event.instanceId === people.length - 1
                 ? "Your little wanderer. Tap to say hello."
                 : "A neighbor out for a walk. Tap to say hello.",
+              event,
             );
           }}
-          onPointerOut={() => onHover?.("")}
+          onPointerOut={(e) => onHover?.("", e)}
           onClick={(event) => {
             event.stopPropagation();
             if (!animate || event.delta > 4 || event.instanceId === undefined)

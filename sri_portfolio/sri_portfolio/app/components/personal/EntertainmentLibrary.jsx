@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { useEffect, useState } from "react";
 import MusicCard from "./MusicCard";
 import RemoteVideo from "./RemoteVideo";
@@ -100,7 +101,7 @@ export default function EntertainmentLibrary({
                 alt="Spotify"
               />
               <span>
-                Open Spotify <span aria-hidden="true">↗</span>
+                Open Spotify <UiIcon />
               </span>
             </a>
           </div>
@@ -125,7 +126,7 @@ export default function EntertainmentLibrary({
                 target="_blank"
                 rel="noreferrer"
               >
-                Explore the show <span aria-hidden="true">↗</span>
+                Explore the show <UiIcon />
               </a>
               <button onClick={() => setChannel((channel + 1) % shows.length)}>
                 Next in the rotation <span>→</span>

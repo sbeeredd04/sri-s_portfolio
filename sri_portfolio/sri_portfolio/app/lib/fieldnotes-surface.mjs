@@ -3,6 +3,7 @@ import {
   fieldnotesDeckHeight,
   fieldnotesLookoutZ,
   fieldnotesRoute,
+  fieldnotesPavingStartAt,
 } from "./fieldnotes-layout.mjs";
 
 export function fieldnotesPavingContours() {
@@ -10,8 +11,8 @@ export function fieldnotesPavingContours() {
   const h = r.loopWidth / 2;
   const hs = r.spurWidth / 2;
   const outer = [
-    [-h, r.pavingStart],
-    [h, r.pavingStart],
+    [-h, fieldnotesPavingStartAt(-h)],
+    [h, fieldnotesPavingStartAt(h)],
     [h, r.south - h],
     [r.east + h, r.south - h],
     [r.east + h, r.north + h],

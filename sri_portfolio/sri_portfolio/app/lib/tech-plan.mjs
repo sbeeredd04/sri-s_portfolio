@@ -3,12 +3,7 @@
 // across a plaza from the workshops, a row of tool pylons, palms along a
 // boulevard and a few low glass offices. Everything here is data; the
 // scene reads it.
-import {
-  bowlOuter,
-  seats,
-  stage,
-  venueBounds,
-} from "./amphitheatre.mjs";
+import { bowlOuter, seats, stage, venueBounds } from "./amphitheatre.mjs";
 
 export { stage, venueBounds };
 
@@ -174,16 +169,16 @@ export const techViews = [
     id: "keynote",
     label: "Keynote stage",
     // From the back rows, a little off the aisle, over the crowd's heads.
-    position: [stage.x - 17.1, 7.8, stage.z + 3.4],
-    target: [stage.x + 1, 2.2, stage.z - 0.2],
+    position: [stage.x - 23, 8.4, stage.z + 1],
+    target: [stage.x + 1, 5, stage.z],
     portrait: {
-      position: [stage.x - 15.5, 8, stage.z + 1.6],
-      target: [stage.x + 1, 2.6, stage.z],
-      fov: 74,
+      position: [stage.x - 26, 9, stage.z],
+      target: [stage.x + 1, 5.5, stage.z],
+      fov: 62,
     },
     content: "work",
     prompt: "What I've been making, on the big screen",
-    hint: "A full house under the canopy. Tap the screen to open the project that's up.",
+    hint: "One idea at a time. Choose a slide, then open its full story.",
   },
   {
     id: "tools",
@@ -212,15 +207,5 @@ export const techViews = [
     content: "work",
     prompt: "Every project gets a booth",
     hint: "Walk the row, then open one to see how it was built.",
-  },
-  {
-    id: "valley",
-    label: "The valley",
-    position: [6, 25, 33],
-    target: [33, 0, -1],
-    portrait: { position: [10, 36, 42], target: [34, 0, 0], fov: 64 },
-    content: "work",
-    prompt: "A small valley of things being built",
-    hint: "Workshops, an open-air stage across the plaza, and offices along the palms.",
   },
 ];

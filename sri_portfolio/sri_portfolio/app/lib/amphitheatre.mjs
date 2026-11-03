@@ -167,12 +167,6 @@ export function buildAmphitheatre(frameAt) {
     const box = frameAt(x, z, Math.atan2(Math.cos(a) / 0.62, Math.sin(a)));
     box("stone", i % 2 ? cream : creamShade, [0, wall.height / 2 - 0.4, out], [0.36, wall.height + 0.8, 0.24]);
   }
-  // Side screen housings on slim towers.
-  for (const ss of sideScreens) {
-    const box = frameAt(ss.x, ss.z, ss.yaw);
-    box("paint", black, [0, ss.y, -0.12], [ss.width + 0.3, ss.height + 0.3, 0.2]);
-    box("paint", truss, [0, (ss.y - ss.height / 2) / 2, -0.3], [0.35, ss.y - ss.height / 2, 0.35]);
-  }
   // A lighting truss across the front of the stage, lamps along it.
   const t = frameAt(stage.x - 2.6, stage.z, Math.PI / 2);
   for (const y of [9.1, 9.7])

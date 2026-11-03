@@ -1,0 +1,22 @@
+/* Shared tempo, entrance choreography and editorial reading surfaces. */
+:root {
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-fast: 160ms;
+  --motion-page: 520ms;
+  --type-editorial: var(--font-newsreader), Georgia, serif;
+}
+.site-mark .personal-signature {
+  width: 52px;
+  height: 30px;
+  display: block;
+  color: inherit;
+}
+/* The dark story masthead must not lend its light text to the paper mixer. */
+.fn-article .room-sound-panel {
+  --paper: #f1efe7;
+  --ink: #25302e;
+  --muted: #575f59;
+  --line: #25302e24;
+  --accent: #57706a;
+  color: var(--ink);
+}

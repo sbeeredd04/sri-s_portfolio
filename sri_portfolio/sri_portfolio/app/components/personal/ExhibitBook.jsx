@@ -100,10 +100,12 @@ export default function ExhibitBook({ id, screen, onChange, onHover, wood }) {
               step
                 ? step.label
                 : "Choose a chapter along the bottom of the book.",
+              e,
+              step ? "pointer" : "auto",
             );
           }}
           onPointerOver={(e) => e.stopPropagation()}
-          onPointerOut={() => onHover("")}
+          onPointerOut={(e) => onHover("", e)}
           onClick={(e) => {
             e.stopPropagation();
             const action = exhibitActionAt(id, e.uv);

@@ -5,16 +5,16 @@ import { walkingRoutes, pathPose, pathHalfWidth } from "./world-paths.mjs";
 import { courtPaths } from "./court-layout.mjs";
 import { projectWalks } from "./project-town-layout.mjs";
 import { entertainmentPaths } from "./entertainment-layout.mjs";
-import { overlookSegments, trailCenter } from "./trail-layout.mjs";
-import { overlookDeck, overlookPolyline } from "./valley-layout.mjs";
-import { campusCenter, campusFeet, onCampusPath } from "./campus-layout.mjs";
-import { campusPavingHeight } from "./campus-surface.mjs";
-import { trailFootHeight } from "./trail-surface.mjs";
 import { streetRoutes } from "./street-view.mjs";
 import { cityWalkRuns } from "./sf-streets.mjs";
 import { STREET } from "./sf-plan.mjs";
 import { pavingPlacements, pavingSize } from "./paving-layout.mjs";
-import { APARTMENT_LEVEL } from "./studio-layout.mjs";
+import { APARTMENT_LEVEL, apartmentPoint } from "./studio-layout.mjs";
+import { homeSite } from "./home-site.mjs";
+import { afterHoursLandingWalk } from "./afterhours-landing-walk.mjs";
+import { outThereWalks } from "./out-there-walk-runtime.mjs";
+import { madeCampus } from "./made-campus-data.mjs";
+import { legacyContentLift } from "./authored-island-sites.mjs";
 import {
   fieldnotesFootHeight,
   fieldnotesPaths,
@@ -22,35 +22,26 @@ import {
   fieldnotesWalkEntries,
 } from "./fieldnotes-layout.mjs";
 
-export const WALK_SPEED = 4.2;
+export const WALK_SPEED = 3.0;
 export const WALK_RADIUS = 0.5;
 // Missing short joins, rendered by the same coordinates as navigation. No
 // inferred straight lines through the apartment, sports courts or workshops.
 export const walkingJoins = {
-  studio: [
-    [[-4, 10], [0, 10], 3],
-    [[0, 10], [0, 9], 3],
-    [[0, 10], [5.5, 7], 3],
-  ],
-  projects: [
-    [[0, -16], [2.8, -16], 2],
-    [[2.8, -16], [2.8, -7], 2],
-  ],
+  studio: [],
+  projects: [],
   entertainment: [[[24, 7], [13, 6], 2]],
 };
 function localSegments(world, paths, roof = false) {
   const r = regions.find((r) => r.id === world),
     result = [];
   const stones =
-    roof || world === "trail" || world === "future"
+    roof || world === "trail" || world === "future" || world === "projects"
       ? []
       : pavingPlacements(world, paths);
   const floor = (x, z) => {
     if (roof) return APARTMENT_LEVEL + (z > 5.1 ? 0.004 : 0.144);
     if (world === "future") return fieldnotesFootHeight(x, z);
-    if (world === "trail") return trailFootHeight(x, z);
-    if (world === "projects" && onCampusPath(x, z))
-      return campusPavingHeight() + 0.004;
+    if (world === "projects") return 2.208;
     let height = renderedSurfaceHeight(world, x, z) + 0.031;
     for (const s of stones)
       if (
@@ -65,14 +56,19 @@ function localSegments(world, paths, roof = false) {
     const at = (t) => {
       const x = MathUtils.lerp(a[0], b[0], t),
         z = MathUtils.lerp(a[1], b[1], t);
-      return worldPoint(world, [x, floor(x, z), z]);
+      if (roof) return worldPoint(world, apartmentPoint([x, 0.15, z]));
+      return worldPoint(world, [
+        x,
+        floor(x, z) + (legacyContentLift[world] || 0),
+        z,
+      ]);
     };
     for (let i = 0; i < count; i++)
       result.push({
         a: at(i / count),
         b: at((i + 1) / count),
         up: r.normal.clone(),
-        half: (roof || world === "trail" ? width : width * 0.64) / 2,
+        half: (roof || world === "trail" || world === "projects" ? width : width * 0.64) / 2,
         world,
       });
   }
@@ -87,35 +83,48 @@ export function makeWalkNetwork(roof = false) {
       true,
     );
   }
-  const trail = Array.from({ length: 64 }, (_, i) => {
-    const z = 10 - i * 0.45;
-    return [[trailCenter(z), z], [trailCenter(z - 0.45), z - 0.45], 1.3];
-  });
   const locals = {
     studio: [],
     court: courtPaths,
-    projects: projectWalks,
+    projects: madeCampus.walks,
     entertainment: entertainmentPaths,
-    trail: [
-      [[2, 9], [trailCenter(9), 9], 1.3],
-      ...trail,
-      ...overlookSegments(),
-    ],
+    trail: [],
     future: fieldnotesPaths,
   };
   const network = Object.entries(locals).flatMap(([id, paths]) =>
     localSegments(id, [...paths, ...(walkingJoins[id] || [])]),
   );
+  const trailRegion = regions.find((r) => r.id === "trail");
+  for (const walk of outThereWalks)
+    for (let i = 1; i < walk.points.length; i++) {
+      const a = walk.points[i - 1],
+        b = walk.points[i];
+      network.push({
+        a: worldPoint("trail", [a[0], a[1] + 0.004, a[2]]),
+        b: worldPoint("trail", [b[0], b[1] + 0.004, b[2]]),
+        up: trailRegion.normal.clone(),
+        half: Math.min(a[3], b[3]) + 0.3,
+        world: "trail",
+        authoredPath: walk.id,
+      });
+    }
   const studio = regions.find((r) => r.id === "studio");
-  const cityPoint = ([x, z]) =>
-    worldPoint("studio", [x, renderedSurfaceHeight("studio", x, z) + 0.031, z]);
-  for (const [a, b] of cityWalkRuns())
+  for (const path of homeSite.walks)
+    for (let i = 1; i < path.points.length; i++)
+      network.push({
+        a: worldPoint("studio", path.points[i - 1]),
+        b: worldPoint("studio", path.points[i]),
+        up: studio.normal.clone(),
+        half: path.width / 2,
+        world: "studio",
+      });
+  for (let i = 1; i < afterHoursLandingWalk.points.length; i++)
     network.push({
-      a: cityPoint(a),
-      b: cityPoint(b),
-      up: studio.normal.clone(),
-      half: STREET.road / 2 + STREET.walk - WALK_RADIUS,
-      world: "studio",
+      a: worldPoint("court", afterHoursLandingWalk.points[i - 1]),
+      b: worldPoint("court", afterHoursLandingWalk.points[i]),
+      up: regions.find((r) => r.id === "court").normal.clone(),
+      half: afterHoursLandingWalk.width / 2,
+      world: "court",
     });
   for (const route of walkingRoutes) {
     const count = Math.ceil(route.length / 0.8);
@@ -170,70 +179,57 @@ export function nearestWalk(point, network) {
     : null;
 }
 export function walkStart(world, roof = false, entry) {
+  if (world === "trail" && !roof) {
+    const p = outThereWalks[0].points[0],
+      q = outThereWalks[0].points[1],
+      r = regions.find((r) => r.id === "trail");
+    return {
+      position: worldPoint("trail", [p[0], p[1] + 0.004, p[2]]),
+      velocity: new Vector3(),
+      forward: worldPoint("trail", q.slice(0, 3))
+        .sub(worldPoint("trail", p.slice(0, 3)))
+        .normalize(),
+      up: r.normal.clone(),
+      distance: 0,
+    };
+  }
   const gardenEntry = world === "future" ? fieldnotesWalkEntries[entry] : null;
-  const atOverlook = world === "trail" && entry === "overlook";
-  const campusEntry =
-    world === "projects" && (entry === "campus" || entry === "ring")
-      ? campusFeet()[entry]
-      : null;
   const points = {
-    studio: [-4, 10],
+    studio: [0, 44.3],
     court: [-21, 13],
-    trail: [trailCenter(9), 9],
-    projects: [-2.8, 11.7],
+    projects: [0, 18],
     entertainment: [12.8, 6],
     future: gardenEntry?.point || fieldnotesSpawn,
   };
   const [x, z] = roof
     ? streetRoutes.studio[2].point
-    : atOverlook
-      ? [overlookDeck().x, overlookDeck().z]
-      : campusEntry
-        ? [campusEntry.x, campusEntry.z]
-        : points[world] || points.studio;
-  const position = worldPoint(world, [
-    x,
+    : points[world] || points.studio;
+  const position = worldPoint(
+    world,
     roof
-      ? APARTMENT_LEVEL + 0.15
-      : world === "trail"
-        ? trailFootHeight(x, z)
-        : world === "future"
-          ? fieldnotesFootHeight(x, z)
-          : campusEntry
-            ? campusPavingHeight() + 0.004
-            : renderedSurfaceHeight(world, x, z) + 0.1,
-    z,
-  ]);
+      ? apartmentPoint([x, 0.15, z])
+      : [
+          x,
+          world === "studio"
+            ? 2.613
+            : world === "projects"
+                ? 2.208
+                : world === "future"
+                  ? fieldnotesFootHeight(x, z)
+                  : renderedSurfaceHeight(world, x, z) + 0.1,
+          z,
+        ],
+  );
   const r = regions.find((r) => r.id === world);
+  if (legacyContentLift[world])
+    position.addScaledVector(r.normal, legacyContentLift[world]);
   const forward =
     world === "court"
       ? r.east.clone()
       : world === "future"
         ? r.north.clone()
         : r.north.clone().negate();
-  if (atOverlook) {
-    const prior = overlookPolyline().at(-2);
-    forward
-      .copy(r.east)
-      .multiplyScalar(prior[0] - x)
-      .addScaledVector(r.north, prior[1] - z)
-      .normalize();
-  }
-  if (world === "studio" && !roof)
-    forward.copy(
-      pathPose(
-        walkingRoutes.find((r) => r.to === "trail"),
-        0,
-      ).forward,
-    );
-  if (campusEntry) {
-    const aim = entry === "campus" ? { x: x + 4, z } : campusCenter;
-    forward
-      .copy(r.east)
-      .multiplyScalar(aim.x - x)
-      .addScaledVector(r.north, aim.z - z)
-      .normalize();
-  }
+  if (world === "studio" && !roof) forward.copy(r.east);
   if (gardenEntry) {
     forward
       .copy(r.east)
@@ -249,7 +245,7 @@ export function walkStart(world, roof = false, entry) {
     distance: 0,
   };
 }
-export function advanceWalker(state, desired, delta, network) {
+export function advanceWalker(state, desired, delta, network, speed = WALK_SPEED) {
   const dt = Math.min(Math.max(delta, 0), 0.06),
     steps = Math.max(1, Math.ceil(dt / (1 / 90)));
   let nearest = nearestWalk(state.position, network);
@@ -259,7 +255,7 @@ export function advanceWalker(state, desired, delta, network) {
         .clone()
         .addScaledVector(state.up, -desired.dot(state.up));
     if (target.lengthSq() > 1) target.normalize();
-    target.multiplyScalar(WALK_SPEED);
+    target.multiplyScalar(speed);
     state.velocity.lerp(
       target,
       1 - Math.exp(-h * (target.lengthSq() ? 14 : 20)),

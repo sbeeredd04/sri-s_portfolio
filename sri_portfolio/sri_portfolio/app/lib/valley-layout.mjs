@@ -3,6 +3,17 @@
 // replica and not a record of a visit.
 export const outdoorsLift = 0.035;
 export const lake = { x: -8, z: -3, radius: 6, level: -0.02 };
+// First full-scale redwood style benchmark. The explicit crown envelope is
+// shared by placement and route-clearance review rather than guessed per view.
+export const redwoodBenchmark = {
+  x: -11.5,
+  z: 5.5,
+  scale: 0.88,
+  turn: -0.16,
+  crownRadius: 4.0 * 0.88,
+  rootRadius: 2.5 * 0.88,
+  trailMargin: 2.4,
+};
 // A clearing east of the trail for a small camp; planting keeps out.
 export const campsite = { x: 7.6, z: -8, radius: 3.4 };
 export const trailCenter = (z) => Math.sin(z * 0.14) * 2.2;
@@ -392,6 +403,8 @@ export function inViewpoint(x, z, crown = 0) {
 export function blocksValleyPlanting(x, z, margin = 0) {
   return (
     inGraniteFootprint(x, z, margin) ||
+    Math.hypot(x - redwoodBenchmark.x, z - redwoodBenchmark.z) <
+      redwoodBenchmark.rootRadius + margin ||
     nearValleyWater(x, z, margin) ||
     inOverlookDeck(x, z, margin) ||
     lakeDistance(x, z) < lake.radius + margin ||

@@ -1,4 +1,4 @@
-import { BufferGeometry, Float32BufferAttribute } from "three";
+import { BufferGeometry, Color, Float32BufferAttribute } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import {
   fieldnotesBeds,
@@ -11,6 +11,7 @@ import {
   fieldnotesMaterialNames,
   fieldnotesReturn,
   fieldnotesTable,
+  fieldnotesStudio,
   fieldnotesTerraces,
   fieldnotesWall,
 } from "./fieldnotes-layout.mjs";
@@ -176,36 +177,20 @@ function addCanopy(timber) {
         [0, -1, 0],
       );
     }
-  const fascia = (u0, v0, u1, v1, outward) => {
-    const a = at(u0, v0, 0),
-      b = at(u1, v1, 0);
-    const dx = b[0] - a[0],
-      dz = b[2] - a[2];
-    const len = Math.hypot(dx, dz) || 1;
-    const ox = (-dz / len) * outward * 0.028,
-      oz = (dx / len) * outward * 0.028;
+  // The roof has real closed edge faces; its 20cm section meets the posts.
+  const edge = (u0, v0, u1, v1, outward) =>
     addQuad(
       timber,
-      [a[0], a[1] - 0.08, a[2]],
-      [b[0], b[1] - 0.08, b[2]],
-      [b[0] + ox, b[1] - 0.08, b[2] + oz],
-      [a[0] + ox, a[1] - 0.08, a[2] + oz],
-      [ox, 0, oz],
+      at(u0, v0, 0),
+      at(u1, v1, 0),
+      at(u1, v1, -thickness),
+      at(u0, v0, -thickness),
+      outward,
     );
-    addQuad(
-      timber,
-      [a[0], a[1], a[2]],
-      [b[0], b[1], b[2]],
-      [b[0] + ox, b[1], b[2] + oz],
-      [a[0] + ox, a[1], a[2] + oz],
-      [0, 1, 0],
-    );
-  };
-  for (let i = 0; i < nu; i++) fascia(i / nu, 1, (i + 1) / nu, 1, 1);
-  for (let j = 0; j < nv; j++) {
-    fascia(0, j / nv, 0, (j + 1) / nv, -1);
-    fascia(1, j / nv, 1, (j + 1) / nv, 1);
-  }
+  edge(0, 0, 1, 0, [0, 0, 1]);
+  edge(1, 0, 1, 1, [1, 0, 0]);
+  edge(1, 1, 0, 1, [0, 0, -1]);
+  edge(0, 1, 0, 0, [-1, 0, 0]);
 }
 function addCopperDrip(copper) {
   const { x0, x1, zFront } = fieldnotesCanopy;
@@ -432,6 +417,148 @@ function addGarden(garden, stone) {
   }
 }
 
+function addLibrary(wood, glass, books, charcoal) {
+  const room = fieldnotesStudio;
+  const sill = 0.09,
+    head = 2.96;
+  // Clear glass sits between timber mullions. The west doorway is an actual
+  // opening rather than a transparent collision panel over the walking spur.
+  const pane = (ax, az, bx, bz) => {
+    addQuad(
+      glass,
+      [ax, sill, az],
+      [bx, sill, bz],
+      [bx, head, bz],
+      [ax, head, az],
+      [bz - az, 0, ax - bx],
+    );
+  };
+  const upright = (x, z) =>
+    addBox(wood, x, (head + sill) / 2, z, 0.035, (head - sill) / 2, 0.035);
+  // The writing desk is framed by one clear central pane; mullions sit
+  // beside the library bays instead of bisecting the close reading view.
+  const frontBays = [room.xWest, -3.6, -0.8, room.xEast];
+  for (let i = 0; i < frontBays.length - 1; i++) {
+    const x0 = frontBays[i];
+    const x1 = frontBays[i + 1];
+    pane(x0 + 0.035, room.front, x1 - 0.035, room.front);
+    upright(x0, room.front);
+  }
+  upright(room.xEast, room.front);
+  for (let i = 0; i < 4; i++) {
+    const z0 = room.front + ((room.back - room.front) * i) / 4;
+    const z1 = room.front + ((room.back - room.front) * (i + 1)) / 4;
+    pane(room.xEast, z0 + 0.035, room.xEast, z1 - 0.035);
+    upright(room.xEast, z1);
+  }
+  pane(room.xWest, room.door.z1, room.xWest, 2.3);
+  upright(room.xWest, room.door.z1);
+  // Head/sill rails. No threshold across the west entrance.
+  for (const y of [sill, head]) {
+    addBox(
+      wood,
+      (room.xWest + room.xEast) / 2,
+      y,
+      room.front,
+      (room.xEast - room.xWest) / 2,
+      0.032,
+      0.038,
+    );
+    addBox(
+      wood,
+      room.xEast,
+      y,
+      (room.front + room.back) / 2,
+      0.038,
+      0.032,
+      (room.back - room.front) / 2,
+    );
+  }
+  addBox(
+    wood,
+    room.xWest,
+    head,
+    (room.front + room.back) / 2,
+    0.038,
+    0.032,
+    (room.back - room.front) / 2,
+  );
+  // A softly recessed roof edge and timber soffit frame the open glass box.
+  addBox(wood, -2.45, 3.015, 1.98, 2.57, 0.022, 2.12);
+  for (let i = 0; i < 26; i++) {
+    const x = -5.1 + ((i + 0.5) * 5.3) / 26;
+    addBox(wood, x, 0.026, 2.06, 5.3 / 52 - 0.003, 0.004, 2.26);
+  }
+  // The study library leaves a central niche for Sri's existing writing sign
+  // and keeps all shelving behind / beside the existing desk and chair.
+  const palette = [
+    "#9c674b",
+    "#b5a27a",
+    "#465c55",
+    "#647b8e",
+    "#927483",
+    "#c1b69a",
+  ];
+  let number = 0;
+  for (const [left, right] of room.shelfBays) {
+    const mid = (left + right) / 2,
+      half = (right - left) / 2;
+    addBox(wood, mid, 1.46, 3.96, half, 1.28, 0.11);
+    for (const x of [left, right])
+      addBox(wood, x, 1.46, 3.74, 0.028, 1.28, 0.24);
+    for (let row = 0; row < 5; row++) {
+      const base = 0.22 + row * 0.5;
+      addBox(wood, mid, base, 3.74, half, 0.024, 0.24);
+      let x = left + 0.075;
+      while (x < right - 0.09) {
+        const width = 0.055 + ((number * 13) % 9) * 0.009;
+        const height = 0.24 + ((number * 7) % 8) * 0.022;
+        const depth = 0.16 + ((number * 3) % 5) * 0.015;
+        if (x + width > right - 0.055) break;
+        const color = new Color(palette[number % palette.length]).toArray();
+        addBox(
+          books,
+          x + width / 2,
+          base + 0.026 + height / 2,
+          3.52 + depth / 2,
+          width / 2 - 0.003,
+          height / 2,
+          depth / 2,
+          color,
+        );
+        // Small paper bands at a believable book scale, not random bright dots.
+        if (number % 3 === 0)
+          addBox(
+            books,
+            x + width / 2,
+            base + 0.11,
+            3.515,
+            width * 0.36,
+            0.009,
+            0.002,
+            new Color("#d5c6a4").toArray(),
+          );
+        x += width + 0.012;
+        number++;
+      }
+    }
+    addBox(wood, mid, 2.75, 3.74, half, 0.035, 0.24);
+  }
+  // A thin bronze door pull marks the open, parked leaf beside the entrance.
+  addBox(charcoal, room.xWest - 0.045, 1.08, 2.15, 0.022, 0.18, 0.012);
+  // Timber beneath the existing two inward-facing seats; no added obstacle.
+  for (let i = 0; i < 20; i++)
+    addBox(
+      wood,
+      -1.83 + ((i + 0.5) * 3.84) / 20,
+      0.026,
+      -2.12,
+      3.84 / 40 - 0.003,
+      0.004,
+      1.15,
+    );
+}
+
 export function buildFieldnotesGeometry() {
   const stone = bucket(),
     timber = bucket(),
@@ -447,6 +574,9 @@ export function buildFieldnotesGeometry() {
     table = bucket(),
     hello = bucket();
   const terraces = bucket();
+  const interiorWood = bucket(),
+    glass = bucket(),
+    books = bucket(true);
   for (const terrace of fieldnotesTerraces)
     addBox(
       terraces,
@@ -466,6 +596,7 @@ export function buildFieldnotesGeometry() {
   addDisplay(plinth, panel, trim);
   addTable(table, hello);
   addGarden(garden, stone);
+  addLibrary(interiorWood, glass, books, charcoal);
   return {
     paving: buildFieldnotesPaving(),
     terraces: toGeometry(terraces),
@@ -482,6 +613,9 @@ export function buildFieldnotesGeometry() {
     trim: toGeometry(trim),
     table: toGeometry(table),
     hello: toGeometry(hello),
+    interiorWood: toGeometry(interiorWood),
+    glass: toGeometry(glass),
+    books: toGeometry(books),
   };
 }
 

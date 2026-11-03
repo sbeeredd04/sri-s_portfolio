@@ -12,7 +12,7 @@ export const fieldnotesRoute = {
   spurZ: 0.95,
   spurEnd: -3.72,
   spurWidth: 1.64,
-  pavingStart: -7.7,
+  pavingStart: -7.88,
 };
 
 export const fieldnotesSpawn = [0, -7.2];
@@ -20,25 +20,25 @@ export const fieldnotesSpawn = [0, -7.2];
 export const fieldnotesLookoutZ = 17.2;
 
 export const fieldnotesCanopy = {
-  x0: -4.18,
-  x1: -0.22,
-  zBack: 3.98,
-  zFront: 2.1,
-  thickness: 0.04,
+  x0: -5.15,
+  x1: 0.25,
+  zBack: 4.37,
+  zFront: -0.25,
+  thickness: 0.2,
 };
 
 export const fieldnotesWall = {
-  x0: -4.22,
-  x1: -0.18,
-  z: 3.98,
+  x0: -5.02,
+  x1: 0.12,
+  z: 4.14,
   thickness: 0.18,
 };
 
 export const fieldnotesReturn = {
-  x: -4.14,
+  x: -5.02,
   thickness: 0.16,
-  z0: 2.2,
-  z1: 3.89,
+  z0: 2.3,
+  z1: 4.06,
 };
 
 export const fieldnotesDesk = {
@@ -59,7 +59,7 @@ export const fieldnotesChair = {
 
 export const fieldnotesLoungeScale = 0.64;
 export const fieldnotesTerraces = [
-  { x: -2.2, z: 2.96, width: 4.45, depth: 2.48 },
+  { x: -2.45, z: 2.06, width: 5.4, depth: 4.62 },
   { x: 0.1, z: -2.12, width: 3.95, depth: 2.38 },
   { x: 3.55, z: 0.4, width: 1.34, depth: 2.05 },
 ];
@@ -148,22 +148,33 @@ export function fieldnotesDeckHeight() {
   return fieldnotesBridgeY();
 }
 
+// A shallow weathering fall, visually a flat sandstone frame above the glass.
 export function fieldnotesCanopyY(x, z) {
-  const { x0, x1, zBack, zFront } = fieldnotesCanopy;
-  const u = (x - x0) / (x1 - x0);
-  const v = (z - zBack) / (zFront - zBack);
-  const fold = Math.cos((u - 0.28) * Math.PI) * 0.18;
-  return 2.78 - v * 0.4 + fold * (1 - v * 0.25);
+  return 3.24 + (z - fieldnotesCanopy.zFront) * 0.008;
 }
 
 export function fieldnotesColumnPoints() {
-  const { x0, x1, zBack, zFront } = fieldnotesCanopy;
-  return [0.08, 0.92].map((u) => ({
-    x: x0 + (x1 - x0) * u,
-    z: zBack + (zFront - zBack) * 0.82,
-    size: 0.11,
+  const { x0, x1, zFront } = fieldnotesCanopy;
+  return [x0 + 0.1, x1 - 0.1].map((x) => ({
+    x,
+    z: zFront + 0.1,
+    size: 0.13,
   }));
 }
+
+// Wall/glass panels stop at this west entry, which is centred on the existing
+// writing spur. The full path width (including shoulders) enters the studio.
+export const fieldnotesStudio = {
+  xWest: -5.02,
+  xEast: 0.12,
+  front: -0.12,
+  back: 4.14,
+  door: { z0: -0.04, z1: 2.05 },
+  shelfBays: [
+    [-4.84, -3.14],
+    [-1.22, -0.02],
+  ],
+};
 
 export function fieldnotesPathQuery(x, z) {
   let best = Infinity,
@@ -195,9 +206,22 @@ export function fieldnotesFootHeight(x, z) {
   return renderedSurfaceHeight("future", x, z) + 0.031;
 }
 
+// Match the oblique terminal bridge cross-section instead of a horizontal cap.
+export function fieldnotesPavingStartAt(x) {
+  const future = regions.find((region) => region.id === "future");
+  const crossing = walkingRoutes.find((item) => item.to === "future");
+  const forward = pathPose(crossing, 1)
+    .forward.clone()
+    .applyQuaternion(future.rotation.clone().invert());
+  return route.pavingStart - (x * forward.x) / forward.z;
+}
+
 export function fieldnotesExpectsPaving(x, z) {
   if (!onFieldnotesPath(x, z, -0.05)) return false;
-  if (z < route.pavingStart + 0.04 && Math.abs(x) < route.loopWidth / 2 + 0.08)
+  if (
+    z < fieldnotesPavingStartAt(x) + 0.04 &&
+    Math.abs(x) < route.loopWidth / 2 + 0.08
+  )
     return false;
   return true;
 }
@@ -305,7 +329,32 @@ export function fieldnotesSignPoses() {
 }
 
 export function fieldnotesObstacles() {
+  const room = fieldnotesStudio;
   const boxes = [
+    {
+      minX: room.xWest,
+      maxX: room.xEast,
+      minZ: room.front - 0.04,
+      maxZ: room.front + 0.04,
+    },
+    {
+      minX: room.xEast - 0.04,
+      maxX: room.xEast + 0.04,
+      minZ: room.front,
+      maxZ: room.back,
+    },
+    {
+      minX: room.xWest - 0.04,
+      maxX: room.xWest + 0.04,
+      minZ: room.door.z1,
+      maxZ: room.back,
+    },
+    ...room.shelfBays.map(([minX, maxX]) => ({
+      minX,
+      maxX,
+      minZ: 3.5,
+      maxZ: 4.08,
+    })),
     footprint(
       fieldnotesDesk.x,
       fieldnotesDesk.z,
@@ -395,9 +444,10 @@ export function fieldnotesBlocks(x, z, pad = 0.03) {
 }
 
 export const fieldnotesArrival = {
-  position: [-4.4, 5, -9.6],
-  target: [-0.5, 1.3, 1.0],
-  portrait: { position: [4.6, 10.7, -20], target: [-0.3, 1.1, 0.6] },
+  position: [-29, 22, -34],
+  target: [-7.5, 2.0, 1],
+  fov: 48,
+  portrait: { position: [-37, 29, -43], target: [-7.5, 2.0, 1], fov: 58 },
 };
 
 export const fieldnotesCameras = {
@@ -434,4 +484,5 @@ export const fieldnotesMaterialNames = [
   "ivory",
   "garden",
   "paving",
+  "glass",
 ];

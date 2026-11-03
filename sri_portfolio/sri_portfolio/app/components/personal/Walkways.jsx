@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { walkwayPlacements } from "../../lib/world-paths.mjs";
-import { useRoomTexture } from "./RoomMaterials";
+import {
+  walkwayPlacements,
+  worldPavingGeometry,
+} from "../../lib/world-paths.mjs";
 import BayBridge from "./BayBridge";
 
 function Instances({
@@ -55,11 +57,8 @@ function Instances({
   );
 }
 
-export default function Walkways({ daylight }) {
-  const stone = useRoomTexture("stone", 3);
-  // Cut stone has square joints. A 12-triangle slab keeps the hundreds of
-  // repeating pavers inexpensive; bevels belong on the close-up furnishings.
-  const geometry = useMemo(() => new THREE.BoxGeometry(1, 1, 1), []);
+export default function Walkways({ daylight, animate,wind }) {
+  const paving = useMemo(worldPavingGeometry, []);
   // Bollards are turned, not sawn: unit cylinders keep the placement sizes
   // (width = diameter) while reading as cast posts with round lenses.
   const round = useMemo(
@@ -72,26 +71,26 @@ export default function Walkways({ daylight }) {
   const batches = useMemo(walkwayPlacements, []);
   useEffect(
     () => () => {
-      geometry.dispose();
+      paving.dispose();
       round.post.dispose();
       round.lens.dispose();
     },
-    [geometry, round],
+    [paving, round],
   );
   return (
     <group>
-      <BayBridge daylight={daylight} />
+      <BayBridge daylight={daylight} animate={animate} wind={wind}/>
+      <mesh geometry={paving} receiveShadow>
+        <meshStandardMaterial
+          vertexColors
+          roughness={0.93}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
       <Instances
-        placements={batches.tiles}
-        geometry={geometry}
-        color="#7c7569"
-        variation={0.065}
-        map={stone}
-      />
-      <Instances
-        placements={batches.edge}
-        geometry={geometry}
-        color="#514e48"
+        placements={batches.piers}
+        geometry={round.post}
+        color="#837d70"
       />
       <Instances
         placements={batches.footings}

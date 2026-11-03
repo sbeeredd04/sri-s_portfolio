@@ -99,7 +99,7 @@ test("the Foundry pad stays level under the workshops and the new ring", () => {
     );
 });
 
-test("the ring keeps the existing studios, galleries and mobile shelf", () => {
+test("removing the campus keeps the studios and mobile exhibits accessible", () => {
   assert.equal(workshops.length, 6);
   assert.deepEqual(projectGallerySites.mobile.position, [-8.5, 0, -10.5]);
   assert.deepEqual(projectGallerySites.hackathons.position, [7.7, 0, -11.1]);
@@ -122,35 +122,26 @@ test("the ring keeps the existing studios, galleries and mobile shelf", () => {
   for (const id of ["aatram", "simsim", "ios-101"])
     assert.match(mobile, new RegExp(`id: "${id}"`));
   assert.match(mobile, /id6760587556/);
-  for (const id of ["ring", "campus"]) {
-    const stop = placeStops.projects.find((item) => item.id === id);
-    assert.equal(stop.collection, "mobile");
-    assert.equal(stop.content, "work");
-  }
-  assert.deepEqual(placeStops.projects.find((s) => s.id === "ring").position, [
-    ...campusView().overview.position,
-  ]);
-  assert.deepEqual(
-    placeStops.projects.find((s) => s.id === "campus").position,
-    [...campusView().court.position],
+  for (const id of ["ring", "campus", "valley"])
+    assert.equal(
+      placeStops.projects.some((stop) => stop.id === id),
+      false,
+    );
+  assert.equal(
+    placeStops.projects.find((stop) => stop.id === "mobile").collection,
+    "mobile",
+  );
+  assert.equal(
+    projectWalks.some((path) =>
+      campusPaths().some((old) => JSON.stringify(old) === JSON.stringify(path)),
+    ),
+    false,
   );
 });
 
-test("campus paths join the Foundry walk and only cross the ring at the entry", () => {
+test("retired ring-kit paths cross its own ring only at the authored entry", () => {
   const join = campusPaths()[0][0];
   assert.deepEqual(join, [0, -16]);
-  const projects = network.filter((segment) => segment.world === "projects");
-  let hits = 0;
-  for (const segment of projects) {
-    const localA = localOf(segment.a);
-    const localB = localOf(segment.b);
-    if (
-      Math.hypot(localA[0] - join[0], localA[1] - join[1]) < 0.2 ||
-      Math.hypot(localB[0] - join[0], localB[1] - join[1]) < 0.2
-    )
-      hits += 1;
-  }
-  assert.ok(hits >= 2, "campus approach is not tied into the passage");
   for (const [a, b] of campusPaths())
     for (let step = 0; step <= 12; step++) {
       const t = step / 12;
@@ -222,7 +213,6 @@ test("full paving width and a visitor shoulder clear columns, planting and exhib
       );
     }
   }
-  assert.ok(projectWalks.length > campusPaths().length);
 });
 
 test("each exhibit bay has an open approach and faces the courtyard", () => {
@@ -253,39 +243,12 @@ test("each exhibit bay has an open approach and faces the courtyard", () => {
   assert.ok(campusBench.z > campusCenter.z);
 });
 
-test("on foot starts at the selected campus stop and can reach the courtyard", () => {
-  const feet = campusFeet();
-  for (const entry of ["campus", "ring"]) {
-    const [x, z] = localOf(walkStart("projects", false, entry).position);
+test("removed campus entries fall back to the connected Foundry entrance", () => {
+  const home = walkStart("projects").position;
+  for (const id of ["campus", "ring"])
     assert.ok(
-      Math.hypot(x - feet[entry].x, z - feet[entry].z) < 0.05,
-      `${entry} starts at ${x}, ${z}`,
+      walkStart("projects", false, id).position.distanceTo(home) < 0.001,
     );
-  }
-  const home = localOf(walkStart("projects").position);
-  assert.ok(Math.hypot(home[0] + 2.8, home[1] - 11.7) < 0.05);
-  const state = walkStart("projects", false, "ring");
-  const loop = courtyardLoop();
-  const goals = [[campusCenter.x, -18.05], loop[0], ...loop.slice(1, 11)];
-  for (const [tx, tz] of goals) {
-    let reached = false;
-    for (let i = 0; i < 280; i++) {
-      const [x, z] = localOf(state.position);
-      if (Math.hypot(x - tx, z - tz) < 0.6) {
-        reached = true;
-        break;
-      }
-      steer(state, tx - x, tz - z);
-    }
-    const [x, z] = localOf(state.position);
-    assert.ok(
-      reached,
-      `stopped at ${x.toFixed(2)}, ${z.toFixed(2)} before ${tx}, ${tz}`,
-    );
-  }
-  const court = nearestWalk(state.position, network);
-  assert.equal(court.segment.world, "projects");
-  assert.ok(Math.sqrt(court.distance) < 0.2);
 });
 
 test("the ring floor clears rendered ground and the skirt is buried", () => {
@@ -428,49 +391,8 @@ test("the campus stays inside the structural budget without glass transmission",
   disposeCampus(built);
 });
 
-// Use the same boxes as WorldPaths, not a centerline proxy: the previous
-// placement passed local-courtyard checks while a complete bridge crossed it.
-test("every connecting deck, curb and lamp clears the rendered campus", async () => {
-  const { walkwayPlacements } = await import("../app/lib/world-paths.mjs");
-  const { Mesh, MeshBasicMaterial, Raycaster } = await import("three");
-  const built = buildCampusGeometry();
-  const material = new MeshBasicMaterial();
-  const campus = [built.canopy, built.stone, built.wood, built.metal].map(
-    (g) => new Mesh(g, material),
-  );
-  campus.forEach((mesh) => mesh.updateMatrixWorld());
-  let checked = 0;
-  for (const pieces of Object.values(walkwayPlacements()))
-    for (const piece of pieces) {
-      const [x, z] = localOf(piece.position);
-      if (campusRadius(x, z) > campusRadii.eaveOuter + 10) continue;
-      const nx = Math.max(2, Math.ceil(piece.size[0] / 0.18));
-      const nz = Math.max(2, Math.ceil(piece.size[2] / 0.18));
-      for (let ix = 0; ix <= nx; ix++)
-        for (let iz = 0; iz <= nz; iz++) {
-          const p = piece.position
-            .clone()
-            .addScaledVector(piece.right, (ix / nx - 0.5) * piece.size[0])
-            .addScaledVector(piece.forward, (iz / nz - 0.5) * piece.size[2]);
-          const [px, pz] = localOf(p);
-          const ray = new Raycaster(
-            new Vector3(px, 20, pz),
-            new Vector3(0, -1, 0),
-            0,
-            25,
-          );
-          assert.equal(
-            ray.intersectObjects(campus).length,
-            0,
-            `connecting infrastructure intersects campus at ${px}, ${pz}`,
-          );
-          checked++;
-        }
-    }
-  assert.ok(checked > 50, "the full bridge approach was not examined");
-  material.dispose();
-  disposeCampus(built);
-});
+// Live connecting infrastructure is checked against shipped Made GLB meshes in
+// authored-connections.test.mjs; this retired ring kit is no longer mounted.
 
 test("continuous courtyard paving supports visitor feet and full corridor width", async () => {
   const { buildCampusPaving, campusPavingHeight } =
@@ -497,14 +419,6 @@ test("continuous courtyard paving supports visitor feet and full corridor width"
           `terrain above path at ${x},${z}`,
         );
       }
-  }
-  for (const id of ["ring", "campus"]) {
-    const state = walkStart("projects", false, id),
-      relative = state.position.clone().sub(region.center);
-    assert.ok(
-      Math.abs(relative.dot(region.normal) - campusPavingHeight() - 0.004) <
-        0.0001,
-    );
   }
   geometry.dispose();
   material.dispose();

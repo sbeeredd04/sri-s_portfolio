@@ -1,5 +1,12 @@
 import test from "node:test";
-import { Mesh, MeshBasicMaterial, DoubleSide, Raycaster, Vector3 } from "three";
+import {
+  Box3,
+  Mesh,
+  MeshBasicMaterial,
+  DoubleSide,
+  Raycaster,
+  Vector3,
+} from "three";
 import assert from "node:assert/strict";
 import {
   buildLandmarks,
@@ -10,42 +17,46 @@ import {
   towerPlanScale,
   towerSite,
 } from "../app/lib/sf-landmarks.mjs";
-import { landmarkSites } from "../app/lib/sf-plan.mjs";
 import { streetRange, streetRoutes } from "../app/lib/street-view.mjs";
-import {
-  WORLD_RADIUS,
-  regions,
-  surfaceHeight,
-  regionDistance,
-} from "../app/lib/world-layout.mjs";
-import { renderedSurfaceHeight } from "../app/lib/terrain-geometry.mjs";
+import { authoredModel } from "./helpers/authored-model.mjs";
 import { wallClock } from "../app/lib/world-time.mjs";
 
-test("every landmark stands on level plateau ground at its plan site", () => {
-  assert.equal(WORLD_RADIUS, 450);
-  const studio = regions.find((region) => region.id === "studio");
-  const { ferry, salesforce, transamerica } = landmarkSites;
-  const spans = [
-    [ferry, 5, 13],
-    [salesforce, 5.5, 5.5],
-    [transamerica, 6.5, 6.5],
-  ];
-  for (const [site, hx, hz] of spans)
-    for (const [a, b] of [
-      [-1, -1],
-      [1, -1],
-      [-1, 1],
-      [1, 1],
-    ]) {
-      const x = site.x + a * hx,
-        z = site.z + b * hz;
-      assert.ok(regionDistance(studio, x, z) < studio.inner - 0.8);
-      assert.ok(
-        Math.abs(surfaceHeight("studio", x, z)) < 0.03,
-        `ground not level at ${x}, ${z}`,
-      );
-      assert.ok(Math.abs(renderedSurfaceHeight("studio", x, z)) < 0.03);
-    }
+test("authored Home houses sit on their complete rendered landform pads", async () => {
+  const { scene } = await authoredModel("home-landform");
+  const architecture = (await authoredModel("home-architecture")).scene;
+  const houses = [];
+  architecture.traverse((node) => {
+    if (/^Rowhouse_\d+_Root$/.test(node.name)) houses.push(node);
+  });
+  const terrain = scene.getObjectByName("Home_ContinuousHill");
+  assert.ok(terrain);
+  assert.ok(houses.length === 15, "both Painted Ladies rows are checked");
+  const ray = new Raycaster();
+  let checked = 0;
+  for (const house of houses) {
+    const bounds = new Box3().setFromObject(house);
+    const [x0, z0, x1, z1] = [
+      bounds.min.x,
+      bounds.min.z,
+      bounds.max.x,
+      bounds.max.z,
+    ];
+    const ground = house.getWorldPosition(new Vector3()).y;
+    for (let i = 0; i <= 8; i++)
+      for (let j = 0; j <= 10; j++) {
+        const x = x0 + ((x1 - x0) * i) / 8,
+          z = z0 + ((z1 - z0) * j) / 10;
+        ray.set(new Vector3(x, 75, z), new Vector3(0, -1, 0));
+        const hit = ray.intersectObject(terrain, true)[0];
+        assert.ok(hit, `${house.name}: missing terrain at ${x},${z}`);
+        assert.ok(
+          hit.point.y >= ground - 0.055 && hit.point.y <= ground + 0.03,
+          `${house.name}: ground ${hit.point.y}, foundation ${ground}`,
+        );
+        checked++;
+      }
+  }
+  assert.ok(checked >= 1200);
 });
 
 test("the tower plan is a rounded taper rather than a cylinder or a cone", () => {
@@ -136,15 +147,19 @@ test("landmark meshes keep their footprints, a real door and ground contact", ()
   disposeLandmarks(built);
 });
 
-test("home walking keeps the apartment and the Bay as separate journeys", () => {
-  const route = streetRoutes.studio;
+test("Made walking keeps the campus and the Bay as separate journeys", () => {
+  const route = streetRoutes.projects;
+  assert.ok(streetRoutes.studio.every((node) => node.group !== "bay"));
   const bay = route
     .map((node, index) => (node.group === "bay" ? index : -1))
     .filter((i) => i >= 0);
   assert.equal(bay.length, 5);
-  assert.equal(streetRange("studio", "street:0").end, bay[0] - 1);
-  assert.equal(streetRange("studio", `street:${bay[0]}`).start, bay[0]);
-  assert.equal(streetRange("studio", `street:${bay[0]}`).end, route.length - 1);
+  assert.equal(streetRange("projects", "street:0").end, bay[0] - 1);
+  assert.equal(streetRange("projects", `street:${bay[0]}`).start, bay[0]);
+  assert.equal(
+    streetRange("projects", `street:${bay[0]}`).end,
+    route.length - 1,
+  );
   assert.ok(route.every((node) => !node.group || node.group === "bay"));
 });
 

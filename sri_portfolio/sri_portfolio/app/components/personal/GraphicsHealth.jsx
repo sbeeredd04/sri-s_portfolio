@@ -24,29 +24,34 @@ export default function GraphicsHealth({ onUnavailable }) {
     gl.domElement.addEventListener("webglcontextlost", lost);
     return () => gl.domElement.removeEventListener("webglcontextlost", lost);
   }, [gl, onUnavailable]);
-  // Real context-loss QA is available only in a development build and only
-  // when explicitly requested in the URL. No diagnostic UI ships to production.
-  if (
-    process.env.NODE_ENV === "development" &&
-    new URLSearchParams(location.search).has("diagnostics")
-  ) {
+  // Measurements are opt-in so a physical phone can report its real budget.
+  // The destructive context-loss test remains development-only.
+  if (new URLSearchParams(location.search).has("diagnostics")) {
     return (
       <>
         <RenderDiagnostics />
-        <Html
-          fullscreen
-          calculatePosition={(_, __, size) => [size.width / 2, size.height / 2]}
-          style={{ pointerEvents: "none" }}
-        >
-          <button
-            className="graphics-test-control"
-            onClick={() =>
-              gl.getContext().getExtension("WEBGL_lose_context")?.loseContext()
-            }
+        {process.env.NODE_ENV === "development" && (
+          <Html
+            fullscreen
+            calculatePosition={(_, __, size) => [
+              size.width / 2,
+              size.height / 2,
+            ]}
+            style={{ pointerEvents: "none" }}
           >
-            Test graphics recovery
-          </button>
-        </Html>
+            <button
+              className="graphics-test-control"
+              onClick={() =>
+                gl
+                  .getContext()
+                  .getExtension("WEBGL_lose_context")
+                  ?.loseContext()
+              }
+            >
+              Test graphics recovery
+            </button>
+          </Html>
+        )}
       </>
     );
   }

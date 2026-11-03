@@ -118,10 +118,12 @@ export default function InteractiveProjectExhibit({
               item = projectExhibits[id].steps.find((s) => s.id === action);
             onHover(
               item ? item.label : "Try the three choices on the display.",
+              e,
+              item ? "pointer" : "auto",
             );
           }}
           onPointerOver={(e) => e.stopPropagation()}
-          onPointerOut={() => onHover("")}
+          onPointerOut={(e) => onHover("", e)}
           onClick={(e) => {
             e.stopPropagation();
             const action = exhibitActionAt(id, e.uv);

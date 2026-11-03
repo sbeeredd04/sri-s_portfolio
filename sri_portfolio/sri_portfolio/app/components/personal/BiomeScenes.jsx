@@ -34,13 +34,17 @@ export function Workspace({
   onHover,
   onScreenClick,
   onCue,
+  summit = false,
 }) {
   const photo = useArtworkTexture("/materials/studio-photo.webp");
   const deskTexture = useRoomTexture("walnut");
   const fabricTexture = useRoomTexture("fabric", 12);
   return (
     <group position={[0, 0.15, 0]}>
-      <group position={[-6.19, 2.2, -1.6]} rotation={[0, Math.PI / 2, 0]}>
+      <group
+        position={summit ? [-3.7, 2.2, -4.58] : [-6.19, 2.2, -1.6]}
+        rotation={[0, summit ? 0 : Math.PI / 2, 0]}
+      >
         <Box size={[1.7, 1.18, 0.055]} color="#313b49" radius={0.012} />
         <Box size={[1.58, 1.06, 0.059]} color="#e7e0d6" radius={0.006} />
         <mesh position={[0, 0, 0.033]}>
@@ -63,7 +67,7 @@ export function Workspace({
         radius={0.025}
       />
       <PaperPendant
-        position={[-4.7, 4.12, -1.35]}
+        position={[-4.7, summit ? 2.92 : 4.12, -1.35]}
         night={night}
         animate={animate}
         onHover={onHover}

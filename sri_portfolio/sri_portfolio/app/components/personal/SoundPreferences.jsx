@@ -106,12 +106,29 @@ export default function SoundPreferences({ audio, scope = "world" }) {
       />
       <Toggle
         title="Interaction sounds"
-        detail="Little cues as you explore"
+        detail={
+          audio.enabled
+            ? "Clicks and cues as you explore"
+            : "Enable sound above to hear clicks and cues"
+        }
         checked={audio.preferences.effects}
         onClick={() =>
           audio.setPreference("effects", !audio.preferences.effects)
         }
       />
+      <button
+        className="sensory-test"
+        data-quiet
+        disabled={
+          !audio.enabled ||
+          !audio.preferences.effects ||
+          !audio.preferences.volume ||
+          !audio.preferences.effectsLevel
+        }
+        onClick={() => audio.cue("press")}
+      >
+        Test click sound
+      </button>
       {audio.touchAvailable ? (
         <Toggle
           title="Touch feedback"

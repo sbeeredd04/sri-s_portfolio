@@ -6,6 +6,7 @@ import {
   distanceToOverlook,
   inViewpoint,
   lake,
+  redwoodBenchmark,
   trailCenter,
   wallFrame,
   wallOutward,
@@ -25,6 +26,7 @@ export const dressingRadius = {
   "tree-stump": 0.8,
   "rock-small": 0.16,
   "stones-pebbles": 0.07,
+  "forest-fern": 0.43,
 };
 
 function rng(seed) {
@@ -137,6 +139,13 @@ export function valleyDressing() {
       low: true,
       scale: [2, 4.5],
       near: shore,
+    }),
+    // A deliberately small authored vignette at the benchmark tree. The
+    // shared clear() check keeps each frond outside the buttress roots and
+    // away from the full-width trail, water, granite and viewing lanes.
+    "forest-fern": scatter("forest-fern", 8, 19, {
+      scale: [0.92, 1.08],
+      near: (random) => [redwoodBenchmark.x, redwoodBenchmark.z, 3.65],
     }),
   };
   return cached;

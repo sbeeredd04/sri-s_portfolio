@@ -1,4 +1,5 @@
 "use client";
+import UiIcon from "./UiIcon";
 import { projectDemos } from "../../json/project-demos.mjs";
 import RemoteVideo from "./RemoteVideo";
 export default function ProjectDemo({ id, name }) {
@@ -16,7 +17,7 @@ export default function ProjectDemo({ id, name }) {
         />
       ) : (
         <a href={demo.url} target="_blank" rel="noreferrer">
-          {demo.label} <span className="sr-only">for {name}</span> ↗
+          {demo.label} <span className="sr-only">for {name}</span> <UiIcon />
         </a>
       )}
     </section>

@@ -1,9 +1,14 @@
-import { put } from "@vercel/blob";
+import { put, del } from "@vercel/blob";
 import { createHmac, randomUUID } from "node:crypto";
 export const inboxAvailable = () =>
   Boolean(process.env.BLOB_READ_WRITE_TOKEN && process.env.INBOX_RATE_SECRET);
 // No browser uploads or public read route. Sri reviews these files in Vercel Storage.
-export async function savePrivate(kind, payload, request) {
+export async function savePrivate(
+  kind,
+  payload,
+  request,
+  storage = { put, del },
+) {
   if (!inboxAvailable())
     return {
       status: 503,
@@ -19,19 +24,16 @@ export async function savePrivate(kind, payload, request) {
   const bucket = Math.floor(
     now.getTime() / (kind === "messages" ? 300000 : 30000),
   );
+  const reservation = `limits/${now.toISOString().slice(0, 10)}/${kind}/${fingerprint}-${kind === "discoveries" ? payload.discovery + "-" : ""}${bucket}.json`;
   // Atomic create-if-absent works across serverless instances. Raw addresses are never stored.
   try {
-    await put(
-      `limits/${now.toISOString().slice(0, 10)}/${kind}/${fingerprint}-${kind === "discoveries" ? payload.discovery + "-" : ""}${bucket}.json`,
-      "{}",
-      {
-        access: "private",
-        abortSignal,
-        addRandomSuffix: false,
-        allowOverwrite: false,
-        contentType: "application/json",
-      },
-    );
+    await storage.put(reservation, "{}", {
+      access: "private",
+      abortSignal,
+      addRandomSuffix: false,
+      allowOverwrite: false,
+      contentType: "application/json",
+    });
   } catch (error) {
     if (error?.message?.includes("This blob already exists"))
       return {
@@ -46,7 +48,7 @@ export async function savePrivate(kind, payload, request) {
   }
   try {
     const id = randomUUID();
-    await put(
+    await storage.put(
       `${kind}/${now.toISOString().slice(0, 10)}/${id}.json`,
       JSON.stringify({ id, createdAt: now.toISOString(), ...payload }),
       {
@@ -59,6 +61,11 @@ export async function savePrivate(kind, payload, request) {
     );
     return { status: 201, id };
   } catch {
+    // A failed delivery must not lock out a retry. This request owns the
+    // reservation only after its atomic create succeeded above.
+    await storage
+      .del(reservation, { abortSignal: AbortSignal.timeout(3000) })
+      .catch(() => {});
     return {
       status: 503,
       error: "That didn’t reach my inbox. Keep your draft and try email below.",

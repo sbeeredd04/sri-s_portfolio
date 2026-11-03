@@ -19,11 +19,11 @@ function Invitation({ children, label, onOpen, onHover, ...props }) {
         e.stopPropagation();
         onOpen();
       }}
-      onPointerOver={(e) => {
+      onPointerMove={(e) => {
         e.stopPropagation();
-        onHover(label);
+        onHover(label, e);
       }}
-      onPointerOut={() => onHover("")}
+      onPointerOut={(e) => onHover("", e)}
     >
       {children}
     </group>
