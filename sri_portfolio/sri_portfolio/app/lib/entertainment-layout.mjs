@@ -8,6 +8,7 @@ export const cinemaSeats = [-1.3, 0, 1.3].map((x) => {
   const position = [x, 0.12, 2.4];
   return { position, yaw: facingYaw(position, cinemaScreen) };
 });
+export const listeningRoomSign = { position: [-3.25, 3.3, 3.7], size: [2.3, .75] };
 export const listeningSeat = {
   position: [-3, 0.14, 1.35],
   target: [-2, 1.1, -2.55],

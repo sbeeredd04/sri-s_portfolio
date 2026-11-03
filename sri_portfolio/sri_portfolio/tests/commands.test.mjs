@@ -84,3 +84,20 @@ test("scenic stops keep explicit legacy access without being suggested", () => {
   assert.deepEqual(runCommand("go bay").action, { type: "stop", biome: "projects", stop: "bay" });
   assert.ok(completions("go life in").includes("go life in san francisco"));
 });
+
+test("Fieldnotes promotes one writing view while preserving the kiosk camera command", async () => {
+  const { visiblePlaceStops } = await import('../app/lib/place-stops.mjs');
+  const { spotlightEntries } = await import('../app/lib/spotlight.mjs');
+  const { biomeRooms, roomPageHref } = await import('../app/lib/reading-rooms.mjs');
+  assert.deepEqual(visiblePlaceStops('future').filter(s=>s.content==='writing').map(s=>s.id), ['writing']);
+  assert.deepEqual(runCommand('go the newsstand').action, {type:'stop',biome:'future',stop:'newsstand'});
+  assert.deepEqual(completions('go newsstand'), []);
+  assert.ok(completions('go writing').some(command => runCommand(command).action?.stop === 'writing'));
+  assert.ok(!spotlightEntries.some(s=>s.id==='stop-future-newsstand'));
+  assert.ok(spotlightEntries.some(s=>s.id==='stop-future-writing'));
+  assert.ok(spotlightEntries.some(s=>s.room==='writing' && s.action.content==='writing'));
+  assert.ok(biomeRooms.future.includes('writing'));
+  assert.equal(roomPageHref('writing'), '/rooms/writing');
+  const kiosk=placeStops.future.find(s=>s.id==='newsstand');
+  assert.ok(kiosk.position && kiosk.target && kiosk.portrait.position, 'Saved kiosk camera remains complete');
+});

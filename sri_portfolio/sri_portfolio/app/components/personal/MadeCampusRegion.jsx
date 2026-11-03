@@ -17,7 +17,6 @@ const targets = [
   [/^Mesa_(?!Approach)/i, "mesa", "Mesa"],
   [/^csDNA_(?!Approach)/i, "csdna", "csDNA"],
   [/^SoDA_(?!Approach)/i, "soda", "SoDA"],
-  [/^ThisWorld_(?!Approach)/i, "world", "Whole world"],
   [/^(Made_Hall_|Made_HackathonHall)/, "hackathons", "Hackathon hall"],
   [/^Made_Mobile(?!_Approach)/, "mobile", "iPhone studio"],
   [/^Made_PierHouse/, "workbench", "The workbench"],
@@ -157,8 +156,7 @@ export default function MadeCampusRegion({
           const hit = targetOf(e.object);
           if (!hit) return;
           e.stopPropagation();
-          if (hit[1] === "world") onWorld();
-          else if (activeProject === hit[1] && projectExhibits[hit[1]])
+          if (activeProject === hit[1] && projectExhibits[hit[1]])
             onProjectOpen(hit[1]);
           else onVisit(hit[1]);
         }}

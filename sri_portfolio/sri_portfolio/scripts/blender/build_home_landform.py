@@ -19,9 +19,9 @@ spec.loader.exec_module(kit)
 Mesh = kit.Mesh
 kit.PALETTE.update(
     dict(
-        grass="AC9C63",
-        high="84925C",
-        shade="748250",
+        grass="8D945E",
+        high="7C8B57",
+        shade="6D7E4D",
         rock="A59583",
         wet="8E877B",
         mortar="B4A798",
@@ -40,6 +40,8 @@ kit.PALETTE.update(
         scrubDark="526044",
         scrub="697850",
         scrubTip="899365",
+        leafSage="879A70", leafDeep="405F43", leafOlive="70834F",
+        poppy="CF813E", poppyLight="D79856", lavender="927AA5", flowerStem="5C754B",
         outcropDark="867764",
         outcropLight="AE9E83",
         deck="AD825E",
@@ -54,6 +56,8 @@ SOURCE = APP / "asset-src/authored/home-landform/home-landform.blend"
 ANCHORS = {}
 PATHS = []
 OAKS = []
+PLANTING = []
+PLANT_RESERVATIONS = []
 CONTROL = [
     (-64, -22),
     (-58, -44),
@@ -393,7 +397,7 @@ def path(name, points, width, y=None, tone="walk"):
             for u, v in zip(row, row[1:]):
                 support.face((P(*u), P(*v), foot(v), foot(u)), "mortar")
         obj(support, name + "_RetainingEdge")
-    PATHS.append(dict(name=name, width=width, centerline=[list(a[1]) for a in rows]))
+    PATHS.append(dict(name=name, width=width, centerline=[list(a[1]) for a in rows], footprints=[[[v[0],v[2]] for v in tri] for a,b in zip(rows,rows[1:]) for tri in [(a[0],b[0],b[2]),(a[0],b[2],a[2])]]))
     return rows
 
 
@@ -573,14 +577,17 @@ def oak(x, z, h, i):
     r = 0.19 * h
     tr = Vector(P(x, y - 0.06, z))
     crown = tr + Vector((0.20 * math.sin(i), 0.28 * math.cos(i), h * 0.78))
-    m.rod(tr, tr.lerp(crown, 0.62), r * 0.185, "oakTrunk", 8)
+    m.rod(tr, tr.lerp(crown, 0.62), r * 0.24, "oakTrunk", 8)
     m.rod(tr.lerp(crown, 0.55), crown, r * 0.135, "oakTrunk", 7)
     for j in range(5):
         a = j * math.tau / 5 + i * 0.48
         pos = crown + Vector(
-            (r * 0.74 * math.cos(a), r * 0.65 * math.sin(a), r * 0.23 * math.sin(j + i))
+            (r * (.74+.27*math.sin(i*.71+j)) * math.cos(a), r * (.70+.22*math.cos(i*.43+j)) * math.sin(a), r * 0.23 * math.sin(j + i))
         )
-        m.rod(tr.lerp(crown, 0.62), pos, r * 0.067, "oakTrunk", 5)
+        fork=tr.lerp(crown,.42)+Vector((r*.22*math.cos(a),r*.22*math.sin(a),0))
+        elbow=tr.lerp(crown,.62)+Vector((r*.54*math.cos(a),r*.48*math.sin(a),r*.07*math.sin(j)))
+        m.rod(fork, elbow, r*.095, "oakTrunk", 6)
+        m.rod(elbow, pos, r*.055, "oakTrunk", 5)
         rings = []
         for l, (zz, w) in enumerate(
             [(-0.58, 0.43), (-0.25, 0.9), (0.24, 0.76), (0.58, 0.38)]
@@ -593,8 +600,9 @@ def oak(x, z, h, i):
                             math.cos(k * math.tau / 7)
                             * r
                             * w
+                            * (.95+.26*math.sin(i*.61+j*.82))
                             * (0.9 + 0.13 * math.sin(j + k)),
-                            math.sin(k * math.tau / 7) * r * w,
+                            math.sin(k * math.tau / 7) * r * w * (.95+.21*math.cos(i*.72+j*.57)),
                             r * zz,
                         )
                     )
@@ -619,94 +627,164 @@ def oak(x, z, h, i):
     )
 
 
+def rectangle(bounds):
+    a,b,c,d=bounds
+    return [[a,b],[c,b],[c,d],[a,d]]
+
+
+def overlaps(a,b):
+    for polygon in [a,b]:
+        for p,q in zip(polygon,polygon[1:]+polygon[:1]):
+            dx,dz=q[0]-p[0],q[1]-p[1]
+            aa=[-dz*v[0]+dx*v[1] for v in a];bb=[-dz*v[0]+dx*v[1] for v in b]
+            if min(max(aa),max(bb))<=max(min(aa),min(bb)):return False
+    return True
+
+
 def hillside_dressing():
-    rng = random.Random(397)
-    scrub = Mesh()
-    stone = Mesh()
-    placements = []
-    summit = ARCH["summitBounds"]
-    boxes = [[summit["min"][0], summit["min"][2], summit["max"][0], summit["max"][2]]]
+    # All foliage uses the same BVH as the walking terrain; each leaf follows
+    # its own piece of slope rather than floating on a horizontal plant disc.
+    rng=random.Random(397)
+    meshes={name:Mesh() for name in ["CoastalUnderstory","FlowerDrifts","BranchedShrubs","SlopeLeafMats"]}
+    roots={name:[] for name in meshes}
+    summit=ARCH["summitBounds"]
+    boxes=[[summit["min"][0]-.25,summit["min"][2]-.25,summit["max"][0]+.25,summit["max"][2]+.25]]
     for house in ARCH["reservations"]:
-        boxes.extend(house[key] for key in ("boundsXZ", "stoopXZ", "frontApproachXZ") if key in house)
-
-    # Follow the contour in loose groups, with open breaks between colonies.
-    for center_x, center_z in [(-28,-17), (-25,-4), (-16,0), (-7,-4),
-                               (7,-3), (20,-9), (26,0), (32,-15),
-                               (39,-11), (20,6), (-34,-26)]:
-        for j in range(10):
-            x = center_x + rng.uniform(-4.2,4.2)
-            z = center_z + rng.uniform(-3.4,3.4)
-            radius = rng.uniform(.68,1.58)
-            y = ground(x,z)
-            if not 7 < y < 45:
-                continue
-            rim = [ground(x + dx * radius, z + dz * radius)
-                   for dx,dz in ((1,0),(-1,0),(0,1),(0,-1))]
-            if max(rim) - min(rim) > 1.9 * radius:
-                continue
-            if any(rectdist(x,z,*bounds) < radius+1 for bounds in boxes):
-                continue
-            if any(math.hypot(x-p[0],z-p[2]) < path["width"]/2+radius+1.1
-                   for path in PATHS for p in path["centerline"]):
-                continue
-            if any(math.hypot(x-o["center"][0],z-o["center"][2]) < radius+o["crownRadius"]*.76
-                   for o in OAKS):
-                continue
-            if any(math.hypot(x-a,z-b) < radius+r+.25 for a,b,r in placements):
-                continue
-            placements.append((x,z,radius))
-            is_stone = j%3==0
-            asset = stone if is_stone else scrub
-            sides = 7
-            turn = rng.random()*math.tau
-            heights = [.19,.60] if is_stone else [.30,.66]
-            rings = []
-            for k, width in enumerate([1,.80,.34]):
-                ring = []
-                for side in range(sides):
-                    angle = turn + side*math.tau/sides
-                    jitter = 1+.12*math.sin(side*2.5+j)
-                    xx = x + radius*width*jitter*math.cos(angle)
-                    zz = z + radius*width*.81*jitter*math.sin(angle)
-                    yy = ground(xx,zz)-.17 if k==0 else (
-                        y + (ground(xx,zz)-y)*.84 +
-                        radius*(heights[k-1]+.07*math.sin(angle*2+j))
-                    )
-                    ring.append(P(xx,yy,zz))
-                rings.append(ring)
-            for k,(a,b) in enumerate(zip(rings,rings[1:])):
-                for side in range(sides):
-                    next_side = (side+1)%sides
-                    dark, light = ("outcropDark","outcropLight") if is_stone else (
-                        "scrubDark" if k==0 else "scrub", "scrubTip"
-                    )
-                    asset.face((a[side],b[side],a[next_side]),dark)
-                    asset.face((a[next_side],b[side],b[next_side]),light if (side+j)%3==0 else dark)
-            asset.face(tuple(reversed(rings[-1])),"outcropLight" if is_stone else "scrub")
-    obj(scrub,"Home_HillsideCoastalScrub")
-    obj(stone,"Home_HillsideSandstone")
-
-
-def stoop_gardens():
-    mesh = Mesh()
-    rng = random.Random(162)
+        # Whole-building bounds include the projecting stair on only one side.
+        # Reserve the actual facade/bay edge separately so both flanking
+        # gardens remain plantable, while the entire stair stays clear.
+        x0,z0,x1,z1=house["boundsXZ"]
+        boxes.append([x0,z0,x1,z1-9.12+7.08])
+        boxes.extend(house[key] for key in ("stoopXZ","frontApproachXZ") if key in house)
+    boxes.extend([[x-1.1,49.05,x+1.1,50.4] for x in [-20,16,30]])
+    PLANT_RESERVATIONS.extend(rectangle(b) for b in boxes)
+    PLANT_RESERVATIONS.extend(poly for path in PATHS for poly in path["footprints"])
+    # Also reserve the immediate trunk collars. Larger crowns naturally shade
+    # the low understory without excluding an entire circular lawn.
+    PLANT_RESERVATIONS.extend(rectangle([o["center"][0]-.4,o["center"][2]-.4,o["center"][0]+.4,o["center"][2]+.4]) for o in OAKS)
+    cells={}
+    def keys(poly):
+        xs=[p[0] for p in poly];zs=[p[1] for p in poly]
+        return [(x,z) for x in range(math.floor(min(xs)/4),math.floor(max(xs)/4)+1) for z in range(math.floor(min(zs)/4),math.floor(max(zs)/4)+1)]
+    for i,poly in enumerate(PLANT_RESERVATIONS):
+        for key in keys(poly):cells.setdefault(key,[]).append(i)
+    # Interlocking contour bands make a wooded slope, leaving open grass
+    # windows between colonies and clear, flower-lined approaches.
+    banks=[(-34,-27,19,17),(-28,-10,20,14),(-8,-3,18,9),(17,-5,22,12),
+           (33,-20,18,20),(45,-1,12,25),(-49,4,10,22),(0,-47,30,10)]
+    # Deterministic clustered dart throwing: spatial bins accelerate rejection,
+    # but positions never come from a grid. Variable separation lets colonies
+    # overlap organically rather than resolving into cultivated rows.
+    points=[(rng.uniform(-57,57),rng.uniform(-56,40)) for _ in range(17000)]
+    for cx,cz,rx,rz in banks:
+        for j in range(650):
+            a=rng.random()*math.tau;r=math.sqrt(rng.random())
+            points.append((cx+math.cos(a)*rx*r,cz+math.sin(a)*rz*r))
+    # The full lawns beside each stair receive dense low planting, rather
+    # than a few stems along the very front edge.
     for house in ARCH["reservations"]:
-        if house["row"] != "front":
-            continue
-        x0, z0, x1, _ = house["frontApproachXZ"]
-        for side in (-1, 1):
+        x0,z0,x1,z1=house["boundsXZ"]
+        for j in range(110):points.append((rng.uniform(x0+.3,x1-.3),rng.uniform(z1-1.65,z1+1.25)))
+    rng.shuffle(points)
+    accepted={}
+    for x,zz in points:
+        if not inside(x,zz) or shore(x,zz)<4:continue
+        trail_distance,_=trail_profile(x,zz)
+        bank=min(((x-a)/rx)**2+((zz-b)/rz)**2 for a,b,rx,rz in banks)
+        edge=.90+.13*math.sin(x*.25+zz*.13)+.09*math.sin(zz*.4-x*.12)
+        housing=13<zz<40 and -51<x<49
+        trail_band=1.6<trail_distance<6.2 and zz<18
+        if not (bank<edge or housing or trail_band):continue
+        # Keep irregular gaps in the broad outer banks, never in the
+        # narrow house gardens or summit-trail edging.
+        if not housing and not trail_band and math.sin(x*.19+zz*.09)+math.cos(zz*.23-x*.11)>1.30:continue
+        form="FlowerDrifts" if housing or (trail_band and trail_distance<3.8) else "BranchedShrubs" if math.sin(x*.18-zz*.14)>.56 else "CoastalUnderstory"
+        scale=(.90+rng.random()*.18) if housing else (1.45+rng.random()*.45)
+        radius=(.58 if form=="BranchedShrubs" else .43)*scale
+        separation=(.46+rng.random()*.13) if housing else (.65+rng.random()*.25)
+        cell=(math.floor(x/2),math.floor(zz/2))
+        near=[p for dx in (-1,0,1) for dz in (-1,0,1) for p in accepted.get((cell[0]+dx,cell[1]+dz),[])]
+        if any(math.hypot(x-a,zz-b)<(separation+d)*.5 for a,b,d in near):continue
+        footprint=rectangle([x-radius-.12,zz-radius-.12,x+radius+.12,zz+radius+.12])
+        candidates=set(i for key in keys(footprint) for i in cells.get(key,[]))
+        if any(overlaps(footprint,PLANT_RESERVATIONS[i]) for i in candidates):continue
+        y=ground(x,zz)
+        if y<2.5:continue
+        rim=[ground(x+dx*radius,zz+dz*radius) for dx,dz in [(1,0),(-1,0),(0,1),(0,-1)]]
+        # On steep banks keep terrain-following leaves, not upright shrubs.
+        # Rooted fronds drape down the actual slope instead of rejecting it.
+        steep=max(rim)-min(rim)>radius*1.4
+        if steep:
+            # Deliberate unplanted windows separate the low mat colonies.
+            # Neither their location nor the foliage follows sampling rows.
+            if math.sin(x*.43+math.sin(zz*.23)*1.4)+.58*math.cos(zz*.37-x*.11)>1.24:continue
+            form="SlopeLeafMats"
+        accepted.setdefault(cell,[]).append((x,zz,separation))
+        m=meshes[form];seed=len(PLANTING)
+        h=((.42+rng.random()*.22) if form!="BranchedShrubs" else (.76+rng.random()*.34))*min(scale,1.45)
+        def point(dx,dz,above):return P(x+dx,ground(x+dx,zz+dz)+above,zz+dz)
+        if form not in ["BranchedShrubs","SlopeLeafMats"]:
+            for j in range(9):
+                angle=j*2.399+seed*.41;length=(.28+rng.random()*.14)*scale
+                dx,dz=math.cos(angle),math.sin(angle)
+                a=point(0,0,.015);b=point(dx*length*.55-dz*.075*scale,dz*length*.55+dx*.075*scale,h*.24)
+                c=point(dx*length*.55+dz*.075*scale,dz*length*.55-dx*.075*scale,h*.24)
+                ridge=point(dx*length*.6,dz*length*.6,h*.62);tip=point(dx*length,dz*length,h*.36)
+                for tri,tone in [([a,b,ridge],"leafDeep"),([a,ridge,c],"leafOlive"),([b,tip,ridge],"leafSage"),([ridge,tip,c],"leafOlive")]:m.face(tri,tone)
+        if form=="SlopeLeafMats":
+            gx=(ground(x+.2,zz)-ground(x-.2,zz))/.4
+            gz=(ground(x,zz+.2)-ground(x,zz-.2))/.4
+            slope=max(.001,math.hypot(gx,gz));tx,tz=-gz/slope,gx/slope;nx,nz=gx/slope,gz/slope
+            # A low continuous basal mat follows the terrain. Its long axis
+            # follows the contour, so a metre of slope does not stretch a
+            # single blade into a tall vertical stalk.
+            reach=radius*.88
+            across=min(.17,.23/slope)
+            ring=[]
+            for k in range(10):
+                a=k*math.tau/10
+                dx=tx*reach*math.cos(a)+nx*across*math.sin(a)
+                dz=tz*reach*math.cos(a)+nz*across*math.sin(a)
+                ring.append(point(dx,dz,.022))
+            for k in range(10):m.face([point(0,0,.015),ring[k],ring[(k+1)%10]],"leafOlive" if k%3 else "scrub")
+            for j in range(12):
+                sign=-1 if j%2 else 1
+                u=0 if j==0 else rng.uniform(-reach*.38,reach*.38)
+                v=0 if j==0 else rng.uniform(-across*.3,across*.3)
+                length=reach*rng.uniform(.36,.58)
+                width=across*rng.uniform(.30,.55)
+                def mat_point(along,cross,raise_y):return point(tx*(u+along)+nx*(v+cross),tz*(u+along)+nz*(v+cross),raise_y)
+                a=mat_point(0,0,.015);b=mat_point(sign*length*.48,-width,.05);c=mat_point(sign*length*.48,width,.05)
+                ridge=mat_point(sign*length*.53,0,.11);tip=mat_point(sign*length,0,.045)
+                for tri,tone in [([a,b,ridge],"leafDeep"),([a,ridge,c],"leafOlive"),([b,tip,ridge],"leafSage"),([ridge,tip,c],"leafOlive")]:m.face(tri,tone)
+        if form=="FlowerDrifts":
+            poppy=math.sin(x*.16+zz*.22)>.0 or trail_band
             for j in range(3):
-                x = (x0+x1)/2 + side*(1.65+.68*j)
-                z = z0 + .50 + rng.uniform(-.19,.28)
-                y = ground(x,z)
-                radius = rng.uniform(.39,.52)
-                ring = [P(x+radius*math.cos(k*math.tau/7), y-.055,
-                          z+radius*.81*math.sin(k*math.tau/7)) for k in range(7)]
-                crown = P(x-.09, y+radius*.94, z+.08)
-                for k in range(7):
-                    mesh.face((ring[k], crown, ring[(k+1)%7]),
-                              "scrubTip" if k%3==0 else "scrub")
-    obj(mesh,"Home_PaintedLadiesStoopGardens")
+                a=j*2.399+seed*.27;dx,dz=math.cos(a)*.22*scale,math.sin(a)*.22*scale
+                stem_y=ground(x+dx,zz+dz)+h
+                rod(m,(x,y+.02,zz),(x+dx,stem_y,zz+dz),.012,"flowerStem",4)
+                for k in range(5):
+                    aa=k*math.tau/5+a;bb=(k+1)*math.tau/5+a
+                    petal_radius=(.13 if poppy else .075)*min(scale,1.4);lift=.07 if poppy else .16
+                    m.face([P(x+dx,stem_y-.025,zz+dz),P(x+dx+petal_radius*math.cos(aa),stem_y+lift,zz+dz+petal_radius*math.sin(aa)),P(x+dx+petal_radius*math.cos(bb),stem_y+lift,zz+dz+petal_radius*math.sin(bb))],("poppyLight" if k%3==0 else "poppy") if poppy else "lavender")
+        if form=="BranchedShrubs":
+            for j in range(4):
+                a=j*2.399+seed*.27;dx,dz=math.cos(a)*.25*scale,math.sin(a)*.25*scale
+                top=ground(x+dx,zz+dz)+h*(.75+.2*rng.random())
+                rod(m,(x,y+.015,zz),(x+dx,top-.10,zz+dz),.022,"oakTrunk",5)
+                for k in range(6):
+                    aa=k*2.399+a;length=(.23+rng.random()*.09)*scale
+                    root=P(x+dx,top-.17,zz+dz);ridge=P(x+dx+math.cos(aa)*length*.6,top+.045,zz+dz+math.sin(aa)*length*.6)
+                    left=P(x+dx+math.cos(aa-.5)*length*.65,top-.04,zz+dz+math.sin(aa-.5)*length*.65)
+                    right=P(x+dx+math.cos(aa+.5)*length*.65,top-.04,zz+dz+math.sin(aa+.5)*length*.65)
+                    tip=P(x+dx+math.cos(aa)*length,top+.015,zz+dz+math.sin(aa)*length)
+                    for tri,tone in [([root,left,ridge],"leafDeep"),([root,ridge,right],"leafOlive"),([ridge,left,tip],"leafSage"),([ridge,tip,right],"leafOlive")]:m.face(tri,tone)
+        roots[form].append([round(x,4),round(y+.015,4),round(zz,4)])
+        PLANTING.append(dict(center=[x,y,zz],radius=radius,form=form))
+    for name,m in meshes.items():
+        tree=obj(m,"Home_"+name);tree["plantRoots"]=roots[name]
+    # Keep loader/debug semantic names, without preserving the old pyramids.
+    for name in ["Home_HillsideCoastalScrub","Home_HillsideSandstone","Home_PaintedLadiesStoopGardens"]:kit.empty(name,ROOT)
 
 
 def main():
@@ -763,7 +841,6 @@ def main():
     ):
         oak(x, z, h, i)
     hillside_dressing()
-    stoop_gardens()
     for n, p in {
         "Home_HarborDockRoot": [6, 2.6, 53],
         "Home_FerryBerth": [6, 1.35, 69],
@@ -811,6 +888,8 @@ def main():
                 architectureSHA=ARCH["sha256"],
                 paths=PATHS,
                 oaks=OAKS,
+                planting=PLANTING,
+                plantingReservations=PLANT_RESERVATIONS,
                 anchors=ANCHORS,
                 reservations=ARCH["reservations"],
                 summitBounds=ARCH["summitBounds"],

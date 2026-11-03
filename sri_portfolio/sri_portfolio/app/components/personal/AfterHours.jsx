@@ -24,6 +24,7 @@ import {
   cinemaOrigin,
   cinemaScreen,
   cinemaSeats,
+  listeningRoomSign,
   listeningSeat,
   facingYaw,
   entertainmentPaths,
@@ -360,8 +361,7 @@ function ListeningHouse({
         title="Side B"
         subtitle="THE LISTENING HOUSE"
         accent="#8ac8a5"
-        position={[-3.25, 3.3, 3.7]}
-        size={[2.3, 0.75]}
+        {...listeningRoomSign}
       />
       {detailed ? (
         <>

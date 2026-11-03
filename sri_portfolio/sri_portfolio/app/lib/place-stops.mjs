@@ -191,8 +191,9 @@ export const placeStops = {
       position: [1.8, 2.5, 4.7],
       target: [-2.3, 1.45, -1.8],
       portrait: {
-        position: [-0.8, 2.25, 4],
-        target: [-2.5, 1.65, -0.1],
+        position: [-1.05, 3.35, 5.45],
+        target: [-2.05, 1.85, -2.55],
+        fov: 71,
       },
       content: "music",
       collection: "music",
@@ -268,15 +269,15 @@ export const placeStops = {
         fov: 70,
       },
       content: "about",
-      prompt: "The end of a good hike",
-      hint: "A tent, a fire, and a few people who walked in before dark.",
+      prompt: "About Sri",
+      hint: "More about life outside work.",
     },
     {
       id: "overlook",
       label: "The overlook",
       ...trailView().overlook,
       content: "notes",
-      prompt: "Through my lens",
+      prompt: "Read the outdoor journal",
       compact: true,
       hint: "A frame for the valley. The photography collection is still to come.",
     },
@@ -295,10 +296,14 @@ export const placeStops = {
       label: "The writing studio",
       ...fieldnotesCameras.writing,
       content: "writing",
-      prompt: "What I want to share",
+      prompt: "Read Fieldnotes",
       hint: "Notes on AI engineering, agents, and the work around models.",
     },
-    ...quarterViews,
+    // The kiosk is an alternate object interaction for the same writing page.
+    // Keep its camera address, but promote a single writing destination.
+    ...quarterViews.map((view) =>
+      view.id === "newsstand" ? { ...view, promoted: false } : view,
+    ),
     {
       id: "collaborate",
       label: "Pull up a chair",
@@ -310,10 +315,10 @@ export const placeStops = {
   ],
 };
 
-// Public navigation promotes authored portfolio subjects. Scenic camera IDs
-// remain in placeStops for saved addresses and explicit legacy commands.
+// Public navigation promotes authored portfolio subjects. Scenic and alternate
+// object camera IDs remain available to saved addresses and explicit commands.
 export function visiblePlaceStops(biome) {
-  const stops = (placeStops[biome] || []).filter((stop) => !stop.scenic);
+  const stops = (placeStops[biome] || []).filter((stop) => !stop.scenic && stop.promoted !== false);
   return biome === "projects"
     ? [...stops.filter((stop) => stop.project), ...stops.filter((stop) => !stop.project)]
     : stops;
