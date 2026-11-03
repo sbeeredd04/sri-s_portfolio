@@ -63,6 +63,7 @@ test('Made arrival includes the rendered island and quay despite the reading-pan
     assert(box.min.x>-.99&&box.max.x<.99,`arrival horizontal clip: ${box.min.x}..${box.max.x}`);
     assert(box.min.y>-.78&&box.max.y<.7,`arrival vertical clip: ${box.min.y}..${box.max.y}`);
     assert(box.max.x-box.min.x>(phone?1.7:1.15),'campus should fill the view, not shrink into distant scenery');
+    if(phone) assert(box.max.y-box.min.y>.70,'portrait arrival should show the campus and quay at useful scale');
   }
 });
 test('all five project interiors frame the primary display at eye level, with desktop story panels',()=>{
@@ -75,6 +76,10 @@ test('all five project interiors frame the primary display at eye level, with de
       const surface=projectedBox(site,camera,[-1.28,layout.floor+1.15,-2.319],[1.28,layout.floor+2.83,-2.319]);
       const pixels=(surface.max.x-surface.min.x)*390/2;
       assert(pixels>=295&&pixels<=330,`${site.id} phone interactive surface must remain readable at390px: ${pixels}px`);
+      if(site.id==='agentex'){
+        const top=(1-surface.max.y)*844/2,bottom=(1-surface.min.y)*844/2;
+        assert(top>=240&&top<=310&&bottom<=510,`Agentex exhibit should occupy the clear middle of the portrait view: ${top}..${bottom}`);
+      }
     }
     const [x,y,z]=layout.board,[w,h]=layout.boardSize,board=projectedBox(site,camera,[x-w/2,y-h/2,z],[x+w/2,y+h/2,z]);
     // Phone keeps the interactive exhibit primary; the full project remains

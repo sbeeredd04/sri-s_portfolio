@@ -27,7 +27,7 @@ const shot = (
 });
 const camera = {
   // Account for the desktop reading-panel offset and preserve the whole quay.
-  arrival: shot([8, 72, 115], [5, 3, 8], 48, [3, 98, 166], 66, [0, 3, 8]),
+  arrival: shot([8, 72, 115], [5, 3, 8], 48, [3, 142, 123], 66, [0, 3, 8]),
   campus: shot([34, 28, 60], [-1, 5, 4], 49, [36, 41, 88], 65),
   ring: shot([17, 18, 34], [0, 4, -1], 50, [23, 26, 49], 65),
   keynote: shot([0, 4.25, 15.7], [0, 4.45, -6.72], 40, [0, 4.45, 17.2], 65),
@@ -61,9 +61,11 @@ export function madeProjectView(id, phase = "inside", portrait = false) {
   const localEye = phase === "entry"
     ? [0, layout.floor + 1.65, site.size[2] / 2 + 3.8]
     : portrait ? [0, layout.floor + 1.85, 4.0] : [0.45, layout.floor + 1.85, 2.6];
+  // In portrait, frame the Agentex exhibit and its table rather than the soffit.
+  const targetRise = portrait && phase === "inside" && id === "agentex" ? 1.50 : 1.99;
   return {
     position: madeSitePoint(site, localEye),
-    target: madeSitePoint(site, [portrait ? 0 : 0.85, layout.exhibit[1] + 1.99, layout.exhibit[2] - 0.22]),
+    target: madeSitePoint(site, [portrait ? 0 : 0.85, layout.exhibit[1] + targetRise, layout.exhibit[2] - 0.22]),
     fov: phase === "entry" ? (portrait ? 65 : 48) : (portrait ? 60 : 55),
   };
 }
