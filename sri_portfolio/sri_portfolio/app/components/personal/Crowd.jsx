@@ -204,7 +204,7 @@ export default function Crowd({ agents, ground, scale = 1, animate }) {
         z = az + (bz - az) * t;
         yaw = Math.atan2((bx - ax) * a.dir, (bz - az) * a.dir);
       }
-      p.set(x, ground(x, z), z);
+      p.set(x, ground(x, z) + (a.groundOffset || 0), z);
       q.setFromAxisAngle(up, yaw);
       matrix.compose(p, q, s);
       mesh.current.setMatrixAt(i, matrix);

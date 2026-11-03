@@ -96,6 +96,18 @@ export const APARTMENT_LEVEL = homeSite.anchors.Summit_EntryAnchor[1] + 3.45;
 // frame; rotating screens alone would put the keyboard behind their displays.
 export const APARTMENT_YAW = Math.PI;
 export const apartmentOrigin = [-4.3, APARTMENT_LEVEL, -23.4];
+// Desk/book inspection stays between the occupied floor and the next slab.
+// Vertical orbit must not enter the timber floor (which deliberately remains
+// opaque). Horizontal rotation remains unrestricted for the wall cutaway.
+export const studioInteriorOrbit = { minHeight: 1.7, maxHeight: 2.85 };
+export function studioInteriorPolarLimits(distance, targetHeight) {
+  const radius = Math.max(distance, .001);
+  const angle = height => Math.acos(Math.max(-1, Math.min(1, (height-targetHeight)/radius)));
+  return {
+    min: angle(studioInteriorOrbit.maxHeight),
+    max: angle(studioInteriorOrbit.minHeight),
+  };
+}
 export const apartmentPoint = ([x, y, z]) => [
   apartmentOrigin[0] + Math.cos(APARTMENT_YAW) * x + Math.sin(APARTMENT_YAW) * z,
   apartmentOrigin[1] + y,

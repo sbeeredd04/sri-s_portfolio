@@ -47,5 +47,14 @@ function walkers(count) {
 export function courtCrowd(tier = "medium") {
   const count = courtCrowdBudget[tier] ?? courtCrowdBudget.medium;
   const watching = spectators().slice(0, Math.ceil(count * 0.62));
-  return [...watching, ...walkers(count - watching.length)];
+  // The authored coast terrace sits 18 mm below the legacy content frame.
+  // Promenade pavers instead have their exposed top at +25 mm. Keep shoes
+  // on those actual surfaces; neither uses the old generic zero plane.
+  return [
+    ...watching.map((agent) => ({ ...agent, groundOffset: -0.018 })),
+    ...walkers(count - watching.length).map((agent) => ({
+      ...agent,
+      groundOffset: 0.025,
+    })),
+  ];
 }

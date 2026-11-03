@@ -11,6 +11,7 @@ import {
   apartmentPoint,
   studioDeskView,
   studioBookView,
+  studioInteriorPolarLimits,
 } from "../../lib/studio-layout.mjs";
 import { cameraLimits } from "../../lib/camera-limits.mjs";
 import { courtViews } from "../../lib/court-layout.mjs";
@@ -153,6 +154,22 @@ export default function CameraRig({
   const interiorShot = world === "studio"
     ? { desk: studioDeskView, bookshelf: studioBookView }[stop]
     : null;
+  function constrainInteriorOrbit(c) {
+    if (!interiorShot || focused.current !== "studio" || flight.current || street || roaming) return;
+    const origin = worldPoint("studio", apartmentPoint([0, 0, 0]));
+    const targetHeight = c.getTarget(scratch.target).sub(origin).dot(camera.up);
+    const limits = studioInteriorPolarLimits(c.distance, targetHeight);
+    c.minPolarAngle = limits.min;
+    c.maxPolarAngle = limits.max;
+    // Re-clamp after dolly too: a fixed angle range would pierce a slab when
+    // the orbit radius grows. CameraControls also clamps the drag end angle.
+    const polar = THREE.MathUtils.clamp(c.polarAngle, limits.min, limits.max);
+    if (Math.abs(polar-c.polarAngle) > .00001) {
+      c.rotateTo(c.azimuthAngle, polar, false);
+      c.update(0);
+      invalidate();
+    }
+  }
   const fieldOfView =
     interiorShot
       ? (portraitFrame ? interiorShot.portrait : interiorShot).fov || 45
@@ -591,9 +608,11 @@ export default function CameraRig({
       if (t === 1) {
         flight.current = null;
         c.minDistance = focused.current === "planet" ? mapNear : 3.2;
+        constrainInteriorOrbit(c);
       } else invalidate();
       return;
     }
+    constrainInteriorOrbit(c);
     if (street) {
       const eye = destination(world).position;
       camera.getWorldDirection(scratch.direction);
