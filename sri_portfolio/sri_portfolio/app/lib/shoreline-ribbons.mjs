@@ -5,6 +5,35 @@ export const shorelineRibbonWidth = 3.2;
 const innerWidth = -0.12;
 const maxMiter = 1.65;
 const minimumArea = 0.00001;
+// Float32 positions still leave at least 10 cm of visible water-side ribbon.
+const minimumOuterWidth = 0.106;
+const maximumTaperSlope = 0.5;
+
+function outerWidth(section) {
+  return Math.hypot(section.nx, section.nz) * shorelineRibbonWidth * section.scale;
+}
+
+function smoothTaper(sections) {
+  // Limit the change in radial width per metre of coast. A short notch must
+  // not connect a nearly collapsed strip directly to a five-metre foam spike.
+  for (let sweep = 0; sweep < sections.length; sweep++) {
+    let changed = false;
+    for (let i = 0; i < sections.length; i++) {
+      const a = sections[i], b = sections[(i + 1) % sections.length];
+      const aw = outerWidth(a), bw = outerWidth(b);
+      const change = b.length * maximumTaperSlope;
+      if (aw > bw + change) {
+        a.scale *= (bw + change) / aw;
+        changed = true;
+      }
+      if (bw > aw + change) {
+        b.scale *= (aw + change) / bw;
+        changed = true;
+      }
+    }
+    if (!changed) return;
+  }
+}
 
 function cross([ax, az], [bx, bz], [cx, cz]) {
   return (bx - ax) * (cz - az) - (bz - az) * (cx - ax);
@@ -16,7 +45,7 @@ function crosses(a, b, c, d) {
   );
 }
 
-function ribbonSections(points) {
+function ribbonSections(points, bounded = false) {
   const sections = points.map(([x, z], i) => {
     const a = points[(i + points.length - 1) % points.length];
     const c = points[(i + 1) % points.length];
@@ -24,14 +53,26 @@ function ribbonSections(points) {
     const nextLength = Math.hypot(c[0] - x, c[1] - z);
     const n0 = [(z - a[1]) / length, -(x - a[0]) / length];
     const n1 = [(c[1] - z) / nextLength, -(c[0] - x) / nextLength];
-    const sum = [n0[0] + n1[0], n0[1] + n1[1]];
+    // At a tiny bevel between long edges, the symmetric bisectors aim at
+    // one another. Favor the short edge's normal only where both normals
+    // occupy the same half-plane, preserving the land/water side of each.
+    const shortBevel = bounded &&
+      n0[0] * n1[0] + n0[1] * n1[1] > 0 &&
+      Math.min(length, nextLength) / Math.max(length, nextLength) < 0.2;
+    const sum = shortBevel
+      ? [n0[0] * nextLength + n1[0] * length, n0[1] * nextLength + n1[1] * length]
+      : [n0[0] + n1[0], n0[1] + n1[1]];
     const norm = Math.hypot(...sum);
     const [nx, nz] = norm < 1e-5 ? n1 : sum.map((value) => value / norm);
     const miter = Math.min(
       maxMiter,
       1 / Math.max(0.25, nx * n1[0] + nz * n1[1]),
     );
-    return { x, z, nx: nx * miter, nz: nz * miter, length, scale: 1 };
+    const minimumScale = minimumOuterWidth / (miter * shorelineRibbonWidth);
+    const scale = bounded
+      ? Math.max(minimumScale, Math.min(1, Math.min(length, nextLength) * 2 / shorelineRibbonWidth))
+      : 1;
+    return { x, z, nx: nx * miter, nz: nz * miter, length, scale, minimumScale };
   });
   // Concave corners and short edges can fold a wide offset quad over itself.
   // Taper both edges locally until each strip cell is convex and faces up.
@@ -41,7 +82,8 @@ function ribbonSections(points) {
     z + nz * width * scale,
   ];
   const count = sections.length;
-  for (let pass = 0; pass < 48; pass++) {
+  for (let pass = 0; pass < (bounded ? 96 : 48); pass++) {
+    if (bounded) smoothTaper(sections);
     const taper = new Set();
     for (let i = 0; i < count; i++) {
       const a = sections[i],
@@ -77,8 +119,19 @@ function ribbonSections(points) {
         }
       }
     }
-    if (!taper.size) return sections;
-    for (const section of taper) section.scale *= 0.75;
+    if (!taper.size) {
+      // Preserve existing coast geometry unless the original offset actually
+      // collapses. Re-solve tight contours using visible, smoothly tapered widths.
+      if (!bounded && sections.some((section) => outerWidth(section) < 0.1)) {
+        return ribbonSections(points, true);
+      }
+      return sections;
+    }
+    for (const section of taper) {
+      section.scale = bounded
+        ? Math.max(section.minimumScale, section.scale * 0.9)
+        : section.scale * 0.75;
+    }
   }
   throw new Error("Shoreline contour is too tight to form a continuous ribbon");
 }

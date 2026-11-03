@@ -68,7 +68,7 @@ test("ribbons follow the coast on the water side with bounded, continuous sectio
       assert.ok(
         outer[i].distanceTo(point) <= shorelineRibbonWidth * 1.65 + 0.00002,
       );
-      assert.ok(outer[i].distanceTo(point) >= 0.1);
+      assert.ok(outer[i].distanceTo(point) >= 0.1, `${id} section ${i} collapsed below 10 cm`);
       assert.ok(uv.getX(k) < 0 && uv.getX(k + 1) > 0);
       assert.equal(uv.getY(k), uv.getY(k + 1));
       assert.ok(Math.abs(uv.getY(k) - perimeter) < 0.00004);
@@ -116,4 +116,35 @@ test("ribbons follow the coast on the water side with bounded, continuous sectio
     base += (count + 1) * 2;
   }
   assert.equal(base, position.count);
+});
+
+
+test("Fieldnotes short coves keep visible width without long foam spikes", () => {
+  let base = 0;
+  for (const { id, points } of shorelines) {
+    if (id !== "future") {
+      base += (points.length + 1) * 2;
+      continue;
+    }
+    const widths = points.map(([x, z], i) =>
+      Math.hypot(position.getX(base + i * 2 + 1) - x, position.getZ(base + i * 2 + 1) - z),
+    );
+    let shortEdges = 0;
+    for (let i = 0; i < points.length; i++) {
+      const next = (i + 1) % points.length;
+      const previous = (i + points.length - 1) % points.length;
+      const edgeLength = Math.hypot(points[next][0] - points[i][0], points[next][1] - points[i][1]);
+      if (edgeLength < 0.2) shortEdges++;
+      // Measure the emitted Float32 vertex positions, not the solver's scales.
+      assert.ok(Math.abs(widths[i] - widths[next]) <= edgeLength * 0.5 + 0.00003,
+        `Fieldnotes ${i}/${next} abruptly changes foam width`);
+      const before = { x: points[previous][0], z: points[previous][1] };
+      const at = { x: points[i][0], z: points[i][1] };
+      assert.ok(orientation(before, at, vertex(base + i * 2 + 1)) < 0,
+        `Fieldnotes ${i} offset crosses the incoming coast edge`);
+      assert.ok(orientation(before, at, vertex(base + i * 2)) > 0,
+        `Fieldnotes ${i} inner offset crosses the incoming coast edge`);
+    }
+    assert.ok(shortEdges > 0, "actual Fieldnotes contour must exercise the short-edge regression");
+  }
 });

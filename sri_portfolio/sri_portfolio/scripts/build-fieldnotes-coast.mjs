@@ -15,7 +15,7 @@ import {
   fieldnotesArrival, fieldnotesBeds, fieldnotesCameras, fieldnotesDeckHeight,
   fieldnotesObstacles, fieldnotesPaths, fieldnotesTerraces,
 } from "../app/lib/fieldnotes-layout.mjs";
-import { newsstand, quarterViews } from "../app/lib/fieldnotes-quarter.mjs";
+import { newsstand, quarterViews, lanternPosts, lookout } from "../app/lib/fieldnotes-quarter.mjs";
 import { regions } from "../app/lib/world-layout.mjs";
 import { pathHalfWidth, pathPose, walkingRoutes } from "../app/lib/world-paths.mjs";
 
@@ -43,6 +43,12 @@ const layout = {
   deckY: fieldnotesDeckHeight(),
   obstacles: fieldnotesObstacles(),
   newsstand,
+  groundSupports: [
+    ...lanternPosts().map(([x,z])=>({x,z,width:.45,depth:.45})),
+    {x:lookout.x,z:lookout.z,width:lookout.width+.3,depth:.7},
+    {x:0,z:lookout.bench,width:2.5,depth:1},
+    {x:-2.4,z:lookout.bench,width:.6,depth:.6},
+  ],
   cameras: [fieldnotesArrival, ...Object.values(fieldnotesCameras), ...quarterViews],
   bridge,
 };

@@ -450,9 +450,9 @@ export const fieldnotesArrival = {
   // Arrive at the inhabited publishing garden, with its coast as a frame.
   // Phone uses a steeper, closer view so studio → lounge → kiosk stack in
   // the clear middle of the screen rather than shrinking under the sky.
-  position: [-18, 14, -23],
-  target: [-1.25, 1.1, -0.75],
-  fov: 44,
+  position: [-27, 25, -40],
+  target: [-7, 3, 5],
+  fov: 48,
   portrait: { position: [-5, 15, -27], target: [0, 0.8, -1.2], fov: 56 },
 };
 
@@ -463,9 +463,9 @@ export const fieldnotesCameras = {
     portrait: { position: [7.3, 2.7, 2.5], target: [3.4, 1.05, 0.4] },
   },
   writing: {
-    position: [-3.9, 2.15, -2.3],
-    target: [-2.2, 1.35, 3.25],
-    fov: 48,
+    position: [-2.25, 1.86, -2.1],
+    target: [-2.45, 1.28, 3.5],
+    fov: 46,
     portrait: { position: [-3.4, 2.1, -2.5], target: [-2.2, 1.35, 3.25], fov: 57 },
   },
   collaborate: {
