@@ -5,21 +5,10 @@ import { Box, Rods } from "./ScenePrimitives";
 import {
   cinemaGarden as g,
   cinemaScreen,
+  cinemaStrandBulbs,
 } from "../../lib/entertainment-layout.mjs";
 
 const BULB = "#ffd9a0";
-
-// Points along a gently sagging strand between two posts.
-function strandPoints([a, b], count, sag = 0.32) {
-  return Array.from({ length: count }, (_, i) => {
-    const t = (i + 0.5) / count;
-    return [
-      a[0] + (b[0] - a[0]) * t,
-      a[1] + (b[1] - a[1]) * t - Math.sin(Math.PI * t) * sag,
-      a[2] + (b[2] - a[2]) * t,
-    ];
-  });
-}
 
 // Every bulb in the garden, marquee border included, as one instanced draw.
 function Bulbs({ points, night }) {
@@ -163,7 +152,7 @@ function Cart() {
 
 export default function CinemaGarden({ night }) {
   const bulbs = useMemo(() => {
-    const points = g.strands.flatMap((s) => strandPoints(s, 11));
+    const points = g.strands.flatMap(cinemaStrandBulbs);
     const { position: [mx, my, mz], size: [w, h] } = g.marquee;
     for (let i = 0; i <= 16; i++)
       for (const y of [my - h / 2 - 0.02, my + h / 2 + 0.02])

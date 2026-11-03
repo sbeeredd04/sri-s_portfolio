@@ -39,7 +39,7 @@ export default function SharedIslandAsset({
       if (/glass|glaz/i.test(m.name)) {
         m.transmission = 0;
         m.transparent = true;
-        m.opacity = 0.27;
+        m.opacity = m.name === "AfterHours_LowReflectionGlass" ? 0.18 : 0.27;
         m.depthWrite = false;
         m.roughness = 0.2;
       }

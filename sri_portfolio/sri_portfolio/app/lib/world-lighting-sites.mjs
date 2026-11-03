@@ -1,7 +1,17 @@
 import { Vector3 } from "three";
 import { homeArrival, homeHarbor, homePromenade, homeSite } from "./home-site.mjs";
 import { apartmentPoint } from "./studio-layout.mjs";
-import { afterHoursArrival } from "./authored-island-sites.mjs";
+import { afterHoursArrival, raisedContentPoint } from "./authored-island-sites.mjs";
+
+import { courtLamps } from "./court-layout.mjs";
+import {
+  cinemaGarden,
+  cinemaOrigin,
+  cinemaScreen,
+  cinemaStrandBulbs,
+  listeningHearth,
+  listeningPendants,
+} from "./entertainment-layout.mjs";
 
 export const closeShadowProjection = { offset: 180, near: 3, far: 400 };
 
@@ -34,6 +44,48 @@ export function afterHoursThresholdPracticals(stop) {
     ? afterHoursThresholdLenses.slice(1)
     : afterHoursThresholdLenses.slice(0, 2);
   return lenses.map((position) => [position, "#ffbd7d", 8, 7, "exterior", "court"]);
+}
+
+const offsetPoint = (origin, point) => origin.map((value, i) => value + point[i]);
+const entertainmentLamp = (position, color, power, reach) =>
+  [position, color, power, reach, "", "entertainment"];
+
+// Resting center of the 0.38 m paper globe, 0.93 m below its ceiling mount.
+const pendantLamp = (index, power, reach) =>
+  entertainmentLamp(offsetPoint(listeningPendants[index], [0, -0.93, 0]), "#ffd2a3", power, reach);
+const strandLamp = (index, power, reach) => entertainmentLamp(
+  offsetPoint(cinemaOrigin, cinemaStrandBulbs(cinemaGarden.strands[index])[5]),
+  "#ffd09a", power, reach,
+);
+
+export function afterHoursPracticals(world, stop) {
+  if (world === "court") return [
+    ...courtLamps.map((position) => [position, "#f6dfbd", 92, 24]),
+    pendantLamp(0, 42, 14),
+    strandLamp(0, 22, 10),
+  ];
+  const thresholds = afterHoursThresholdPracticals(stop);
+  if (stop === "cinema") return [
+    strandLamp(0, 18, 9),
+    strandLamp(1, 18, 9),
+    // Screen bounce starts just in front of the screen, facing the seats.
+    entertainmentLamp(offsetPoint(cinemaOrigin, offsetPoint(cinemaScreen, [0, 0, 0.28])), "#c8d2ea", 4, 7),
+    pendantLamp(2, 16, 10),
+    ...thresholds,
+  ];
+  return [
+    pendantLamp(0, 12, 8),
+    pendantLamp(1, 10, 8),
+    pendantLamp(2, 14, 8),
+    entertainmentLamp(offsetPoint(listeningHearth.position, listeningHearth.flame), "#ff9f61", 9, 6),
+    ...thresholds,
+  ];
+}
+
+export function practicalLocalPosition(world, lampWorld, item) {
+  if (item[4] === "exterior") return item[0];
+  if (world === "studio") return apartmentPoint(item[0]);
+  return raisedContentPoint(lampWorld, item[0]);
 }
 
 const summitBase = homeSite.anchors.Summit_EntryAnchor[1];

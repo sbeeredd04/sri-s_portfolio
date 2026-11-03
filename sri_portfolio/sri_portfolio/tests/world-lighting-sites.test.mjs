@@ -6,14 +6,18 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "meshoptimizer";
 import { regions, worldPoint } from "../app/lib/world-layout.mjs";
 import { homeSite } from "../app/lib/home-site.mjs";
-import { afterHoursCoastSource } from "../app/lib/authored-island-sites.mjs";
+import { cinemaGarden, cinemaOrigin, cinemaScreen, cinemaStrandBulbs, listeningHearth, listeningPendants } from "../app/lib/entertainment-layout.mjs";
+import { courtLamps } from "../app/lib/court-layout.mjs";
+import { afterHoursCoastSource, legacyContentLift } from "../app/lib/authored-island-sites.mjs";
 import {
+  afterHoursPracticals,
   afterHoursThresholdLenses,
   afterHoursThresholdPracticals,
   closeShadowProjection,
   homeStreetLenses,
   homeStreetPracticals,
   lightingShadowSubject,
+  practicalLocalPosition,
   shadowFit,
 } from "../app/lib/world-lighting-sites.mjs";
 
@@ -117,4 +121,37 @@ test("pooled exterior lights sit at the decoded lantern lenses", async () => {
   assert.deepEqual(homeStreetPracticals("promenade").map(([p]) => p[0]), [24, 36, 12, 48]);
   assert.equal(afterHoursThresholdPracticals("listening").length, 2);
   assert.equal(afterHoursThresholdPracticals("cinema").length, 2);
+});
+
+test("After hours keeps six points attached to the appropriate visible fixtures", async () => {
+  const [, , coast] = await loaded;
+  const sum = (a, b) => a.map((value, i) => value + b[i]);
+  const actualPoint = (world, item) => {
+    const lampWorld = item[5] || world;
+    return worldPoint(lampWorld, practicalLocalPosition(world, lampWorld, item));
+  };
+  const raisedFixture = (world, point) =>
+    worldPoint(world, sum(point, [0, legacyContentLift[world], 0]));
+  const pendant = (index) =>
+    raisedFixture("entertainment", sum(listeningPendants[index], [0, -0.93, 0]));
+  const strands = cinemaGarden.strands.map((strand) =>
+    raisedFixture("entertainment", sum(cinemaOrigin, cinemaStrandBulbs(strand)[5])));
+  const hearth = raisedFixture("entertainment", sum(listeningHearth.position, listeningHearth.flame));
+  const screen = raisedFixture("entertainment", sum(cinemaOrigin, sum(cinemaScreen, [0, 0, 0.28])));
+  const lenses = afterHoursThresholdLenses.map((_, i) =>
+    worldPoint("court", bounds(coast, `AfterHours_Garden_LanternGlow_${i}`).getCenter(new Vector3()).toArray()));
+  const courts = courtLamps.map((position) => raisedFixture("court", position));
+  for (const [world, stop, expected] of [
+    ["court", "arrival", [...courts, pendant(0), strands[0]]],
+    ["court", "badminton", [...courts, pendant(0), strands[0]]],
+    ["entertainment", "listening", [pendant(0), pendant(1), pendant(2), hearth, lenses[0], lenses[1]]],
+    ["entertainment", "cinema", [...strands, screen, pendant(2), lenses[1], lenses[2]]],
+  ]) {
+    const lights = afterHoursPracticals(world, stop);
+    assert.equal(lights.length, 6);
+    lights.forEach((light, index) => {
+      assert.ok(actualPoint(world, light).distanceTo(expected[index]) < 0.01,
+        `${stop} practical ${index} misses its rendered fixture`);
+    });
+  }
 });

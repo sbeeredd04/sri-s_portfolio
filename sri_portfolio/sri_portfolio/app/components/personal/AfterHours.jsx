@@ -24,6 +24,8 @@ import {
   cinemaOrigin,
   cinemaScreen,
   cinemaSeats,
+  listeningHearth,
+  listeningPendants,
   listeningRoomSign,
   listeningSeat,
   facingYaw,
@@ -198,7 +200,7 @@ function Fireplace({ animate }) {
     uniforms.uTime.value = time.current;
   });
   return (
-    <group position={[3.7, 0, -1.7]}>
+    <group position={listeningHearth.position}>
       <mesh position={[0, 1.1, 0]} scale={[1, 1.4, 0.75]} castShadow>
         <sphereGeometry args={[0.5, 32, 24]} />
         <meshStandardMaterial
@@ -221,7 +223,7 @@ function Fireplace({ animate }) {
           emissiveIntensity={0.35}
         />
       </mesh>
-      <mesh ref={flame} position={[0, 1.05, 0.36]}>
+      <mesh ref={flame} position={listeningHearth.flame}>
         <planeGeometry args={[0.54, 0.64]} />
         <shaderMaterial
           transparent
@@ -457,11 +459,7 @@ function ListeningHouse({
             position={[3.7, 0.15, 3]}
             scale={0.8}
           />
-          {[
-            [-2.8, 4, 0],
-            [0.6, 4, -1.4],
-            [2.8, 4, 2],
-          ].map((p, i) => (
+          {listeningPendants.map((p, i) => (
             <PaperPendant
               key={i}
               position={p}

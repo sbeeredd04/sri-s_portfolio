@@ -5,7 +5,8 @@ import * as THREE from "three";
 import { useQuality } from "./Quality";
 import { illumination } from "../../lib/world-lighting.mjs";
 import {
-  afterHoursThresholdPracticals,
+  afterHoursPracticals,
+  practicalLocalPosition,
   closeShadowProjection,
   homeStreetPracticals,
   isHomeInterior,
@@ -22,7 +23,6 @@ import {
 import { apartmentPoint, studioDeskLight } from "../../lib/studio-layout.mjs";
 import { outThereCamp } from "../../lib/out-there-site.mjs";
 import { madeSites, madeSitePoint } from "../../lib/made-campus-views.mjs";
-import { raisedContentPoint } from "../../lib/authored-island-sites.mjs";
 import { courtLamps } from "../../lib/court-layout.mjs";
 import { projectGallerySites } from "../../lib/project-town-layout.mjs";
 import { campusCenter } from "../../lib/campus-layout.mjs";
@@ -50,18 +50,6 @@ const practicals = {
     ],
     [[-4.7, 2.14, -1.35], "#ffd6a6", 17, 9],
     [[-6.24, 2.4, 5.3], "#ffd6a6", 3, 5],
-  ],
-  entertainment: [
-    [[-2.8, 2.9, 0], "#ffd2a3", 10, 8],
-    [[0.6, 2.9, -1.4], "#ffd2a3", 8, 7],
-    [[3.7, 1.1, -1], "#ff9f61", 9, 6],
-    [[9, 2, -0.5], "#b5bddd", 5, 7],
-  ],
-  court: [
-    ...courtLamps.map((position) => [position, "#f6dfbd", 92, 24]),
-    // Pavilion is part of this island even when the courts own the camera.
-    [[-1.55, 3.15, 42.55], "#ffbb72", 55, 19],
-    [[9, 2.4, 42], "#ffd09a", 34, 15],
   ],
   // The campfire only burns at night, and flickers.
   trail: [
@@ -118,12 +106,6 @@ const exhibits = {
 // dimming a pooled light only changes uniforms.
 const POOL = 6;
 const moonDirection = [-0.5, 0.8, 0.5];
-function practicalLocalPosition(world, lampWorld, item) {
-  if (item[4] === "exterior") return item[0];
-  if (world === "studio") return apartmentPoint(item[0]);
-  return raisedContentPoint(lampWorld, item[0]);
-}
-
 export default function WorldLighting({
   world,
   stop,
@@ -170,7 +152,7 @@ export default function WorldLighting({
       return [
         [apartmentPoint([1.98, 2.45, -2.2]), "#ffc181", 18, 12, "", "studio"],
         [[0, 5.85, -6.5], "#ffcf9d", 60, 26, "", "projects"],
-        [[-1.55, 3.15, 42.55], "#ffbb72", 65, 24, "", "court"],
+        afterHoursPracticals("court")[courtLamps.length],
         [courtLamps[1], "#f6dfbd", 92, 26, "", "court"],
         [[outThereCamp.x, outThereCamp.y + .7, outThereCamp.z], "#ffa04a", 8, 12, "fire", "trail"],
         [fieldnotesDeskLamp.bulb, "#ffc181", 12, 12, "", "future"],
@@ -195,8 +177,8 @@ export default function WorldLighting({
     if (world === "studio" && !interior) {
       return [practicals.studio[0], practicals.studio[3], ...homeStreetPracticals(stop)];
     }
-    if (world === "entertainment") {
-      return [...practicals.entertainment, ...afterHoursThresholdPracticals(stop)];
+    if (world === "court" || world === "entertainment") {
+      return afterHoursPracticals(world, stop);
     }
     return practicals[world] || [];
   }, [world, stop, interior]);
