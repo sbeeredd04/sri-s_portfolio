@@ -25,7 +25,6 @@ import WorldResidents from "./WorldResidents";
 import { RoomMaterialProvider } from "./RoomMaterials";
 import PlanetSurface from "./PlanetSurface";
 import { Stars } from "./WorldDetails";
-import StarSphere from "./StarSphere";
 import Walkways from "./Walkways";
 import StreetViewMarkers from "./StreetViewMarkers";
 import VisitorWalker from "./VisitorWalker";
@@ -59,17 +58,6 @@ import { QualityProvider, useQuality } from "./Quality";
 import { tierSettings } from "../../lib/device-tier.mjs";
 
 
-
-// The procedural star field is already present at every tier. A phone does
-// not need a second 4K texture and three extra sky samples per pixel.
-function DesktopStarBackdrop({ daylight, weather }) {
-  const { tier } = useQuality();
-  return tier === "low" ? null : (
-    <Suspense fallback={null}>
-      <StarSphere daylight={daylight} weather={weather} />
-    </Suspense>
-  );
-}
 
 // Warm the real render path, including late textures and environment lighting,
 // behind the entrance. Stop scheduling as soon as it is ready.
@@ -256,10 +244,9 @@ function ConnectedWorld({
         {...{ world, stop, night, animate, solar, residentClock }}
       />
       <SolarSky world={world} solar={solar} />
-      <DesktopStarBackdrop daylight={solar.daylight} weather={solar.weather} />
       <AtmosphereSky world={world} solar={solar} animate={animate} />
       <WeatherRain weather={solar.weather} animate={animate} />
-      <Stars daylight={solar.daylight} weather={solar.weather} />
+      <Stars world={world} daylight={solar.daylight} weather={solar.weather} />
       <Suspense fallback={null}>
         <PlanetSurface
           surfaceRef={planet}

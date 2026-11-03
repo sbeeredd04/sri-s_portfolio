@@ -1,55 +1,74 @@
 "use client";
 import { starVisibility } from "../../lib/atmosphere.mjs";
+import { starField } from "../../lib/night-stars.mjs";
+import { regions } from "../../lib/world-layout.mjs";
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-// A dome of stars that travels with the eye, like the sky, so no star can
-// sit between the camera and the ground: a fixed shell inside the grown
-// planet's reach used to scatter specks over the land.
-const STAR_DISTANCE = 900;
-export function Stars({ daylight, weather }) {
+// One directional star field for every quality tier. Its distant, eye-centred
+// shell is depth-tested against the world, so stars cannot shine through land.
+export function Stars({ world, daylight, weather }) {
   const dome = useRef();
-  useFrame(({ camera }) => dome.current?.position.copy(camera.position));
   const geometry = useMemo(() => {
-    const positions = [],
-      colors = [],
-      color = new THREE.Color();
-    for (let i = 0; i < 380; i++) {
-      const y = 1 - (i / 379) * 2,
-        r = Math.sqrt(1 - y * y),
-        a = i * 2.399963;
-      positions.push(
-        Math.cos(a) * r * STAR_DISTANCE,
-        y * STAR_DISTANCE,
-        Math.sin(a) * r * STAR_DISTANCE,
-      );
-      color.set(["#b4cce9", "#dad6ec", "#9cbbdc", "#e7dfcd"][i % 4]);
-      color.multiplyScalar(0.3 + ((i * 17) % 13) / 20);
-      colors.push(color.r, color.g, color.b);
-    }
+    const field = starField();
     const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-    g.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+    g.setAttribute("position", new THREE.Float32BufferAttribute(field.positions, 3));
+    g.setAttribute("color", new THREE.Float32BufferAttribute(field.colors, 3));
+    g.setAttribute("diameter", new THREE.Float32BufferAttribute(field.diameters, 1));
     return g;
   }, []);
+  const uniforms = useMemo(() => ({
+    visibility: { value: 0 },
+    pixelRatio: { value: 1 },
+    overview: { value: 0 },
+    skyUp: { value: new THREE.Vector3(0, 1, 0) },
+  }), []);
+  uniforms.visibility.value = starVisibility(daylight, weather);
+  uniforms.overview.value = world === "planet" ? 1 : 0;
+  useFrame(({ camera, gl }) => {
+    dome.current?.position.copy(camera.position);
+    uniforms.pixelRatio.value = gl.getPixelRatio();
+    const region = regions.find(r => r.id === world);
+    if (region) uniforms.skyUp.value.copy(region.normal);
+    else uniforms.skyUp.value.copy(camera.position).normalize();
+  });
   useEffect(() => () => geometry.dispose(), [geometry]);
   return (
-    <points
-      ref={dome}
-      geometry={geometry}
-      renderOrder={-10}
-      frustumCulled={false}
-      userData={{ sky: true }}
-    >
-      <pointsMaterial
-        vertexColors
-        size={1.25}
-        sizeAttenuation={false}
-        transparent
-        opacity={0.7 * starVisibility(daylight, weather)}
-        depthWrite={false}
-        toneMapped={false}
+    <points ref={dome} geometry={geometry} renderOrder={-10}
+      frustumCulled={false} userData={{ sky: true }} raycast={() => null}>
+      <shaderMaterial uniforms={uniforms} vertexColors transparent
+        depthWrite={false} depthTest toneMapped={false}
+        vertexShader={`
+          attribute float diameter;
+          uniform float pixelRatio, overview;
+          uniform vec3 skyUp;
+          varying vec3 starColor;
+          varying float heightFade;
+          void main() {
+            starColor = color;
+            vec3 direction = normalize(position);
+            float viewHeight = (viewMatrix * vec4(direction, 0.)).y;
+            float horizon = mix(dot(direction, skyUp), -.11 + viewHeight * 1.65, overview);
+            heightFade = mix(.55, 1., smoothstep(-.08, .28, horizon));
+            gl_PointSize = diameter * pixelRatio;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
+          }
+        `}
+        fragmentShader={`
+          uniform float visibility;
+          varying vec3 starColor;
+          varying float heightFade;
+          void main() {
+            float radius = length(gl_PointCoord - .5) * 2.;
+            float core = 1. - smoothstep(.12, .72, radius);
+            float halo = exp(-radius * radius * 5.) * .24;
+            float alpha = (core * .82 + halo) * visibility * heightFade;
+            if (alpha < .004) discard;
+            gl_FragColor = vec4(starColor, alpha);
+            #include <colorspace_fragment>
+          }
+        `}
       />
     </points>
   );

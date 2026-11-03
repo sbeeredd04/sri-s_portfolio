@@ -8,7 +8,7 @@ import { skyState } from "../../lib/atmosphere.mjs";
 
 // A camera-centred scattering sky whose "up" is the planet normal under the
 // eye, so every biome gets its own horizon, sun glow and haze. The sky remains
-// present at every supported camera height and thins at night for clear stars.
+// present at every supported camera height, with a separate night star layer.
 // The same horizon colour drives exponential fog, which gives distance the
 // aerial perspective that makes a small scene read as a large landscape.
 export const skyFragment = `
@@ -43,10 +43,9 @@ export const skyFragment = `
             // Mie forward scattering around the sun, strongest near sunset.
             float mu = max(dot(d, uSun), 0.);
             col += uGlow * (pow(mu, 6.) * .28 + pow(mu, 48.) * .9 + pow(mu, 900.) * 6.);
-            // Stars stay visible overhead at night; the horizon keeps its glow.
-            float nightAlpha = mix(mix(.98, .72, smoothstep(-.05, .55, h)), 1., uCloud*uCloud);
-            float alpha = uOpacity * mix(nightAlpha, 1., uDay);
-            gl_FragColor = vec4(col, alpha);
+            // Stars are a single depth-tested layer after the opaque sky.
+            // No second photograph is attenuated behind this atmosphere.
+            gl_FragColor = vec4(col, uOpacity);
             #include <tonemapping_fragment>
             #include <colorspace_fragment>
           }
@@ -158,12 +157,9 @@ export default function AtmosphereSky({ world, solar, animate = true }) {
       <shaderMaterial
         uniforms={uniforms}
         side={THREE.BackSide}
-        // Stay in the opaque list (drawn right after the stars, before the
-        // world) while still alpha-blending over the starfield.
+        // Opaque atmospheric background; depth-tested stars render afterwards.
         transparent={false}
-        blending={THREE.CustomBlending}
-        blendSrc={THREE.SrcAlphaFactor}
-        blendDst={THREE.OneMinusSrcAlphaFactor}
+        blending={THREE.NoBlending}
         depthWrite={false}
         depthTest={false}
         fog={false}
