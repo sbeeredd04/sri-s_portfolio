@@ -1,6 +1,6 @@
 // Authored GLB positions and audited top-ribbon footprints in metres.
 export const madeCampus = {
-  "source": "/models/islands/made-campus.glb?v=3134a3bda0c8a2dd",
+  "source": "/models/islands/made-campus.glb?v=8e31721ac62c9562",
   "anchors": {
     "Made_L2LandingAnchor": [
       -44,

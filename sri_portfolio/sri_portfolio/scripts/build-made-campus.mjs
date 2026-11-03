@@ -10,6 +10,7 @@ import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
 import { dedup, weld, meshopt } from "@gltf-transform/functions";
 import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
+import { auditMadeFacades } from "./lib/made-facade-audit.mjs";
 const app = fileURLToPath(new URL("../", import.meta.url));
 const file = new URL(
   "../public/models/islands/made-campus.glb",
@@ -288,6 +289,13 @@ for(const studio of stats.studios){
   }
 }
 
+const facadePlanes = auditMadeFacades(gltf.scene, stats.studios);
+assert.equal(facadePlanes.length, 24, "All six studios need all four exterior planes audited");
+for (const plane of facadePlanes) {
+  assert(plane.triangles > 0, `Missing rendered facade plane: ${plane.studio} ${plane.face}`);
+  assert.equal(plane.visiblePairs, 0, `Exposed differently coloured coplanar facade: ${JSON.stringify(plane)}`);
+}
+
 const bounds = new Box3().setFromObject(gltf.scene, true),
   round = (v) => v.toArray().map((x) => +x.toFixed(4));
 Object.assign(stats, {
@@ -309,6 +317,7 @@ Object.assign(stats, {
     loader: "Three GLTFLoader + MeshoptDecoder",
     semanticNamesRetained: true,
     doorwayRays, gardenTriangles, gardenReservations: reserve.length,
+    facadePlanes,
     anchorsRetained: true,
     studioTransformsRetained: true,
   },

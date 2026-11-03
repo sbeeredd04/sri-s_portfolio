@@ -964,3 +964,17 @@ Browser checks at 390×844 and 1440×900 cover Made overcast daylight/live dawn/
 Regression tests cover 74 actual authored camera positions, seven weather presets and five solar/preview states, including real 02:30 and 07:03 SF times. Root checks: 341/341 tests and typecheck. Isolated release: 339/339 tests, typecheck and production build pass. No added scene geometry, textures or lights.
 
 Open visual defects remain: broad flat grounds, sparse/regular planting, washed daytime materials, incomplete authored architecture and terrain, limited warm exterior lighting and camera obstruction coverage. Listening-room phone framing crops part of the cabinet/record-player; its close framing still needs a separate design pass. This resolves the disappearing atmosphere defect only; it does not close the full-world reference-quality goal.
+
+
+### Atmosphere production verification — November 3, 2026, 07:32 PT
+
+Commit f04381be is live through GitHub → Vercel; production dpl_CqsCM4vRK6iHpSJzT8XAPFxg8FwZ is Ready. Public /, /story, /resume, /rooms/work, /rooms/music, /fieldnotes/preview and /sitemap.xml return 200. Production browser screenshots at real SF07:30–07:32, Overcast12°C, confirm the formerly failing Made phone arrival has its sky and no daytime stars, plus desktop arrival and return to the sphere. No browser application errors observed. Viewport override reset. Exact reviewed release remains http://localhost:3111/.
+
+Evidence: research/atmosphere-continuity-2026-11-03/production-made-phone.png, production-made-desktop.png, production-world-return.png. Release pause/resume and changing light while paused were also exercised. Broad pale surfaces, sparse planting and distant facade/railing shimmer remain visible; atmosphere continuity is fixed, full visual quality is not accepted.
+
+
+### Home and Made construction repair — November 3, 2026
+
+Rebuilt Home and Made to remove exported coplanar surfaces that produced patchy/flickering trim. Made now has physical 120 mm window/arch relief, corrected lintels, joined wall corners and a roof band without overlapping wall faces. All 24 decoded exterior facade planes have zero exposed competing color surfaces. Home repairs cover all 15 rowhouses' eaves, reveals, plinths and wall joints, plus the Summit rug and pool junctions. Full decoded geometry checks retain the original bounds, anchors, doorways and complete path clearances. Home is 456,144 bytes /52,284 triangles /35 draws; Made is 2,540,840 bytes /136,217 triangles /144 draws.
+
+Browser screenshots cover desktop day-overcast arrivals, Home facade close view, Made Agentex interior, and return; phone overcast-night Home arrival/desk, Made arrival/interior and return. Pointer selection, keyboard chapter selection and reading Escape exit work; Agentex opens its specific case-study anchor. High-level appearance remains below the supplied references: muted overcast materials, sparse gardens, broad pale campus paving, plain house detailing, thin railing aliasing and excessive phone ceiling highlights remain open. This geometry pass does not resolve those design defects. Physical-phone/older-M1 and free touch/orbit validation remain unperformed. Evidence: research/facade-craft-2026-11-03/. Root 343/343 tests; isolated release341/341, typecheck, build and decoded export checks pass.

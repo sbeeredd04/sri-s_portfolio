@@ -276,6 +276,7 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
     s, t, gl, roof = Mesh(), Mesh(), Mesh(), Mesh()
     f = 0.18
     roofz = h - 0.6
+    wall_top = roofz - 0.2  # Wall ends at slab underside; no coplanar facade band.
     upper = 4.65
     openw = 6.4 if ident == "gitcue" else (7.2 if ident == "world" else 6.8)
     facade_tone={"agentex":"studioSage","gitcue":"studioOchre","mesa":"studioClay",
@@ -284,14 +285,16 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
     s.bevel_box((0, 0, .09), (w,d,.18), .025, "concrete")
     fy=-d/2+.23
     # Back wall is intentionally solid behind the runtime editorial board.
-    wall(s,(-w/2,w/2,f,roofz),(0,d/2-.24,0),(1,0,0),(0,1,0),[],tone,depth=.48)
+    wall(s,(-w/2,w/2,f,wall_top),(0,d/2-.24,0),(1,0,0),(0,1,0),[],tone,depth=.48)
+    # Side walls butt into the inside of the front/rear walls, rather than
+    # capping over their coloured facade planes.
     # Inset side windows leave large warm plaster shoulders. Their sill and
     # jamb return faces make the shell read as masonry instead of a glass box.
     for side in [-1,1]:
         sw=min(5.2,d*.48)
         holes=[(-sw/2,sw/2,1.25,3.45)]
         if h>7.6: holes.append((-sw/2,sw/2,5.2,roofz-.85))
-        wall(s,(-d/2,d/2,f,roofz),(side*(w/2-.24),0,0),(0,1,0),(side,0,0),holes,tone,depth=.48)
+        wall(s,(-d/2+.46,d/2-.48,f,wall_top),(side*(w/2-.24),0,0),(0,1,0),(side,0,0),holes,tone,depth=.48)
         x=side*(w/2-.30)
         for lo,hi,bottom,top in holes:
             gl.face([(x,lo,bottom),(x,hi,bottom),(x,hi,top),(x,lo,top)],"glass")
@@ -305,20 +308,24 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
         r=openw/2
         spring=3.95
         for lo,hi in [(-w/2,-r),(r,w/2)]:
-            wall(s,(lo,hi,f,roofz),(0,fy,0),(1,0,0),(0,-1,0),[],tone,depth=.46)
+            wall(s,(lo,hi,f,wall_top),(0,fy,0),(1,0,0),(0,-1,0),[],tone,depth=.46)
         arc=[(-r*math.cos(i*math.pi/24),spring+r*math.sin(i*math.pi/24)) for i in range(25)]
         for (x0,z0),(x1,z1) in zip(arc,arc[1:]):
-            s.face([(x0,fy-.23,z0),(x1,fy-.23,z1),(x1,fy-.23,roofz),(x0,fy-.23,roofz)],tone)
-            s.face([(x0,fy+.23,roofz),(x1,fy+.23,roofz),(x1,fy+.23,z1),(x0,fy+.23,z0)],"plaster")
+            s.face([(x0,fy-.23,z0),(x1,fy-.23,z1),(x1,fy-.23,wall_top),(x0,fy-.23,wall_top)],tone)
+            s.face([(x0,fy+.23,wall_top),(x1,fy+.23,wall_top),(x1,fy+.23,z1),(x0,fy+.23,z0)],"plaster")
             s.face([(x0,fy-.23,z0),(x0,fy+.23,z0),(x1,fy+.23,z1),(x1,fy-.23,z1)],"concrete")
         # Sandstone voussoirs have both a front ring and a recessed inner edge.
         outer=[(-(r+.43)*math.cos(i*math.pi/24),spring+(r+.43)*math.sin(i*math.pi/24)) for i in range(25)]
         for i in range(24):
             a,b=arc[i],arc[i+1];c,d0=outer[i],outer[i+1]
-            s.face([(a[0],fy-.235,a[1]),(b[0],fy-.235,b[1]),(d0[0],fy-.235,d0[1]),(c[0],fy-.235,c[1])],"concrete")
+            # A 120mm sandstone relief attaches to the exterior wall face.
+            # Side returns make it real masonry, not a coplanar colour decal.
+            s.face([(a[0],fy-.35,a[1]),(b[0],fy-.35,b[1]),(d0[0],fy-.35,d0[1]),(c[0],fy-.35,c[1])],"concrete")
+            s.face([(a[0],fy-.23,a[1]),(b[0],fy-.23,b[1]),(b[0],fy-.35,b[1]),(a[0],fy-.35,a[1])],"concrete")
+            s.face([(c[0],fy-.35,c[1]),(d0[0],fy-.35,d0[1]),(d0[0],fy-.23,d0[1]),(c[0],fy-.23,c[1])],"concrete")
             t.rod((a[0],fy+.02,a[1]),(b[0],fy+.02,b[1]),.045,"graphite",5)
         for side in [-1,1]:
-            s.box((side*(r+.215),fy-.16,(f+spring)/2),(.43,.15,spring-f),"concrete")
+            s.box((side*(r+.215),fy-.29,(f+spring)/2),(.43,.12,spring-f),"concrete")
             t.box((side*r,fy+.02,(f+spring)/2),(.09,.08,spring-f),"graphite")
         for lo,hi in [(-r,-1.1),(1.1,r)]:glass_quad(gl,lo,hi,fy+.04,f,2.5)
         gl.face([(-r,fy+.04,2.5),(r,fy+.04,2.5),*[(x,fy+.04,z) for x,z in reversed(arc)]],"glass")
@@ -330,12 +337,12 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
     else:
         holes=[(-openw/2,openw/2,f,3.5)]
         if h>7.6:holes.append((-openw/2,openw/2,5.2,roofz-.85))
-        wall(s,(-w/2,w/2,f,roofz),(0,fy,0),(1,0,0),(0,-1,0),holes,tone,depth=.46)
+        wall(s,(-w/2,w/2,f,wall_top),(0,fy,0),(1,0,0),(0,-1,0),holes,tone,depth=.46)
         for x0,x1,bottom,top in holes:
             # A heavy architectural surround gives a clear large-window frame.
-            for xx in [x0-.13,x1+.13]:s.box((xx,fy-.13,(bottom+top)/2),(.26,.20,top-bottom+.40),"concrete")
-            s.box((0,fy-.13,top+.10),(openw+.52,.20,.20),"concrete")
-            if bottom>1:s.box((0,fy-.13,bottom-.10),(openw+.52,.20,.20),"concrete")
+            for xx in [x0-.13,x1+.13]:s.box((xx,fy-.29,(bottom+top)/2),(.26,.12,top-bottom+.40),"concrete")
+            s.box((0,fy-.29,top+.10),(openw+.52,.12,.20),"concrete")
+            if bottom>1:s.box((0,fy-.29,bottom-.10),(openw+.52,.12,.20),"concrete")
             if bottom<1:
                 for xx in [x0+.04,x1-.04]:t.box((xx,fy+.035,(bottom+top)/2),(.08,.075,top-bottom),"graphite")
                 t.box((0,fy+.035,top-.04),(openw,.075,.08),"graphite")
@@ -353,7 +360,7 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
         if h>7.6:s.box((0,0,upper-.12),(w-.96,d-.96,.24),"plaster")
         if ident in ["mesa","soda"]:
             # A shallow lintel shades the door without extending its approach.
-            s.bevel_box((0,-d/2+.12,4.50),(openw+.7,.24,.22),.025,"concrete")
+            s.bevel_box((0,-d/2-.09,4.50),(openw+.7,.18,.22),.025,"concrete")
     s.bevel_box((0, 0, roofz - 0.1), (w, d, 0.2), 0.018, "concrete")
     for xx in (-w / 2 + 0.12, w / 2 - 0.12):
         s.box((xx, 0, h - 0.3), (0.24, d, 0.6), "sandLight")

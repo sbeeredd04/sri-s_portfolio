@@ -69,9 +69,109 @@ assert.ok(alley>=5,`Full rendered alley only ${alley}m`);
 for(const row of [fronts,backs])for(let i=1;i<row.length;i++)assert.ok(row[i].min[0]-row[i-1].max[0]>=.8,'Neighbouring roofs intersect');
 assert.ok(triangles<65000,`Architecture ${triangles} triangles`);assert.ok(primitives<=36,`Architecture ${primitives} draw primitives`);
 assert.ok(bytes.length<1500000,`Compressed architecture is ${bytes.length} bytes`);
+// Test the delivered triangle surfaces, including cross-mesh conflicts. Work
+// per building so spatially separate footprints do not enter the pair scans.
+const cross = (a, b, c) =>
+  (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+
+function overlapArea(subject, clip) {
+  let polygon = subject;
+  for (let i = 0; i < 3; i++) {
+    const a = clip[i];
+    const b = clip[(i + 1) % 3];
+    const clipped = [];
+    for (let j = 0; j < polygon.length; j++) {
+      const p = polygon[j];
+      const q = polygon[(j + 1) % polygon.length];
+      const pSide = cross(a, b, p);
+      const qSide = cross(a, b, q);
+      if (pSide >= -1e-9) clipped.push(p);
+      if ((pSide > 1e-9 && qSide < -1e-9) || (pSide < -1e-9 && qSide > 1e-9)) {
+        const t = pSide / (pSide - qSide);
+        clipped.push(p.map((value, axis) => value + (q[axis] - value) * t));
+      }
+    }
+    if (clipped.length < 3) return 0;
+    polygon = clipped;
+  }
+  return Math.abs(polygon.reduce((sum, p, i) => {
+    const q = polygon[(i + 1) % polygon.length];
+    return sum + p[0] * q[1] - p[1] * q[0];
+  }, 0) / 2);
+}
+
+function scanCoplanarColors(module) {
+  const bins = new Map();
+  const vertex = new Vector3();
+  let testedTriangles = 0;
+  module.traverse((mesh) => {
+    if (!mesh.isMesh) return;
+    const { position, color } = mesh.geometry.attributes;
+    const index = mesh.geometry.index;
+    for (let i = 0; i < (index?.count ?? position.count); i += 3) {
+      testedTriangles++;
+      const ids = [0, 1, 2].map((j) => index ? index.getX(i + j) : i + j);
+      const points = ids.map((id) => vertex.fromBufferAttribute(position, id)
+        .applyMatrix4(mesh.matrixWorld).toArray());
+      const palette = [color.getX(ids[0]), color.getY(ids[0]), color.getZ(ids[0])]
+        .map((n) => n.toFixed(4)).join(",");
+      for (let axis = 0; axis < 3; axis++) {
+        const plane = points[0][axis];
+        if (points.some((p) => Math.abs(p[axis] - plane) > 1e-6)) continue;
+        const triangle = points.map((p) => p.filter((_, i) => i !== axis));
+        const winding = cross(...triangle);
+        if (Math.abs(winding) < 1e-8) continue;
+        if (winding < 0) triangle.reverse();
+        const bounds = [0, 1].map((i) => {
+          const coords = triangle.map((p) => p[i]);
+          return [Math.min(...coords), Math.max(...coords)];
+        });
+        const key = `${axis}:${plane.toFixed(3)}`;
+        if (!bins.has(key)) bins.set(key, []);
+        bins.get(key).push({ plane, triangle, bounds, palette });
+      }
+    }
+  });
+  const overlaps = [];
+  for (const [key, candidates] of bins) {
+    let area = 0;
+    for (let i = 0; i < candidates.length; i++) {
+      const a = candidates[i];
+      for (let j = i + 1; j < candidates.length; j++) {
+        const b = candidates[j];
+        if (a.palette === b.palette || Math.abs(a.plane - b.plane) > 1e-6) continue;
+        if (a.bounds.some(([lo, hi], axis) => lo >= b.bounds[axis][1] || hi <= b.bounds[axis][0])) continue;
+        area += overlapArea(a.triangle, b.triangle);
+      }
+    }
+    if (area > .0001) {
+      const [axis, plane] = key.split(":").map(Number);
+      overlaps.push({ axis, plane, areaMetres2: +area.toFixed(5) });
+    }
+  }
+  return { testedTriangles, overlaps: overlaps.sort((a, b) => b.areaMetres2 - a.areaMetres2) };
+}
+
+const coplanar = Object.fromEntries(
+  ["Summit_Root", ...houseBounds.map(({ name }) => name)]
+    .map((name) => [name, scanCoplanarColors(node(name))]),
+);
+const auditedTriangles = Object.values(coplanar)
+  .reduce((sum, audit) => sum + audit.testedTriangles, 0);
+assert.equal(auditedTriangles, triangles, "Coplanar audit must cover every rendered Home triangle");
+for (const [name, audit] of Object.entries(coplanar)) {
+  // The remaining sub-60 cm² house contacts are small rail/trim joints.
+  // Summit allows the small embedded bookshelf and furniture contacts.
+  const areaLimit = name === "Summit_Root" ? .06 : .01;
+  const worst = audit.overlaps[0];
+  assert.ok(!worst || worst.areaMetres2 < areaLimit,
+    `${name} has a conflicting coplanar face at axis ${worst?.axis}, plane ${worst?.plane}: ${worst?.areaMetres2}m²`);
+}
 const summit=box(new Box3().setFromObject(node('Summit_Root'),true));
 Object.assign(stats,{bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),triangles,primitives,vertices,
   bounds:box(new Box3().setFromObject(root,true)),summitBounds:summit,houseBounds,exportedAnchors:actualAnchors,
+  coplanarColorAudit:coplanar,
+  coplanarAuditTriangleCount:auditedTriangles,
   paletteRoundTrip:{attribute:'COLOR_0',maximumLinearError:Math.max(...Object.values(palette)),perColorError:palette},
   integrity:{loader:'Three GLTFLoader + MeshoptDecoder',semanticHierarchy:true,anchorsRetained:true,quantized:true,
     fullRenderedFootprintChecked:true,actualAlleyClearWidthMetres:+alley.toFixed(4),browserVisualAcceptance:false}});
