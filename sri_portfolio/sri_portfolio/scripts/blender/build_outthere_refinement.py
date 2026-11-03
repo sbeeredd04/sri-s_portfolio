@@ -436,18 +436,196 @@ for group in rock_groups:
   rock_faces.extend(group)
 rock_vertices = [tuple(point(original_rock, v)) for v in original_rock.data.vertices]
 rock_indices = [tuple(face.vertices) for face in rock_faces]
-rock_colors = []
+# Replace the front's inherited long skinny triangles with a deliberate
+# constrained face layout. The seam uses original boundary vertices, so this
+# remains the same connected formation and the summit/back are untouched.
+selected=[];retained=[]
+for f in rock_indices:
+ vv=[rock_vertices[j] for j in f]
+ (selected if min(v[2] for v in vv)>1.8 and max(v[1] for v in vv)<19.1 else retained).append(f)
+edge_counts={}
+for f in selected:
+ for aa,bb in zip(f,f[1:]+f[:1]):
+  k=tuple(sorted((aa,bb)));edge_counts[k]=edge_counts.get(k,0)+1
+adj={}
+for (aa,bb),count in edge_counts.items():
+ if count==1:adj.setdefault(aa,[]).append(bb);adj.setdefault(bb,[]).append(aa)
+assert all(len(v)==2 for v in adj.values()),'Front granite seam must be a closed loop'
+start=min(adj);outline_ids=[start];previous=None;current=start
+while True:
+ nxt=next(v for v in adj[current] if v!=previous)
+ if nxt==start:break
+ outline_ids.append(nxt);previous,current=current,nxt
+assert len(outline_ids)==len(adj),'Front granite must be one surface patch'
+# Collapse only near-duplicate seam points, updating adjacent retained faces.
+# These .005m inherited edges created the most conspicuous needle facets.
+redirect={};clean=[]
+for i in outline_ids:
+ if clean and (Vector(rock_vertices[i])-Vector(rock_vertices[clean[-1]])).length<.22:redirect[i]=clean[-1]
+ else:clean.append(i)
+if (Vector(rock_vertices[clean[-1]])-Vector(rock_vertices[clean[0]])).length<.22:redirect[clean.pop()]=clean[0]
+outline_ids=clean
+retained=[tuple(redirect.get(i,i) for i in f) for f in retained]
+retained=[f for f in retained if len(set(f))>=3]
+source_front=BVHTree.FromPolygons([Vector(v) for v in rock_vertices],selected)
+def front_height(x,y):
+ hit,_,_,_=source_front.ray_cast(Vector((x,y,50)),Vector((0,0,-1)))
+ return hit.z if hit else None
+outline=[(rock_vertices[i][0],rock_vertices[i][1]) for i in outline_ids]
+points=list(outline);edge_constraints=[(i,(i+1)%len(outline)) for i in range(len(outline))]
+retopo_rng=random.Random(44120)
+# Irregular, well-spaced points give roughly 1.5–2.4m stone faces. There is no
+# per-vertex displacement noise and no recursive triangle subdivision.
+for attempt in range(1600):
+ x=retopo_rng.uniform(-14.8,10.8);y=retopo_rng.uniform(4.0,18.8)
+ if not inside(x,y,outline) or nearest(x,y,outline)[0]<.85:continue
+ if min(math.hypot(x-a,y-b) for a,b in points)<1.6:continue
+ if front_height(x,y) is not None:points.append((x,y))
+# Explicit paired shelf contours, rather than accidental sloped triangle tips.
+buttresses=[(-10.0,3.3,8.3,3.1),(-6.8,3.1,12.0,2.7),(-4.2,1.45,6.8,1.6),
+            (4.3,1.8,10.0,2.5),(7.8,2.7,6.9,3.0),(8.2,2.1,14.1,1.8)]
+for cx,w,ledge,projection in buttresses:
+ for yy in [ledge-.22,ledge+.42]:
+  pair=[]
+  for xx in [cx-w*.65,cx,cx+w*.65]:
+   if not inside(xx,yy,outline) or nearest(xx,yy,outline)[0]<.7:continue
+   # Remove nearby unstructured interior points before inserting a shelf.
+   points=[v for j,v in enumerate(points) if j<len(outline) or math.dist(v,(xx,yy))>.7]
+   pair.append((xx,yy))
+  points.extend(pair)
+# Interior shelf points are triangulated with the boundary; minimum angle
+# quality is improved in 3D after the actual shoulder projection below.
+res=delaunay_2d_cdt([Vector(v) for v in points],edge_constraints,[list(range(len(outline)))],1,1e-5)
+front_map=[];front_ids=set()
+for v in res[0]:
+ match=next((i for i,(x,y) in enumerate(outline) if math.hypot(v.x-x,v.y-y)<1e-4),None)
+ if match is not None:front_map.append(outline_ids[match]);continue
+ z=front_height(v.x,v.y)
+ assert z is not None,'New granite point must lie on the source face'
+ # Suppress inherited tiny pits, without changing the global cliff silhouette.
+ samples=[front_height(v.x+dx,v.y+dy) for dx,dy in [(0,0),(.45,0),(-.45,0),(0,.45),(0,-.45)]]
+ samples=[q for q in samples if q is not None];z=sum(samples)/len(samples)
+ front_map.append(len(rock_vertices));front_ids.add(len(rock_vertices));rock_vertices.append((v.x,v.y,z))
+front_faces=[]
+for f in res[2]:
+ ids=tuple(front_map[j] for j in f);aa,bb,cc=[Vector(rock_vertices[j]) for j in ids]
+ if (bb-aa).cross(cc-aa).z<0:ids=tuple(reversed(ids))
+ front_faces.append(ids)
+rock_indices=retained+front_faces
+sculpt_approaches=json.loads((OUT/'world-approaches.json').read_text())['samples']
+sculpted_count=0;sculpt_maximum=0
+# Narrow and recess the upper front core, allowing a genuine silhouette change
+# below the immutable summit support. Walking envelopes remain untouched.
+def smooth01(v):
+ v=max(0,min(1,v));return v*v*(3-2*v)
+for i,(x,y,z) in enumerate(rock_vertices):
+ if z<=1.8 or y>=19 or y<=3.85:continue
+ if any(math.hypot(x-q[0],z-q[2])<q[3]+2 for q in all_path_points+sculpt_approaches):continue
+ weight=smooth01((z-1.8)/4)*smooth01((19-y)/2)*smooth01((y-3.85)/1.8)
+ channel=smooth01((abs(x+.45)-2.25)/1.05)
+ xx=x+(.45-x)*weight*.18*channel
+ zz=z-1.8*weight*channel
+ rock_vertices[i]=(xx,y,zz);sculpted_count+=1;sculpt_maximum=max(sculpt_maximum,math.hypot(xx-x,zz-z))
+# Three angular shoulder polyhedra union into the recessed core. Broad flat
+# shelves and different summit elevations read as geological masses, not loose
+# boulder balls. Their footprint, not a decorative radius, is audited below.
+shoulder_forms=[{'x':-9.6,'z':7.5,'width':5.7,'depth':4.7,'top':10.7,'shiftX':.7,'shiftZ':-.45},
+ {'x':-6.5,'z':5.1,'width':3.7,'depth':4.3,'top':15.0,'shiftX':-.25,'shiftZ':-.40},
+ {'x':6.9,'z':7.0,'width':3.8,'depth':4.5,'top':9.7,'shiftX':.1,'shiftZ':-.35}]
+def temporary_solid(name,vv,ff):
+ m=bpy.data.meshes.new(name);m.from_pydata(vv,[],ff);m.update()
+ bm=bmesh.new();bm.from_mesh(m);bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(m);bm.free()
+ o=bpy.data.objects.new(name,m);bpy.context.collection.objects.link(o);return o
+core=temporary_solid('granite_union_core',rock_vertices,rock_indices)
+profile=[(-1,-.65),(-.72,-1),(.62,-1),(1,-.36),(.86,.66),(.25,1),(-.65,.88),(-1,.28)]
+for index,form in enumerate(shoulder_forms):
+ vv=[];ff=[];baseY=3.72;phase=[.28,-.47,.68][index]
+ # Each ridge vertex has its own elevation, radius and angular direction.
+ # There are no horizontal courses or full-width cap terraces.
+ for ring,(rise,sx,sz) in enumerate([(0,1,1),(.43,.94,1.01),(.82,.78,.86),(1,.53,.61)]):
+  for j,(px,pz) in enumerate(profile):
+   a=phase+.14*math.sin(j*2.31+ring*1.8+index)
+   radial=1+.14*math.sin(j*1.9+ring*2.3+index*1.1)
+   qx=(px*math.cos(a)-pz*math.sin(a))*radial
+   qz=(px*math.sin(a)+pz*math.cos(a))*radial
+   xx=form['x']+qx*form['width']*sx+form['shiftX']*rise
+   if index<2:xx=min(-2.75,xx)
+   else:xx=max(2.8,xx)
+   zz=form['z']+qz*form['depth']*sz+form['shiftZ']*rise
+   irregular=0 if ring==0 else .13*math.sin(j*2.04+index*1.7+ring*.83)+.055*math.cos(j*1.17-ring)
+   yy=baseY+(form['top']-baseY)*(rise+irregular)
+   vv.append((xx,yy,zz))
+ for ring in range(3):
+  for j in range(8):
+   aa=ring*8+j;bb=ring*8+(j+1)%8;cc=(ring+1)*8+(j+1)%8;dd=(ring+1)*8+j
+   ff.extend([(aa,bb,cc),(aa,cc,dd)] if (j+ring+index)%2 else [(aa,bb,dd),(bb,cc,dd)])
+ ff.append(tuple(reversed(range(8))))
+ top=len(vv);vv.append((form['x']+form['shiftX']+.25,form['top']+.20,form['z']+form['shiftZ']-.4))
+ for j in range(8):ff.append((24+j,24+(j+1)%8,top))
+ # Complete solid footprint stays outside the shared approach corridor.
+ for xx,yy,zz in vv:
+  assert all(math.hypot(xx-q[0],zz-q[2])>q[3]+.35 for q in all_path_points+sculpt_approaches),'Granite shoulder enters a full-width path'
+ part=temporary_solid('granite_shoulder_'+str(index),vv,ff)
+ bpy.context.view_layer.objects.active=core;core.select_set(True)
+ mod=core.modifiers.new('Connected granite shoulder','BOOLEAN');mod.operation='UNION';mod.solver='EXACT';mod.object=part
+ bpy.ops.object.modifier_apply(modifier=mod.name)
+ bpy.data.objects.remove(part,do_unlink=True)
+# Dissolve coplanar boolean seams before triangulation. Their triangles shade as
+# one stone plane; no tiny independently tinted chips are introduced.
+bm=bmesh.new();bm.from_mesh(core.data)
+bmesh.ops.remove_doubles(bm,verts=list(bm.verts),dist=.0001)
+bmesh.ops.dissolve_limit(bm,angle_limit=.025,verts=list(bm.verts),edges=list(bm.edges),use_dissolve_boundaries=False)
+bmesh.ops.triangulate(bm,faces=list(bm.faces),quad_method='BEAUTY',ngon_method='BEAUTY')
+bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(core.data);bm.free()
+rock_vertices=[tuple(v.co) for v in core.data.vertices];rock_indices=[tuple(f.vertices) for f in core.data.polygons]
+bpy.data.objects.remove(core,do_unlink=True)
+# Localized soil-catching ledges: inset only part of an irregular upper plane,
+# keeping its surrounding ridges intact. These are not full facade courses.
+pocket_candidates=[]
+for i,f in enumerate(rock_indices):
+ a,b,c=[Vector(rock_vertices[j]) for j in f];n=(b-a).cross(c-a).normalized();center=(a+b+c)/3
+ area=(b-a).cross(c-a).length/2
+ if .43<n.y<.98 and n.z>-.05 and area>2.0 and 5.2<center.y<17 and center.z>5.3 and abs(center.x+.45)>3.2:
+  pocket_candidates.append((i,center,area))
+targets=[(-12,7.8,10),(-7.9,12.8,8.3),(-5.0,15.2,7.4),(5.3,9.3,9.8),(8.6,6.0,10.1),(-9.5,5.5,11.4),(-5.2,10,9.7)]
+selected_pockets={};pockets=[]
+for target in targets:
+ candidates=[q for q in pocket_candidates if q[0] not in selected_pockets and all(math.hypot(q[1].x-p['x'],q[1].z-p['z'])>2.0 for p in pockets)]
+ if not candidates:continue
+ i,center,area=min(candidates,key=lambda q:(q[1]-Vector(target)).length)
+ if (center-Vector(target)).length>5.0:continue
+ f=rock_indices[i];inner=[]
+ for j in f:
+  p=center.lerp(Vector(rock_vertices[j]),.52);p.y=center.y
+  inner.append(len(rock_vertices));rock_vertices.append(tuple(p))
+ poly=[(rock_vertices[j][0],rock_vertices[j][2]) for j in inner]
+ root_radius=nearest(center.x,center.z,poly)[0]
+ if root_radius<.15:continue
+ pocket={'x':center.x,'y':center.y,'z':center.z,'rootRadius':root_radius,'support':poly}
+ pockets.append(pocket);selected_pockets[i]=(f,inner)
+new_faces=[]
+for i,f in enumerate(rock_indices):
+ if i not in selected_pockets:new_faces.append(f);continue
+ outer,inner=selected_pockets[i]
+ for j in range(3):
+  k=(j+1)%3;new_faces.extend([(outer[j],outer[k],inner[k]),(outer[j],inner[k],inner[j])])
+ new_faces.append(tuple(inner))
+rock_indices=new_faces
+rock_colors=[]
 for face in rock_indices:
- a, b, c = (Vector(rock_vertices[i]) for i in face)
- n = (b-a).cross(c-a).normalized()
- center = (a+b+c)/3
- # Broad mineral seams and a darker runnel beneath the falling water.
- band = .5 + .5 * math.sin(center.y*.73 + center.x*.17)
- wet = max(0, 1-abs(center.x+.4)/4.7) * max(0, min(1, (center.z-4)/4))
- shade = (.84 + .15*band + .10*max(0,n.y)) * (1-.27*wet)
- rock_colors.append(tuple(c*shade for c in (.235,.253,.250)))
+ a,b,c=(Vector(rock_vertices[i]) for i in face);n=(b-a).cross(c-a).normalized();center=(a+b+c)/3
+ band=.5+.5*math.sin(center.y*.46+center.x*.23)
+ wet=max(0,1-abs(center.x+.45)/3.1)*smooth01((center.z-4)/4)
+ shade=(.91+.08*band+.07*max(0,n.y))*(1-.24*wet)
+ # Subtle warm grey granite; form and lighting carry the seams, not noise.
+ base=(.27+.018*max(0,n.x),.267+.008*max(0,n.y),.244)
+ rock_colors.append(tuple(v*shade for v in base))
+rock_sculpt={'connectedSourceTopology':True,'displacedVertices':sculpted_count,'maximumProjectionMetres':sculpt_maximum,
+ 'protectedSummitAbove':19,'protectedChannelHalfWidth':2.25,'shoulderForms':shoulder_forms,'plantingPockets':pockets,'buttresses':buttresses,'triangles':len(rock_indices)}
+
 bpy.data.objects.remove(original_rock,do_unlink=True)
-mesh('rock',rock_vertices,rock_indices,rock_colors)
+rock_object=mesh('rock',rock_vertices,rock_indices,rock_colors)
+rock_object['plantingPockets']=json.dumps(pockets)
 
 # Replace the inherited accordion sheets and airborne foam with a continuous
 # gravity curtain. The fall travels out from the notch as it accelerates down;
@@ -536,18 +714,26 @@ def clear_plant(x,z,radius):
 stone_vertices, stone_faces, stone_colors = [], [], []
 fern_vertices, fern_faces, fern_colors = [], [], []
 settled = []
-for i in range(900):
- x, z = shore_rng.uniform(-32,5), shore_rng.uniform(10,37)
+shore_rock_bvh=BVHTree.FromPolygons([Vector(v) for v in rock_vertices],rock_indices)
+for i in range(18000):
+ x, z = shore_rng.uniform(-35,13), shore_rng.uniform(4,40)
  d = nearest(x,z,LAKE)[0]
- if not .45 < d < 3.8 or inside(x,z,LAKE) or not inside(x,z,COAST):
+ if not .45 < d < 7.8 or inside(x,z,LAKE) or not inside(x,z,COAST):
   continue
- fern = len(settled)%4 != 0
- radius = shore_rng.uniform(.29,.66) if fern else shore_rng.uniform(.44,1.05)
- if not clear_plant(x,z,radius) or any(math.hypot(x-a,z-b)<radius+r+.18 for a,b,r in settled):
+ fern = len(settled)%12 != 0
+ radius = shore_rng.uniform(.65,1.22) if fern else shore_rng.uniform(.44,1.05)
+ if not clear_plant(x,z,radius) or any(math.hypot(x-a,z-b)<(radius+r)*.57 for a,b,r in settled):
   continue
  y = shore_support(x,z)
- if y is None or not WATER-.02 < y < WATER+1.25:
+ if y is None or not WATER-.02 < y < WATER+4.5:
   continue
+ # All leaf tips fit the bank and ground grade. Deliberate drifting patches
+ # leave irregular mineral windows instead of even plant spacing.
+ rim=[shore_support(x+math.cos(j*math.tau/8)*radius,z+math.sin(j*math.tau/8)*radius) for j in range(8)]
+ if any(h is None for h in rim) or max(rim)-min(rim)>.9:continue
+ if math.sin(x*.32+z*.13)+.55*math.sin(z*.51-x*.17)<-.65:continue
+ rock_hit,_,_,_=shore_rock_bvh.ray_cast(Vector((x,40,z)),Vector((0,-1,0)))
+ if rock_hit and rock_hit.y>y+.08:continue
  settled.append((x,z,radius))
  if fern:
   # Folded, paired leaflets on arcing fronds. One mesh for the whole bank.
@@ -559,11 +745,11 @@ for i in range(900):
    span = radius*shore_rng.uniform(.70,1)
    for j in range(1,7):
     t=j/7
-    stem=Vector((x+dx*span*t,y+.03+span*(.74*t-.48*t*t),z+dz*span*t))
+    stem=Vector((x+dx*span*t,y+.03+span*(1.35*t-.82*t*t),z+dz*span*t))
     for side in [-1,1]:
-     tip=stem+Vector((span*(dx*.17-dz*side*.24)*(1-t*.6),span*.055,span*(dz*.17+dx*side*.24)*(1-t*.6)))
+     tip=stem+Vector((span*(dx*.17-dz*side*.31)*(1-t*.6),span*.055,span*(dz*.17+dx*side*.31)*(1-t*.6)))
      ridge=stem.lerp(tip,.51)+Vector((0,span*.035,0))
-     edge=Vector((dx,0,dz))*span*.051*(1-t*.48)
+     edge=Vector((dx,0,dz))*span*.119*(1-t*.48)
      base=len(fern_vertices)
      fern_vertices.extend([tuple(stem),tuple(ridge-edge),tuple(tip),tuple(ridge+edge),tuple(ridge)])
      fern_faces.extend([(base,base+4,base+1),(base+1,base+4,base+2),(base+2,base+4,base+3),(base+3,base+4,base)])
@@ -588,10 +774,39 @@ for i in range(900):
     stone_colors.extend([color,tuple(c*.91 for c in color)])
   stone_faces.append(tuple(reversed(range(base+16,base+24))))
   stone_colors.append((.27,.30,.148))
- if len(settled)>=36:
+ if len(settled)>=260:
   break
 mesh('lake_shore_stones',stone_vertices,stone_faces,stone_colors)
 mesh('lake_shore_ferns',fern_vertices,fern_faces,fern_colors)
+# Broad salal-like leaves and visible branching interlock with fern fronds.
+# These occupy existing fully reserved bank footprints; no new path intrusion.
+shrub_v=[];shrub_f=[];shrub_c=[];shrub_sites=[]
+shrub_rng=random.Random(31812)
+for index,(x,z,r) in enumerate(settled):
+ if index%3!=1:continue
+ y=shore_support(x,z);height=shrub_rng.uniform(.48,.82)*r
+ shrub_sites.append([x,y,z,r,height])
+ for branch in range(5):
+  angle=branch*math.tau/5+shrub_rng.random()*.5;dx,dz=math.cos(angle),math.sin(angle)
+  end=Vector((x+dx*r*.52,y+height,z+dz*r*.52));root=Vector((x,y-.025,z))
+  # Slender tapered pentagonal branch, not a floating foliage sphere.
+  base=len(shrub_v)
+  for t,thick in [(0,.022),(1,.009)]:
+   c=root.lerp(end,t)
+   for j in range(5):shrub_v.append(tuple(c+Vector((math.cos(j*math.tau/5)*thick,0,math.sin(j*math.tau/5)*thick))))
+  for j in range(5):
+   a=base+j;b=base+(j+1)%5;shrub_f.extend([(a,b,b+5),(a,b+5,a+5)]);shrub_c.extend([(.12,.115,.06)]*2)
+  for level in range(1,5):
+   for side in [-1,1]:
+    t=level/5;stem=root.lerp(end,t)
+    length=r*shrub_rng.uniform(.25,.38);direction=Vector((dx*.35-dz*side*.8,.18,dz*.35+dx*side*.8)).normalized()
+    tip=stem+direction*length;mid=stem.lerp(tip,.48);wide=Vector((dz,0,-dx))*length*.34
+    ridge=mid+Vector((0,length*.13,0));base=len(shrub_v)
+    shrub_v.extend([tuple(stem),tuple(mid-wide),tuple(tip),tuple(mid+wide),tuple(ridge)])
+    shrub_f.extend([(base,base+1,base+4),(base+1,base+2,base+4),(base+2,base+3,base+4),(base+3,base,base+4)])
+    tone=shrub_rng.uniform(.89,1.08);shrub_c.extend([tuple(v*tone*k for v in (.09,.17,.065)) for k in [1,.92,1.13,1.05]])
+mesh('lake_shore_shrubs',shrub_v,shrub_f,shrub_c)
+
 
 # Forest composition uses the shipped polygon redwood/pine meshes, reused at
 # juvenile and mature scales. Terrain and all path widths remain authoritative.
@@ -680,59 +895,56 @@ for attempt in range(12000):
  if len(forest_plants)>=1200:break
 mesh('ferns_grove_understory',under_v,under_f,under_c)
 mesh('grass_grove_tufts',grass_v,grass_f,grass_c)
-# Staggered granite shoulders at the cliff foot. Their back halves overlap
-# the source rock; the foreground edge stops well short of the falling water.
-# They are individually faceted, irregular forms, never vertical columns.
+# The connected sculpted granite itself supplies all ledges; former separate
+# foot boulder shells are retired to avoid a piled-ball silhouette.
 shoulder_rng=random.Random(3146)
-shoulder_v=[];shoulder_f=[];shoulder_c=[];shoulder_sites=[]
-for x,y,r,h in [(-12.0,3.7,1.8,2.1),(-10.2,4.0,2.0,2.9),(-8.0,3.75,1.8,1.7),(-6.4,4.1,1.4,2.3),(-12.0,4.2,2.6,1.9),(-9.1,4.5,2.3,2.0),(5.0,3.8,1.25,1.6),(7.1,4.0,1.8,2.4),(9.5,3.9,1.45,1.65),(8.2,4.2,1.9,1.65)]:
- hit,_,_,_=rock_bvh.ray_cast(Vector((x,y+.7,60)),Vector((0,0,-1)))
- if hit is None:continue
- z=hit.z-.72
- if not clear_plant(x,z,r+.25):continue
- base=len(shoulder_v);turn=shoulder_rng.random()*math.tau
- radii=[shoulder_rng.uniform(.80,1.08) for _ in range(9)]
- for ring,(scale,rise) in enumerate([(1,-.35),(.94,.27),(.76,.73),(.52,.91)]):
-  for j in range(9):
-   a=turn+j*math.tau/9;xx=x+math.cos(a)*r*radii[j]*scale+ring*r*.085;zz=z+math.sin(a)*r*radii[j]*scale*.76-ring*r*.10
-   yy=y+h*(rise+(.06*math.sin(a*2+.8) if ring else 0))
-   shoulder_v.append((xx,yy,zz))
- for ring in range(3):
-  for j in range(9):
-   a=base+ring*9+j;b=base+ring*9+(j+1)%9
-   shoulder_f.extend([(a,a+9,b),(b,a+9,b+9)])
-   shade=shoulder_rng.uniform(.86,1.13)*(1 if ring else .77)
-   shoulder_c.extend([tuple(v*shade for v in (.205,.225,.223)),tuple(v*shade*1.035 for v in (.205,.225,.223))])
- shoulder_f.append(tuple(reversed(range(base+27,base+36))));shoulder_c.append((.225,.252,.222))
- shoulder_sites.append({'x':x,'z':z,'base':y,'height':h,'radius':r})
-mesh('cliff_foot_shoulders',shoulder_v,shoulder_f,shoulder_c)
+shoulder_sites=[{'x':q['x']+q['shiftX'],'z':q['z']+q['shiftZ'],'base':q['top'],'height':q['top']-3.72,'radius':q['width']*.60,'depth':q['depth']*.68} for q in shoulder_forms]
 # Ferns root onto actual exported ledge polygons; low shelf plants break the
 # mineral/ground transition without covering the lake or source dock.
-shoulder_bvh=BVHTree.FromPolygons([Vector(v) for v in shoulder_v],shoulder_f)
+shoulder_bvh=rock_bvh
 ledge_v=[];ledge_f=[];ledge_c=[];ledge_sites=[]
-for attempt in range(950):
- if not shoulder_sites:break
- site=shoulder_sites[attempt%len(shoulder_sites)];x=site['x']+shoulder_rng.uniform(-.85,.85)*site['radius'];z=site['z']+shoulder_rng.uniform(-.3,.9)*site['radius']
- r=shoulder_rng.uniform(.38,.80)
+ledge_candidates=[]
+for pocket_index,pocket in enumerate(pockets):
+ for member in range([3,2,1,3,2,2,1][pocket_index%7]):
+  a=pocket_index*1.7+member*2.4;offset=pocket['rootRadius']*(.04 if member==0 else .72)
+  x=pocket['x']+math.cos(a)*offset;z=pocket['z']+math.sin(a)*offset
+  r=shoulder_rng.uniform(.62,1.27)*(1 if member==0 else .77)
+  ledge_candidates.append((x,z,r,pocket['y']))
+for x,z,r,expected_y in ledge_candidates:
  if not clear_plant(x,z,r) or (-3.0<x<2.4 and z>7):continue
  hit,normal,_,_=shoulder_bvh.ray_cast(Vector((x,40,z)),Vector((0,-1,0)))
- if hit is None or normal.y<.50:continue
- # The visible upper support must be the new ledge, not a hidden rock interior.
- original,_,_,_=rock_bvh.ray_cast(Vector((x,40,z)),Vector((0,-1,0)))
- if original and original.y>hit.y+.08:continue
- if any(math.hypot(x-a,z-b)<(r+rr)*.66 for a,b,rr in ledge_sites):continue
+ if hit is None or normal.y<.92 or abs(hit.y-expected_y)>.05:continue
+ if any(math.hypot(x-a,z-b)<.14 for a,b,rr in ledge_sites):continue
  ledge_sites.append((x,z,r));y=hit.y-.012;turn=shoulder_rng.random()*math.tau
- for branch in range(6):
-  a=turn+branch*math.tau/6;dx,dz=math.cos(a),math.sin(a);span=r*shoulder_rng.uniform(.8,1)
-  for j in range(1,5):
-   t=j/5;stem=Vector((x+dx*span*t,y+.04+span*(1.3*t-.95*t*t),z+dz*span*t))
+ # Upright salal shrub sprays; four branches interlock into one broad crown.
+ for spray in range(6):
+  angle=turn+spray*math.tau/6;dx,dz=math.cos(angle),math.sin(angle)
+  root=Vector((x,y,z));tip=Vector((x+dx*r*.45,y+r*shoulder_rng.uniform(.85,1.15),z+dz*r*.45))
+  base=len(ledge_v)
+  for t,rr in [(0,.025),(1,.012)]:
+   c=root.lerp(tip,t)
+   for j in range(5):ledge_v.append(tuple(c+Vector((math.cos(j*math.tau/5)*rr,0,math.sin(j*math.tau/5)*rr))))
+  for j in range(5):
+   aa=base+j;bb=base+(j+1)%5;ledge_f.extend([(aa,bb,bb+5),(aa,bb+5,aa+5)]);ledge_c.extend([(.13,.115,.055)]*2)
+  for level in range(2,6):
+   stem=root.lerp(tip,level/6)
    for side in [-1,1]:
-    tip=stem+Vector((span*(dx*.17-dz*side*.27)*(1-t*.55),span*.04,span*(dz*.17+dx*side*.27)*(1-t*.55)))
-    ridge=stem.lerp(tip,.5)+Vector((0,span*.055,0));edge=Vector((dx,0,dz))*span*.07
+    direction=Vector((dx*.5-dz*side*.65,.45,dz*.5+dx*side*.65)).normalized();length=r*shoulder_rng.uniform(.38,.52)
+    end=stem+direction*length;mid=stem.lerp(end,.48);width=Vector((dz,0,-dx))*length*.37;ridge=mid+Vector((0,length*.16,0))
+    base=len(ledge_v);ledge_v.extend([tuple(stem),tuple(mid-width),tuple(end),tuple(mid+width),tuple(ridge)])
+    ledge_f.extend([(base,base+1,base+4),(base+1,base+2,base+4),(base+2,base+3,base+4),(base+3,base,base+4)])
+    ledge_c.extend([(.095,.175,.055),(.13,.215,.07),(.18,.26,.092),(.15,.23,.068)])
+ for branch in range(8):
+  a=turn+branch*math.tau/8;dx,dz=math.cos(a),math.sin(a);span=r*shoulder_rng.uniform(.8,1)
+  for j in range(1,5):
+   t=j/5;stem=Vector((x+dx*span*t,y+.04+span*(1.65*t-1.1*t*t),z+dz*span*t))
+   for side in [-1,1]:
+    tip=stem+Vector((span*(dx*.20-dz*side*.39)*(1-t*.55),span*.04,span*(dz*.20+dx*side*.39)*(1-t*.55)))
+    ridge=stem.lerp(tip,.5)+Vector((0,span*.055,0));edge=Vector((dx,0,dz))*span*.11
     base=len(ledge_v);ledge_v.extend([tuple(stem),tuple(ridge-edge),tuple(tip),tuple(ridge+edge),tuple(ridge)])
     ledge_f.extend([(base,base+4,base+1),(base+1,base+4,base+2),(base+2,base+4,base+3),(base+3,base+4,base)])
     ledge_c.extend([leaf_palette[(branch+j+k)%4] for k in range(4)])
- if len(ledge_sites)>=65:break
+ if len(ledge_sites)>=24:break
 mesh('ferns_cliff_ledge',ledge_v,ledge_f,ledge_c)
 forest_contract={'trees':forest_trees,'cliffShoulders':shoulder_sites,'cliffLedgeFerns':len(ledge_sites),'groundPlants':len(forest_plants),'fernTriangles':len(under_f),'grassTriangles':len(grass_f),'pathMarginMetres':.24,'worldApproachSamples':len(external_path_points),'cameraCorridorMarginMetres':2,'source':'Existing shipped polygon redwood/pine meshes; sampled exported terrain and full authored path widths'}
 
@@ -748,7 +960,7 @@ opts=dict(filepath=str(OUT/'landscape-raw.glb'),export_format='GLB',use_selectio
 bpy.ops.export_scene.gltf(**{k:v for k,v in opts.items() if k in props})
 replace=[o.name for o in changed]
 remove=fall_nodes+['rock','terrain','pool','bridges_paths_p8','dock_boats','lake_rocks','ferns','coast_shrubs','coast_flowers','coast_ledges','coast_foam','lake_rim','lake_rocks_layered','bushes','grass','grass_island','ground','hills','sky_card','sky_ridge','lake_ripples','lake_outflow','outflow_rapids']+trees_remove
-manifest={'schema':'out-there-refinement/v1','sourceSha256':SOURCE_SHA,'units':'Three metres [Blender.x, Blender.z+6,-Blender.y]/1.56','replaceOrRemoveOfficialNodes':remove,'replacementNodes':replace,'coastBoundary':COAST,'originalLakeBoundary':[{'sourceVertex':i,'point':list(v)} for i,v in zip(ordered,source_shore)],'lakeBoundary':LAKE,'waterHeight':WATER,'originalLakeArea':abs(signed_area([(v.x,v.z) for v in source_shore])),'lakeArea':abs(signed_area(LAKE)),'sourceComponentAudit':component_audit,'removedSourceFaces':removed_faces,'plantFacesRemoved':plant_removed,'removedTreeNodes':trees_remove,'retainedTreeContacts':tree_contacts,'adjustedHooks':adjusted,'nodes':nodes,'profiles':path_profiles,'boats':boat_anchors,'waterfall':fall_contract,'forest':forest_contract,'camp':{'centre':[32,4.34,34],'radius':3.766,'terraceOwnedByRuntime':True,'connectorStart':camppts[0],'connectorEnd':camppts[-1],'width':1.2,'foundationBottom':3.68},'limitations':['New paths require exported full-width collision audit before enabling walking.','Four baked source hikers removed by audited connected topology; runtime supplies shared 1.75m adult rigs at those anchors.','Original upper timber bridge, dock and stairs remain. The unsupported east arch and gate are removed: the main-world crossing now joins certified ENTRY. Obsolete southwest small bridge removed because expanded basin replaces its crossing.']}
+manifest={'schema':'out-there-refinement/v1','sourceSha256':SOURCE_SHA,'units':'Three metres [Blender.x, Blender.z+6,-Blender.y]/1.56','replaceOrRemoveOfficialNodes':remove,'replacementNodes':replace,'coastBoundary':COAST,'originalLakeBoundary':[{'sourceVertex':i,'point':list(v)} for i,v in zip(ordered,source_shore)],'lakeBoundary':LAKE,'waterHeight':WATER,'originalLakeArea':abs(signed_area([(v.x,v.z) for v in source_shore])),'lakeArea':abs(signed_area(LAKE)),'sourceComponentAudit':component_audit,'removedSourceFaces':removed_faces,'plantFacesRemoved':plant_removed,'removedTreeNodes':trees_remove,'retainedTreeContacts':tree_contacts,'adjustedHooks':adjusted,'nodes':nodes,'profiles':path_profiles,'boats':boat_anchors,'waterfall':fall_contract,'forest':forest_contract,'graniteSculpt':rock_sculpt,'lakePlanting':{'sites':settled,'fernTriangles':len(fern_faces),'ledgeSites':ledge_sites,'shrubs':shrub_sites},'camp':{'centre':[32,4.34,34],'radius':3.766,'terraceOwnedByRuntime':True,'connectorStart':camppts[0],'connectorEnd':camppts[-1],'width':1.2,'foundationBottom':3.68},'limitations':['New paths require exported full-width collision audit before enabling walking.','Four baked source hikers removed by audited connected topology; runtime supplies shared 1.75m adult rigs at those anchors.','Original upper timber bridge, dock and stairs remain. The unsupported east arch and gate are removed: the main-world crossing now joins certified ENTRY. Obsolete southwest small bridge removed because expanded basin replaces its crossing.']}
 (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 assert hashlib.sha256(SOURCE.read_bytes()).hexdigest()==SOURCE_SHA
 print('REFINEMENT_STATIC_EXPORTED',json.dumps({'nodes':replace,'removedTrees':len(trees_remove),'lakeAreaRatio':manifest['lakeArea']/manifest['originalLakeArea'],'newPathProfiles':len(path_profiles)}))

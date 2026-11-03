@@ -1,6 +1,6 @@
 import { outThereViews, outThereNode } from "./out-there-p11.mjs";
 // Asset revision is independent of the retained, separately audited walk graph.
-export const outThereLiveSource = "/models/islands/out-there-refined.glb?v=d7630eafc6d6917a";
+export const outThereLiveSource = "/models/islands/out-there-refined.glb?v=6179d72cb16c9d41";
 
 // One metre frame for the actual portfolio region, camp, cameras and paths.
 export const outThereCamp = {
@@ -25,10 +25,10 @@ export function outThereStop(id) {
     };
   if (id === "lake")
     return {
-      position: [-16, 12.5, 36],
-      target: [-11.8, 7.4, 13],
-      fov: 54,
-      portrait: { position: [-17, 15, 46], target: [-9.5, 7.8, 14], fov: 68 },
+      position: [-17, 12, 48],
+      target: [-5, 11.8, 9],
+      fov: 49,
+      portrait: { position: [-23, 13, 51], target: [-3, 13, 9], fov: 70 },
     };
   if (id === "overlook")
     return {

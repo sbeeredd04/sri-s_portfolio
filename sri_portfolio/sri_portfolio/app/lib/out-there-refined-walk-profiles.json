@@ -1,7 +1,7 @@
 {
   "schema": "out-there-walk-profiles/v2",
-  "geometryRevision": "refined-coast-lake-paths-d7630eafc6d6917a",
-  "modelSha256": "d7630eafc6d6917ad76bee56bc35eea84dc43951cebae52b5742afd43219accb",
+  "geometryRevision": "refined-coast-lake-paths-6179d72cb16c9d41",
+  "modelSha256": "6179d72cb16c9d419db4ed34a39f9acc2b98cdfd4e741ab273b90b5b9231074b",
   "units": "Three metres [Blender.x, Blender.z+6,-Blender.y]/1.56",
   "assumptions": {
     "bodyDiameter": 0.6,
