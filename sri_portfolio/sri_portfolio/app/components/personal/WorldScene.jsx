@@ -24,6 +24,7 @@ import SolarSky from "./SolarSky";
 import WorldResidents from "./WorldResidents";
 import { RoomMaterialProvider } from "./RoomMaterials";
 import PlanetSurface from "./PlanetSurface";
+import ShorelineWater from "./ShorelineWater";
 import { Stars } from "./WorldDetails";
 import Walkways from "./Walkways";
 import StreetViewMarkers from "./StreetViewMarkers";
@@ -254,6 +255,7 @@ function ConnectedWorld({
           animate={animate}
         />
       </Suspense>
+      <ShorelineWater weather={solar.weather} animate={animate} />
       {assembly >= 1 && (
         <Walkways daylight={solar.daylight} animate={animate} wind={solar.weather?.wind}/>
       )}

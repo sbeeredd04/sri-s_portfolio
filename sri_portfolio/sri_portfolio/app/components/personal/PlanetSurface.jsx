@@ -4,10 +4,9 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { createTerrainGeometry } from "../../lib/terrain-geometry.mjs";
 import { seaHeightGLSL } from "../../lib/sea-motion.mjs";
-import { regions } from "../../lib/world-layout.mjs";
 
-// A single water body. Broad moving normals and a shallows gradient keep the
-// polygons legible; the shader uses the existing sky probe and one render pass.
+// One continuous bay uses crossed swell normals and the shared sky probe.
+// Separate coast ribbons add whitewater at decoded island waterlines.
 export default function PlanetSurface({ surfaceRef, weather, animate = true }) {
   const geometry = useMemo(createTerrainGeometry, []);
   const time = useMemo(() => ({ value: 0 }), []),
@@ -28,13 +27,11 @@ export default function PlanetSurface({ surfaceRef, weather, animate = true }) {
       roughness: 0.23,
       envMapIntensity: 0.9,
     });
-    const coast = regions.filter((r) => r.id !== "entertainment");
+
     m.onBeforeCompile = (s) => {
       s.uniforms.uBayTime = time;
       s.uniforms.uBayWind = wind;
-      s.uniforms.uCoasts = {
-        value: coast.map((r) => new THREE.Vector2(r.center.x, r.center.z)),
-      };
+
       s.vertexShader =
         "varying vec3 vBay;\n" +
         s.vertexShader.replace(
@@ -42,23 +39,16 @@ export default function PlanetSurface({ surfaceRef, weather, animate = true }) {
           "#include <begin_vertex>\nvBay=position;",
         );
       s.fragmentShader =
-        `varying vec3 vBay; uniform float uBayTime,uBayWind; uniform vec2 uCoasts[${coast.length}];\n` +
+        `varying vec3 vBay; uniform float uBayTime,uBayWind;\n` +
         seaHeightGLSL + s.fragmentShader;
       s.fragmentShader = s.fragmentShader
         .replace(
           "#include <color_fragment>",
           `
         #include <color_fragment>
-        float shelf=0.;
-        for(int i=0;i<${coast.length};i++){
-          vec2 delta=vBay.xz-uCoasts[i];
-          float d=length(delta/vec2(1.,.90));
-          float limit=i==0?83.:i==4?40.:62.;
-          shelf=max(shelf,1.-smoothstep(limit-13.,limit+18.,d));
-        }
-        shelf*=smoothstep(422.,448.,vBay.y);
-        vec3 deep=vec3(.019,.112,.140), shallows=vec3(.062,.243,.245);
-        diffuseColor.rgb=mix(deep,shallows,shelf*.72);
+        // Coastal whitewater follows decoded waterlines in ShorelineWater.
+        // The open bay has no circular per-island color halos.
+        diffuseColor.rgb=vec3(.019,.112,.140);
       `,
         )
         .replace(
@@ -80,7 +70,7 @@ export default function PlanetSurface({ surfaceRef, weather, animate = true }) {
           "#include <roughnessmap_fragment>\nroughnessFactor=mix(.18,.39,smoothstep(.1,1.6,max(length(dFdx(vBay)),length(dFdy(vBay)))));",
         );
     };
-    m.customProgramCacheKey = () => "painted-bay-v2";
+    m.customProgramCacheKey = () => "painted-bay-v3";
     return m;
   }, [time, wind]);
   useEffect(
