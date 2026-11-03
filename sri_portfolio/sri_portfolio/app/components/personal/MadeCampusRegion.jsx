@@ -8,7 +8,7 @@ import { madeSites } from "../../lib/made-campus-views.mjs";
 import { projectExhibits } from "../../lib/project-exhibits.mjs";
 import { keynoteSlides } from "../../lib/keynote.mjs";
 import { drawKeynote } from "../../lib/keynote-drawing.mjs";
-import InteractiveProjectExhibit from "./InteractiveProjectExhibit";
+import MadeStudioGallery from "./MadeStudioGallery";
 import { AetherShowroom } from "./MadeVisitCanvas";
 
 const targets = [
@@ -148,7 +148,6 @@ export default function MadeCampusRegion({
         ? 1.4 + (animate ? 0.7 * Math.sin(clock.elapsedTime * 1.55) : 0)
         : 0.18;
   });
-  const site = madeSites.find((s) => s.id === activeProject);
   return (
     <group>
       <primitive
@@ -190,18 +189,10 @@ export default function MadeCampusRegion({
           onValue={(next) => onExhibitChange("aether", next)}
         />
       </group>
-      {detailed && site && site.id !== "aether" && projectExhibits[site.id] && (
-        <group position={site.center} rotation={[0, site.yaw, 0]}>
-          <group position={[0, 0.18, -2.1]}>
-            <InteractiveProjectExhibit
-              id={site.id}
-              value={exhibitValues[site.id]}
-              onChange={onExhibitChange}
-              onHover={onHover}
-            />
-          </group>
-        </group>
-      )}
+      {madeSites.filter(site=>site.id!=="aether"&&projectExhibits[site.id]).map(site=><MadeStudioGallery
+        key={site.id} site={site} night={night} value={exhibitValues[site.id]}
+        onChange={onExhibitChange} onHover={onHover} onProjectOpen={onProjectOpen}
+      />)}
       {activeProject === "keynote" && (
         <CampusKeynote index={keynoteIndex} {...{ onProjectOpen, onHover }} />
       )}

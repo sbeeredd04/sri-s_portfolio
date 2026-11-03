@@ -42,7 +42,7 @@ function pageGeometry(width, height) {
 }
 const legs = [-1, 1].flatMap((side) =>
   [-0.32, 0.32].map((z) => ({
-    from: [side * 0.98, 0.15, z],
+    from: [side * 0.98, 0, z],
     to: [side * 0.98, 0.97, z],
     radius: 0.035,
   })),
@@ -114,6 +114,7 @@ export default function ExhibitBook({ id, screen, onChange, onHover, wood }) {
         >
           <meshBasicMaterial
             map={screen}
+            color="#c0b8a8"
             toneMapped={false}
             side={THREE.DoubleSide}
           />

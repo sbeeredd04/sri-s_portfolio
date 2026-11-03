@@ -162,7 +162,7 @@ export default function WorldLighting({
         [
           site ? madeSitePoint(site, [0, 3.65, -1]) : [0, 5.85, -6.5],
           "#ffe1b2",
-          site ? 36 : 11,
+          site ? 18 : 11,
           12,
         ],
         [[-18, 4.32, -9], "#ffcf9d", 32, 17],

@@ -506,6 +506,40 @@
   border-top: 1px solid var(--skin-line);
   padding-top: 16px;
 }
+.place-collections {
+  flex-basis: 100%;
+  position: relative;
+  margin-top: 8px;
+  color: var(--skin-muted);
+  font: 12px/1.5 var(--skin-label);
+}
+.place-collections summary {
+  cursor: pointer;
+  padding: 9px 0;
+  width: fit-content;
+}
+.place-collections summary:focus-visible {
+  outline: 2px solid var(--skin-accent);
+  outline-offset: 3px;
+}
+.place-collection-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+@media (min-width: 701px) {
+  .place-collections[open] .place-collection-links {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    padding: 12px;
+    width: 100%;
+    background: var(--skin-surface);
+    border: 1px solid var(--skin-line);
+    border-radius: var(--skin-radius);
+    box-shadow: var(--skin-shadow);
+  }
+}
 .experience-shell[data-biome="projects"] .biome-page {
   border-top: 2px solid var(--skin-accent);
 }

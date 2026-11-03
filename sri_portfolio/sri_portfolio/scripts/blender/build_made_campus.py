@@ -23,7 +23,10 @@ Mesh, empty, wall, frame, glass_quad = (
 )
 kit.PALETTE.update(
     {
-        "plinth": "CFC5B8",
+        "plinth": "ADA58D",
+        "studioSage": "718271", "studioOchre": "B89563",
+        "studioClay": "B87A61", "studioLimestone": "CDBEA6",
+        "gardenSoil": "626444", "flowerPink": "B96F95", "flowerGold": "CF9A52",
         "seawall": "BDB2A6",
         "limestone": "D9CDBB",
         "set": "CFC0A8",
@@ -51,6 +54,7 @@ ANCHORS = {}
 FOOTPRINTS = []
 PATHS = []
 STUDIOS = []
+GARDEN = []
 
 
 def xyz(p):
@@ -199,14 +203,17 @@ def bench(name, x, z, yaw=0):
 def olive(name, x, z, height=4.5, r=1.2):
     m = Mesh()
     base = L
+    shape=int(abs(x*17+z*13))%5
+    height*=1.18+(shape%3)*.055
+    spread=1.05+shape*.12
     m.rod((x, -z, base), (x, -z, base + 0.65), r, "concrete", 12)
     m.rod((x, -z, base + 0.65), (x, -z, base + 0.67), r * 0.86, "soil", 12)
     m.rod((x, -z, base + 0.67), (x + 0.12, -z, base + height - 0.8), 0.12, "timber", 7)
     for i in range(5):
-        angle = i * math.tau / 5 + 0.3
-        px = x + math.cos(angle) * 0.75
-        py = -z + math.sin(angle) * 0.75
-        pz = base + height - 0.8 + (i % 2) * 0.35
+        angle = i * math.tau / 5 + .3+shape*.47
+        px = x + math.cos(angle) * spread
+        py = -z + math.sin(angle) * spread*.83
+        pz = base + height - .8 + math.sin(i*1.7+shape)*.42
         m.rod((x, -z, base + height * 0.48), (px, py, pz), 0.055, "timber", 6)
         # Irregular low-poly leaf volumes, not smooth spherical crowns.
         rings = []
@@ -214,8 +221,8 @@ def olive(name, x, z, height=4.5, r=1.2):
             rings.append(
                 [
                     (
-                        px + math.cos(j * math.tau / 7) * rad,
-                        py + math.sin(j * math.tau / 7) * rad,
+                        px + math.cos(j * math.tau / 7) * rad*spread*(1+.08*math.sin(j*4+shape)),
+                        py + math.sin(j * math.tau / 7) * rad*spread*.86,
                         pz + zz,
                     )
                     for j in range(7)
@@ -263,163 +270,90 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
         yaw,
         stopId=ident,
         facadeType=kind,
-        interiorStatus="blank anchor shell",
+        interiorStatus="runtime gallery anchors",
         facadeDirection="+Z",
     )
     s, t, gl, roof = Mesh(), Mesh(), Mesh(), Mesh()
     f = 0.18
     roofz = h - 0.6
     upper = 4.65
-    openw = min(9.6, w - 2.4)
-    s.bevel_box((0, 0, 0.09), (w, d, 0.18), 0.025, "concrete")
-    if ident == "world":
-        for xx in (-w / 2 + 0.22, w / 2 - 0.22):
-            for yy in (-d / 2 + 0.22, d / 2 - 0.22):
-                s.box((xx, yy, (roofz + f) / 2), (0.44, 0.44, roofz - f), "concrete")
-        for yy in (-d / 2 + 0.08, d / 2 - 0.08):
-            for k in range(5):
-                a = -w / 2 + 0.44 + k * (w - 0.88) / 5
-                b = -w / 2 + 0.44 + (k + 1) * (w - 0.88) / 5
-                frame(t, a, b, yy, f, roofz)
-                glass_quad(gl, a + 0.055, b - 0.055, yy, f + 0.055, roofz - 0.055)
-        for side in (-1, 1):
-            gl.face(
-                (
-                    (side * (w / 2 - 0.08), -d / 2 + 0.44, f),
-                    (side * (w / 2 - 0.08), d / 2 - 0.44, f),
-                    (side * (w / 2 - 0.08), d / 2 - 0.44, roofz),
-                    (side * (w / 2 - 0.08), -d / 2 + 0.44, roofz),
-                ),
-                "glass",
-            )
+    openw = 6.4 if ident == "gitcue" else (7.2 if ident == "world" else 6.8)
+    facade_tone={"agentex":"studioSage","gitcue":"studioOchre","mesa":"studioClay",
+                 "csdna":"studioLimestone","soda":"sand","world":"studioLimestone"}[ident]
+    tone=facade_tone
+    s.bevel_box((0, 0, .09), (w,d,.18), .025, "concrete")
+    fy=-d/2+.23
+    # Back wall is intentionally solid behind the runtime editorial board.
+    wall(s,(-w/2,w/2,f,roofz),(0,d/2-.24,0),(1,0,0),(0,1,0),[],tone,depth=.48)
+    # Inset side windows leave large warm plaster shoulders. Their sill and
+    # jamb return faces make the shell read as masonry instead of a glass box.
+    for side in [-1,1]:
+        sw=min(5.2,d*.48)
+        holes=[(-sw/2,sw/2,1.25,3.45)]
+        if h>7.6: holes.append((-sw/2,sw/2,5.2,roofz-.85))
+        wall(s,(-d/2,d/2,f,roofz),(side*(w/2-.24),0,0),(0,1,0),(side,0,0),holes,tone,depth=.48)
+        x=side*(w/2-.30)
+        for lo,hi,bottom,top in holes:
+            gl.face([(x,lo,bottom),(x,hi,bottom),(x,hi,top),(x,lo,top)],"glass")
+            for yy in [lo,hi]: t.box((x,yy,(bottom+top)/2),(.09,.08,top-bottom),"graphite")
+            for zz in [bottom,top]: t.box((x,0,zz),(.09,sw,.08),"graphite")
+            for k in range(1,4):t.box((x,lo+k*sw/4,(bottom+top)/2),(.08,.055,top-bottom),"graphite")
+            s.box((side*(w/2-.13),0,bottom-.08),(.27,sw+.20,.14),"concrete")
+    if ident=="gitcue":
+        # The entrance is a true barrel-arch aperture, not a decoration laid
+        # over a rectangular window. All jambs stay inside the original shell.
+        r=openw/2
+        spring=3.95
+        for lo,hi in [(-w/2,-r),(r,w/2)]:
+            wall(s,(lo,hi,f,roofz),(0,fy,0),(1,0,0),(0,-1,0),[],tone,depth=.46)
+        arc=[(-r*math.cos(i*math.pi/24),spring+r*math.sin(i*math.pi/24)) for i in range(25)]
+        for (x0,z0),(x1,z1) in zip(arc,arc[1:]):
+            s.face([(x0,fy-.23,z0),(x1,fy-.23,z1),(x1,fy-.23,roofz),(x0,fy-.23,roofz)],tone)
+            s.face([(x0,fy+.23,roofz),(x1,fy+.23,roofz),(x1,fy+.23,z1),(x0,fy+.23,z0)],"plaster")
+            s.face([(x0,fy-.23,z0),(x0,fy+.23,z0),(x1,fy+.23,z1),(x1,fy-.23,z1)],"concrete")
+        # Sandstone voussoirs have both a front ring and a recessed inner edge.
+        outer=[(-(r+.43)*math.cos(i*math.pi/24),spring+(r+.43)*math.sin(i*math.pi/24)) for i in range(25)]
+        for i in range(24):
+            a,b=arc[i],arc[i+1];c,d0=outer[i],outer[i+1]
+            s.face([(a[0],fy-.235,a[1]),(b[0],fy-.235,b[1]),(d0[0],fy-.235,d0[1]),(c[0],fy-.235,c[1])],"concrete")
+            t.rod((a[0],fy+.02,a[1]),(b[0],fy+.02,b[1]),.045,"graphite",5)
+        for side in [-1,1]:
+            s.box((side*(r+.215),fy-.16,(f+spring)/2),(.43,.15,spring-f),"concrete")
+            t.box((side*r,fy+.02,(f+spring)/2),(.09,.08,spring-f),"graphite")
+        for lo,hi in [(-r,-1.1),(1.1,r)]:glass_quad(gl,lo,hi,fy+.04,f,2.5)
+        gl.face([(-r,fy+.04,2.5),(r,fy+.04,2.5),*[(x,fy+.04,z) for x,z in reversed(arc)]],"glass")
+        for xx in [-2.4,-1.2,0,1.2,2.4]:
+            top=spring+math.sqrt(r*r-xx*xx)
+            bottom=2.5 if xx==0 else f
+            t.box((xx,fy,(bottom+top)/2),(.055,.08,top-bottom),"graphite")
+        for zz in [2.5,4.15]:t.box((0,fy,zz),(openw,.08,.065),"graphite")
     else:
-        wall(
-            s,
-            (-w / 2, w / 2, f, roofz),
-            (0, -d / 2 + 0.18, 0),
-            (1, 0, 0),
-            (0, -1, 0),
-            [
-                (-openw / 2, openw / 2, f, 4.38),
-                (-w / 2 + 1.1, w / 2 - 1.1, 5.25, roofz - 0.7),
-            ]
-            if h > 7.6
-            else [(-openw / 2, w / 2 if ident == "csdna" else openw / 2, f, 4.38)],
-            tone,
-            depth=0.36,
-        )
-        wall(
-            s,
-            (-w / 2, w / 2, f, roofz),
-            (0, d / 2 - 0.18, 0),
-            (-1, 0, 0),
-            (0, 1, 0),
-            [(-w / 2 + 1.3, w / 2 - 1.3, 1.4, 3.5)],
-            "sandLight",
-            depth=0.36,
-        )
-        for side in (-1, 1):
-            wall(
-                s,
-                (-d / 2, d / 2, f, roofz),
-                (side * (w / 2 - 0.18), 0, 0),
-                (0, side, 0),
-                (side, 0, 0),
-                (
-                    [
-                        (-d / 2 + 1.2, d / 2 - 1.2, 1.3, 3.6),
-                        (-d / 2 + 1.4, d / 2 - 1.4, 5.25, roofz - 0.7),
-                    ]
-                    if h > 7.6
-                    else (
-                        [(-d / 2, d / 2 - 1.2, f, 4.38)]
-                        if ident == "csdna" and side == 1
-                        else [(-d / 2 + 1.2, d / 2 - 1.2, 1.3, 3.6)]
-                    )
-                ),
-                "sandLight" if side < 0 else "sand",
-                depth=0.36,
-            )
-            # Side glazing is inset from outer plaster face, revealing wall depth.
-            x = side * (w / 2 - 0.22)
-            gl.face(
-                (
-                    (x, -d / 2 + 1.2, 1.3),
-                    (x, d / 2 - 1.2, 1.3),
-                    (x, d / 2 - 1.2, 3.6),
-                    (x, -d / 2 + 1.2, 3.6),
-                ),
-                "glass",
-            )
-            for k in range(1, 5):
-                t.box(
-                    (x, -d / 2 + 1.2 + k * (d - 2.4) / 5, 2.45),
-                    (0.06, 0.055, 2.3),
-                    "graphite",
-                )
-            if h > 7.6:
-                gl.face(
-                    (
-                        (x, -d / 2 + 1.4, 5.25),
-                        (x, d / 2 - 1.4, 5.25),
-                        (x, d / 2 - 1.4, roofz - 0.7),
-                        (x, -d / 2 + 1.4, roofz - 0.7),
-                    ),
-                    "glass",
-                )
-                for k in range(1, 5):
-                    t.box(
-                        (x, -d / 2 + 1.4 + k * (d - 2.8) / 5, (5.25 + roofz - 0.7) / 2),
-                        (0.06, 0.055, roofz - 5.95),
-                        "graphite",
-                    )
-        if h > 7.6:
-            frame(t, -w / 2 + 1.1, w / 2 - 1.1, -d / 2 + 0.22, 5.25, roofz - 0.7)
-            glass_quad(
-                gl, -w / 2 + 1.16, w / 2 - 1.16, -d / 2 + 0.22, 5.31, roofz - 0.76
-            )
-            for xx in range(-4, 5, 2):
-                t.box(
-                    (xx, -d / 2 + 0.21, (5.25 + roofz - 0.7) / 2),
-                    (0.055, 0.09, roofz - 5.95),
-                    "graphite",
-                )
-            s.box((0, 0, upper - 0.12), (w - 0.72, d - 0.72, 0.24), "plaster")
-        count = 7 if kind == "C" else 4
-        for k in range(count):
-            a = -openw / 2 + openw * k / count
-            b = -openw / 2 + openw * (k + 1) / count
-            frame(t, a, b, -d / 2 + 0.21, f, 4.38)
-            glass_quad(gl, a + 0.055, b - 0.055, -d / 2 + 0.21, f + 0.055, 4.325)
-        if kind == "B":
-            for zz in (1.58, 2.98):
-                t.box((0, -d / 2 + 0.18, zz), (openw, 0.08, 0.05), "aluminium")
-        if ident == "agentex":
-            for xx in (-w / 2 + 0.65, w / 2 - 0.65):
-                s.box((xx, -d / 2 - 0.025, 2.3), (0.65, 0.12, 4.1), "corten")
-            s.box((0, -d / 2 + 0.12, 4.65), (w, 0.45, 0.38), "corten")
-        if ident == "mesa":
-            s.bevel_box((0, -d / 2 - 0.15, 4.64), (w, 0.6, 0.36), 0.025, "terracotta")
-        if ident == "soda":
-            for zz in (4.55, 7.8):
-                s.box((0, -d / 2 - 0.03, zz), (w, 0.32, 0.27), "concrete")
-        if ident == "csdna":
-            # The south-west corner is genuinely open in the structural shell.
-            # Glass wraps the corner and bears on a slender metal corner mullion.
-            x = w / 2 - 0.22
-            gl.face(
-                (
-                    (x, -d / 2 + 0.20, f),
-                    (x, d / 2 - 1.2, f),
-                    (x, d / 2 - 1.2, 4.38),
-                    (x, -d / 2 + 0.20, 4.38),
-                ),
-                "glass",
-            )
-            glass_quad(gl, openw / 2, w / 2 - 0.18, -d / 2 + 0.21, f, 4.38)
-            t.box((w / 2 - 0.18, -d / 2 + 0.18, 2.28), (0.065, 0.065, 4.2), "aluminium")
-            for yy in (-d / 2 + 0.2, -2, 1, d / 2 - 1.2):
-                t.box((x, yy, 2.28), (0.06, 0.055, 4.2), "graphite")
+        holes=[(-openw/2,openw/2,f,3.5)]
+        if h>7.6:holes.append((-openw/2,openw/2,5.2,roofz-.85))
+        wall(s,(-w/2,w/2,f,roofz),(0,fy,0),(1,0,0),(0,-1,0),holes,tone,depth=.46)
+        for x0,x1,bottom,top in holes:
+            # A heavy architectural surround gives a clear large-window frame.
+            for xx in [x0-.13,x1+.13]:s.box((xx,fy-.13,(bottom+top)/2),(.26,.20,top-bottom+.40),"concrete")
+            s.box((0,fy-.13,top+.10),(openw+.52,.20,.20),"concrete")
+            if bottom>1:s.box((0,fy-.13,bottom-.10),(openw+.52,.20,.20),"concrete")
+            if bottom<1:
+                for xx in [x0+.04,x1-.04]:t.box((xx,fy+.035,(bottom+top)/2),(.08,.075,top-bottom),"graphite")
+                t.box((0,fy+.035,top-.04),(openw,.075,.08),"graphite")
+                for lo,hi in [(x0+.07,-1.1),(1.1,x1-.07)]:glass_quad(gl,lo,hi,fy+.055,bottom,top-.07)
+                glass_quad(gl,-1.1,1.1,fy+.055,2.5,top-.07)
+                for xx in [-1.14,1.14]:t.box((xx,fy+.035,(bottom+2.5)/2),(.08,.075,2.5-bottom),"graphite")
+                t.box((0,fy+.035,2.54),(2.36,.075,.08),"graphite")
+            else:
+                frame(t,x0,x1,fy+.035,bottom,top,width=.08)
+                glass_quad(gl,x0+.07,x1-.07,fy+.055,bottom+.07,top-.07)
+            for k in range(1,4):
+                start=2.5 if bottom<1 and k==2 else bottom
+                t.box((x0+k*openw/4,fy+.02,(start+top)/2),(.055,.08,top-start),"graphite")
+            if bottom>1:t.box((0,fy+.02,(bottom+top)/2),(openw,.08,.05),"graphite")
+        if h>7.6:s.box((0,0,upper-.12),(w-.96,d-.96,.24),"plaster")
+        if ident in ["mesa","soda"]:
+            # A shallow lintel shades the door without extending its approach.
+            s.bevel_box((0,-d/2+.12,4.50),(openw+.7,.24,.22),.025,"concrete")
     s.bevel_box((0, 0, roofz - 0.1), (w, d, 0.2), 0.018, "concrete")
     for xx in (-w / 2 + 0.12, w / 2 - 0.12):
         s.box((xx, 0, h - 0.3), (0.24, d, 0.6), "sandLight")
@@ -488,25 +422,31 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
         "soda": "6",
         "world": "7",
     }[ident]
-    lettering(
-        name + "_StudioNumeral",
-        numeral,
-        -w / 2 + 0.28,
-        -d / 2 - 0.015,
-        3.2,
-        0.6,
-        "aluminium",
-        0.006,
-    )
-    lettering(
-        name + "_DoorEtch",
-        name if ident != "world" else "This world",
-        -0.8,
-        -d / 2 + 0.15,
-        1.52,
-        0.18,
-        "trim",
-    )
+    if ident=="world":
+        lettering(
+            name + "_StudioNumeral",
+            numeral,
+            -w / 2 + 0.28,
+            -d / 2 - 0.015,
+            3.2,
+            0.6,
+            "aluminium",
+            0.006,
+        )
+        lettering(
+            name + "_DoorEtch",
+            name if ident != "world" else "This world",
+            -0.8,
+            -d / 2 - 0.012,
+            3.85,
+            0.30,
+            "graphite",
+        )
+    else:
+        # Runtime identity plaques carry the professional title once; keep
+        # semantic nodes for consumers without duplicate etched lettering.
+        empty(name+"_StudioNumeral",g,role="runtimeIdentityPlaceholder")
+        empty(name+"_DoorEtch",g,role="runtimeIdentityPlaceholder")
     # No fake hero objects, furnished interior or working motion.
     for suffix, p in [
         ("Threshold", (0, 0.18, d / 2 - 0.18)),
@@ -525,7 +465,7 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
     route(
         name + "_Approach",
         [p(0, d / 2), p(0, d / 2 + (4.7 if ident == "soda" else 4))],
-        max(3.2, openw * 0.52),
+        max(3.2, min(9.6, w - 2.4) * 0.52),
         "limestone",
         L + 0.185,
         ident,
@@ -539,13 +479,14 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
             yaw=yaw,
             size=[w, h, d],
             facadeType=kind,
-            opening=[openw, 4.2],
+            opening=[openw, 7.15 if ident == "gitcue" else 3.32],
+            exteriorPalette=facade_tone,
             anchorsLocalThree={
                 "threshold": [0, 0.18, d / 2 - 0.18],
                 "entryCamera": [0, 1.83, d / 2 + 4],
                 "inside": [0, 1.83, d / 2 - 3.5],
             },
-            interior="blank",
+            interior="runtime furnished gallery" if ident != "world" else "world exhibit",
             motion="dormant",
         )
     )
@@ -1194,6 +1135,76 @@ def props():
     meshobj(q, "Made_EastFacetedRockBluff")
 
 
+def overlap_polygon(a,b):
+    for poly in [a,b]:
+        for p,q in zip(poly,poly[1:]+poly[:1]):
+            dx,dz=q[0]-p[0],q[1]-p[1]
+            aa=[-dz*v[0]+dx*v[1] for v in a]
+            bb=[-dz*v[0]+dx*v[1] for v in b]
+            if min(max(aa),max(bb))<=max(min(aa),min(bb)):
+                return False
+    return True
+
+
+def campus_gardens():
+    # Plant the unused shoulders around each gallery, not the working plaza.
+    # All ground-level geometry stays inside a certified plant footprint;
+    # every complete route and external Aether approach is a reservation.
+    reserved=[fp["polygon"] for fp in FOOTPRINTS]
+    reserved += [poly for route in PATHS for poly in route["segments"]]
+    plants,soil=Mesh(),Mesh()
+    rng=random.Random(734)
+    for row in range(64):
+        for col in range(78):
+            x=-43+col*1.12+(row%2)*.56+rng.uniform(-.10,.10)
+            z=-34+row*.98+rng.uniform(-.10,.10)
+            distances=[]
+            for studio in STUDIOS:
+                cx,_,cz=studio["center"]; w,_,d=studio["size"]
+                yaw=studio["yaw"]; dx,dz=x-cx,z-cz
+                lx=dx*math.cos(yaw)-dz*math.sin(yaw)
+                lz=dx*math.sin(yaw)+dz*math.cos(yaw)
+                distances.append(math.hypot(max(0,abs(lx)-w/2),max(0,abs(lz)-d/2)))
+            near=min(distances)
+            if not .85<near<4.2+.55*math.sin(x*.4+z*.3):continue
+            footprint=polyrect(x,z,1.24,1.24)
+            if any(overlap_polygon(footprint,p) for p in reserved):continue
+            if not (-42<x<42 and -35<z<31):continue
+            seed=len(GARDEN)
+            species="lavender" if (int((x+z)*.22)%3) else "flowerGold"
+            h=.45+rng.random()*.45
+            # An irregular low mat connects the stems to soil; all foliage
+            # grows up from this ground rather than hovering over paving.
+            ring=[xyz((x+math.cos(k*math.tau/7)*(.55+.045*math.sin(k+seed)),L+.009,z+math.sin(k*math.tau/7)*.55)) for k in range(7)]
+            soil.face(list(reversed(ring)),"gardenSoil")
+            for j in range(9):
+                angle=j*2.399+seed*.31
+                dx,dz=math.cos(angle),math.sin(angle)
+                length=.38+rng.random()*.17
+                root=xyz((x,L+.015,z))
+                left=xyz((x+dx*length*.55-dz*.10,L+h*.28,z+dz*length*.55+dx*.10))
+                right=xyz((x+dx*length*.55+dz*.10,L+h*.28,z+dz*length*.55-dx*.10))
+                ridge=xyz((x+dx*length*.65,L+h*.43,z+dz*length*.65))
+                tip=xyz((x+dx*length,L+h*.35,z+dz*length))
+                plants.face([root,left,ridge],"darkLeaf")
+                plants.face([root,ridge,right],"leaf")
+                plants.face([ridge,left,tip],"darkLeaf")
+                plants.face([ridge,tip,right],"leafLight")
+            for j in range(4):
+                angle=j*2.399+seed*.4
+                px,pz=x+math.cos(angle)*.30,z+math.sin(angle)*.30
+                top=L+h*(.8+.2*rng.random())
+                atrod(plants,(x,L+.06,z),(px,top,pz),.009,"darkLeaf",3)
+                for tier in range(2):
+                    y=top+tier*.065
+                    for petal in range(4):
+                        a=petal*math.pi/2+angle
+                        plants.face([xyz((px, y+.09,pz)),xyz((px+.073*math.cos(a-.55),y,pz+.073*math.sin(a-.55))),xyz((px+.073*math.cos(a+.55),y,pz+.073*math.sin(a+.55)))],species if (j+tier)%3 else "flowerPink")
+            GARDEN.append(dict(center=[round(x,4),round(z,4)],footprint=footprint,height=round(h+.16,3)))
+    meshobj(soil,"Made_GalleryGardenSoil")
+    meshobj(plants,"Made_GalleryGardenLeavesFlowers")
+
+
 def make():
     global ROOT, MAT, METAL, GLASS
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -1248,6 +1259,7 @@ def make():
     plaza()
     hall_cube_pier()
     props()
+    campus_gardens()
     bpy.context.view_layer.update()
     for o in bpy.context.scene.objects:
         if o.type == "MESH":
@@ -1291,12 +1303,13 @@ def make():
         anchors=ANCHORS,
         studios=STUDIOS,
         footprints=FOOTPRINTS,
+        gardenPlants=GARDEN,
         renderedPaving=PATHS,
         externalAether=dict(
             center=[-26, L, -14], yaw=math.pi / 4, size=[12, 8.4, 11], triangles=7138
         ),
         knownLimitations=[
-            "Six studios are exterior shells with blank glazing/interior anchors; only external Aether has its furnished animated showroom.",
+            "The six authored shells retain runtime-furnished gallery anchors; gallery content is supplied separately at runtime.",
             "All crane, crowd, tower beacon, glass fronts and flora are static; no implied running interactions.",
             "No ferry vehicle, studio claims, logos, media maps or copied reference pixels.",
             "Campus asset prep needs actual desktop/phone browser arrival-close-return integration gate; viewport renders do not validate physical phone or older M1.",

@@ -17,7 +17,7 @@ import { cameraLimits } from "../../lib/camera-limits.mjs";
 import { courtViews } from "../../lib/court-layout.mjs";
 import { trailView } from "../../lib/valley-layout.mjs";
 import { outThereArrival, outThereStop } from "../../lib/out-there-site.mjs";
-import { madeStop } from "../../lib/made-campus-views.mjs";
+import { madeStop, madeSites, madeGalleryOrbitLimits } from "../../lib/made-campus-views.mjs";
 import { homeArrival, homePromenade, homeHarbor } from "../../lib/home-site.mjs";
 import {
   afterHoursArrival,
@@ -154,7 +154,30 @@ export default function CameraRig({
   const interiorShot = world === "studio"
     ? { desk: studioDeskView, bookshelf: studioBookView }[stop]
     : null;
+  const gallerySite = world === "projects" && ["agentex", "gitcue", "mesa", "csdna", "soda"].includes(stop)
+    ? madeSites.find(site => site.id === stop) : null;
   function constrainInteriorOrbit(c) {
+    if (gallerySite && focused.current === "projects" && !flight.current && !street && !roaming) {
+      const origin = worldPoint("projects", gallerySite.center);
+      const targetHeight = c.getTarget(scratch.target).sub(origin).dot(camera.up);
+      const limits = madeGalleryOrbitLimits(gallerySite, c.distance, targetHeight);
+      c.minDistance = limits.minDistance;
+      c.maxDistance = limits.maxDistance;
+      c.minPolarAngle = limits.minPolar;
+      c.maxPolarAngle = limits.maxPolar;
+      c.minAzimuthAngle = limits.minAzimuth;
+      c.maxAzimuthAngle = limits.maxAzimuth;
+      const distance = THREE.MathUtils.clamp(c.distance, limits.minDistance, limits.maxDistance);
+      const polar = THREE.MathUtils.clamp(c.polarAngle, limits.minPolar, limits.maxPolar);
+      const azimuth = THREE.MathUtils.clamp(c.azimuthAngle, limits.minAzimuth, limits.maxAzimuth);
+      if (Math.abs(distance-c.distance) > .00001 || Math.abs(polar-c.polarAngle) > .00001 || Math.abs(azimuth-c.azimuthAngle) > .00001) {
+        c.dollyTo(distance, false);
+        c.rotateTo(azimuth, polar, false);
+        c.update(0);
+        invalidate();
+      }
+      return;
+    }
     if (!interiorShot || focused.current !== "studio" || flight.current || street || roaming) return;
     const origin = worldPoint("studio", apartmentPoint([0, 0, 0]));
     const targetHeight = c.getTarget(scratch.target).sub(origin).dot(camera.up);
@@ -360,6 +383,8 @@ export default function CameraRig({
     controls.current.maxDistance = id === "planet" ? mapFar : limits.maxDistance;
     camera.far = limits.far;
     camera.updateProjectionMatrix();
+    controls.current.minAzimuthAngle = -Infinity;
+    controls.current.maxAzimuthAngle = Infinity;
     controls.current.minPolarAngle = 0.04;
     controls.current.maxPolarAngle = id === "planet" ? Math.PI / 2.15 : Math.PI - 0.04;
     controls.current.setFocalOffset(0, 0, 0, false);
@@ -374,6 +399,7 @@ export default function CameraRig({
       controls.current.update(0);
       controls.current.minDistance = id === "planet" ? mapNear : 3.2;
       flight.current = null;
+      constrainInteriorOrbit(controls.current);
     } else {
       const from = camera.position.clone();
       flight.current = {
@@ -456,9 +482,10 @@ export default function CameraRig({
         key.split(":").slice(1).join(":");
     const prior = lastRequest.current?.split(":");
     lastRequest.current = key;
+    const galleryStops = ["aether", "agentex", "gitcue", "mesa", "csdna", "soda"];
     const cutInterior =
-      (world === "projects" && stop === "aether") ||
-      (prior?.[0] === "projects" && prior[4] === "aether") ||
+      (world === "projects" && galleryStops.includes(stop)) ||
+      (prior?.[0] === "projects" && galleryStops.includes(prior[4])) ||
       (world === "studio" && ["desk", "bookshelf"].includes(stop)) ||
       (prior?.[0] === "studio" && ["desk", "bookshelf"].includes(prior[4]));
     if (!alreadyArrived)

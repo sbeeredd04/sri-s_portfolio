@@ -16,12 +16,12 @@ export const allChapters = [
     short: "Made",
     label: "The Foundry",
     number: "02",
-    title: "An idea needs somewhere to go.",
+    title: "AI tools, research, and products.",
     description:
-      "A conversation that branches. A museum you can explore. Small tools that make a day easier. Welcome to the things I’ve made.",
-    action: "Explore the collection",
+      "Interfaces for working with AI, developer tools, and software for researchers and communities. Six selected projects, with the purpose and implementation behind each.",
+    action: "Read the project stories",
     content: "work",
-    note: "A working campus for ideas. Step inside a studio.",
+    note: "Each studio represents a project. Open its story to see what it does and how I contributed.",
   },
   {
     id: "entertainment",
@@ -79,7 +79,7 @@ export const readingSections = [
   {
     id: "work",
     name: "Projects & ideas",
-    caption: "Apps, hackathons, experiments, and the details behind them.",
+    caption: "AI tools, research software, and collaborative projects — their purpose, implementation, and my contribution.",
   },
   {
     id: "journey",

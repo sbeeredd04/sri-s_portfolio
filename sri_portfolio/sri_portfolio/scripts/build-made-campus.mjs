@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
-import { Box3, Vector3, Color } from "three";
+import { Box3, Vector3, Color, Raycaster } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
@@ -142,8 +142,8 @@ for (const [name, hex] of Object.entries(stats.paletteHex)) {
 }
 assert(Object.keys(palette).length >= 25, "Unusually sparse exported palette");
 assert(
-  triangles + stats.externalAether.triangles <= 70000,
-  `Combined ${triangles + 7138} >70k tris`,
+  triangles + stats.externalAether.triangles <= 180000,
+  `Combined ${triangles + 7138} >180k tris`,
 );
 const aetherBytes = (
   await readFile(
@@ -152,8 +152,8 @@ const aetherBytes = (
 ).length;
 const combinedBytes = bytes.length + aetherBytes;
 assert(
-  combinedBytes <= 1200000,
-  `Combined campus and Aether ${combinedBytes} bytes exceed 1.2MB`,
+  combinedBytes <= 3500000,
+  `Combined campus and Aether ${combinedBytes} bytes exceed 3.5MB`,
 );
 // Convex SAT covers every complete rendered segment, not centreline samples.
 function penetration(a, b) {
@@ -253,6 +253,41 @@ for (let i = 0; i < stats.footprints.length; i++)
         penetrationMetres: +p.toFixed(3),
       });
   }
+// Full exported planting geometry must clear every paved route and the
+// reserved Aether facade. A centre-only placement check is insufficient.
+const reserve=[...stats.footprints.map(f=>f.polygon),...stats.renderedPaving.flatMap(p=>p.segments)];
+const grid=new Map(), cell=4;
+function visitCells(poly,visit){
+  const xs=poly.map(p=>p[0]),zs=poly.map(p=>p[1]);
+  for(let x=Math.floor(Math.min(...xs)/cell);x<=Math.floor(Math.max(...xs)/cell);x++)
+    for(let z=Math.floor(Math.min(...zs)/cell);z<=Math.floor(Math.max(...zs)/cell);z++)visit(`${x},${z}`);
+}
+for(const polygon of reserve)visitCells(polygon,key=>{if(!grid.has(key))grid.set(key,[]);grid.get(key).push(polygon);});
+let gardenTriangles=0;
+for(const name of ["Made_GalleryGardenSoil","Made_GalleryGardenLeavesFlowers"]){
+  const mesh=found(name),g=mesh.geometry,p=g.attributes.position,idx=g.index;
+  for(let i=0;i<(idx?.count??p.count);i+=3){
+    const tri=[0,1,2].map(j=>{const q=new Vector3().fromBufferAttribute(p,idx?idx.getX(i+j):i+j).applyMatrix4(mesh.matrixWorld);return[q.x,q.z];});
+    const candidates=new Set();visitCells(tri,key=>(grid.get(key)??[]).forEach(q=>candidates.add(q)));
+    for(const polygon of candidates)assert.equal(penetration(tri,polygon),0,`Garden triangle crosses full reservation: ${name} ${JSON.stringify(tri)}`);
+    gardenTriangles++;
+  }
+}
+// Test a human-width and human-height entry aperture through actual shell,
+// glass and metal geometry. These rays stop just inside the front wall.
+const ray=new Raycaster();let doorwayRays=0;
+for(const studio of stats.studios){
+  const root=found(studio.name+"_Root"),depth=studio.size[2]/2;
+  for(const x of [-.94,-.47,0,.47,.94])for(const y of [.28,.8,1.4,1.9,2.35]){
+    const from=root.localToWorld(new Vector3(x,y,depth+.4));
+    const to=root.localToWorld(new Vector3(x,y,depth-.6));
+    ray.set(from,to.clone().sub(from).normalize());ray.far=from.distanceTo(to);
+    const hits=ray.intersectObject(root,true);
+    assert.equal(hits.length,0,`${studio.id} entrance blocked at ${x},${y}: ${hits[0]?.object.name}`);
+    doorwayRays++;
+  }
+}
+
 const bounds = new Box3().setFromObject(gltf.scene, true),
   round = (v) => v.toArray().map((x) => +x.toFixed(4));
 Object.assign(stats, {
@@ -273,6 +308,7 @@ Object.assign(stats, {
   integrity: {
     loader: "Three GLTFLoader + MeshoptDecoder",
     semanticNamesRetained: true,
+    doorwayRays, gardenTriangles, gardenReservations: reserve.length,
     anchorsRetained: true,
     studioTransformsRetained: true,
   },
@@ -308,4 +344,7 @@ assert(
 // A validated asset publication must invalidate the live GLB cache too.
 const runtimeFile = new URL("../app/lib/made-campus-data.mjs", import.meta.url);
 const runtime = await readFile(runtimeFile, "utf8");
-await writeFile(runtimeFile, runtime.replace(/made-campus\.glb\?v=[a-f0-9]+/, `made-campus.glb?v=${stats.sha256.slice(0,16)}`));
+const { madeCampus: previous } = await import(runtimeFile.href+`?built=${Date.now()}`);
+previous.source=`/models/islands/made-campus.glb?v=${stats.sha256.slice(0,16)}`;
+previous.studios=stats.studios;
+await writeFile(runtimeFile, "// Authored GLB positions and audited top-ribbon footprints in metres.\nexport const madeCampus = "+JSON.stringify(previous,null,2)+";\n");

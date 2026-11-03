@@ -48,7 +48,7 @@ function useExhibitDisplay(id, value) {
 
 const consoleLegs = [-1.12, 1.12].flatMap((x) =>
   [-0.46, 0.38].map((z) => ({
-    from: [x, 0.16, z],
+    from: [x, 0, z],
     to: [x, 0.94, z],
     radius: 0.028,
   })),
@@ -131,7 +131,7 @@ export default function InteractiveProjectExhibit({
           }}
         >
           <planeGeometry args={[2.56, 1.68]} />
-          <meshBasicMaterial map={screen} toneMapped={false} />
+          <meshBasicMaterial map={screen} color="#c4cbd2" toneMapped={false} />
         </mesh>
         <Rods segments={vents} color="#293847" />
         <mesh position={[0, 0.867, 0.06]}>

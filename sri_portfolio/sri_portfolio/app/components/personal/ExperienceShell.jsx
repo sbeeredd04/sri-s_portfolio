@@ -61,7 +61,11 @@ import {
   navigationStop,
 } from "../../lib/mobile-navigation.mjs";
 import { initialTier, chooseTier, readDevice } from "../../lib/device-tier.mjs";
-import { graphicsMode as validGraphicsMode, graphicsModes, requestedTier } from "../../lib/graphics-quality.mjs";
+import {
+  graphicsMode as validGraphicsMode,
+  graphicsModes,
+  requestedTier,
+} from "../../lib/graphics-quality.mjs";
 import { worldLoading } from "../../lib/world-loading.mjs";
 import {
   createAssetPreloader,
@@ -110,7 +114,10 @@ const WorldScene = dynamic(
 );
 function clearProjectLink() {
   if (linkedProjectId(window.location.hash))
-    replaceWorldHistory(window.history, window.location.pathname + window.location.search);
+    replaceWorldHistory(
+      window.history,
+      window.location.pathname + window.location.search,
+    );
 }
 
 class WorldBoundary extends Component {
@@ -158,12 +165,21 @@ export default function ExperienceShell() {
     [entered, setEntered] = useState(null),
     [returning, setReturning] = useState(false);
   useEffect(() => {
-    try { setTierCeiling(chooseTier(readDevice())); }
-    catch { setTierCeiling("medium"); }
+    try {
+      setTierCeiling(chooseTier(readDevice()));
+    } catch {
+      setTierCeiling("medium");
+    }
     try {
       const requested = new URLSearchParams(location.search).get("quality");
-      setGraphicsMode(validGraphicsMode(requested ?? localStorage.getItem("sri-graphics-quality")));
-    } catch { /* Auto remains available when browser storage is disabled. */ }
+      setGraphicsMode(
+        validGraphicsMode(
+          requested ?? localStorage.getItem("sri-graphics-quality"),
+        ),
+      );
+    } catch {
+      /* Auto remains available when browser storage is disabled. */
+    }
     const light = new URLSearchParams(location.search).get("light");
     if (lightModes.includes(light)) setLightMode(light);
   }, []);
@@ -177,7 +193,9 @@ export default function ExperienceShell() {
   const chooseGraphics = useCallback((mode) => {
     const next = validGraphicsMode(mode);
     setGraphicsMode(next);
-    try { localStorage.setItem("sri-graphics-quality", next); } catch {}
+    try {
+      localStorage.setItem("sri-graphics-quality", next);
+    } catch {}
     const url = new URL(window.location.href);
     if (next === "auto") url.searchParams.delete("quality");
     else url.searchParams.set("quality", next);
@@ -552,8 +570,12 @@ export default function ExperienceShell() {
       setPlaying(saved.playing === true);
       setStill(saved.still === true);
       // A time preview is explicit in the address, never a hidden old visit.
-      const requestedLight = new URLSearchParams(window.location.search).get("light");
-      setLightMode(lightModes.includes(requestedLight) ? requestedLight : "live");
+      const requestedLight = new URLSearchParams(window.location.search).get(
+        "light",
+      );
+      setLightMode(
+        lightModes.includes(requestedLight) ? requestedLight : "live",
+      );
       // Do not replay an old ?room= link over the restored camera or sheet.
       window.addEventListener("hashchange", follow);
       return () => window.removeEventListener("hashchange", follow);
@@ -604,8 +626,11 @@ export default function ExperienceShell() {
           window.location.pathname +
           window.location.search +
           window.location.hash;
-        replaceWorldHistory(window.history, url,
-          withWorldReturn(window.history.state, snapshot, url));
+        replaceWorldHistory(
+          window.history,
+          url,
+          withWorldReturn(window.history.state, snapshot, url),
+        );
       } catch {
         /* Navigation must work even when the browser denies storage. */
       }
@@ -673,10 +698,15 @@ export default function ExperienceShell() {
             {liveTime?.label || "Connecting to local time"}
           </time>
           {lightMode === "live" ? (
-            <span className="world-weather" aria-live="polite">{weatherLabel(weather)}</span>
+            <span className="world-weather" aria-live="polite">
+              {weatherLabel(weather)}
+            </span>
           ) : (
-            <button className="light-preview-reset" onClick={() => chooseLight("live")}
-              aria-label={`End ${lightMode} preview and return to live San Francisco lighting`}>
+            <button
+              className="light-preview-reset"
+              onClick={() => chooseLight("live")}
+              aria-label={`End ${lightMode} preview and return to live San Francisco lighting`}
+            >
               {lightMode[0].toUpperCase() + lightMode.slice(1)} preview · Live
             </button>
           )}
@@ -918,9 +948,11 @@ export default function ExperienceShell() {
               ref={mobileTools}
             >
               <div className="place-tools-content">
-                <p className="mobile-place-description">
-                  {chapter.description}
-                </p>
+                {!activeExhibit && (
+                  <p className="mobile-place-description">
+                    {chapter.description}
+                  </p>
+                )}
                 {biome === "projects" && stop === "keynote" && (
                   <KeynoteControls
                     index={keynoteIndex}
@@ -1123,35 +1155,81 @@ export default function ExperienceShell() {
                             </button>
                           )}
                           {!(biome === "projects" && stop === "keynote") &&
-                            visiblePlaceStopGroups(biome).map((group, i) => (
-                              <div key={group.label || i} style={{ display: "contents" }}
-                                role={group.label ? "group" : undefined} aria-label={group.label || undefined}>
-                                {group.label && <span className="eyebrow"
-                                  style={{ flexBasis: "100%", gridColumn: "1 / -1", marginTop: 8 }}>{group.label}</span>}
-                                {group.stops.map((s) => (
-                                  <button key={s.id} aria-pressed={stop === s.id}
-                                    onClick={() => explore(s.id)}>{s.label}</button>
-                                ))}
-                              </div>
-                            ))}
+                            visiblePlaceStopGroups(biome).map((group, i) =>
+                              biome === "projects" &&
+                              group.label === "Collections & tools" ? (
+                                <details
+                                  className="place-collections"
+                                  key={group.label}
+                                >
+                                  <summary>{group.label}</summary>
+                                  <div
+                                    className="place-collection-links"
+                                    role="group"
+                                    aria-label={group.label}
+                                  >
+                                    {group.stops.map((s) => (
+                                      <button
+                                        key={s.id}
+                                        aria-pressed={stop === s.id}
+                                        onClick={() => explore(s.id)}
+                                      >
+                                        {s.label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </details>
+                              ) : (
+                                <div
+                                  key={group.label || i}
+                                  style={{ display: "contents" }}
+                                  role={group.label ? "group" : undefined}
+                                  aria-label={group.label || undefined}
+                                >
+                                  {group.label && (
+                                    <span
+                                      className="eyebrow"
+                                      style={{
+                                        flexBasis: "100%",
+                                        gridColumn: "1 / -1",
+                                        marginTop: 8,
+                                      }}
+                                    >
+                                      {group.label}
+                                    </span>
+                                  )}
+                                  {group.stops.map((s) => (
+                                    <button
+                                      key={s.id}
+                                      aria-pressed={stop === s.id}
+                                      onClick={() => explore(s.id)}
+                                    >
+                                      {s.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              ),
+                            )}
                         </div>
                       </>
                     )}
                     {activeStop && stop !== "keynote" && (
                       <div className="stop-actions">
-                        {activeStop.prompt && <button
-                          className="stop-story"
-                          onClick={() =>
-                            activeStop.project
-                              ? openProject(activeStop.project)
-                              : show(
-                                  activeStop.content || chapter.content,
-                                  activeStop.collection || "all",
-                                )
-                          }
-                        >
-                          {activeStop.prompt} <UiIcon />
-                        </button>}
+                        {activeStop.prompt && (
+                          <button
+                            className="stop-story"
+                            onClick={() =>
+                              activeStop.project
+                                ? openProject(activeStop.project)
+                                : show(
+                                    activeStop.content || chapter.content,
+                                    activeStop.collection || "all",
+                                  )
+                            }
+                          >
+                            {activeStop.prompt} <UiIcon />
+                          </button>
+                        )}
                         {biome === "studio" &&
                           stop === "walk" &&
                           !still &&
@@ -1263,22 +1341,28 @@ export default function ExperienceShell() {
                     (stop === "bay" || street?.group === "bay")
                       ? "Open air above the water"
                       : biomeMoods[biome].label}
-                    <br />San Francisco · {weatherLabel(weather)}
+                    <br />
+                    San Francisco · {weatherLabel(weather)}
                   </small>
                 </div>
                 <div className="light-mode-control graphics-mode-control">
                   <span>Graphics</span>
                   <div role="group" aria-label="Graphics quality">
                     {graphicsModes.map((mode) => (
-                      <button key={mode} aria-pressed={graphicsMode === mode}
-                        onClick={() => chooseGraphics(mode)}>
+                      <button
+                        key={mode}
+                        aria-pressed={graphicsMode === mode}
+                        onClick={() => chooseGraphics(mode)}
+                      >
                         {mode[0].toUpperCase() + mode.slice(1)}
                       </button>
                     ))}
                   </div>
-                  <small>{graphicsMode === "auto"
-                    ? "Adjusts to keep the world running smoothly."
-                    : "Your selected quality stays fixed. High uses more power."}</small>
+                  <small>
+                    {graphicsMode === "auto"
+                      ? "Adjusts to keep the world running smoothly."
+                      : "Your selected quality stays fixed. High uses more power."}
+                  </small>
                 </div>
                 <button
                   className="wanderer-choice"
