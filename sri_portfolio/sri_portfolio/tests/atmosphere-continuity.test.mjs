@@ -6,9 +6,9 @@ import { worldTime } from '../app/lib/world-time.mjs';
 import { resolveWorldLight } from '../app/lib/world-lighting.mjs';
 import { presetWeather, weatherKinds } from '../app/lib/weather.mjs';
 import { worldPoint, regions, WORLD_RADIUS } from '../app/lib/world-layout.mjs';
-import { homeArrival, homePromenade, homeHarbor } from '../app/lib/home-site.mjs';
+import { homeArrival, homePromenade, homeHarbor, homeSite } from '../app/lib/home-site.mjs';
 import { apartmentPoint, studioDeskView, studioBookView } from '../app/lib/studio-layout.mjs';
-import { madeStop, madeSites } from '../app/lib/made-campus-views.mjs';
+import { madeProjectView, madeSitePoint, madeStop, madeSites } from '../app/lib/made-campus-views.mjs';
 import { afterHoursArrival, raisedContentPoint } from '../app/lib/authored-island-sites.mjs';
 import { outThereStop } from '../app/lib/out-there-site.mjs';
 import { fieldnotesArrival } from '../app/lib/fieldnotes-layout.mjs';
@@ -118,6 +118,71 @@ test('twilight star visibility changes continuously and monotonically as dayligh
       assert(current>=0&&current<=1&&current<=previous+1e-12);
       assert(Math.abs(current-previous)<.04,'no abrupt star switch during live dawn/dusk');
       previous=current;
+    }
+  }
+});
+
+
+function fogAt(world, shot, subject, solar) {
+  const eye = worldPoint(world, shot.position);
+  const forward = worldPoint(world, shot.target).sub(eye).normalize();
+  const depth = subject.clone().sub(eye).dot(forward);
+  assert.ok(depth > 0, 'measured subject is in front of the authored camera');
+  const focusDistance = eye.distanceTo(worldPoint(world, [0, 0, 0]));
+  const { fog } = stateFor({ world, focusDistance }, solar);
+  // Three FogExp2 uses forward view-space depth, not Euclidean distance.
+  return 1 - Math.exp(-Math.pow(fog * depth, 2));
+}
+
+test('ordinary overcast keeps Home and Made subjects clear while dense fog retains depth', () => {
+  const overcast = resolveWorldLight('day', morning, presetWeather('overcast'));
+  const dense = resolveWorldLight('day', morning, presetWeather('fog'));
+  const agentex = madeSites.find(({ id }) => id === 'agentex');
+  const summit = worldPoint('studio', homeSite.anchors.Summit_HeroTarget);
+  for (const phone of [false, true]) {
+    const view = (shot) => phone ? shot.portrait : shot;
+    for (const [world, shot, subject, background] of [
+      ['studio', view(homeArrival), worldPoint('studio', [0, 7, 31]), summit],
+      ['studio', view(homePromenade), worldPoint('studio', [17, 5, 30]), summit],
+      ['projects', view(madeStop('arrival')), worldPoint('projects', [0, 2, 0]), summit],
+      ['projects', madeProjectView('agentex', 'inside', phone),
+        worldPoint('projects', madeSitePoint(agentex, [0, 2.1, -2.32]))],
+    ]) {
+      const label = `${world}/${phone ? 'phone' : 'desktop'} at ${shot.position}`;
+      const mild = fogAt(world, shot, subject, overcast);
+      const thick = fogAt(world, shot, subject, dense);
+      assert.ok(mild > 0 && mild < 0.02, `${label} overcast subject blend is ${mild}`);
+      // Preserve dense fog strength at the same real depth, including short
+      // interior sightlines where a percentage floor would be misleading.
+      assert.ok(Math.abs(Math.log1p(-thick) / Math.log1p(-mild) - 3.88 ** 2) < 0.001, label);
+      if (background) {
+        const distant = fogAt(world, shot, background, overcast);
+        assert.ok(distant > mild && distant < 0.06, `${label} distant blend is ${distant}`);
+        assert.ok(fogAt(world, shot, background, dense) > 0.20, `${label} dense fog loses depth`);
+      }
+    }
+  }
+});
+
+test('mist and rain add fog continuously and monotonically across the weather range', () => {
+  const weather = presetWeather('overcast');
+  for (const camera of cameras.filter(({ id }) => ['arrival', 'promenade', 'agentex'].includes(id))) {
+    for (const mode of ['day', 'night']) {
+      const density = (mist, rain) => stateFor(camera,
+        resolveWorldLight(mode, morning, { ...weather, fog: mist, rain })).fog;
+      const dry = density(0, 0);
+      assert.ok(Math.abs(density(0.2, 0) / dry - 1) < 1e-12);
+      assert.ok(Math.abs(density(0.9, 0) / dry - 3.88) < 1e-12);
+      assert.ok(Math.abs(density(0, 1) / dry - 2.1) < 1e-12);
+      for (const vary of [(amount) => density(amount, 0.25), (amount) => density(0.55, amount)]) {
+        let previous = vary(0);
+        for (let step = 1; step <= 200; step++) {
+          const current = vary(step / 200);
+          assert.ok(current >= previous && current - previous < dry * 0.04,
+            `${camera.world}/${camera.id} ${mode} jumps or reverses at ${step / 200}`);
+          previous = current;
+        }
+      }
     }
   }
 });

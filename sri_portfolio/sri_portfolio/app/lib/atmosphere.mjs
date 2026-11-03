@@ -102,6 +102,6 @@ export function skyState({
       fogDensity(world, focusDistance) *
       opacity *
       (0.75 + dayAmount * 0.25) *
-      (1 + mist * 3.2 + rain * 1.1),
+      (1 + mist * 3.2 * THREE.MathUtils.smoothstep(mist, 0.2, 0.8) + rain * 1.1),
   };
 }

@@ -1130,3 +1130,15 @@ Replaced broad circular per-island shallow-water halos with narrow, broken movin
 First geometry review found reversed winding and26 locally folded triangles. Corrected winding and tapered tight concave joins; rendered-footprint tests now verify all upward nondegenerate triangles, no crossed boundaries, water-side offsets, bounded miters and closed seams. All381 isolated tests, typecheck and production build pass. Actual1440×900 High overcast World, Home arrival/close, Fieldnotes and Made coasts inspected;390×844 Low Home arrival/close/World return inspected. Keyboard selection and settings/Escape work. Night overcast foam remains subdued. A180×90 water crop was byte-identical across two paused captures; after resume15,987of48,600channel samples changed. No browser shader/runtime errors. Evidence research/coast-water-2026-11-03/.
 
 Open: narrowest rocky joins taper nearly away; foam does not address sea reflection fidelity, inland waterfall physics or boat wakes. Camera close views can still hide the water behind controls, and broader models/terrain/overcast colors remain below supplied references. Physical phone/older-M1 testing is outstanding. Full-world goal remains active.
+
+
+### Coastline production verification — November 3, 2026, 13:50 PT
+
+Commit013f0ebf is live through GitHub→Vercel; productiondpl_HTT1w996whTbbANY6KgeD4zdmT9C is Ready. Actual public desktop Made quay and390×844 arrival/World return show the coast-following foam without circular turquoise halos. Public/, /story, /rooms/work, /rooms/about, /rooms/music, /resume and/sitemap.xml return200. Evidence research/coast-water-2026-11-03/production-*.png. Full goal remains active.
+
+
+### Clearer ordinary overcast atmosphere — November 3, 2026
+
+Eased the additional mist density into the low-visibility range rather than multiplying ordinary cloudy air into a pale veil. Base biome depth, sky/cloud color, direct/ambient lights, white point, night palette and full dense fog remain. Existing rain contribution is unchanged; ordinary low mist contributes less. Fixed `?weather=overcast` High Foundry before/after shows stronger water/background separation and darker material recesses. Actual Low390×844 Home day and After hours night arrival/close/return inspected; entertainment practical pools stay warm. Actual High dense-fog Foundry/Agentex approach and keyboard entry remain usable.383 isolated tests, typecheck and production build pass, including view-space fog fractions at authored Home/Made eyes and monotonic day/night mist/rain sweeps. Evidence research/haze-response-2026-11-03/.
+
+This reduces atmospheric wash but does not fix the remaining pale material palette, broad paved spaces, sparse planting or simplified silhouettes. Low foreground form remains flatter than the reference; no full-reference or physical-device acceptance. Full-world goal remains active.
