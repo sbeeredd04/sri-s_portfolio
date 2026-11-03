@@ -132,7 +132,7 @@
   max-width: 28ch;
   margin: 0 0 8px;
   font-weight: 400;
-  color: #463f36;
+  color: var(--muted);
 }
 
 /* Side A / Side B: a record label that flips over. */
@@ -155,7 +155,7 @@
   border: 0;
   border-bottom: 1px solid transparent;
   border-radius: 0;
-  color: #463f36;
+  color: var(--muted);
   font-size: 16px;
   font-weight: 500;
 }

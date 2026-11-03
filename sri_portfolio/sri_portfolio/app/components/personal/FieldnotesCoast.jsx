@@ -10,7 +10,7 @@ const shadowCasters = new Set([bladeName, "Fieldnotes_Cypress", "Fieldnotes_Pier
 
 function ignoreRaycast() {}
 
-export default function FieldnotesCoast({ night, onOpenLookout, onHover }) {
+export default function FieldnotesCoast({ night }) {
   const { scene } = useGLTF(fieldnotesCoastSource);
   const coast = useMemo(() => {
     const root = scene.clone(true);
@@ -31,7 +31,7 @@ export default function FieldnotesCoast({ night, onOpenLookout, onHover }) {
       object.castShadow = shadowCasters.has(object.name);
       // These static meshes have no actions. Skip their rays so close plant
       // and terrain triangles do not intercept writing or lounge controls.
-      if (object.name !== bladeName) object.raycast = ignoreRaycast;
+      object.raycast = ignoreRaycast;
       if (object.name === amberName) {
         amber = object.material;
         amber.emissive.set("#ffb547");
@@ -51,15 +51,5 @@ export default function FieldnotesCoast({ night, onOpenLookout, onHover }) {
     [coast],
   );
 
-  return (
-    <primitive
-      object={coast.root}
-      onClick={onOpenLookout}
-      onPointerMove={(event) => {
-        event.stopPropagation();
-        onHover?.("Visit the lookout", event);
-      }}
-      onPointerOut={(event) => onHover?.("", event)}
-    />
-  );
+  return <primitive object={coast.root} />;
 }

@@ -51,7 +51,21 @@ export const continuations = {
   },
 };
 
+// Music is the default; only the supported alternate section enters URLs.
+export const entertainmentSection = (value) => value === "shows" ? "shows" : "music";
+
+// Tab selection replaces only this room's collection parameter. Keep campaign,
+// accessibility and other independent URL state, including the current anchor.
+export function entertainmentSectionHref(href, section) {
+  const url = new URL(href, "https://portfolio.invalid");
+  if (entertainmentSection(section) === "shows")
+    url.searchParams.set("collection", "shows");
+  else url.searchParams.delete("collection");
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
 export function roomPageHref(id, collection = "all", hash = "") {
+  if (id === "music") collection = entertainmentSection(collection) === "shows" ? "shows" : "all";
   const query =
     collection !== "all" ? `?collection=${encodeURIComponent(collection)}` : "";
   const anchor =
@@ -63,6 +77,8 @@ export function roomWorldHref(id, collection = "all", hash = "") {
   const query = new URLSearchParams({ room: id });
   if (id === "work" && collection !== "all")
     query.set("collection", collection);
+  if (id === "music" && entertainmentSection(collection) === "shows")
+    query.set("collection", "shows");
   const anchor =
     id === "work" && /^#project-[a-z0-9-]+$/.test(hash) ? hash : "";
   return `/?${query}${anchor}`;
@@ -71,6 +87,8 @@ export function roomWorldHref(id, collection = "all", hash = "") {
 // A room's independent page returns to its physical place, so closing the
 // reading sheet reveals the same subject rather than an unrelated globe view.
 export function roomWorldDestination(id, collection = "all") {
+  if (id === "music")
+    return { world: "entertainment", stop: entertainmentSection(collection) === "shows" ? "cinema" : "listening" };
   if (id === "work")
     return {
       world: "projects",
@@ -83,7 +101,6 @@ export function roomWorldDestination(id, collection = "all") {
       journey: { world: "studio", stop: "desk" },
       about: { world: "studio", stop: "arrival" },
       skills: { world: "projects", stop: "workbench" },
-      music: { world: "entertainment", stop: "arrival" },
       notes: { world: "trail", stop: "overlook" },
       writing: { world: "future", stop: "writing" },
       socials: { world: "future", stop: "socials" },

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppContent from "./AppContent";
 import RoomSoundControls from "./RoomSoundControls";
 import SiteHeader from "./SiteHeader";
@@ -9,7 +9,9 @@ import {
   continuations,
   roomPageHref,
   roomWorldHref,
+  entertainmentSectionHref,
 } from "../../lib/reading-rooms.mjs";
+import { replaceWorldHistory } from "../../lib/world-return.mjs";
 export default function StandaloneRoom({ id, initialCollection = "all" }) {
   const room = readingSections.find((s) => s.id === id);
   const [detail, setDetail] = useState(null),
@@ -19,6 +21,15 @@ export default function StandaloneRoom({ id, initialCollection = "all" }) {
     hash: "",
   });
   const audio = useSoundscape("planet", id, detail);
+  useEffect(() => {
+    // Wait for the library's actual selection; null must not erase an incoming
+    // shows deep link during the first render. No navigation or component key.
+    if (id !== "music" || detail === null) return;
+    const { pathname, search, hash } = window.location;
+    const current = `${pathname}${search}${hash}`;
+    const nextHref = entertainmentSectionHref(current, detail);
+    if (nextHref !== current) replaceWorldHistory(window.history, nextHref);
+  }, [id, detail]);
   const next = continuations[id];
   return (
     <div className="reading-sheet standalone-room" data-section={id}>
@@ -29,7 +40,7 @@ export default function StandaloneRoom({ id, initialCollection = "all" }) {
         place={room.name}
         worldHref={roomWorldHref(
           id,
-          projectLocation.collection,
+          id === "music" ? (detail ?? initialCollection) : projectLocation.collection,
           projectLocation.hash,
         )}
       >

@@ -143,11 +143,7 @@ export default function FutureStudio({
         <GardenMasonry built={built} />
       </Suspense>
       <Suspense fallback={null}>
-        <FieldnotesCoast
-          night={night}
-          onOpenLookout={open("lookout", "writing")}
-          onHover={onHover}
-        />
+        <FieldnotesCoast night={night} />
       </Suspense>
       <FieldnotesQuarter
         detailed={detailed}

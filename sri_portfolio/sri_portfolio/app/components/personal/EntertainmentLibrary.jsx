@@ -1,5 +1,6 @@
 "use client";
 import UiIcon from "./UiIcon";
+import { entertainmentSection } from "../../lib/reading-rooms.mjs";
 import { useEffect, useState } from "react";
 import MusicCard from "./MusicCard";
 import RemoteVideo from "./RemoteVideo";
@@ -15,7 +16,7 @@ export default function EntertainmentLibrary({
 }) {
   const [localChannel, setLocalChannel] = useState(0);
   const [section, setSection] = useState(
-    initialSection === "shows" ? "shows" : "music",
+    entertainmentSection(initialSection),
   );
   const channel = sharedChannel ?? localChannel;
   const setChannel = onChannelChange || setLocalChannel;
@@ -87,23 +88,6 @@ export default function EntertainmentLibrary({
                 <p>Always part of the mix.</p>
               </div>
             </article>
-            <a
-              className="spotify-link"
-              href="https://open.spotify.com/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <small>ELSEWHERE</small>
-              <img
-                src="/official/spotify-white.webp"
-                width="88"
-                height="24"
-                alt="Spotify"
-              />
-              <span>
-                Open Spotify <UiIcon />
-              </span>
-            </a>
           </div>
         </section>
       )}

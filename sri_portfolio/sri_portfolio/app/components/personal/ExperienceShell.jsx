@@ -46,7 +46,7 @@ import {
   streetRange,
 } from "../../lib/street-view.mjs";
 import { placeStops, visiblePlaceStopGroups } from "../../lib/place-stops.mjs";
-import { roomWorldDestination } from "../../lib/reading-rooms.mjs";
+import { roomWorldDestination, entertainmentSection } from "../../lib/reading-rooms.mjs";
 import { allProjects, shows } from "../../json/personal";
 import WorldLoader from "./WorldLoader";
 import {
@@ -266,6 +266,11 @@ export default function ExperienceShell() {
   const [visitorColor, setVisitorColor] = useState(0);
   const [entertainmentChannel, setEntertainmentChannel] = useState(0);
   const [roomDetail, setRoomDetail] = useState(null);
+  const changeSoundRoom = useCallback((detail) => {
+    setRoomDetail(detail);
+    // Keep Open page and restored visits aligned with the visible music tab.
+    if (sheet === "music") setCollection(entertainmentSection(detail));
+  }, [sheet]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [ballRequests, setBallRequests] = useState({});
   const [courtActivity, setCourtActivity] = useState({});
@@ -591,6 +596,8 @@ export default function ExperienceShell() {
       setStop(destination.stop);
       if (requestedRoom === "work")
         setCollection(params.get("collection") || "all");
+      else if (requestedRoom === "music")
+        setCollection(entertainmentSection(params.get("collection")));
       open(requestedRoom);
     }
     follow();
@@ -1477,7 +1484,7 @@ export default function ExperienceShell() {
       {sheet && (
         <ReadingSheet
           audio={audio}
-          onSoundRoomChange={setRoomDetail}
+          onSoundRoomChange={changeSoundRoom}
           id={sheet}
           collection={collection}
           onClose={close}
