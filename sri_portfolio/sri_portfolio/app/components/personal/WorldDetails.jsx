@@ -1,4 +1,5 @@
 "use client";
+import { starVisibility } from "../../lib/atmosphere.mjs";
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -7,7 +8,7 @@ import * as THREE from "three";
 // sit between the camera and the ground: a fixed shell inside the grown
 // planet's reach used to scatter specks over the land.
 const STAR_DISTANCE = 900;
-export function Stars({ daylight }) {
+export function Stars({ daylight, weather }) {
   const dome = useRef();
   useFrame(({ camera }) => dome.current?.position.copy(camera.position));
   const geometry = useMemo(() => {
@@ -46,7 +47,7 @@ export function Stars({ daylight }) {
         size={1.25}
         sizeAttenuation={false}
         transparent
-        opacity={0.7 - daylight * 0.58}
+        opacity={0.7 * starVisibility(daylight, weather)}
         depthWrite={false}
         toneMapped={false}
       />

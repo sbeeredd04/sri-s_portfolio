@@ -2,19 +2,20 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import { starVisibility } from "../../lib/atmosphere.mjs";
 import { SKY_RADIUS } from "../../lib/camera-limits.mjs";
 
 // A distant sky changes with viewing direction, never with camera translation.
 // Keep it centered on the eye and draw before the world without writing depth.
 // An origin-centered finite shell can be exited or clipped into a black disk.
-export default function StarSphere({ daylight }) {
+export default function StarSphere({ daylight, weather }) {
   const sky = useRef();
   const texture = useTexture("/background/stars-4k.webp");
   const uniforms = useMemo(
     () => ({ starMap: { value: texture }, brightness: { value: 0.08 } }),
     [texture],
   );
-  uniforms.brightness.value = 0.055 - daylight * 0.03;
+  uniforms.brightness.value = 0.055 * starVisibility(daylight, weather);
   useEffect(() => {
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = 4;

@@ -946,3 +946,21 @@ Five project interiors now retain oak floors, grounded exhibit furniture, side b
 Browser screenshots at 1440×900 and 390×844 cover arrival, project close views and return to the sphere, day and night. Pointer chapter choices, keyboard Enter/Escape reading journeys, direct case-study anchors, selected states, collections disclosure and motion pause/resume were exercised. Evidence: research/made-gallery-2026-11-03/. Camera tests use decoded exported surfaces and runtime furniture: 270 constrained orbit positions, 810 approach samples and 630 full-panel rays, plus frame/wall checks. Free drag was not repeated through the DOM-only browser control; Aether's separate free-orbit safety remains unverified. Physical-phone and older-M1 validation remain outstanding.
 
 Isolated release check: 334/334 tests, type generation/TypeScript and production build pass. This is an incremental functional/architecture improvement, not acceptance against the reference quality. Open: plaza and perimeter still too broad and flat; planting remains too regular and sparse; interiors need richer authored form; phone book typography is small; ceiling highlights can still wash out the header; global daylight remains muted; camera occlusion is not proven across every island. The full world goal remains active.
+
+
+### Made production verification — November 3, 2026, 07:04 PT
+
+Reviewed commit 7a8304a2 was published through GitHub → Vercel. Production dpl_8wtF4Sy33bB6mgkYeKvtduGLEXE4 is Ready; the public Made asset matches SHA256 3134a3bda0c8a2ddb44b47e79bb5bf73dfae98a97facfb7a77e8747c1d709625. /, /story, /resume, /rooms/work, /rooms/writing, /fieldnotes/preview and /sitemap.xml return 200; unknown Fieldnotes returns 404; preview remains noindex. Production screenshots cover 390×844 arrival/Agentex and 1440×900 arrival/return. No browser application errors observed. Browser viewport override reset. Reviewed local build remains http://localhost:3111/.
+
+Live SF time 07:03–07:04, Overcast 12°C: the phone arrival exposed a black star field above brightly lit terrain. This atmosphere mismatch is newly confirmed and remains an active defect for the next unit, alongside the other reference/quality gaps above. The full goal is not complete. Evidence: research/made-gallery-2026-11-03/production-*.png.
+
+
+### Atmosphere continuity — November 3, 2026, release review
+
+The live 07:03 SF Made phone arrival bug was reproduced from the actual authored camera: local height 98 m became radial altitude 147.6 m because of the bay tangent-plane offset. The old 70–150 m sky fade reduced opacity to 0.0027 and also removed fog, while both star layers retained daylight brightness. The supported world and island views now retain their atmosphere at every camera height. Both star layers fade with daylight and cloud/fog/rain; overcast night sky remains opaque. This does not change the real SF solar clock.
+
+Browser checks at 390×844 and 1440×900 cover Made overcast daylight/live dawn/night arrivals, Agentex interior, After-hours arrival and listening-room close view, and return to the sphere. Clear-night stars remain restrained, cloudy-night stars disappear, and the formerly black Made phone sky stays visible. Pointer selection, keyboard Enter return, preview/live controls and lighting deep links were exercised. Screenshots: research/atmosphere-continuity-2026-11-03/. Physical devices and free-drag/touch were not retested in this unit.
+
+Regression tests cover 74 actual authored camera positions, seven weather presets and five solar/preview states, including real 02:30 and 07:03 SF times. Root checks: 341/341 tests and typecheck. Isolated release: 339/339 tests, typecheck and production build pass. No added scene geometry, textures or lights.
+
+Open visual defects remain: broad flat grounds, sparse/regular planting, washed daytime materials, incomplete authored architecture and terrain, limited warm exterior lighting and camera obstruction coverage. Listening-room phone framing crops part of the cabinet/record-player; its close framing still needs a separate design pass. This resolves the disappearing atmosphere defect only; it does not close the full-world reference-quality goal.

@@ -48,9 +48,14 @@ const cloudDeck = {
   glow: new THREE.Color(0.7, 0.68, 0.64),
 };
 
-// Close views use an altitude fade. The bounded overview keeps an atmospheric
-// backdrop around the invented sphere instead of dropping into black space.
-export const SKY_FADE = [70, 150];
+// Every supported camera remains in the same inhabited atmosphere. Radial
+// altitude is not a departure into space: tangent-plane island positions alone
+// can exceed the old fade height, especially in portrait establishing shots.
+export function starVisibility(daylight, weather) {
+  const dark = 1 - THREE.MathUtils.smoothstep(daylight, 0.01, 0.42);
+  const clear = 1 - THREE.MathUtils.smoothstep(weather?.cloud ?? 0, 0.25, 0.95);
+  return dark * clear * (1 - (weather?.fog ?? 0)) * (1 - (weather?.rain ?? 0));
+}
 
 export function skyState({
   world,
@@ -66,10 +71,7 @@ export function skyState({
   const mist = weather?.fog ?? 0;
   // Biome mood never invents weather: measured cloud cover controls the deck.
   const deck = cloud * cloud * 0.9;
-  const opacity =
-    world === "planet"
-      ? 0.88
-      : 1 - THREE.MathUtils.smoothstep(altitude, SKY_FADE[0], SKY_FADE[1]);
+  const opacity = 1;
   const dayAmount = THREE.MathUtils.clamp(daylight, 0, 1);
   const sunset = THREE.MathUtils.clamp(
     Math.max(warmth, 1 - THREE.MathUtils.smoothstep(sunHeight, 0.02, 0.4)) *
