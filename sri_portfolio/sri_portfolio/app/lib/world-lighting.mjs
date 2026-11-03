@@ -31,9 +31,17 @@ export function illumination({ daylight, weather }, interior = false) {
   return {
     direct: (0.48 * (1 - d) + 3.1 * d * (1 - diffuse * 0.92)) *
       (interior ? 0.6 : 1),
-    sky: (0.34 + d * (0.42 + diffuse * 0.55)) *
+    sky: (0.34 + d * (0.42 + diffuse * 0.19)) *
       (1 - rain * 0.18) * (interior ? 0.58 : 1),
     ambient: (0.035 + d * 0.045) * (interior ? 0.6 : 1),
     practical: Math.min(1, 0.14 + (1 - d) * 0.86 + diffuse * 0.16),
   };
+}
+
+// The renderer uses scene.environmentIntensity for standard materials
+// without an explicit environment map, so shape probe energy at the source.
+export function environmentLightIntensity(daylight, cloud = 0) {
+  const d = Math.max(0, Math.min(1, daylight));
+  const cover = Math.max(0, Math.min(1, cloud));
+  return 0.28 + d * (0.27 - 0.2 * cover * cover);
 }

@@ -3,12 +3,13 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { skyFragment, skyUniforms } from "./AtmosphereSky";
+import { environmentLightIntensity } from "../../lib/world-lighting.mjs";
 
 // Image-based lighting from the live sky: a small probe scene renders the same
 // scattering sky (with a soft dark ground below the horizon) into a PMREM, so
 // metal, glass, water and every rough surface pick up the true time of day.
 // It refreshes only when the sky has visibly changed, never every frame.
-export default function MaterialLighting({ daylight, world }) {
+export default function MaterialLighting({ daylight, weather, world }) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const invalidate = useThree((s) => s.invalidate);
@@ -35,8 +36,10 @@ export default function MaterialLighting({ daylight, world }) {
   const pending = useRef({ key: "", since: 0 });
   useEffect(() => {
     const previous = scene.environment;
+    const previousIntensity = scene.environmentIntensity;
     return () => {
       scene.environment = previous;
+      scene.environmentIntensity = previousIntensity;
       current.current?.dispose();
       probe.generator.dispose();
       probe.material.dispose();
@@ -45,6 +48,7 @@ export default function MaterialLighting({ daylight, world }) {
   }, [scene, probe]);
   useFrame(({ clock }) => {
     const u = skyUniforms;
+    scene.environmentIntensity = environmentLightIntensity(daylight, weather?.cloud ?? u.uCloud.value);
     // Reflections follow the biome and meaningful light/weather changes, not
     // the moving camera. Wait for the sky to settle before generating once.
     const key = [
@@ -72,9 +76,5 @@ export default function MaterialLighting({ daylight, world }) {
     scene.environment = target.texture;
     invalidate();
   });
-  useEffect(() => {
-    scene.environmentIntensity = 0.28 + daylight * 0.27;
-    invalidate();
-  }, [scene, daylight, invalidate]);
   return null;
 }

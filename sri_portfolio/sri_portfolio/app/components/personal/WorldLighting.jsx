@@ -4,6 +4,14 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useQuality } from "./Quality";
 import { illumination } from "../../lib/world-lighting.mjs";
+import {
+  afterHoursThresholdPracticals,
+  closeShadowProjection,
+  homeStreetPracticals,
+  isHomeInterior,
+  lightingShadowSubject,
+  shadowFit,
+} from "../../lib/world-lighting-sites.mjs";
 import { biomeMoods } from "../../lib/world-time.mjs";
 import { worldPoint, WORLD_RADIUS, regions } from "../../lib/world-layout.mjs";
 import {
@@ -109,6 +117,13 @@ const exhibits = {
 // recompiled every material in the world (a multi-second freeze). Moving or
 // dimming a pooled light only changes uniforms.
 const POOL = 6;
+const moonDirection = [-0.5, 0.8, 0.5];
+function practicalLocalPosition(world, lampWorld, item) {
+  if (item[4] === "exterior") return item[0];
+  if (world === "studio") return apartmentPoint(item[0]);
+  return raisedContentPoint(lampWorld, item[0]);
+}
+
 export default function WorldLighting({
   world,
   stop,
@@ -125,8 +140,7 @@ export default function WorldLighting({
   const fieldnotes = world === "future";
   // Inside the apartment the room should be lit by its lamps and screens;
   // sky fill through the glass is kept low so night reads warm, not blue.
-  const interior =
-    world === "studio" && (stop === "desk" || stop === "bookshelf");
+  const interior = world === "studio" && isHomeInterior(stop);
   const light = illumination(solar, interior);
   const skyFill = useRef();
   const key = useRef(),
@@ -139,10 +153,16 @@ export default function WorldLighting({
       position: new THREE.Vector3(),
       direction: new THREE.Vector3(),
       target: new THREE.Vector3(),
+      up: new THREE.Vector3(),
       color: new THREE.Color(),
     }),
     [],
   );
+  const direction = daylight > 0.05 ? solar.direction : moonDirection;
+  const framing = useMemo(() => {
+    const subject = lightingShadowSubject(world, stop);
+    return subject ? shadowFit(subject, direction) : null;
+  }, [world, stop, direction]);
   const lights = useMemo(() => {
     if (world === "planet") {
       // Keep the same six-light budget in overview. Each light remains at an
@@ -172,8 +192,14 @@ export default function WorldLighting({
         [[2, 4.32, 38.8], "#ffd4a3", 32, 17],
       ];
     }
+    if (world === "studio" && !interior) {
+      return [practicals.studio[0], practicals.studio[3], ...homeStreetPracticals(stop)];
+    }
+    if (world === "entertainment") {
+      return [...practicals.entertainment, ...afterHoursThresholdPracticals(stop)];
+    }
     return practicals[world] || [];
-  }, [world, stop]);
+  }, [world, stop, interior]);
   useFrame((_, dt) => {
     const step = Math.min(dt, 0.05),
       close = world !== "planet";
@@ -191,13 +217,12 @@ export default function WorldLighting({
       close
         ? worldPoint(
             world,
-            world === "studio"
-              ? apartmentPoint([0, 0, 0])
-              : valley
+            framing?.focus ??
+              (valley
                 ? [0, 2, -12]
                 : foundry
                   ? [-7, 1, -14]
-                  : [0, 0, 0],
+                  : [0, 0, 0]),
           )
         : new THREE.Vector3(0, WORLD_RADIUS, 0),
     );
@@ -212,15 +237,14 @@ export default function WorldLighting({
     // coordinate. A low sun at y=6 was below Home's 26m summit; in overview
     // it was even below the 450m bay plane. Keep the solar angle at every
     // camera/terrain height and centre the shadow volume on the subject.
-    scratch.direction.set(...(daylight > 0.05 ? solar.direction : [-0.5, 0.8, 0.5])).normalize();
+    scratch.direction.set(...direction).normalize();
     const lightRegion = regions.find((r) => r.id === world);
     if (lightRegion) scratch.direction.applyQuaternion(lightRegion.rotation);
-    scratch.position.copy(scratch.target).addScaledVector(scratch.direction, close ? 180 : WORLD_RADIUS * 2);
+    scratch.position.copy(scratch.target).addScaledVector(scratch.direction, close ? closeShadowProjection.offset : WORLD_RADIUS * 2);
     const blend = animate ? 1 - Math.exp(-step * 5) : 1;
     key.current.position.lerp(scratch.position, blend);
     target.position.lerp(scratch.target, blend);
-    const region = regions.find((r) => r.id === world);
-    if (region) skyFill.current.position.copy(region.normal);
+    if (lightRegion) skyFill.current.position.copy(lightRegion.normal);
     else skyFill.current.position.set(0, 1, 0);
     key.current.intensity = THREE.MathUtils.lerp(
       key.current.intensity,
@@ -231,31 +255,32 @@ export default function WorldLighting({
     if (solar.warmth && daylight > 0.05)
       scratch.color.lerp(new THREE.Color("#ffb67c"), solar.warmth * (1 - (solar.weather?.cloud ?? 0) * 0.8) * 0.5);
     key.current.color.lerp(scratch.color, blend);
-    const span = close
-      ? foundry
-        ? 42
-        : world === "entertainment"
-          ? 23
-          : valley
-            ? 37
-            : world === "court"
-              ? 30
-              : 15
+    const fallbackSpan = close
+      ? foundry ? 42 : valley ? 37 : 15
       : WORLD_RADIUS + 20;
-    const shadow = key.current.shadow.camera;
-    if (shadow.right !== span) {
-      shadow.left = -span;
-      shadow.right = span;
-      shadow.top = span;
-      shadow.bottom = -span;
-      shadow.near = close ? 3 : 20;
-      shadow.far = close ? 400 : WORLD_RADIUS * 4;
+    const following = world === "studio" && stop === "walk";
+    const width = following ? 20 : framing?.width ?? fallbackSpan;
+    const height = following ? 20 : framing?.height ?? fallbackSpan;
+    const shadow = keyShadow.camera;
+    const shadowUp = framing && lightRegion ? lightRegion.normal : scratch.up.set(0, 1, 0);
+    if (!shadow.up.equals(shadowUp)) {
+      shadow.up.copy(shadowUp);
+      keyShadow.needsUpdate = true;
+    }
+    if (shadow.right !== width || shadow.top !== height) {
+      shadow.left = -width;
+      shadow.right = width;
+      shadow.top = height;
+      shadow.bottom = -height;
+      shadow.near = close ? closeShadowProjection.near : 20;
+      shadow.far = close ? closeShadowProjection.far : WORLD_RADIUS * 4;
       shadow.updateProjectionMatrix();
+      keyShadow.needsUpdate = true;
     }
     for (let i = 0; i < POOL; i++) {
       const lamp = points.current[i];
       const item =
-        i === POOL - 1 && world === "studio"
+        i === POOL - 1 && interior
           ? [
               [0, 4, -5],
               "#dae9ff",
@@ -271,9 +296,7 @@ export default function WorldLighting({
         lamp.position.lerp(
           worldPoint(
             lampWorld,
-            world === "studio"
-              ? apartmentPoint(item[0])
-              : raisedContentPoint(lampWorld, item[0]),
+            practicalLocalPosition(world, lampWorld, item),
           ),
           blend,
         );
@@ -287,7 +310,9 @@ export default function WorldLighting({
               ? night
                 ? 1
                 : 0.4
-              : light.practical * (interior ? 1.8 : 1);
+              : kind === "exterior"
+                ? 1 - THREE.MathUtils.smoothstep(daylight, 0.2, 0.75)
+                : light.practical * (interior ? 1.8 : 1);
         lamp.intensity = THREE.MathUtils.lerp(
           lamp.intensity,
           item[2] * level,

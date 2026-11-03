@@ -251,7 +251,7 @@ function ConnectedWorld({
         assembled={assembly >= regions.length + 2}
       />
       <AnimationDriver animate={animate} />
-      <MaterialLighting daylight={solar.daylight} world={world} />
+      <MaterialLighting daylight={solar.daylight} weather={solar.weather} world={world} />
       <WorldLighting
         {...{ world, stop, night, animate, solar, residentClock }}
       />

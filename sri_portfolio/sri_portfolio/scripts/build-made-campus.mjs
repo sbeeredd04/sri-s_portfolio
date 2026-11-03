@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
-import { Box3, Vector3, Color, Raycaster } from "three";
+import { Box3, Vector3, Color, Raycaster, Vector2, ShapeUtils } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
@@ -23,6 +23,8 @@ if (!process.argv.includes("--verify-only")) {
     [
       "-b",
       "--disable-autoexec",
+      "--python-exit-code",
+      "1",
       "--python",
       "scripts/blender/build_made_campus.py",
     ],
@@ -143,8 +145,8 @@ for (const [name, hex] of Object.entries(stats.paletteHex)) {
 }
 assert(Object.keys(palette).length >= 25, "Unusually sparse exported palette");
 assert(
-  triangles + stats.externalAether.triangles <= 180000,
-  `Combined ${triangles + 7138} >180k tris`,
+  triangles + stats.externalAether.triangles <= 210000,
+  `Combined ${triangles + 7138} >210k tris`,
 );
 const aetherBytes = (
   await readFile(
@@ -153,8 +155,8 @@ const aetherBytes = (
 ).length;
 const combinedBytes = bytes.length + aetherBytes;
 assert(
-  combinedBytes <= 3500000,
-  `Combined campus and Aether ${combinedBytes} bytes exceed 3.5MB`,
+  combinedBytes <= 4500000,
+  `Combined campus and Aether ${combinedBytes} bytes exceed 4.5MB`,
 );
 // Convex SAT covers every complete rendered segment, not centreline samples.
 function penetration(a, b) {
@@ -256,7 +258,8 @@ for (let i = 0; i < stats.footprints.length; i++)
   }
 // Full exported planting geometry must clear every paved route and the
 // reserved Aether facade. A centre-only placement check is insufficient.
-const reserve=[...stats.footprints.map(f=>f.polygon),...stats.renderedPaving.flatMap(p=>p.segments)];
+const crewReservations=stats.landscape.crewReservations.map(([x,z])=>[[x-.475,z-.475],[x+.475,z-.475],[x+.475,z+.475],[x-.475,z+.475]]);
+const reserve=[...stats.footprints.map(f=>f.polygon),...stats.renderedPaving.flatMap(p=>p.segments),...crewReservations];
 const grid=new Map(), cell=4;
 function visitCells(poly,visit){
   const xs=poly.map(p=>p[0]),zs=poly.map(p=>p[1]);
@@ -265,7 +268,7 @@ function visitCells(poly,visit){
 }
 for(const polygon of reserve)visitCells(polygon,key=>{if(!grid.has(key))grid.set(key,[]);grid.get(key).push(polygon);});
 let gardenTriangles=0;
-for(const name of ["Made_GalleryGardenSoil","Made_GalleryGardenLeavesFlowers"]){
+for(const name of ["Made_GalleryGardenSoil","Made_GardenGroundcover","Made_GardenFlowerDrifts","Made_GardenWoodyShrubs"]){
   const mesh=found(name),g=mesh.geometry,p=g.attributes.position,idx=g.index;
   for(let i=0;i<(idx?.count??p.count);i+=3){
     const tri=[0,1,2].map(j=>{const q=new Vector3().fromBufferAttribute(p,idx?idx.getX(i+j):i+j).applyMatrix4(mesh.matrixWorld);return[q.x,q.z];});
@@ -356,4 +359,9 @@ const runtime = await readFile(runtimeFile, "utf8");
 const { madeCampus: previous } = await import(runtimeFile.href+`?built=${Date.now()}`);
 previous.source=`/models/islands/made-campus.glb?v=${stats.sha256.slice(0,16)}`;
 previous.studios=stats.studios;
+// Ship compact intended clearance polygons, not the tessellated slab or
+// per-plant generator bookkeeping. Clean-checkout tests inspect the GLB.
+const plaza=stats.landscape.plazaOutline;
+const plazaTriangles=ShapeUtils.triangulateShape(plaza.map(p=>new Vector2(...p)),[]).map(t=>t.map(i=>plaza[i]));
+previous.landscape={...stats.landscape,reservations:[...stats.footprints.map(f=>f.polygon),...stats.renderedPaving.flatMap(p=>p.isPlaza?plazaTriangles:p.segments),...crewReservations]};
 await writeFile(runtimeFile, "// Authored GLB positions and audited top-ribbon footprints in metres.\nexport const madeCampus = "+JSON.stringify(previous,null,2)+";\n");

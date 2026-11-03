@@ -3,6 +3,22 @@ import { useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 
+function homeStreetLampMaterial(original) {
+  const material = original.clone();
+  material.name = "Home_PromenadeLensPalette";
+  material.emissive.set("#ffbb78");
+  // The decoded lamp mesh batches dark metal and warm lens glass. Its
+  // linear red channel separates the lens palette from the graphite.
+  material.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <emissivemap_fragment>",
+      "#include <emissivemap_fragment>\n totalEmissiveRadiance *= step(0.7, vColor.r);",
+    );
+  };
+  material.customProgramCacheKey = () => "home-promenade-lens-v1";
+  return material;
+}
+
 export default function SharedIslandAsset({
   source,
   onClick,
@@ -38,6 +54,9 @@ export default function SharedIslandAsset({
       o.castShadow = !/glaz|glass|water/i.test(o.name);
       o.receiveShadow = true;
       configure?.(o);
+      if (o.name === "Home_HarborPromenadeLamps") {
+        o.material = homeStreetLampMaterial(o.material);
+      }
       for (const material of [o.material].flat()) configured.add(material);
     });
     return { root, materials: [...new Set([...materials.values(), ...configured])] };
@@ -45,7 +64,9 @@ export default function SharedIslandAsset({
   useEffect(() => () => asset.materials.forEach((m) => m.dispose()), [asset]);
   useFrame(() => {
     for (const material of asset.materials) {
-      if (/AmberEave/i.test(material.name)) {
+      if (material.name === "Home_PromenadeLensPalette") {
+        material.emissiveIntensity = night ? 1.55 : 0;
+      } else if (/AmberEave/i.test(material.name)) {
         material.emissive.set("#ffb65b");
         material.emissiveIntensity = night ? 2.3 : 0.18;
       }

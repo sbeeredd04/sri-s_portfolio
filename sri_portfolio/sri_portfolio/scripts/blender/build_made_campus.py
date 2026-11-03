@@ -7,6 +7,7 @@ import json, math, random, importlib.util
 from pathlib import Path
 import bpy
 from mathutils import Vector
+from mathutils.geometry import delaunay_2d_cdt
 
 APP = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location(
@@ -26,7 +27,9 @@ kit.PALETTE.update(
         "plinth": "ADA58D",
         "studioSage": "718271", "studioOchre": "B89563",
         "studioClay": "B87A61", "studioLimestone": "CDBEA6",
-        "gardenSoil": "626444", "flowerPink": "B96F95", "flowerGold": "CF9A52",
+        "gardenSoil": "566544", "gardenMoss": "64734D", "gardenLoam": "6C694C",
+        "shrubDeep": "3D5D3F", "shrubLight": "718951", "sageLeaf": "8D9B72",
+        "paverWarm": "BCAA90", "paverLight": "BDAB91", "paverShade": "BBA98F", "flowerPink": "B96F95", "flowerGold": "CF9A52",
         "seawall": "BDB2A6",
         "limestone": "D9CDBB",
         "set": "CFC0A8",
@@ -55,6 +58,50 @@ FOOTPRINTS = []
 PATHS = []
 STUDIOS = []
 GARDEN = []
+LANDSCAPE = {}
+PLAZA_OUTLINE=[[-17,-9],[17,-9],[17,3.6],[14.3,4.2],[13.6,5.3],[13.6,9.2],
+               [14.4,10.2],[17,10.8],[17,17],[-17,17],[-17,10.5],[-14.2,9.8],
+               [-13.4,8.7],[-13.4,5.1],[-14.2,4.1],[-17,3.4]]
+CAMPUS_OUTLINE=[[-47.5,-32],[-42,-40],[37,-40],[47.5,-31],[47.5,28],
+                [39,40],[-40,40],[-47.5,33]]
+CREW_POSITIONS=[[-8,7],[-7,11],[-4,13],[-2,14],[1,14],[9,13],[11,8],[-9,2],
+                [-3,3],[2,9],[6,9],[-11,10],[10,10],[-9,16],[8,17],[13,4],[12,0],[-12,3]]
+LAVENDER_BEDS=[[-33,33,8,1],[-12,32,6,1],[18,33,7,1],[39,25,2,7],
+                [-14,24,3,.8],[-10,27,6,.8],[14,19,6,.8],[-36,-29,1.4,.7]]
+
+
+def inside_polygon(x,z,poly):
+    hit=False
+    for i,(x1,z1) in enumerate(poly):
+        x2,z2=poly[i-1]
+        if (z1>z)!=(z2>z) and x<(x2-x1)*(z-z1)/(z2-z1)+x1:hit=not hit
+    return hit
+
+
+def constrained_triangles(polygons,grid=2.0):
+    points=[];edges=[];lookup={}
+    def vertex(p):
+        key=(round(p[0],6),round(p[1],6))
+        if key not in lookup:lookup[key]=len(points);points.append(key)
+        return lookup[key]
+    for poly in polygons:
+        ids=[vertex(p) for p in poly]
+        edges.extend((a,b) for a,b in zip(ids,ids[1:]+ids[:1]) if a!=b)
+    rng=random.Random(74)
+    xmin=min(p[0] for p in polygons[0]);xmax=max(p[0] for p in polygons[0])
+    zmin=min(p[1] for p in polygons[0]);zmax=max(p[1] for p in polygons[0])
+    x=xmin+grid
+    while x<xmax:
+        z=zmin+grid
+        while z<zmax:
+            jitter=min(.18,grid*.08)
+            q=(x+rng.uniform(-jitter,jitter),z+rng.uniform(-jitter,jitter))
+            if inside_polygon(*q,polygons[0]):vertex(q)
+            z+=grid
+        x+=grid
+    coords,_,faces,_,_,_=delaunay_2d_cdt([Vector(p) for p in points],edges,[],0,1e-5)
+    return [[(coords[i].x,coords[i].y) for i in face] for face in faces if len(face)==3]
+
 
 
 def xyz(p):
@@ -511,7 +558,7 @@ def plinth():
         [-47.5, 33],
     ]
     m = Mesh()
-    m.face([xyz((x, L, z)) for x, z in reversed(outline)], "plinth")
+    # The top is authored by campus_gardens with real shared bed boundaries.
 
     def setback(i, amount):
         p = Vector(outline[i])
@@ -659,34 +706,26 @@ def tower():
 
 def plaza():
     m = Mesh()
-    atbox(m, (0, L + 0.025, 4), (34, 0.05, 26), "limestone")
-    # Real-world 1.2m paving module, hairline joints; not oversized game tiles.
-    for x in range(-14, 15):
-        atbox(m, (x * 1.2, L + 0.052, 4), (0.025, 0.004, 26), "set")
-    for z in range(-7, 14):
-        atbox(m, (0, L + 0.053, z * 1.2), (34, 0.004, 0.025), "set")
-    ring = []
-    for i in range(40):
-        ring.append(
-            xyz(
-                (
-                    math.cos(i * math.tau / 40) * 6,
-                    L + 0.058,
-                    6 + math.sin(i * math.tau / 40) * 6,
-                )
-            )
-        )
-    m.face(list(reversed(ring)), "set")
-    meshobj(m, "Made_FilmPlazaPaving")
-    PATHS.append(
-        dict(
-            name="Made_FilmPlazaPaving",
-            width=34,
-            segments=[polyrect(0, 4, 34, 26)],
-            owner="filmSet",
-            isPlaza=True,
-        )
-    )
+    paving=[]
+    # Concave planted shoulders are real omissions in this slab, not soil
+    # overlaid on top of an unbroken rectangle. Tile colour stays subdued.
+    # Subdivide the actual cutout boundary too: otherwise a dense interior
+    # grid can still leave metre-long fans against an undivided edge.
+    stone_outline=[]
+    for a,b in zip(PLAZA_OUTLINE,PLAZA_OUTLINE[1:]+PLAZA_OUTLINE[:1]):
+        count=math.ceil(math.hypot(b[0]-a[0],b[1]-a[1])/.65)
+        stone_outline.extend([[a[k]+(b[k]-a[k])*i/count for k in range(2)] for i in range(count)])
+    for tri in constrained_triangles([stone_outline],.65):
+        x,z=[sum(p[k] for p in tri)/3 for k in range(2)]
+        if not inside_polygon(x,z,PLAZA_OUTLINE):continue
+        tone=["paverWarm","paverLight","paverShade"][(math.floor(x/.8)+math.floor(z/.65)*7)%3]
+        m.face([xyz((px,L+.05,pz)) for px,pz in reversed(tri)],tone)
+        paving.append([list(p) for p in tri])
+    for a,b in zip(PLAZA_OUTLINE,PLAZA_OUTLINE[1:]+PLAZA_OUTLINE[:1]):
+        m.face([xyz((a[0],L,a[1])),xyz((b[0],L,b[1])),xyz((b[0],L+.05,b[1])),xyz((a[0],L+.05,a[1]))],"paverShade")
+    meshobj(m,"Made_FilmPlazaPaving")
+    PATHS.append(dict(name="Made_FilmPlazaPaving",width=34,segments=paving,
+                      owner="filmSet",isPlaza=True))
     g = group(
         "Made_FilmSet_Crane",
         (0, L + 0.06, 6),
@@ -1025,19 +1064,8 @@ def props():
         ]
     ):
         olive("Made_OlivePlanter_" + str(i), x, z, h)
-    for i, (x, z, w, d) in enumerate(
-        [
-            (-33, 33, 8, 1),
-            (-12, 32, 6, 1),
-            (18, 33, 7, 1),
-            (39, 25, 2, 7),
-            (-14, 24, 3, 0.8),
-            (-10, 27, 6, 0.8),
-            (14, 19, 6, 0.8),
-            (-36, -29, 1.4, 0.7),
-        ]
-    ):
-        lavender("Made_LavenderBed_" + str(i), x, z, w, d)
+    for i,(x,z,w,d) in enumerate(LAVENDER_BEDS):
+        empty("Made_LavenderBed_"+str(i),ROOT,role="integratedLandscapeBed")
     # Tool wall lives beside, not across, the western circulation arm.
     q = Mesh()
     atbox(q, (-24, L + 1.3, 14), (4, 2.4, 0.18), "timber")
@@ -1049,28 +1077,7 @@ def props():
     obstacle("tools", polyrect(-24, 14, 4.2, 0.5), "prop", (L, L + 2.6))
     anchor("Made_ToolsAnchor", [-24, L + 1.5, 14.2])
     # Sparse static crew/onlookers establish person scale; no duplicated hero assets.
-    for i, (x, z) in enumerate(
-        [
-            (-8, 7),
-            (-7, 11),
-            (-4, 13),
-            (-2, 14),
-            (1, 14),
-            (9, 13),
-            (11, 8),
-            (-9, 2),
-            (-3, 3),
-            (2, 9),
-            (6, 9),
-            (-11, 10),
-            (10, 10),
-            (-9, 16),
-            (8, 17),
-            (13, 4),
-            (12, 0),
-            (-12, 3),
-        ]
-    ):
+    for i,(x,z) in enumerate(CREW_POSITIONS):
         q = Mesh()
         h = 1.72 + (i % 3) * 0.035
         for side in (-1, 1):
@@ -1154,62 +1161,108 @@ def overlap_polygon(a,b):
 
 
 def campus_gardens():
-    # Plant the unused shoulders around each gallery, not the working plaza.
-    # All ground-level geometry stays inside a certified plant footprint;
-    # every complete route and external Aether approach is a reservation.
+    # Continuous native planting wraps the gallery shoulders and joins the
+    # quay gardens. All paths and architecture are cut out before meshing.
     reserved=[fp["polygon"] for fp in FOOTPRINTS]
     reserved += [poly for route in PATHS for poly in route["segments"]]
-    plants,soil=Mesh(),Mesh()
-    rng=random.Random(734)
-    for row in range(64):
-        for col in range(78):
-            x=-43+col*1.12+(row%2)*.56+rng.uniform(-.10,.10)
-            z=-34+row*.98+rng.uniform(-.10,.10)
-            distances=[]
-            for studio in STUDIOS:
-                cx,_,cz=studio["center"]; w,_,d=studio["size"]
-                yaw=studio["yaw"]; dx,dz=x-cx,z-cz
-                lx=dx*math.cos(yaw)-dz*math.sin(yaw)
-                lz=dx*math.sin(yaw)+dz*math.cos(yaw)
-                distances.append(math.hypot(max(0,abs(lx)-w/2),max(0,abs(lz)-d/2)))
-            near=min(distances)
-            if not .85<near<4.2+.55*math.sin(x*.4+z*.3):continue
-            footprint=polyrect(x,z,1.24,1.24)
-            if any(overlap_polygon(footprint,p) for p in reserved):continue
-            if not (-42<x<42 and -35<z<31):continue
-            seed=len(GARDEN)
-            species="lavender" if (int((x+z)*.22)%3) else "flowerGold"
-            h=.45+rng.random()*.45
-            # An irregular low mat connects the stems to soil; all foliage
-            # grows up from this ground rather than hovering over paving.
-            ring=[xyz((x+math.cos(k*math.tau/7)*(.55+.045*math.sin(k+seed)),L+.009,z+math.sin(k*math.tau/7)*.55)) for k in range(7)]
-            soil.face(list(reversed(ring)),"gardenSoil")
-            for j in range(9):
-                angle=j*2.399+seed*.31
-                dx,dz=math.cos(angle),math.sin(angle)
-                length=.38+rng.random()*.17
-                root=xyz((x,L+.015,z))
-                left=xyz((x+dx*length*.55-dz*.10,L+h*.28,z+dz*length*.55+dx*.10))
-                right=xyz((x+dx*length*.55+dz*.10,L+h*.28,z+dz*length*.55-dx*.10))
-                ridge=xyz((x+dx*length*.65,L+h*.43,z+dz*length*.65))
-                tip=xyz((x+dx*length,L+h*.35,z+dz*length))
-                plants.face([root,left,ridge],"darkLeaf")
-                plants.face([root,ridge,right],"leaf")
-                plants.face([ridge,left,tip],"darkLeaf")
-                plants.face([ridge,tip,right],"leafLight")
-            for j in range(4):
-                angle=j*2.399+seed*.4
-                px,pz=x+math.cos(angle)*.30,z+math.sin(angle)*.30
-                top=L+h*(.8+.2*rng.random())
-                atrod(plants,(x,L+.06,z),(px,top,pz),.009,"darkLeaf",3)
-                for tier in range(2):
-                    y=top+tier*.065
-                    for petal in range(4):
-                        a=petal*math.pi/2+angle
-                        plants.face([xyz((px, y+.09,pz)),xyz((px+.073*math.cos(a-.55),y,pz+.073*math.sin(a-.55))),xyz((px+.073*math.cos(a+.55),y,pz+.073*math.sin(a+.55)))],species if (j+tier)%3 else "flowerPink")
-            GARDEN.append(dict(center=[round(x,4),round(z,4)],footprint=footprint,height=round(h+.16,3)))
+    reserved += [polyrect(x,z,.95,.95) for x,z in CREW_POSITIONS]
+    shapes=[]
+    for studio in STUDIOS:
+        cx,_,cz=studio["center"];w,_,d=studio["size"];yaw=studio["yaw"]
+        # Chamfered, asymmetric shoulders follow the building without
+        # repeating a mechanically uniform border on every side.
+        hx,hz=w/2+5.2,d/2+5.0
+        local=[[-hx+2,-hz], [hx-2,-hz-.6], [hx,-hz+2], [hx+.4,hz-2],
+               [hx-2,hz+.6],[-hx+2,hz],[-hx-.6,hz-2],[-hx,-hz+2]]
+        shapes.append([[cx+x*math.cos(yaw)+z*math.sin(yaw),cz-x*math.sin(yaw)+z*math.cos(yaw)]for x,z in local])
+    # Four readable foreground gardens replace the bare strip between the
+    # cinema plaza and quay; two concave pockets soften the plaza itself.
+    shapes.extend([
+        [[-39,23],[-34,21.8],[-29,24],[-28.8,29.5],[-31,33.6],[-37.5,33.5],[-39.5,29]],
+        [[-16,22],[-10,21.2],[-4.4,24],[-3.1,29.5],[-5,33.5],[-14,33.4],[-16.4,29]],
+        [[12.5,24],[18,23.4],[25.8,25],[27,30.5],[24,33.5],[14,33.4],[11.8,29]],
+        [[35.5,20],[40,19.5],[42.5,24],[43,30],[40.2,33.5],[36.3,32.5]],
+        [[-18,2.8],[-13.3,4.3],[-12.8,9.3],[-18,11.5]],
+        [[18,3],[13.1,4.9],[13.1,9.5],[18,11.7]],
+    ])
+    for x,z,w,d in LAVENDER_BEDS:shapes.append(polyrect(x,z,w+1.1,d+1.2))
+    # All constraints are in the same X/Z metre frame. CDT resolves their
+    # intersections, so bed triangles end exactly at real paving boundaries.
+    soil,ground=Mesh(),Mesh()
+    bed_triangles=[];bed_area=0
+    for tri in constrained_triangles([CAMPUS_OUTLINE,*shapes,*reserved],2.4):
+        x,z=[sum(p[k] for p in tri)/3 for k in range(2)]
+        if not inside_polygon(x,z,CAMPUS_OUTLINE):continue
+        garden=any(inside_polygon(x,z,p) for p in shapes) and not any(inside_polygon(x,z,p) for p in reserved)
+        mesh=soil if garden else ground
+        tone=(["gardenSoil","gardenMoss","gardenLoam"][(int(x*.18)+int(z*.14))%3]
+              if garden else "plinth")
+        mesh.face([xyz((px,L,pz)) for px,pz in reversed(tri)],tone)
+        if garden:
+            bed_triangles.append(tri)
+            a,b,c=tri;bed_area+=abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))/2
+    meshobj(ground,"Made_CampusGroundTop")
     meshobj(soil,"Made_GalleryGardenSoil")
-    meshobj(plants,"Made_GalleryGardenLeavesFlowers")
+    forms={name:Mesh() for name in ["Groundcover","FlowerDrifts","WoodyShrubs"]}
+    counts={name:0 for name in forms}
+    rng=random.Random(734)
+    # The ground masks define the composition; plants are tightly interwoven
+    # within each mass instead of evenly scattering isolated rosettes.
+    for row in range(69):
+        for col in range(82):
+            x=-44+col*1.08+(row%2)*.54+rng.uniform(-.14,.14)
+            z=-35+row*.99+rng.uniform(-.13,.13)
+            if not inside_polygon(x,z,CAMPUS_OUTLINE) or not any(inside_polygon(x,z,p) for p in shapes):continue
+            field=math.sin(x*.21+z*.12)+.55*math.cos(z*.29-x*.09)
+            form="WoodyShrubs" if field>.85 else "FlowerDrifts" if field>-.6 else "Groundcover"
+            radius=.83 if form=="WoodyShrubs" else .58
+            footprint=polyrect(x,z,radius*2+.08,radius*2+.08)
+            if any(overlap_polygon(footprint,p) for p in reserved):continue
+            if not all(inside_polygon(px,pz,CAMPUS_OUTLINE) for px,pz in footprint):continue
+            mesh=forms[form];seed=len(GARDEN)
+            h=.31+rng.random()*.17 if form=="Groundcover" else .55+rng.random()*.32
+            if form=="WoodyShrubs":h=.95+rng.random()*.38
+            if form!="WoodyShrubs":
+                for j in range(11 if form=="Groundcover" else 7):
+                    angle=j*2.399+seed*.31;dx,dz=math.cos(angle),math.sin(angle)
+                    length=.38+rng.random()*.17
+                    root=xyz((x,L+.01,z))
+                    left=xyz((x+dx*length*.55-dz*.10,L+h*.40,z+dz*length*.55+dx*.10))
+                    right=xyz((x+dx*length*.55+dz*.10,L+h*.40,z+dz*length*.55-dx*.10))
+                    ridge=xyz((x+dx*length*.65,L+h*.68,z+dz*length*.65))
+                    tip=xyz((x+dx*length,L+h*.48,z+dz*length))
+                    leaf="sageLeaf" if form=="Groundcover" else "darkLeaf"
+                    for points,tone in [([root,left,ridge],leaf),([root,ridge,right],"leaf"),([ridge,left,tip],leaf),([ridge,tip,right],"shrubLight")]:mesh.face(points,tone)
+            if form=="FlowerDrifts":
+                tone="lavender" if math.sin(x*.24-z*.17)>-.2 else "flowerGold"
+                for j in range(4):
+                    angle=j*2.399+seed*.4;px,pz=x+math.cos(angle)*.31,z+math.sin(angle)*.31
+                    top=L+h*(.8+.2*rng.random())
+                    atrod(mesh,(x,L+.04,z),(px,top,pz),.009,"darkLeaf",3)
+                    for tier in range(2):
+                        y=top+tier*.065
+                        for petal in range(4):
+                            a=petal*math.pi/2+angle
+                            mesh.face([xyz((px,y+.09,pz)),xyz((px+.075*math.cos(a-.55),y,pz+.075*math.sin(a-.55))),xyz((px+.075*math.cos(a+.55),y,pz+.075*math.sin(a+.55)))],tone if j%3 else "flowerPink")
+            if form=="WoodyShrubs":
+                for j in range(5):
+                    angle=j*2.399+seed*.4;dx,dz=math.cos(angle),math.sin(angle)
+                    px,pz=x+dx*.36,z+dz*.36;top=L+h*(.67+.25*rng.random())
+                    atrod(mesh,(x,L+.03,z),(px,top-.15,pz),.025,"timber",5)
+                    for k in range(7):
+                        a=angle+k*2.399;length=.30+rng.random()*.16
+                        root=xyz((px,top-.18,pz));ridge=xyz((px+math.cos(a)*length*.58,top+.08,pz+math.sin(a)*length*.58))
+                        left=xyz((px+math.cos(a-.45)*length*.66,top,pz+math.sin(a-.45)*length*.66))
+                        right=xyz((px+math.cos(a+.45)*length*.66,top,pz+math.sin(a+.45)*length*.66))
+                        tip=xyz((px+math.cos(a)*length,top+.04,pz+math.sin(a)*length))
+                        for points,tone in [([root,left,ridge],"shrubDeep"),([root,ridge,right],"leaf"),([ridge,left,tip],"shrubDeep"),([ridge,tip,right],"shrubLight")]:mesh.face(points,tone)
+            counts[form]+=1
+            GARDEN.append(dict(center=[round(x,4),round(z,4)],footprint=footprint,height=round(h+.16,3),form=form))
+    for name,mesh in forms.items():meshobj(mesh,"Made_Garden"+name)
+    # Retain the old semantic name as a group rather than duplicate geometry.
+    empty("Made_GalleryGardenLeavesFlowers",ROOT,role="threeDistinctPlantForms")
+    LANDSCAPE.update(bedAreaMetres2=round(bed_area,2),forms=counts,plazaOutline=PLAZA_OUTLINE,
+                     bedShapes=shapes,groundDatum=L,crewReservations=CREW_POSITIONS)
 
 
 def make():
@@ -1311,6 +1364,7 @@ def make():
         studios=STUDIOS,
         footprints=FOOTPRINTS,
         gardenPlants=GARDEN,
+        landscape=LANDSCAPE,
         renderedPaving=PATHS,
         externalAether=dict(
             center=[-26, L, -14], yaw=math.pi / 4, size=[12, 8.4, 11], triangles=7138

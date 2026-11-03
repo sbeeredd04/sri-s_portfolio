@@ -132,7 +132,7 @@ export default function HomeRegion({
   return (
     <group>
       <Suspense fallback={null}>
-        <SharedIslandAsset source={homeSite.landform} configure={dressHomeSurface} />
+        <SharedIslandAsset source={homeSite.landform} configure={dressHomeSurface} night={night} />
         <SharedIslandAsset
           source={homeSite.architecture}
           configure={configureHouse}
