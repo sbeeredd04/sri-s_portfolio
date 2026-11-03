@@ -17,9 +17,13 @@ PALETTE = {
  "timberLight":"BB926D", "sand":"D8C3A0", "walnut":"77533F", "linen":"E9DFCC",
  "sage":"A9B89A", "rose":"D9A3A0", "butter":"E3C77E", "powder":"9DB4C8",
  "cream":"EFE2C8", "lilac":"B7AFC2", "roof":"5E5A5C", "roofSeam":"706B6C",
- "navy":"2E3F5C", "warm":"FFD9A0", "amber":"FFB547", "bronze":"8A6A48",
+ "navy":"2E3F5C", "amber":"FFB547", "bronze":"8A6A48",
  "book":"B77D68",
- "step":"D8CFC4"
+ "step":"D8CFC4", "creamSiding":"E2D4BA", "rowTrim":"E8DCC9",
+ "rowReveal":"B4A495", "rowSoffit":"C1B09C", "roofFascia":"6B6260", "rowMetal":"60564D",
+ "roomOchre":"947B60", "roomRose":"9D7C6D", "roomSage":"828775",
+ "roomFloor":"937052", "roomCeiling":"AD9A86", "roomLinen":"C1A687",
+ "roomCurtain":"B59B83", "roomUpholstery":"A58F74", "roomBlue":"747D80"
 }
 def linear_channel(v):
     return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
@@ -57,9 +61,9 @@ class Mesh:
         start = len(self.vertices)
         self.vertices.extend(tuple(p) for p in coords)
         self.faces.append(tuple(range(start, len(self.vertices))))
-        self.colors.append(color(tone))
+        self.colors.append(color(tone) if isinstance(tone, str) else tone)
 
-    def box(self, center, size, tone, omit=()):
+    def box(self, center, size, tone, omit=(), face_tones=None):
         x, y, z = center
         a, b, c = [s / 2 for s in size]
         p = [(x + i * a, y + j * b, z + k * c)
@@ -72,7 +76,7 @@ class Mesh:
         )
         for name, indices in faces:
             if name not in omit:
-                self.face([p[i] for i in indices], tone)
+                self.face([p[i] for i in indices], (face_tones or {}).get(name, tone))
 
     def bevel_box(self, center, size, bevel, tone):
         x, y, z = center
@@ -133,7 +137,7 @@ def empty(name, parent=None, location=(0, 0, 0), **extras):
     return obj
 
 
-def wall(mesh, limits, origin, horizontal, normal, holes=(), tone="sand", depth=.3, joined=()):
+def wall(mesh, limits, origin, horizontal, normal, holes=(), tone="sand", depth=.3, joined=(), siding=False, interior="plaster"):
     """A continuous thick wall with actual apertures and their return faces."""
     u0, u1, z0, z1 = limits
     us = sorted({u0, u1, *[q for h in holes for q in h[:2]]})
@@ -151,15 +155,55 @@ def wall(mesh, limits, origin, horizontal, normal, holes=(), tone="sand", depth=
         a, b, c, d = us[i], us[i + 1], zs[j], zs[j + 1]
         front = [point(a, c, depth / 2), point(b, c, depth / 2), point(b, d, depth / 2), point(a, d, depth / 2)]
         back = [point(a, c, -depth / 2), point(b, c, -depth / 2), point(b, d, -depth / 2), point(a, d, -depth / 2)]
-        mesh.face(front, tone)
-        mesh.face(list(reversed(back)), "plaster")
+        if not siding:
+            mesh.face(front, tone)
+        mesh.face(list(reversed(back)), interior)
         for edge, neighbor in [(0, (i, j - 1)), (1, (i + 1, j)), (2, (i, j + 1)), (3, (i - 1, j))]:
             on_outer_boundary = (c == z0, b == u1, d == z1, a == u0)[edge]
             if on_outer_boundary and edge in joined:
                 continue
             if not occupied.get(neighbor, False):
                 k = (edge + 1) % 4
-                mesh.face((front[edge], back[edge], back[k], front[k]), "concrete")
+                mesh.face((front[edge], back[edge], back[k], front[k]),
+                          "rowReveal" if siding else "concrete")
+    if siding:
+        lap_siding(mesh, limits, holes, depth, point, tone)
+
+
+def lap_siding(mesh, limits, holes, depth, point, tone):
+    """Replace the outer wall skin with one continuous set of lapped boards."""
+    u0, u1, y0, y1 = limits
+    course_height = .28
+    outer = depth / 2
+    toe, heel = outer - .006, outer - .029
+    base = color(tone)
+    lip = tuple(channel * .79 for channel in base[:3]) + (1,)
+    courses = math.ceil((y1 - y0) / course_height)
+    for course in range(courses):
+        lower = y0 + course * course_height
+        upper = min(y1, lower + course_height)
+        if upper - lower < 1e-6:
+            continue
+        breaks = sorted({lower, upper, *(y for hole in holes for y in hole[2:] if lower < y < upper)})
+        for bottom, top in zip(breaks, breaks[1:]):
+            midpoint = (bottom + top) / 2
+            openings = sorted((a, b) for a, b, c, d in holes if c < midpoint < d)
+            spans = []
+            left = u0
+            for a, b in openings:
+                if a > left:
+                    spans.append((left, a))
+                left = max(left, b)
+            if left < u1:
+                spans.append((left, u1))
+            bottom_depth = toe + (heel - toe) * (bottom - lower) / course_height
+            top_depth = toe + (heel - toe) * (top - lower) / course_height
+            for a, b in spans:
+                mesh.face([point(a, bottom, bottom_depth), point(b, bottom, bottom_depth),
+                           point(b, top, top_depth), point(a, top, top_depth)], tone)
+                if course and bottom == lower:
+                    mesh.face([point(a, bottom, heel), point(b, bottom, heel),
+                               point(b, bottom, toe), point(a, bottom, toe)], lip)
 
 
 def frame(mesh, x0, x1, y, bottom, top, tone="graphite", width=.055):
@@ -180,8 +224,8 @@ def glass_quad(mesh, x0, x1, y, bottom, top):
 
 
 # Public geometry helpers accept Three-style coordinates (x east, y up, z south).
-def B(m, p, s, tone, omit=()):
-    m.box((p[0], -p[2], p[1]), (s[0], s[2], s[1]), tone, omit)
+def B(m, p, s, tone, omit=(), face_tones=None):
+    m.box((p[0], -p[2], p[1]), (s[0], s[2], s[1]), tone, omit, face_tones)
 def F(m, coords, tone):
     m.face([(x,-z,y) for x,y,z in reversed(coords)],tone)
 def G(m,coords,tone,depth=.24):
@@ -197,17 +241,17 @@ def R(m,a,b,r,tone,sides=6):
 def E(name,parent,p,**extras):
     return empty(name,parent,(p[0],-p[2],p[1]),**extras)
 def rail(m, glass, x0,x1,z,y,kind='glass'):
-    R(m,(x0,y+1.1,z),(x1,y+1.1,z),.022,'graphite' if kind=='glass' else 'plaster')
+    R(m,(x0,y+1.1,z),(x1,y+1.1,z),.022,'graphite' if kind=='glass' else 'rowMetal')
     for i in range(max(2,math.ceil((x1-x0)/1.35)+1)):
         x=x0+(x1-x0)*i/(max(2,math.ceil((x1-x0)/1.35)+1)-1)
-        B(m,(x,y+.55,z),(.035,1.1,.035),'graphite' if kind=='glass' else 'plaster')
+        B(m,(x,y+.55,z),(.035,1.1,.035),'graphite' if kind=='glass' else 'rowMetal')
     if kind=='glass': F(glass,[(x0,y+.08,z),(x1,y+.08,z),(x1,y+1.04,z),(x0,y+1.04,z)],'glass')
     else:
-        R(m,(x0,y+.12,z),(x1,y+.12,z),.018,'plaster')
+        R(m,(x0,y+.12,z),(x1,y+.12,z),.018,'rowMetal')
         n=math.ceil((x1-x0)/.28)
         for i in range(1,n):
             x=x0+(x1-x0)*i/n
-            B(m,(x,y+.6,z),(.024,.96,.024),'plaster')
+            B(m,(x,y+.6,z),(.024,.96,.024),'rowMetal')
 def chair(m,x,y,z,angle=0,tone='sand'):
     # Seat coordinates rotate about vertical: local front +Z.
     def p(a,b,c): return (x+a*math.cos(angle)+c*math.sin(angle),y+b,z-a*math.sin(angle)+c*math.cos(angle))
@@ -221,17 +265,77 @@ def table(m,x,y,z,w=2,d=1):
     B(m,(x,y+.76,z),(w,.08,d),'timberLight')
     for a in [-w*.4,w*.4]:
         for b in [-d*.35,d*.35]:B(m,(x+a,y+.36,z+b),(.07,.72,.07),'walnut')
-def window(m,g,x0,x1,z,y0,y1,lit=False):
+def window(m,g,x0,x1,z,y0,y1):
     # Deep frame and glass are actual apertures, not an opaque decal.
-    frame(m,x0,x1,-z,y0,y1,'plaster',.07)
+    frame(m,x0,x1,-z,y0,y1,'rowTrim',.07)
     F(g,[(x0+.07,y0+.07,z-.03),(x1-.07,y0+.07,z-.03),(x1-.07,y1-.07,z-.03),(x0+.07,y1-.07,z-.03)],'glass')
     mid = (x0 + x1) / 2
-    B(m,(mid,(y0+y1)/2,z-.04),(.055,y1-y0-.17,.07),'plaster',omit=("bottom","top"))
+    B(m,(mid,(y0+y1)/2,z-.04),(.055,y1-y0-.17,.07),'rowMetal',omit=("bottom","top"))
     for x_left, x_right in ((x0+.085, mid-.0275), (mid+.0275, x1-.085)):
         B(m,((x_left+x_right)/2,y0+.9,z-.045),(x_right-x_left,.045,.06),
-          'plaster',omit=("west","east"))
-    B(m,((x0+x1)/2,y0-.04,z+.035),(x1-x0+.22,.09,.20),'plaster')
-    if lit: F(m,[(x0+.13,y0+.12,z-.22),(x1-.13,y0+.12,z-.22),(x1-.13,y1-.12,z-.22),(x0+.13,y1-.12,z-.22)],'warm')
+          'rowMetal',omit=("west","east"))
+    B(m,((x0+x1)/2,y0-.04,z+.035),(x1-x0+.22,.09,.20),'rowTrim')
+def curtain(mesh, x0, x1, y0, y1, z, tone, folds=4):
+    """A hung panel with folded edges and a softly gathered lower hem."""
+    steps = folds * 2
+    points = []
+    for i in range(steps + 1):
+        t = i / steps
+        x = x0 + (x1 - x0) * t
+        fold = .026 if i % 2 else -.021
+        points.append(((x, y1, z + fold), (x + .035 * (t - .5), y0 + .012 * (i % 2), z + fold * 1.45)))
+    light = color(tone)
+    shade = tuple(channel * .82 for channel in light[:3]) + (1,)
+    for i in range(steps):
+        top, hem = points[i]
+        next_top, next_hem = points[i + 1]
+        F(mesh, [hem, next_hem, next_top, top], light if i % 2 == 0 else shade)
+    B(mesh,((x0 + x1) / 2,y1 + .014,z),(x1-x0+.055,.024,.028),'rowMetal')
+
+
+def furnish_rowhouse(mesh, index, width, bayx):
+    room_tones = ('roomOchre','roomRose','roomSage')
+    cloth = 'roomLinen' if index % 3 else 'roomCurtain'
+    floors = (1.02, 3.68, 6.34)
+    for level, (floor, ceiling) in enumerate(zip(floors, (3.50, 6.16, 8.88))):
+        room = room_tones[(index + level) % len(room_tones)]
+        # Each front room ends at a real full-height partition 2.2m behind
+        # the windows. The side walls and slab underside provide the returns.
+        B(mesh,(0,(floor+ceiling)/2,3.51),(width-.43,ceiling-floor,.13),
+          room,omit=('top','bottom'))
+        if level == 0:
+            if index % 2:
+                curtain(mesh,bayx-1.43,bayx-.83,floor+.55,floor+2.27,5.60,cloth,3)
+            else:
+                curtain(mesh,bayx+.88,bayx+1.43,floor+.53,floor+2.27,5.60,cloth,3)
+            # A bench facing the bay, set back beyond the curtain line.
+            x = bayx + (.38 if index % 2 else -.38)
+            fabric = 'roomUpholstery' if index % 3 else 'roomBlue'
+            B(mesh,(x,floor+.22,4.91),(1.48,.44,.55),fabric,omit=('bottom',))
+            B(mesh,(x,floor+.67,4.67),(1.48,.63,.17),fabric)
+            B(mesh,(x,floor+.505,5.00),(1.34,.13,.49),'roomLinen',omit=('bottom','north'))
+            # Slim console with an unlit shade gives the room a second depth.
+            side = bayx + (-.86 if index % 2 else .86)
+            B(mesh,(side,floor+.36,4.03),(.44,.72,.30),'walnut',omit=('bottom',))
+            B(mesh,(side,floor+.90,4.03),(.036,.36,.036),'bronze')
+            B(mesh,(side,floor+1.13,4.03),(.28,.21,.25),'roomLinen')
+        else:
+            span = .45 + ((index + level * 2) % 4) * .13
+            left = (index + level) % 2
+            edges = (-1.57,-1.57+span) if left else (1.57-span,1.57)
+            curtain(mesh,*edges,floor+.24,floor+2.35,5.60,cloth)
+            if (index + level) % 3 == 0:
+                opposite = (1.20,1.57) if left else (-1.57,-1.20)
+                curtain(mesh,*opposite,floor+.23,floor+2.35,5.60,'roomCurtain',3)
+            B(mesh,((.62 if left else -.62),floor+.47,3.86),
+              (1.20,.94,.47),'roomFloor',omit=('bottom',))
+    clear_width = width / 2 - .24
+    F(mesh,[(-clear_width,8.88,5.755),(clear_width,8.88,5.755),
+            (clear_width,8.88,3.575),(-clear_width,8.88,3.575)],'roomCeiling')
+    # An attic dormer reads as a lined loft rather than a light card.
+    B(mesh,(0,11.08,4.92),(1.24,1.66,.11),room_tones[index % 3])
+
+
 
 def townhouse(index,w,tone,root,mat,glassmat):
     structure, glazing=Mesh(),Mesh()
@@ -239,24 +343,24 @@ def townhouse(index,w,tone,root,mat,glassmat):
     floor,eave,ridge=1.02,9.0,12.5
     B(structure,(0,.51,0),(w,1.02,12),'step',omit=('top',))
     for yy in [floor,3.68,6.34]:
-        B(structure,(0,yy-.09,0),(w-.32,.18,11.6),'plaster')
+        B(structure,(0,yy-.09,0),(w-.32,.18,11.6),'roomFloor', face_tones={'bottom':'roomCeiling'})
     doorx=-w*.32 if index%2==0 else w*.32
     bayx=w*.13 if index%2==0 else -w*.13
     groundholes=[(doorx-.57,doorx+.57,floor,floor+2.4),(bayx-1.6,bayx+1.6,floor+.45,floor+2.25)]
     upperholes=[(-1.75,1.75,yy+.12,yy+2.3) for yy in [3.68,6.34]]
-    wall(structure,(-w/2,w/2,1.02,eave),(0,-5.88,0),(1,0,0),(0,-1,0),groundholes+upperholes,tone,.24,joined=(0,1,2,3))
+    wall(structure,(-w/2,w/2,1.02,eave),(0,-5.88,0),(1,0,0),(0,-1,0),groundholes+upperholes,tone,.24,joined=(0,1,2,3),siding=True,interior='roomOchre')
     for side in [-1,1]:
         holes=[(-1.2,1.2,yy+.55,yy+2.15) for yy in [floor,3.68,6.34]]
-        wall(structure,(-5.88,5.88,1.02,eave),(side*(w/2-.12),0,0),(0,1,0),(side,0,0),holes,tone,.24,joined=(0,1,2,3))
+        wall(structure,(-5.88,5.88,1.02,eave),(side*(w/2-.12),0,0),(0,1,0),(side,0,0),holes,tone,.24,joined=(0,1,2,3),siding=True,interior='roomOchre')
         # inset side windows, each with casing and a central division
         for yy in [floor,3.68,6.34]:
             x=side*(w/2-.13)
             F(glazing,[(x,yy+.55,-1.2),(x,yy+2.15,-1.2),(x,yy+2.15,1.2),(x,yy+.55,1.2)],'glass')
-            for z in [-1.2,0,1.2]:B(structure,(side*w/2,yy+1.35,z),(.08,1.75,.07),'plaster')
-            for y in [yy+.55,yy+2.15]:B(structure,(side*w/2,y,0),(.08,.08,2.5),'plaster')
+            for z in [-1.2,0,1.2]:B(structure,(side*w/2,yy+1.35,z),(.08,1.75,.07),'rowMetal')
+            for y in [yy+.55,yy+2.15]:B(structure,(side*w/2,y,0),(.08,.08,2.5),'rowMetal')
     # Rear has a real centered service door and room windows.
     rearholes=[(-.55,.55,floor,floor+2.4),(-3.2,-1.2,4.2,5.8),(1.2,3.2,7,8.6)]
-    wall(structure,(-w/2,w/2,floor,eave),(0,5.88,0),(1,0,0),(0,1,0),rearholes,tone,.24,joined=(0,1,2,3))
+    wall(structure,(-w/2,w/2,floor,eave),(0,5.88,0),(1,0,0),(0,1,0),rearholes,tone,.24,joined=(0,1,2,3),interior='roomOchre')
     B(structure,(0,floor+1.2,-5.95),(1.06,2.4,.07),'navy',omit=('top','bottom'))
     for x,y in [(-2.2,4.2),(2.2,7)]:
         F(glazing,[(x-1,y,-5.95),(x+1,y,-5.95),(x+1,y+1.6,-5.95),(x-1,y+1.6,-5.95)],'glass')
@@ -268,26 +372,30 @@ def townhouse(index,w,tone,root,mat,glassmat):
         G(structure,[(a,eave,6),(side*aw,10.65,6),(side*aw,ridge-3.5*aw/(w/2),6)],tone)
     B(structure,(0,9.65,5.88),(1.04,1.3,.24),tone)
     G(structure,[(-aw,11.7,6),(aw,11.7,6),(aw,ridge-3.5*aw/(w/2),6),(0,ridge,6),(-aw,ridge-3.5*aw/(w/2),6)],tone)
-    window(structure,glazing,-aw,aw,6.03,10.3,11.7,index%3==0)
+    window(structure,glazing,-aw,aw,6.03,10.3,11.7)
     G(structure,[(-w/2,eave,-5.76),(w/2,eave,-5.76),(0,ridge,-5.76)],tone)
     # Roof has physical thickness, quiet standing seams, continuous plain barge boards.
     for side in [-1,1]:
         x=side*(w/2+.24)
         roofpts=[(0,ridge+.14,-6.3),(0,ridge+.14,6.3),(x,eave+.05,6.3),(x,eave+.05,-6.3)]
         F(structure,roofpts,'roof')
-        F(structure,[(px,py-.12,pz) for px,py,pz in reversed(roofpts)],'roof')
+        F(structure,[(px,py-.12,pz) for px,py,pz in reversed(roofpts)],'rowSoffit')
         for j in range(4):
             a,b=roofpts[j],roofpts[(j+1)%4]
-            F(structure,[a,b,(b[0],b[1]-.12,b[2]),(a[0],a[1]-.12,a[2])],'roof')
-        for z in [-6.3,6.3]: R(structure,(0,ridge+.1,z),(x,eave+.02,z),.075,'plaster',4)
+            F(structure,[a,b,(b[0],b[1]-.12,b[2]),(a[0],a[1]-.12,a[2])],'roofFascia')
+        for z in [-6.3,6.3]: R(structure,(0,ridge+.1,z),(x,eave+.02,z),.075,'rowTrim',4)
         for j in range(1,8):
             xx=x*j/8; yy=ridge+.14+(eave+.05-ridge-.14)*j/8
             R(structure,(xx,yy+.015,-6.2),(xx,yy+.015,6.2),.012,'roofSeam',4)
     R(structure,(0,ridge+.15,-6.32),(0,ridge+.15,6.32),.055,'roofSeam',6)
-    B(structure,(0,eave-.05,6.06),(w+.2,.16,.16),'plaster')
+    B(structure,(0,eave-.05,6.06),(w+.2,.16,.16),'rowTrim')
+    # Corner boards close the lapped returns without extending past the roof.
+    for xx in (-w / 2, w / 2):
+        for zz in (-5.925, 5.925):
+            B(structure,(xx,5.00,zz),(.092,7.94,.176),'rowTrim')
     # Entry recess, door panel, transom, brass handle and a six-step stoop.
     B(structure,(doorx,floor+1.18,5.78),(1,2.36,.09),'navy' if index%2 else 'walnut',omit=('bottom',))
-    frame(structure,doorx-.57,doorx+.57,-6.015,floor,floor+2.4,'plaster',.085)
+    frame(structure,doorx-.57,doorx+.57,-6.015,floor,floor+2.4,'rowTrim',.085)
     B(structure,(doorx+.35,floor+1.03,5.86),(.025,.24,.05),'bronze')
     B(structure,(doorx,floor-.05,6.42),(1.7,.1,1.04),'step')
     F(structure,[(doorx-.57,floor,5.8),(doorx+.57,floor,5.8),
@@ -296,29 +404,30 @@ def townhouse(index,w,tone,root,mat,glassmat):
         h=(6-i)*.17;B(structure,(doorx,h/2,7.09+i*.30),(1.7,h,.30),'step')
     for side in [-1,1]:
         x=doorx+side*.78
-        R(structure,(x,1.97,6.9),(x,.98,8.88),.028,'plaster')
+        R(structure,(x,1.97,6.9),(x,.98,8.88),.028,'rowTrim')
         for j in range(4):
             z=6.95+j*.6;h=max(0,1.02-(z-6.95)*.51)
-            B(structure,(x,h+.48,z),(.04,.96,.04),'plaster')
+            B(structure,(x,h+.48,z),(.04,.96,.04),'rowTrim')
     # Three-sided bay: outer panes are angled 30 degrees, with a deep sill/canopy.
     pts=[(bayx-1.6,6),(bayx-1.16,6.76),(bayx+1.16,6.76),(bayx+1.6,6)]
     for j in range(3):
         a,b=pts[j],pts[j+1]
         F(glazing,[(a[0],floor+.5,a[1]),(b[0],floor+.5,b[1]),(b[0],floor+2.25,b[1]),(a[0],floor+2.25,a[1])],'glass')
-        for yy in [floor+.43,floor+2.3]: R(structure,(a[0],yy,a[1]),(b[0],yy,b[1]),.065,'plaster',4)
-        B(structure,(a[0],floor+1.35,a[1]),(.075,1.9,.075),'plaster')
-    B(structure,(pts[-1][0],floor+1.35,pts[-1][1]),(.075,1.9,.075),'plaster')
+        for yy in [floor+.43,floor+2.3]: R(structure,(a[0],yy,a[1]),(b[0],yy,b[1]),.065,'rowTrim',4)
+        B(structure,(a[0],floor+1.35,a[1]),(.075,1.9,.075),'rowMetal')
+    B(structure,(pts[-1][0],floor+1.35,pts[-1][1]),(.075,1.9,.075),'rowMetal')
     # Shallow upper balconies: 0.9m deep, framed French doors and slim rails.
     for k,yy in enumerate([3.68,6.34]):
-        window(structure,glazing,-1.75,1.75,6.01,yy+.12,yy+2.3,(index+k)%3==0)
-        B(structure,(0,yy-.06,6.45),(w*.74,.2,1.05),'plaster')
-        rail(structure,glazing,-w*.37,w*.37,6.96,yy,'white')
+        window(structure,glazing,-1.75,1.75,6.01,yy+.12,yy+2.3)
+        B(structure,(0,yy-.06,6.45),(w*.74,.2,1.05),'rowTrim', face_tones={'bottom':'rowSoffit'})
+        rail(structure,glazing,-w*.37,w*.37,6.935,yy,'white')
         for x in [-w*.37,w*.37]:
-            R(structure,(x,yy+1.1,6.0),(x,yy+1.1,6.96),.022,'plaster')
+            R(structure,(x,yy+1.1,6.0),(x,yy+1.1,6.96),.022,'rowMetal')
     # Modest casing, horizontal shadow breaks and one chimney distinguish the kit.
-    for yy in [3.52,6.18]:B(structure,(0,yy,6.03),(w-.04,.09,.12),'plaster')
+    for yy in [3.52,6.18]:B(structure,(0,yy,6.03),(w-.04,.09,.12),'rowTrim')
     B(structure,(w*.27,11.9,-3.4),(.65,1.55,.7),'step')
-    B(structure,(w*.27,12.68,-3.4),(.8,.12,.85),'plaster')
+    B(structure,(w*.27,12.68,-3.4),(.8,.12,.85),'rowTrim')
+    furnish_rowhouse(structure,index,w,bayx)
     structure.object(f'Rowhouse_{index:02d}_Shell',mat,root)
     glazing.object(f'Rowhouse_{index:02d}_Glazing',glassmat,root)
 
@@ -463,10 +572,10 @@ def make():
         'Summit_BeaconAnchor':[3,SUMMIT_FLOOR+14.45,-26.3],'Summit_HeroTarget':[-2,SUMMIT_FLOOR+4,-22],
         'Summit_NorthApproach':[0,SUMMIT_FLOOR,-31.5]}.items():E(name,root,p,role='runtimeAnchor');anchors[name]=p
     rows=[]
-    frontcolors=['sage','rose','butter','powder','cream','lilac','rose','sage','butter']
+    frontcolors=['sage','rose','butter','powder','creamSiding','lilac','rose','sage','butter']
     for i,(x,tone) in enumerate(zip(range(-46,43,11),frontcolors)):
         rows.append((i+1,x,2.6,29,tone,[8.8,9,9.4,9.6][i%4],'front'))
-    for i,(x,tone) in enumerate(zip(range(-35,21,11),['powder','cream','sage','butter','rose','lilac'])):
+    for i,(x,tone) in enumerate(zip(range(-35,21,11),['powder','creamSiding','sage','butter','rose','lilac'])):
         rows.append((i+10,x,5.6,7,tone,9.0,'back'))
     reservations=[]
     for i,x,y,z,tone,w,row in rows:

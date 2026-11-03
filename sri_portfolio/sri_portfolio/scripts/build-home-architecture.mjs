@@ -9,7 +9,7 @@ import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, EXTMeshoptCompression } from '@gltf-transform/extensions';
 import { dedup, prune, weld, meshopt } from '@gltf-transform/functions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
-import { Box3, Color, Vector3 } from 'three';
+import { Box3, Color, Raycaster, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 const app=fileURLToPath(new URL('../',import.meta.url));
 const asset=new URL('../public/models/islands/home-architecture.glb',import.meta.url);
@@ -62,6 +62,52 @@ for(let i=1;i<=15;i++) {
   assert.ok(bounds.min.x>=r.boundsXZ[0]-.02&&bounds.max.x<=r.boundsXZ[2]+.02,`House ${i} roof width outside reservation`);
   assert.ok(bounds.min.z>=r.boundsXZ[1]-.02&&bounds.max.z<=r.boundsXZ[3]+.02,`House ${i} rendered footprint outside reservation`);
   assert.ok(Math.abs(bounds.min.y-r.ground)<.03,`House ${i} ground contact`);
+}
+// Ray samples on the loaded opaque shells verify true lapped relief and
+// leave the window and entry reveals clear. No texture supplies these profiles.
+const facadeRelief = [];
+const frontRay = new Raycaster(undefined, new Vector3(0, 0, -1), 0, 1.2);
+function frontHit(shell, x, y, z, offset = 7) {
+  frontRay.ray.origin.set(x, y, z + offset);
+  return frontRay.intersectObject(shell, false)[0]?.point.z;
+}
+for (let i = 0; i < houseBounds.length; i++) {
+  const id = String(i + 1).padStart(2, "0");
+  const shell = node(`Rowhouse_${id}_Shell`);
+  const house = node(`Rowhouse_${id}_Root`);
+  const { x, y, z } = house.getWorldPosition(new Vector3());
+  const w = stats.reservations[i].width;
+  const differences = [];
+  for (const course of [12, 13, 14, 19, 20, 21]) {
+    const base = y + 1.02 + .28 * course;
+    const toe = frontHit(shell, x + w * .43, base + .035, z);
+    const heel = frontHit(shell, x + w * .43, base + .235, z);
+    assert.ok(Number.isFinite(toe) && Number.isFinite(heel));
+    differences.push(toe - heel);
+  }
+  assert.ok(differences.every((d) => d > .01 && d < .025), `Missing board profile on Rowhouse ${id}`);
+  const door = frontHit(shell, stats.anchors[`Rowhouse_${id}_EntryAnchor`][0], y + 2.25, z);
+  assert.ok(door === undefined || door < z + 5.90, `Siding filled entry opening at Rowhouse ${id}`);
+  for (const storey of [4.35, 7.01]) {
+    const pane = frontHit(shell, x + .67, y + storey, z, 6.18);
+    assert.ok(pane === undefined || pane < z + 5.94, `Siding filled window opening at Rowhouse ${id}`);
+  }
+  // A straight sightline through the open portion of each street-facing
+  // window meets an interior wall several feet behind its glazing.
+  const bayX = i % 2 === 0 ? -.13 * w : .13 * w;
+  const depths = [];
+  frontRay.far = 3.1;
+  for (const [paneX, paneY, glazingZ] of [
+    [bayX, 2.65, 6.76], [.67, 5.13, 5.98], [.67, 7.79, 5.98],
+  ]) {
+    const backWall = frontHit(shell, x + paneX, y + paneY, z, 6.18);
+    const depth = (z + glazingZ) - backWall;
+    assert.ok(depth > 2.30 && depth < 3.22, `Rowhouse ${id} window lost its recessed room: ${depth}`);
+    depths.push(+depth.toFixed(3));
+  }
+  frontRay.far = 1.2;
+  facadeRelief.push({ id, min: +Math.min(...differences).toFixed(4),
+    max: +Math.max(...differences).toFixed(4), roomDepthMetres: depths });
 }
 const fronts=houseBounds.slice(0,9),backs=houseBounds.slice(9);
 const alley=Math.min(...fronts.map(b=>b.min[2]))-Math.max(...backs.map(b=>b.max[2]));
@@ -171,6 +217,7 @@ const summit=box(new Box3().setFromObject(node('Summit_Root'),true));
 Object.assign(stats,{bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),triangles,primitives,vertices,
   bounds:box(new Box3().setFromObject(root,true)),summitBounds:summit,houseBounds,exportedAnchors:actualAnchors,
   coplanarColorAudit:coplanar,
+  decodedFacadeReliefMetres:facadeRelief,
   coplanarAuditTriangleCount:auditedTriangles,
   paletteRoundTrip:{attribute:'COLOR_0',maximumLinearError:Math.max(...Object.values(palette)),perColorError:palette},
   integrity:{loader:'Three GLTFLoader + MeshoptDecoder',semanticHierarchy:true,anchorsRetained:true,quantized:true,
