@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { Box3, Ray, Vector3, Triangle } from 'three';
+import { Box3, PerspectiveCamera, Ray, Vector3, Triangle } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'meshoptimizer';
+import { madeCampus } from '../app/lib/made-campus-data.mjs';
 import { homeSite } from '../app/lib/home-site.mjs';
-import { apartmentPoint, studioDeskView, studioBookView, studioMonitors, studioSurfaces, studioDeskFrame, APARTMENT_YAW } from '../app/lib/studio-layout.mjs';
+import { apartmentPoint, studioDeskView, studioBookView, studioMonitors, studioSurfaces, studioDeskFrame, studioInteriorOrbit, studioMonitorScale, APARTMENT_YAW } from '../app/lib/studio-layout.mjs';
 import { worldPoint } from '../app/lib/world-layout.mjs';
 
 async function architectureTriangles() {
@@ -21,7 +22,7 @@ async function architectureTriangles() {
     for(let i=0;i<(index?.count??p.count);i+=3){
       const v=[0,1,2].map(j=>new Vector3().fromBufferAttribute(p,index?index.getX(i+j):i+j).applyMatrix4(mesh.matrixWorld));
       const triangle=new Triangle(...v),bounds=new Box3().setFromPoints(v);
-      if(bounds.max.y>29.65 && bounds.min.y<32.95)triangles.push({name:mesh.name,triangle,bounds});
+      if(mesh.name.startsWith("Summit_"))triangles.push({name:mesh.name,triangle,bounds});
     }
   });
   return triangles;
@@ -60,4 +61,49 @@ test('rotated desk, sofa and task-chair envelopes clear actual stairs, walls and
     const body=new Box3(new Vector3(...p.map((x,i)=>x-h[i])),new Vector3(...p.map((x,i)=>x+h[i])));
     for(const t of architecture)if(body.intersectsBox(t.bounds))assert(!body.intersectsTriangle(t.triangle),`${name} intersects ${t.name}`);
   }
+});
+
+test('phone desk keeps the full displays readable and sees Made over the actual balcony rail', () => {
+  const shot = studioDeskView.portrait;
+  assert.ok(shot.position[1] <= studioInteriorOrbit.maxHeight);
+  const width = 390, height = 844;
+  const eye = new Vector3(...apartmentPoint(shot.position));
+  const camera = new PerspectiveCamera(shot.fov, width / height, 0.22, 1000);
+  camera.position.copy(eye);
+  camera.lookAt(...apartmentPoint(shot.target));
+  camera.setViewOffset(width, height, 0, -height * 0.025, width, height);
+  camera.updateMatrixWorld(true);
+
+  function assertClear(point, label) {
+    const toward = point.clone().sub(eye), distance = toward.length();
+    const ray = new Ray(eye, toward.normalize());
+    const intersection = new Vector3();
+    for (const { name, triangle, bounds } of architecture) {
+      if (!ray.intersectsBox(bounds)) continue;
+      const hit = ray.intersectTriangle(triangle.a, triangle.b, triangle.c, false, intersection);
+      assert.ok(!hit || hit.distanceTo(eye) >= distance, `${label} blocked by ${name} at ${intersection.toArray()}`);
+    }
+    const projected = point.clone().project(camera);
+    const x = (projected.x + 1) * width / 2, y = (1 - projected.y) * height / 2;
+    assert.ok(x > 4 && x < width - 4 && y > 185 && y < 655,
+      `${label} leaves the unobscured phone viewport at ${x.toFixed(1)}, ${y.toFixed(1)}`);
+  }
+
+  for (const [i, monitor] of studioMonitors.entries()) {
+    // DeskHardware's display face is 1.457 × .91 model units, z=.028,
+    // mounted in the Workspace group .15m above the apartment origin.
+    for (const x of [-1.457 / 2, 1.457 / 2]) for (const y of [-0.91 / 2, 0.91 / 2]) {
+      const corner = new Vector3(x, y, 0.028).multiplyScalar(studioMonitorScale);
+      corner.applyAxisAngle(new Vector3(0, 1, 0), monitor.rotation);
+      corner.add(new Vector3(...monitor.position));
+      corner.y += 0.15;
+      assertClear(new Vector3(...apartmentPoint(corner.toArray())), `monitor ${i + 1} corner`);
+    }
+  }
+
+  const homeOrigin = worldPoint('studio', [0, 0, 0]);
+  const made = (local) => worldPoint('projects', local).sub(homeOrigin);
+  assertClear(made(madeCampus.anchors.Made_TowerBeaconAnchor), 'Made tower');
+  assertClear(made([0, 2, 0]), 'Made plaza');
+  assertClear(made([0, 2.2, 20]), 'Made promenade over the balcony rail');
 });

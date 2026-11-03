@@ -118,7 +118,7 @@ export const studioDeskView = {
   target: [-0.4, 1.45, -1.1],
   fov: 56,
   portrait: {
-    position: [-0.65, 2.65, 3.1],
+    position: [-0.47, 2.83, 3.1],
     target: [-0.45, 1.45, -1.1],
     fov: 60,
   },

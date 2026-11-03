@@ -1142,3 +1142,15 @@ Commit013f0ebf is live through GitHub→Vercel; productiondpl_HTT1w996whTbbANY6K
 Eased the additional mist density into the low-visibility range rather than multiplying ordinary cloudy air into a pale veil. Base biome depth, sky/cloud color, direct/ambient lights, white point, night palette and full dense fog remain. Existing rain contribution is unchanged; ordinary low mist contributes less. Fixed `?weather=overcast` High Foundry before/after shows stronger water/background separation and darker material recesses. Actual Low390×844 Home day and After hours night arrival/close/return inspected; entertainment practical pools stay warm. Actual High dense-fog Foundry/Agentex approach and keyboard entry remain usable.383 isolated tests, typecheck and production build pass, including view-space fog fractions at authored Home/Made eyes and monotonic day/night mist/rain sweeps. Evidence research/haze-response-2026-11-03/.
 
 This reduces atmospheric wash but does not fix the remaining pale material palette, broad paved spaces, sparse planting or simplified silhouettes. Low foreground form remains flatter than the reference; no full-reference or physical-device acceptance. Full-world goal remains active.
+
+
+### Haze response production verification — November 3, 2026, 14:01 PT
+
+Commitb678d418 is live via GitHub→Vercel; productiondpl_4kveVuNFh6dPtswdNmqeWFr4Pb8k Ready. Actual public1280×720 and390×844 High/overcast Foundry arrival and phone World return match the clearer haze response. No runtime errors. Public/, /story, /rooms/work, /rooms/music and/resume return200. Evidence research/haze-response-2026-11-03/production-*.png. Live SF conditions restored and viewport reset. Local development3010 and reviewed production build3111 remain available. Full-world goal remains active; next priorities are landscape/architecture form, richer ground and building contact, and camera occlusion rather than further blanket lighting tweaks.
+
+
+### Home phone workspace framing — November 3, 2026
+
+The room already faces the inhabited bay; no furniture rotation was needed. Raised and centered only the portrait desk eye from[-.65,2.65,3.1] to[-.47,2.83,3.1], retaining target, lens, geometry and orbit limits. All display faces stay visible, with more clearance above the seated figure and a sightline to Made’s promenade above the balcony rail. Actual1440×900 and390×844 arrival, desk and return reviewed. Keyboard desk entry, professional reading/Escape return and pointer orbit work. Low night while paused remains usable, though the seated figure is too dark and the bay needs richer nighttime illumination.384 isolated tests, typecheck and production build pass; decoded solid-architecture rays and all12 display corners guard the phone frame. Compiled3111 result inspected. Evidence research/home-desk-frame-2026-11-03/.
+
+This is a small camera correction. Home’s broad empty slope, pale exterior surfaces and thin tree silhouettes still fail the reference ambition. Full-world quality, general occlusion and physical-device performance remain open.
