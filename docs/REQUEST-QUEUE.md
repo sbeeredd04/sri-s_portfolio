@@ -1168,3 +1168,17 @@ Rebuilt the coast from approximately66×40m to a42×32.5m two-lobed headland, wi
 Actual1440×900 High overcast arrival, writing, lounge, walking and World return inspected;390×844 Low day arrival/studio/return and night arrival/lounge/return inspected. Keyboard selection, reading entry/Escape return and walking movement work. New garden relief stays outside all rendered paving triangles and full path widths; tests verify rooted plants, seam connectivity, prop ground contact and positive pier clearance.392 isolated tests, typecheck and production build pass. Compiled3111 arrival inspected without runtime errors. A360×240 paused scene crop was identical across259,200channel samples; motion resumed and settings closed. Evidence research/fieldnotes-headland-2026-11-03/.
 
 Open visual defects: low cliff height, oversized14m amber blade relative to the small studio, plain broad paving, pale surfaces and repeated book shapes. Some narrow coast notches remain visibly angular. Dense planted shoulders are not newly walkable; existing shared paths remain the walking domain. Existing fieldnotesObstacles plant radii can be undefined and need a separate navigation correction. Physical phone/older-M1 validation and full reference matching remain open. This is an incremental landscape unit; full-world goal stays active. Production verification pending.
+
+
+### Fieldnotes headland production verification — November 3, 2026, 15:02 PT
+
+Commit19f8c420 is live through GitHub→Vercel, productiondpl_BTpn3HwErgZvcNZWq6aeryZnSVXV Ready. Actual public390×844 and1440×900 Fieldnotes arrivals match reviewed coast and vegetation. Public/, /story, /rooms/writing, /rooms/contact and/resume return200. Evidence research/fieldnotes-headland-2026-11-03/production-*.png. Full-world goal remains active; waterfall shading is the next bounded unit and is not published.
+
+
+### Waterfall flow and impact shading — November 3, 2026
+
+Separated the refined feeder, falling sheet and horizontal foam material roles without changing meshes, cameras or draw count. Gravity travel time drives two scales of broken advected streaks; a pale translucent body replaces the fully opaque white curtain. Initial broad sine bands were browser-reviewed and rejected as fabric-like; finer staggered turbulence replaced them. Existing mist now starts at the decoded landing point1.15m forward of its previous location. A second night review found a glaring spray blob; nighttime tint and alpha now match the dim lake while retaining daytime spray. These are stylized flow shaders, not fluid simulation or boat interaction physics.
+
+Actual1440×900 High day/overcast and night close views plus arrival/World return inspected;390×844 Low night arrival/close/return inspected. Keyboard view selection, pause/resume and Escape settings dismissal work. An initial pause comparison followed a lighting transition; repeating under settled daylight yields a pixel-identical100×320 waterfall crop (96,000channels), while resume visibly changes the falling packets.394 isolated tests, typecheck and production build pass; decoded source geometry guards the feeder/lip/impact positions. Compiled3111 close view has no shader/runtime errors. Evidence research/waterfall-flow-2026-11-03/.
+
+Open: underlying slab-like rock masses, lookout architecture, lake reflectance and overly uniform forest composition still fall short of the references; night lake remains too flat. No physical phone/older-M1 or reference-equivalence claim. Full-world goal stays active. Production verification pending.

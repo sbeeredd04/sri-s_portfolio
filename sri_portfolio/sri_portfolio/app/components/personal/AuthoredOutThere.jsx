@@ -5,7 +5,7 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { outThereFrame } from "../../lib/out-there-p11.mjs";
 import { outThereModelSource } from "../../lib/out-there-p11-build.mjs";
-import { prepareOutThereWater } from "../../lib/out-there-water.mjs";
+import { outThereFallRole, prepareOutThereWater } from "../../lib/out-there-water.mjs";
 import LakeMist from "./LakeMist";
 import SoftHuman from "./SoftHuman";
 import { outThereResidents } from "../../lib/out-there-residents.mjs";
@@ -115,7 +115,11 @@ export default function AuthoredOutThere({
         !/ocean|pool|tarn|mist|falls|waterfall|ripples|foam|glass/.test(owner);
       node.receiveShadow = !/mist|waterfall|foam/.test(owner);
       const prepare = (original) => {
-        if (materials.has(original)) return materials.get(original);
+        // The refined sheet, feeder and horizontal foam share PT_Falls in
+        // the export, but require different flow and opacity at runtime.
+        const role = embedded && original.name === "PT_Falls" ? outThereFallRole[owner] : null;
+        const key = role || original;
+        if (materials.has(key)) return materials.get(key);
         const m = original.clone();
         m.envMapIntensity = 0.35;
         if (m.name === "PT_Flat") {
@@ -125,7 +129,14 @@ export default function AuthoredOutThere({
         }
         if (/PT_(Water|LakeWater)/.test(m.name) && "transmission" in m)
           m.transmission = 0;
-        if (/PT_(Water|LakeWater|Falls|Mist)/.test(m.name))
+        if (role) {
+          m.name = `PT_Falls_${role}`;
+          m.depthWrite = role === "feeder";
+          m.transparent = role !== "feeder";
+          m.roughness = role === "sheet" ? 0.42 : 0.51;
+          m.emissive.set("#86a39d");
+          prepareOutThereWater(m, role, water);
+        } else if (/PT_(Water|LakeWater|Falls|Mist)/.test(m.name))
           prepareOutThereWater(
             m,
             /Falls|Mist/.test(m.name)
@@ -150,7 +161,7 @@ export default function AuthoredOutThere({
           m.roughness = 0.14;
           m.envMapIntensity = 1.45;
         }
-        materials.set(original, m);
+        materials.set(key, m);
         return m;
       };
       node.material = Array.isArray(node.material)
@@ -206,7 +217,9 @@ export default function AuthoredOutThere({
         m.emissive.set("#f2b866");
         m.emissiveIntensity = night ? 1.8 : 0.6;
       }
-      if (m.name === "PT_Falls" || m.name === "PT_Mist")
+      if (m.name.startsWith("PT_Falls_"))
+        m.emissiveIntensity = night ? 0.34 : 0.62;
+      else if (m.name === "PT_Falls" || m.name === "PT_Mist")
         m.emissiveIntensity = night ? 0.25 : 1;
     }
   }, [model, night]);
@@ -316,7 +329,7 @@ export default function AuthoredOutThere({
             }
           }}
         />
-        {focus && <LakeMist water={water} night={night} />}
+        {focus && <LakeMist water={water} night={night} refined={embedded} />}
       </group>
       {embedded &&
         outThereResidents.map((resident, index) => (
