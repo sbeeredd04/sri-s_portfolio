@@ -16,9 +16,9 @@ export const allChapters = [
     short: "Made",
     label: "The Foundry",
     number: "02",
-    title: "AI tools, research, and products.",
+    title: "Selected work",
     description:
-      "Interfaces for working with AI, developer tools, and software for researchers and communities. Six selected projects, with the purpose and implementation behind each.",
+      "AI interfaces, developer tools, and research software.",
     action: "Read the project stories",
     content: "work",
     note: "Each studio represents a project. Open its story to see what it does and how I contributed.",

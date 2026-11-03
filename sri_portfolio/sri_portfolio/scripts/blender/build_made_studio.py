@@ -135,7 +135,7 @@ def empty(name, parent=None, location=(0, 0, 0), **extras):
     return obj
 
 
-def wall(mesh, limits, origin, horizontal, normal, holes=(), tone="sand", depth=.3):
+def wall(mesh, limits, origin, horizontal, normal, holes=(), tone="sand", depth=.3, interior="plaster", reveal="concrete"):
     """A continuous thick wall with actual apertures and their return faces."""
     u0, u1, z0, z1 = limits
     us = sorted({u0, u1, *[q for h in holes for q in h[:2]]})
@@ -154,11 +154,11 @@ def wall(mesh, limits, origin, horizontal, normal, holes=(), tone="sand", depth=
         front = [point(a, c, depth / 2), point(b, c, depth / 2), point(b, d, depth / 2), point(a, d, depth / 2)]
         back = [point(a, c, -depth / 2), point(b, c, -depth / 2), point(b, d, -depth / 2), point(a, d, -depth / 2)]
         mesh.face(front, tone)
-        mesh.face(list(reversed(back)), "plaster")
+        mesh.face(list(reversed(back)), interior)
         for edge, neighbor in [(0, (i, j - 1)), (1, (i + 1, j)), (2, (i, j + 1)), (3, (i - 1, j))]:
             if not occupied.get(neighbor, False):
                 k = (edge + 1) % 4
-                mesh.face((front[edge], back[edge], back[k], front[k]), "concrete")
+                mesh.face((front[edge], back[edge], back[k], front[k]), reveal)
 
 
 def frame(mesh, x0, x1, y, bottom, top, tone="graphite", width=.055):

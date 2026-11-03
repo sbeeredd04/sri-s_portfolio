@@ -48,7 +48,7 @@ function useProjectBoard(id) {
       ctx.fillRect(0, 0, 640, 680);
       ctx.fillStyle = "#596150";
       ctx.font = `500 17px ${font}`;
-      let y = paragraph(ctx, story.category, 38, 45, 564, 25) + 26;
+      let y = paragraph(ctx, story.purpose.toUpperCase(), 38, 45, 564, 25) + 26;
       ctx.fillStyle = "#273c33";
       ctx.font = `500 40px ${font}`;
       y = paragraph(ctx, story.name, 36, y, 568, 48) + 20;
@@ -126,7 +126,7 @@ export default function MadeStudioGallery({
       </mesh>
       <Sign
         title={story.name}
-        subtitle={story.category}
+        subtitle={story.purpose}
         position={layout.identity}
         size={[3.4, 0.58]}
         background="#263b32"

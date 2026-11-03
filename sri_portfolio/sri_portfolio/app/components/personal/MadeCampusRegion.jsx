@@ -99,6 +99,14 @@ export default function MadeCampusRegion({
         : prepare(o.material);
       const glass =
         /glaz|glass/i.test(o.name) || /glass/i.test(o.material.name);
+      if (o.name === "Agentex_Glazing") {
+        const glazing = o.material.clone();
+        glazing.opacity = 0.22;
+        glazing.color.set("#b3aba0");
+        glazing.roughness = 0.24;
+        materials.set(o, glazing);
+        o.material = glazing;
+      }
       o.castShadow = !glass;
       o.receiveShadow = !glass;
       // The authored lamp combines its metal housing and warm bulb in one

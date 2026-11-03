@@ -368,6 +368,31 @@ export default function ExperienceShell() {
       target?.focus({ preventScroll: true });
     }
   }, [biome, stop, still]);
+  useLayoutEffect(() => {
+    if (biome !== "projects" || phone) return;
+    const heading = introduction.current, tools = exploration.current;
+    const shell = tools?.closest(".experience-shell");
+    if (!heading || !tools || !shell) return;
+    const measure = () => {
+      const frame = shell.getBoundingClientRect();
+      const headingBottom = heading.getBoundingClientRect().bottom - frame.top;
+      const bottom = parseFloat(getComputedStyle(tools).bottom) || 0;
+      // Independent top/bottom anchors must share the actual available space.
+      // Font loading, zoom and translated headings can all change this height.
+      tools.style.setProperty("--foundry-tools-height",
+        `${Math.max(0, Math.floor(frame.height - bottom - headingBottom - 16))}px`);
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(heading);
+    observer.observe(shell);
+    window.addEventListener("resize", measure);
+    measure();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+      tools.style.removeProperty("--foundry-tools-height");
+    };
+  }, [biome, phone, stop]);
   useEffect(() => {
     const strip = exploration.current?.querySelector(".place-stops");
     if (!strip) return;
@@ -970,6 +995,7 @@ export default function ExperienceShell() {
                 {chapter && (
                   <div
                     ref={exploration}
+                    data-bounded={biome === "projects" && !phone ? "true" : undefined}
                     className={`place-exploration ${activeExhibit || atWorkbench ? "has-exhibit" : ""}`}
                   >
                     {roaming ? (
@@ -1209,9 +1235,10 @@ export default function ExperienceShell() {
                                     <button
                                       key={s.id}
                                       aria-pressed={stop === s.id}
+                                      className={s.purpose ? "made-project-choice" : undefined}
                                       onClick={() => explore(s.id)}
                                     >
-                                      {s.label}
+                                      {s.purpose ? <><span>{s.label}</span><small>{s.purpose}</small></> : s.label}
                                     </button>
                                   ))}
                                 </div>

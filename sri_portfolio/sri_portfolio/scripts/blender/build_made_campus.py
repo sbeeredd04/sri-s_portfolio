@@ -26,6 +26,10 @@ kit.PALETTE.update(
     {
         "plinth": "ADA58D",
         "studioSage": "718271", "studioOchre": "B89563",
+        "agentexLimewash": "C7BDA9", "agentexSidePlaster": "DBCFB9",
+        "agentexSoffit": "CBBBA4", "agentexStone": "A99B80",
+        "agentexBronze": "554638", "agentexCoping": "C5B69C",
+        "agentexCrown": "566258", "agentexRoofSoil": "535B48",
         "studioClay": "B87A61", "studioLimestone": "CDBEA6",
         "gardenSoil": "566544", "gardenMoss": "64734D", "gardenLoam": "6C694C",
         "shrubDeep": "3D5D3F", "shrubLight": "718951", "sageLeaf": "8D9B72",
@@ -310,6 +314,67 @@ def lavender(name, x, z, w=2.4, d=0.7):
     obstacle(name, polyrect(x, z, w, d), "planter", (L, L + 0.9))
 
 
+def agentex_portal(trim, glazing, width, face, bottom, top, entrance):
+    """Set a continuous bronze liner at the interior shoulder of the opening."""
+    left, right = -width / 2, width / 2
+    frame_y, pane_y = face + .09, face + .11
+    jamb = .07
+    for x in (left + jamb / 2, right - jamb / 2):
+        trim.box((x, frame_y, (bottom + top) / 2), (jamb, .12, top - bottom), "agentexBronze")
+    trim.box((0, frame_y, top - .04), (width - 2 * jamb, .12, .08), "agentexBronze")
+    if entrance:
+        # Exactly 2.2m clear between the liners below the door head.
+        for x in (-1.135, 1.135):
+            trim.box((x, frame_y, (bottom + 2.5) / 2), (jamb, .12, 2.5 - bottom), "agentexBronze")
+        trim.box((0, frame_y, 2.535), (2.34, .12, .07), "agentexBronze")
+        for lo, hi in ((left + jamb, -1.17), (1.17, right - jamb)):
+            glass_quad(glazing, lo, hi, pane_y, bottom, 2.5)
+        glass_quad(glazing, left + jamb, right - jamb, pane_y, 2.57, top - .08)
+        for x in (-1.135, 1.135):
+            trim.box((x, frame_y, (2.57 + top - .08) / 2), (.045, .09, top - .08 - 2.57), "agentexBronze")
+        for x in (-2.26, 2.26):
+            trim.box((x, frame_y, (bottom + 2.5) / 2), (.045, .09, 2.5 - bottom), "agentexBronze")
+        # Carry the head datum across the fixed display wings.
+        wing = width / 2 - 1.17 - jamb
+        for x in (-(1.17 + wing / 2), 1.17 + wing / 2):
+            trim.box((x, frame_y, 2.535), (wing, .12, .07), "agentexBronze")
+    else:
+        trim.box((0, frame_y, bottom + .035), (width - 2 * jamb, .12, .07), "agentexBronze")
+        glass_quad(glazing, left + jamb, right - jamb, pane_y, bottom + .07, top - .08)
+        for x in (-1.7, 0, 1.7):
+            trim.box((x, frame_y, (bottom + top - .01) / 2), (.05, .1, top - bottom - .15), "agentexBronze")
+
+
+def agentex_roof(shell, planting, width, depth, slab_top, height):
+    # One joined parapet with an inset throat and a fine projecting coping.
+    def ring(inset, y):
+        x, z = width / 2 - inset, depth / 2 - inset
+        return [(-x, -z, y), (x, -z, y), (x, z, y), (-x, z, y)]
+
+    profile = [
+        (.025, slab_top - .025, "agentexCrown"),
+        (.095, slab_top + .11, "agentexCrown"),
+        (.095, height - .11, "agentexCrown"),
+        (.035, height - .075, "agentexCoping"),
+        (.055, height + .02, "agentexCoping"),
+        (.33, height + .02, "agentexCoping"),
+        (.35, height - .055, "agentexCoping"),
+        (.28, height - .09, "agentexCrown"),
+        (.28, slab_top - .025, "agentexCrown"),
+    ]
+    for (inset, y, _), (inset_next, y_next, tone) in zip(profile, profile[1:]):
+        a, b = ring(inset, y), ring(inset_next, y_next)
+        for i in range(4):
+            j = (i + 1) % 4
+            shell.face((a[i], a[j], b[j], b[i]), tone)
+
+    for x, tone in ((-2.85, "sedumShade"), (1.4, "sedum")):
+        planting.bevel_box((x, .3, slab_top + .06), (3.5, 7.25, .12), .02, "agentexRoofSoil")
+        planting.bevel_box((x, .3, slab_top + .13), (3.36, 7.1, .12), .03, tone)
+    planting.bevel_box((4.16, 3.3, slab_top + .25), (1.4, 1, .50), .035, "agentexCrown")
+    planting.box((4.16, -1.43, slab_top + .08), (1.1, 1.6, .16), "agentexRoofSoil")
+
+
 def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
     g = group(
         name + "_Root",
@@ -321,6 +386,7 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
         facadeDirection="+Z",
     )
     s, t, gl, roof = Mesh(), Mesh(), Mesh(), Mesh()
+    agentex = ident == "agentex"
     f = 0.18
     roofz = h - 0.6
     wall_top = roofz - 0.2  # Wall ends at slab underside; no coplanar facade band.
@@ -332,7 +398,7 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
     s.bevel_box((0, 0, .09), (w,d,.18), .025, "concrete")
     fy=-d/2+.23
     # Back wall is intentionally solid behind the runtime editorial board.
-    wall(s,(-w/2,w/2,f,wall_top),(0,d/2-.24,0),(1,0,0),(0,1,0),[],tone,depth=.48)
+    wall(s,(-w/2,w/2,f,wall_top),(0,d/2-.24,0),(1,0,0),(0,1,0),[],tone,depth=.48, interior="agentexLimewash" if agentex else "plaster")
     # Side walls butt into the inside of the front/rear walls, rather than
     # capping over their coloured facade planes.
     # Inset side windows leave large warm plaster shoulders. Their sill and
@@ -341,14 +407,17 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
         sw=min(5.2,d*.48)
         holes=[(-sw/2,sw/2,1.25,3.45)]
         if h>7.6: holes.append((-sw/2,sw/2,5.2,roofz-.85))
-        wall(s,(-d/2+.46,d/2-.48,f,wall_top),(side*(w/2-.24),0,0),(0,1,0),(side,0,0),holes,tone,depth=.48)
+        wall(s,(-d/2+.46,d/2-.48,f,wall_top),(side*(w/2-.24),0,0),(0,1,0),(side,0,0),holes,tone,depth=.48,
+             interior="agentexSidePlaster" if agentex else "plaster",
+             reveal="agentexStone" if agentex else "concrete")
         x=side*(w/2-.30)
         for lo,hi,bottom,top in holes:
             gl.face([(x,lo,bottom),(x,hi,bottom),(x,hi,top),(x,lo,top)],"glass")
             for yy in [lo,hi]: t.box((x,yy,(bottom+top)/2),(.09,.08,top-bottom),"graphite")
             for zz in [bottom,top]: t.box((x,0,zz),(.09,sw,.08),"graphite")
             for k in range(1,4):t.box((x,lo+k*sw/4,(bottom+top)/2),(.08,.055,top-bottom),"graphite")
-            s.box((side*(w/2-.13),0,bottom-.08),(.27,sw+.20,.14),"concrete")
+            if not agentex:
+                s.box((side*(w/2-.13),0,bottom-.08),(.27,sw+.20,.14),"concrete")
     if ident=="gitcue":
         # The entrance is a true barrel-arch aperture, not a decoration laid
         # over a rectangular window. All jambs stay inside the original shell.
@@ -384,8 +453,13 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
     else:
         holes=[(-openw/2,openw/2,f,3.5)]
         if h>7.6:holes.append((-openw/2,openw/2,5.2,roofz-.85))
-        wall(s,(-w/2,w/2,f,wall_top),(0,fy,0),(1,0,0),(0,-1,0),holes,tone,depth=.46)
+        wall(s,(-w/2,w/2,f,wall_top),(0,fy,0),(1,0,0),(0,-1,0),holes,tone,depth=.46,
+             interior="agentexSidePlaster" if agentex else "plaster",
+             reveal="agentexStone" if agentex else "concrete")
         for x0,x1,bottom,top in holes:
+            if agentex:
+                agentex_portal(t, gl, openw, fy, bottom, top, entrance=bottom < 1)
+                continue
             # A heavy architectural surround gives a clear large-window frame.
             for xx in [x0-.13,x1+.13]:s.box((xx,fy-.29,(bottom+top)/2),(.26,.12,top-bottom+.40),"concrete")
             s.box((0,fy-.29,top+.10),(openw+.52,.12,.20),"concrete")
@@ -404,36 +478,39 @@ def studio(name, ident, cx, cz, w, d, h, yaw, tone, kind):
                 start=2.5 if bottom<1 and k==2 else bottom
                 t.box((x0+k*openw/4,fy+.02,(start+top)/2),(.055,.08,top-start),"graphite")
             if bottom>1:t.box((0,fy+.02,(bottom+top)/2),(openw,.08,.05),"graphite")
-        if h>7.6:s.box((0,0,upper-.12),(w-.96,d-.96,.24),"plaster")
+        if h>7.6:s.box((0,0,upper-.12),(w-.96,d-.96,.24),"agentexSoffit" if agentex else "plaster")
         if ident in ["mesa","soda"]:
             # A shallow lintel shades the door without extending its approach.
             s.bevel_box((0,-d/2-.09,4.50),(openw+.7,.18,.22),.025,"concrete")
     s.bevel_box((0, 0, roofz - 0.1), (w, d, 0.2), 0.018, "concrete")
-    for xx in (-w / 2 + 0.12, w / 2 - 0.12):
-        s.box((xx, 0, h - 0.3), (0.24, d, 0.6), "sandLight")
-    for yy in (-d / 2 + 0.12, d / 2 - 0.12):
-        s.box((0, yy, h - 0.3), (w - 0.48, 0.24, 0.6), "sandLight")
-    for xx in (-w / 2 + 0.12, w / 2 - 0.12):
-        s.bevel_box((xx, 0, h + 0.015), (0.29, d, 0.04), 0.01, "concrete")
-    for yy in (-d / 2 + 0.12, d / 2 - 0.12):
-        s.bevel_box((0, yy, h + 0.015), (w - 0.48, 0.29, 0.04), 0.01, "concrete")
-    for xx in (-w * 0.22, w * 0.13):
-        roof.box((xx, 0.3, roofz + 0.08), (w * 0.25, d * 0.65, 0.16), "graphite")
+    if agentex:
+        agentex_roof(s, roof, w, d, roofz, h)
+    else:
+        for xx in (-w / 2 + 0.12, w / 2 - 0.12):
+            s.box((xx, 0, h - 0.3), (0.24, d, 0.6), "sandLight")
+        for yy in (-d / 2 + 0.12, d / 2 - 0.12):
+            s.box((0, yy, h - 0.3), (w - 0.48, 0.24, 0.6), "sandLight")
+        for xx in (-w / 2 + 0.12, w / 2 - 0.12):
+            s.bevel_box((xx, 0, h + 0.015), (0.29, d, 0.04), 0.01, "concrete")
+        for yy in (-d / 2 + 0.12, d / 2 - 0.12):
+            s.bevel_box((0, yy, h + 0.015), (w - 0.48, 0.29, 0.04), 0.01, "concrete")
+        for xx in (-w * 0.22, w * 0.13):
+            roof.box((xx, 0.3, roofz + 0.08), (w * 0.25, d * 0.65, 0.16), "graphite")
+            for k in range(6):
+                roof.bevel_box(
+                    (xx, 0.3 - d * 0.25 + k * d * 0.1, roofz + 0.21),
+                    (w * 0.23, d * 0.095, 0.18),
+                    0.03,
+                    "sedum" if k % 2 else "sedumShade",
+                )
+        roof.bevel_box((w * 0.32, d * 0.3, roofz + 0.4), (1.4, 1, 0.8), 0.035, "plinth")
         for k in range(6):
-            roof.bevel_box(
-                (xx, 0.3 - d * 0.25 + k * d * 0.1, roofz + 0.21),
-                (w * 0.23, d * 0.095, 0.18),
-                0.03,
-                "sedum" if k % 2 else "sedumShade",
+            t.box(
+                (w * 0.32 - 0.48 + k * 0.19, d * 0.3 - 0.508, roofz + 0.4),
+                (0.07, 0.018, 0.48),
+                "graphite",
             )
-    roof.bevel_box((w * 0.32, d * 0.3, roofz + 0.4), (1.4, 1, 0.8), 0.035, "plinth")
-    for k in range(6):
-        t.box(
-            (w * 0.32 - 0.48 + k * 0.19, d * 0.3 - 0.508, roofz + 0.4),
-            (0.07, 0.018, 0.48),
-            "graphite",
-        )
-    roof.box((w * 0.32, -d * 0.13, roofz + 0.08), (1.1, 1.6, 0.16), "graphite")
+        roof.box((w * 0.32, -d * 0.13, roofz + 0.08), (1.1, 1.6, 0.16), "graphite")
     for m, suffix, mat in [
         (s, "Architecture", MAT),
         (t, "MetalDetails", METAL),

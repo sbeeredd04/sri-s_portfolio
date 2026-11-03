@@ -265,6 +265,40 @@
   font-size: 10px;
   color: #b9c9df;
 }
+.place-stops button.made-project-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  flex: 1 1 145px;
+  min-width: 0;
+  min-height: 54px;
+  text-align: left;
+  white-space: normal;
+}
+.place-stops .made-project-choice small {
+  font: 400 11px/1.35 var(--font-sans);
+  color: inherit;
+  letter-spacing: 0;
+}
+.experience-shell .place-exploration[data-bounded="true"] {
+  top: auto;
+  max-height: var(--foundry-tools-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding-right: 6px;
+  scroll-padding-block: 6px;
+}
+.experience-shell .place-exploration[data-bounded="true"] .place-collections[open] .place-collection-links {
+  position: static;
+  box-sizing: border-box;
+}
+@media (min-width: 701px) and (min-height: 501px), (min-width: 1001px) {
+  .experience-shell[data-biome="projects"] .place-story:not(.is-close) {
+    grid-template-columns: min(420px, 34vw) 1fr 238px;
+  }
+}
 .place-stops button[aria-pressed="true"] {
   color: #18263e;
   background: #d4e5f4;

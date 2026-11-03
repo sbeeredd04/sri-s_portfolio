@@ -1,3 +1,4 @@
+import { madeProjects } from "./made-projects.mjs";
 import { projectGallerySites } from "./project-town-layout.mjs";
 import { courtViews } from "./court-layout.mjs";
 import { techViews } from "./tech-plan.mjs";
@@ -318,7 +319,12 @@ export const placeStops = {
 // Public navigation promotes authored portfolio subjects. Scenic and alternate
 // object camera IDs remain available to saved addresses and explicit commands.
 export function visiblePlaceStops(biome) {
-  const stops = (placeStops[biome] || []).filter((stop) => !stop.scenic && stop.promoted !== false);
+  const stops = (placeStops[biome] || [])
+    .filter((stop) => !stop.scenic && stop.promoted !== false)
+    .map((stop) => {
+      const identity = biome === "projects" && madeProjects[stop.project];
+      return identity ? { ...stop, label: identity.label, purpose: identity.purpose } : stop;
+    });
   return biome === "projects"
     ? [...stops.filter((stop) => stop.project), ...stops.filter((stop) => !stop.project)]
     : stops;

@@ -1,41 +1,12 @@
+import { madeProjects } from "./made-projects.mjs";
 import { Color, Float32BufferAttribute } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { roundedBox } from "./model-geometry.mjs";
 
-export const madeGalleryStories = {
-  agentex: {
-    name: "Agentex",
-    category: "BROWSER EXTENSION · 2025–26",
-    summary: "Tailor a résumé. Keep the facts and the final judgment yours.",
-    accent: "#b8cba5",
-  },
-  gitcue: {
-    name: "GitCue / Auto-Git",
-    category: "DEVELOPER TOOL · 2025",
-    summary: "Turn repository changes into configurable Git commits.",
-    accent: "#dba878",
-  },
-  mesa: {
-    name: "Mesa Historical Museum",
-    category: "COLLABORATIVE MUSEUM EXHIBIT · 2024–25",
-    summary:
-      "Explore local history through a room, a book, and a museum kiosk.",
-    accent: "#d7a37e",
-  },
-  csdna: {
-    name: "csDNA",
-    category: "RESEARCH SOFTWARE · 2023–24",
-    summary: "Detect, cluster, label and export microscopy structures.",
-    accent: "#a8c7c5",
-  },
-  soda: {
-    name: "Tools for SoDA",
-    category: "COLLABORATIVE COMMUNITY SOFTWARE · 2024–25",
-    summary:
-      "Shared APIs, Discord integrations and tools for a student community.",
-    accent: "#c4b2d4",
-  },
-};
+// Compatibility for the five furnished galleries; Aether has its own showroom.
+export const madeGalleryStories = Object.fromEntries(
+  Object.entries(madeProjects).filter(([id]) => id !== "aether"),
+);
 
 // Local Three coordinates, shared by furniture, cameras and clearance tests.
 // Each studio keeps a generous, uninterrupted centre approach to its exhibit.
@@ -125,19 +96,24 @@ export function buildMadeGallery(site) {
     [...layout.identity.slice(0, 2), layout.identity[2] - 0.025],
     "#303b34",
   );
-  // The emitting surface is attached to a bronze lighting rail; the shared
-  // WorldLighting pool supplies its illumination instead of adding five lights.
-  box("metal", [3.8, 0.08, 0.12], layout.fixture, "#463e31");
-  box("light", [3.62, 0.015, 0.09], [0, 3.6, -1], "#ffce91");
+  // Agentex uses a flush-mounted wash rail on the existing ceiling slab.
+  // The pooled point below it supplies light without adding a shadow pass.
   const ceiling =
     site.id !== "gitcue" && site.size[1] > 7.6 ? 4.41 : site.size[1] - 0.8;
-  for (const x of [-1.6, 1.6])
-    box(
-      "metal",
-      [0.018, ceiling - 3.69, 0.018],
-      [x, (ceiling + 3.69) / 2, -1],
-      "#463e31",
-    );
+  if (site.id === "agentex") {
+    box("metal", [3.7, 0.042, 0.11], [0, ceiling - 0.015, -1], "#665645");
+    box("light", [3.58, 0.012, 0.072], [0, ceiling - 0.038, -1], "#ffce91");
+  } else {
+    box("metal", [3.8, 0.08, 0.12], layout.fixture, "#463e31");
+    box("light", [3.62, 0.015, 0.09], [0, 3.6, -1], "#ffce91");
+    for (const x of [-1.6, 1.6])
+      box(
+        "metal",
+        [0.018, ceiling - 3.69, 0.018],
+        [x, (ceiling + 3.69) / 2, -1],
+        "#463e31",
+      );
+  }
   return Object.fromEntries(
     Object.entries(parts).map(([key, list]) => {
       const g = mergeGeometries(list);

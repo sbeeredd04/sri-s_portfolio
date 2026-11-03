@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BufferGeometry, Float32BufferAttribute, Group, Mesh, MeshBasicMaterial } from 'three';
+import { Box3, BufferGeometry, DoubleSide, Float32BufferAttribute, Group, Mesh, MeshBasicMaterial, Raycaster, Vector3 } from 'three';
 import { madeCampus } from '../app/lib/made-campus-data.mjs';
 import { auditMadeFacades } from '../scripts/lib/made-facade-audit.mjs';
+import { buildMadeGallery } from '../app/lib/made-gallery.mjs';
 import { shippedModel } from './helpers/authored-model.mjs';
 
 const site={id:'fixture',name:'Fixture',center:[0,0,0],yaw:0,size:[4,4,4]};
@@ -46,4 +47,45 @@ test('audit catches opposite-winding coplanar trim and accepts genuinely covered
   assert.ok(raised.coveredContacts>0);
   assert.ok(front(facadeFixture(.12,true)).visiblePairs>0,'Covering only half the overlap must not exempt the exposed half');
   assert.ok(front(facadeFixture(.001)).visiblePairs>0,'A one-millimetre decal is not robust architectural relief');
+});
+
+test('Agentex retains its full adult-height entrance and deep glazing within the original footprint', async () => {
+  const { scene } = await shippedModel(madeCampus.source.split('?')[0]);
+  const site = madeCampus.studios.find(({ id }) => id === 'agentex');
+  const root = scene.getObjectByName('Agentex_Root');
+  const origin = root.getWorldPosition(new Vector3());
+  const meshes = root.children.filter((mesh) => mesh.isMesh);
+  assert.equal(meshes.length, 4);
+  for (const mesh of meshes) mesh.material.side = DoubleSide;
+  const cast = (x, y, far) => new Raycaster(
+    new Vector3(x, y, 8).add(origin), new Vector3(0, 0, -1), 0, far,
+  ).intersectObjects(meshes, false);
+
+  // Sample the complete usable width and height between the fitted jambs.
+  for (const x of [-1.09, -.55, 0, .55, 1.09]) {
+    for (const y of [.21, .8, 1.75, 2.2, 2.49]) {
+      assert.deepEqual(cast(x, y, 5), [], `Entrance obstructed at ${x}, ${y}`);
+    }
+  }
+  for (const x of [-1.135, 1.135]) {
+    assert.equal(cast(x, 1.75, 5)[0]?.object.name, 'Agentex_MetalDetails');
+  }
+  const wall = cast(3.8, 1.75, 5)[0];
+  const pane = cast(2.9, 1.75, 5)[0];
+  assert.equal(pane.object.name, 'Agentex_Glazing');
+  const reveal = wall.point.z - pane.point.z;
+  assert.ok(reveal >= .32 && reveal <= .36, `Glazing reveal is ${reveal} m`);
+  const bounds = (mesh) => new Box3().setFromObject(mesh, true).translate(origin.clone().negate());
+  const shell = bounds(scene.getObjectByName('Agentex_Architecture'));
+  const roof = bounds(scene.getObjectByName('Agentex_SedumHVAC'));
+  assert.ok(shell.max.x <= site.size[0] / 2 + .026);
+  assert.ok(shell.max.z <= site.size[2] / 2 + .026);
+  assert.ok(roof.max.y < shell.max.y - .1, 'Roof plant stays below the coping');
+  const ceiling = new Raycaster(
+    origin.clone().add(new Vector3(0, 3, -1)), new Vector3(0, 1, 0),
+  ).intersectObjects(meshes, false)[0].point.y - origin.y;
+  const built = buildMadeGallery(site);
+  assert.ok(ceiling - built.light.boundingBox.max.y < .05);
+  assert.ok(ceiling > built.light.boundingBox.max.y);
+  for (const geometry of Object.values(built)) geometry.dispose();
 });
