@@ -3,14 +3,12 @@ import { Suspense, useEffect, useMemo } from "react";
 import { DoubleSide, MeshStandardMaterial } from "three";
 import { Sign, StreetLamp } from "./StreetFurniture";
 import { Box, Rod } from "./ScenePrimitives";
-import { LoungeChair } from "./ListeningFurniture";
+import FieldnotesLounge from "./FieldnotesLounge";
 import { useRoomTexture } from "./RoomMaterials";
 import { useFinish } from "./Finishes";
 import FieldnotesQuarter from "./FieldnotesQuarter";
 import FieldnotesCoast from "./FieldnotesCoast";
 import {
-  fieldnotesLounge,
-  fieldnotesLoungeScale,
   fieldnotesLamp,
   fieldnotesDeskLamp,
   fieldnotesSignPoses,
@@ -24,11 +22,11 @@ import {
 function GardenMasonry({ built }) {
   const plaster = useFinish("plaster", "#d6cab4", {
     scale: 0.7,
-    strength: 0.7,
+    strength: 0.22,
   });
   const pavers = useFinish("pavers", "#8d8373", {
     scale: 0.55,
-    strength: 0.85,
+    strength: 0.28,
   });
   return (
     <>
@@ -77,9 +75,9 @@ export default function FutureStudio({
         roughness: 0.95,
       }),
       timber: new MeshStandardMaterial({
-        color: "#c4a07a",
+        color: "#ac8055",
         map: wood,
-        roughness: 0.62,
+        roughness: 0.78,
       }),
       charcoal: new MeshStandardMaterial({
         color: "#393a35",
@@ -97,7 +95,7 @@ export default function FutureStudio({
         roughness: 0.16,
         metalness: 0.18,
         transparent: true,
-        opacity: 0.13,
+        opacity: 0.085,
         depthWrite: false,
         side: DoubleSide,
       }),
@@ -157,8 +155,8 @@ export default function FutureStudio({
         animate={animate}
         onOpenWriting={() => {
           onCue?.("open");
-          if (stop === "writing") onContentOpen("writing");
-          else onStopSelect("writing");
+          if (stop === "writing" || stop === "newsstand") onContentOpen("writing");
+          else onStopSelect("newsstand");
         }}
       />
       {shell(built.timber, materials.stone)}
@@ -265,29 +263,9 @@ export default function FutureStudio({
         }}
         onPointerOut={(e) => onHover?.("", e)}
       >
-        {fieldnotesLounge.map((seat) => (
-          <group
-            key={`${seat.x}:${seat.yaw}`}
-            position={[seat.x, 0.022, seat.z]}
-            rotation={[0, seat.yaw, 0]}
-            scale={fieldnotesLoungeScale}
-          >
-            <LoungeChair />
-          </group>
-        ))}
+        <FieldnotesLounge animate={animate} detailed={detailed} />
         {shell(built.table, materials.timber)}
-        {shell(built.hello, materials.ivory)}
-        <Sign
-          position={signs.collaborate.position}
-          rotation={signs.collaborate.rotation}
-          size={signs.collaborate.size}
-          title={signs.collaborate.title}
-          subtitle={signs.collaborate.subtitle}
-          accent={signs.collaborate.accent}
-          background="#eee5d4"
-          foreground="#41372c"
-          secondary="#756a59"
-        />
+
       </group>
     </group>
   );

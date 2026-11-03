@@ -66,7 +66,7 @@ export const allChapters = [
     number: "05",
     title: "Good things start with a hello.",
     description:
-      "A desk for future stories. The places I share my work. A couple of chairs for a new conversation. Stay a little.",
+      "Notes on building AI systems, the places I share my work, and a place to start a conversation.",
     action: "Find me elsewhere",
     content: "socials",
     note: "Pull up a chair. Bring an idea.",

@@ -546,16 +546,16 @@ function addLibrary(wood, glass, books, charcoal) {
   }
   // A thin bronze door pull marks the open, parked leaf beside the entrance.
   addBox(charcoal, room.xWest - 0.045, 1.08, 2.15, 0.022, 0.18, 0.012);
-  // Timber beneath the existing two inward-facing seats; no added obstacle.
+  // Continuous timber deck beneath the four-seat conversation circle.
   for (let i = 0; i < 20; i++)
     addBox(
       wood,
-      -1.83 + ((i + 0.5) * 3.84) / 20,
+      -1.95 + ((i + 0.5) * 4.1) / 20,
       0.026,
       -2.12,
-      3.84 / 40 - 0.003,
+      4.1 / 40 - 0.003,
       0.004,
-      1.15,
+      1.5,
     );
 }
 

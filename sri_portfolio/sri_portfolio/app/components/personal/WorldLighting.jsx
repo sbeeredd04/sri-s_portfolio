@@ -21,6 +21,7 @@ import { campusCenter } from "../../lib/campus-layout.mjs";
 import {
   fieldnotesLamp,
   fieldnotesDeskLamp,
+  fieldnotesFire,
 } from "../../lib/fieldnotes-layout.mjs";
 
 const practicals = {
@@ -76,7 +77,10 @@ const practicals = {
       8,
       8,
     ],
-    [fieldnotesDeskLamp.bulb, "#f0d5aa", 2.4, 4],
+    [fieldnotesDeskLamp.bulb, "#ffd29c", 4.6, 6],
+    [[fieldnotesFire.x, .72, fieldnotesFire.z], "#ffb064", 5.2, 6, "fire"],
+    [[-2.45, 2.72, 2.1], "#ffd9a4", 5, 6],
+    [[2.55, 1.95, -7.3], "#ffcf8e", 3.4, 4],
   ],
 };
 const exhibits = {

@@ -18,9 +18,9 @@ import {
 import {
   fieldnoteShelves,
   publishedFieldnotes,
+  externalFieldnotes,
 } from "../../lib/fieldnotes.mjs";
 import { discover } from "../../lib/discoveries.mjs";
-import Signpost from "./Signpost";
 import LookoutVista from "./LookoutVista";
 
 const ground = () => fieldnotesCoastGroundY;
@@ -125,7 +125,7 @@ function Newsstand({ onOpen }) {
             w,
             h,
             shelf,
-            publishedFieldnotes.find((note) => note.shelf === shelf.id),
+            [...publishedFieldnotes, ...externalFieldnotes].find((note) => note.shelf === shelf.id),
           ),
         ),
       ),
@@ -230,11 +230,11 @@ function Lanterns({ night }) {
         <lineBasicMaterial color="#2b2a27" />
       </lineSegments>
       <instancedMesh ref={bulbRef} args={[undefined, undefined, bulbs.length]}>
-        <sphereGeometry args={[0.07, 10, 8]} />
+        <sphereGeometry args={[0.035, 10, 8]} />
         <meshStandardMaterial
           color="#fff3dc"
           emissive="#ffc98a"
-          emissiveIntensity={night ? 2.6 : 0.15}
+          emissiveIntensity={night ? 1.7 : 0.15}
           toneMapped={!night}
         />
       </instancedMesh>
@@ -371,7 +371,6 @@ export default function FieldnotesQuarter({
   return (
     <group>
       <Newsstand onOpen={onOpenWriting} />
-      <Signpost biome="future" ground={ground} />
       <Lanterns night={night} />
       <Lookout night={night} />
       <Suspense fallback={null}>

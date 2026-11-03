@@ -173,6 +173,8 @@ export default function CameraRig({
   const fieldOfView =
     interiorShot
       ? (portraitFrame ? interiorShot.portrait : interiorShot).fov || 45
+      : world === "future" && stop === "arrival"
+      ? (portraitFrame ? fieldnotesArrival.portrait : fieldnotesArrival).fov
       : homeShot
       ? (portraitFrame ? homeShot.portrait : homeShot).fov
       : world === "court" && stop === "arrival"

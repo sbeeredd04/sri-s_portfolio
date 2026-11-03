@@ -57,10 +57,10 @@ export const fieldnotesChair = {
   front: 0.24,
 };
 
-export const fieldnotesLoungeScale = 0.64;
+export const fieldnotesLoungeScale = 1;
 export const fieldnotesTerraces = [
   { x: -2.45, z: 2.06, width: 5.4, depth: 4.62 },
-  { x: 0.1, z: -2.12, width: 3.95, depth: 2.38 },
+  { x: 0.1, z: -2.12, width: 4.1, depth: 3.0 },
   { x: 3.55, z: 0.4, width: 1.34, depth: 2.05 },
 ];
 export const fieldnotesWalkEntries = {
@@ -74,15 +74,17 @@ export const fieldnotesDeskLamp = {
   bulb: [-1.73, 1.2, 3.43],
 };
 
-export const fieldnotesLounge = [
-  { x: -1.22, z: -2.12, yaw: Math.PI / 2 },
-  { x: 1.42, z: -2.12, yaw: -Math.PI / 2 },
-];
+export const fieldnotesFire = { x: 0.1, z: -2.12, radius: 0.36, y: 0.031 };
+export const fieldnotesLounge = [-1, 1].flatMap(side => [-1, 1].map(row => {
+  const dx = side * 1.25, dz = row * 0.62;
+  return { x: fieldnotesFire.x + dx, z: fieldnotesFire.z + dz,
+    yaw: Math.atan2(-dx, -dz) };
+}));
 
 export const fieldnotesTable = {
   x: 0.1,
-  z: -2.12,
-  radius: 0.34,
+  z: -3.34,
+  radius: 0.25,
   top: 0.5,
 };
 
@@ -300,7 +302,7 @@ export function fieldnotesSignPoses() {
       normal: [0, 0, -1],
       size: [1.46, 0.58],
       title: "Field notes by Sri",
-      subtitle: "WRITING & CONTENT / COMING SOON",
+      subtitle: "AI ENGINEERING · NOTES & IDEAS",
       accent: "#c6b39a",
     },
     socials: {
@@ -390,9 +392,9 @@ export function fieldnotesObstacles() {
         seat.x,
         seat.z,
         seat.yaw,
-        0.82 * fieldnotesLoungeScale,
-        0.9 * fieldnotesLoungeScale,
-        0.78 * fieldnotesLoungeScale,
+        0.37 * fieldnotesLoungeScale,
+        0.46 * fieldnotesLoungeScale,
+        0.46 * fieldnotesLoungeScale,
       ),
     );
   for (const column of fieldnotesColumnPoints())
@@ -413,6 +415,7 @@ export function fieldnotesObstacles() {
     boxes,
     circles: [
       fieldnotesTable,
+      fieldnotesFire,
       {
         x: fieldnotesLamp.position[0],
         z: fieldnotesLamp.position[2],
@@ -444,10 +447,13 @@ export function fieldnotesBlocks(x, z, pad = 0.03) {
 }
 
 export const fieldnotesArrival = {
-  position: [-29, 22, -34],
-  target: [-7.5, 2.0, 1],
-  fov: 48,
-  portrait: { position: [-37, 29, -43], target: [-7.5, 2.0, 1], fov: 58 },
+  // Arrive at the inhabited publishing garden, with its coast as a frame.
+  // Phone uses a steeper, closer view so studio → lounge → kiosk stack in
+  // the clear middle of the screen rather than shrinking under the sky.
+  position: [-18, 14, -23],
+  target: [-1.25, 1.1, -0.75],
+  fov: 44,
+  portrait: { position: [-5, 15, -27], target: [0, 0.8, -1.2], fov: 56 },
 };
 
 export const fieldnotesCameras = {
@@ -457,14 +463,16 @@ export const fieldnotesCameras = {
     portrait: { position: [7.3, 2.7, 2.5], target: [3.4, 1.05, 0.4] },
   },
   writing: {
-    position: [-2.15, 2.25, -2.2],
-    target: [-2.15, 1.3, 3.2],
-    portrait: { position: [-2.9, 2.1, -2], target: [-2.15, 1.3, 3.2] },
+    position: [-3.9, 2.15, -2.3],
+    target: [-2.2, 1.35, 3.25],
+    fov: 48,
+    portrait: { position: [-3.4, 2.1, -2.5], target: [-2.2, 1.35, 3.25], fov: 57 },
   },
   collaborate: {
-    position: [0.1, 1.95, -6.3],
-    target: [0.1, 0.7, -2.12],
-    portrait: { position: [1.6, 2.55, -7.1], target: [0.1, 0.65, -2.12] },
+    position: [-1.8, 3.1, -8.7],
+    target: [0.1, 1, -2.12],
+    fov: 50,
+    portrait: { position: [-1, 3.3, -11.2], target: [0.1, 1, -2.12], fov: 56 },
   },
 };
 

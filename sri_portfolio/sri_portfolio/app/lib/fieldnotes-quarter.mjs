@@ -88,7 +88,7 @@ export const lookout = {
 };
 
 // Paper planes on slow, tilted orbits above the garden.
-export const planeBudget = { low: 6, medium: 12, high: 20 };
+export const planeBudget = { low: 2, medium: 3, high: 4 };
 export function paperPlanes(tier = "medium") {
   const count = planeBudget[tier] ?? planeBudget.medium;
   return Array.from({ length: count }, (_, i) => ({
@@ -122,12 +122,13 @@ export const quarterViews = [
   {
     id: "newsstand",
     label: "The newsstand",
-    position: [-1.4, 1.75, -9.4],
-    target: [newsstand.x, 1.45, newsstand.z],
+    position: [-4.1, 2.1, -8.6],
+    target: [newsstand.x, 1.1, newsstand.z],
+    fov: 49,
     portrait: {
-      position: [-1.1, 1.9, -10.6],
-      target: [newsstand.x, 1.45, newsstand.z],
-      fov: 70,
+      position: [-5.8, 2.4, -8.3],
+      target: [newsstand.x, 1.1, newsstand.z],
+      fov: 55,
     },
     content: "writing",
     prompt: "Latest writing",

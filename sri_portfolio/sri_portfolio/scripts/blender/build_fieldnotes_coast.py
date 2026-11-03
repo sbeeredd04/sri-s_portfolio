@@ -15,8 +15,8 @@ SOURCE = APP / "asset-src/authored/fieldnotes"
 STAT = APP / "asset-src/stats/fieldnotes-coast.json"
 PALETTE = {
     "bluff": "918275", "bluffLight": "B7A28A", "bluffShade": "6D6C65",
-    "wet": "5F6965", "meadow": "6E7C47", "meadowGold": "929757", "loam": "887354",
-    "cypress": "465D38", "cypressLight": "70814A", "cypressDeep": "344D35",
+    "wet": "5F6965", "meadow": "586D3D", "meadowGold": "7E8747", "loam": "75624E",
+    "cypress": "3D5937", "cypressLight": "6B7C43", "cypressDeep": "294533",
     "bark": "6E5641", "ice": "D46A9A", "iceLight": "D98DB2",
     "lavender": "8C78B8", "lavenderLight": "A891C9", "poppy": "E8833A",
     "poppyLight": "EEA052", "poppyCenter": "C36735", "leaf": "6A8055",
@@ -314,7 +314,10 @@ def poppy(mesh,x,y,z,h,seed):
         p2=(a+width*1.19*math.cos(t),b+h*.17,c+width*1.19*math.sin(t))
         p3=(a+width*math.cos(t+.55),b+h*.13,c+width*math.sin(t+.55))
         mesh.polygon([p0,p3,p2,p1],"poppyLight" if i==1 else "poppy")
-    mesh.organic((a,b+.014,c),(width*.26,.018,width*.26),"poppyCenter",seed,4)
+    # Four facets form the seed cup; a flower centre needs no sphere mesh.
+    cup=[(a+width*.25*math.cos(i*math.pi/2),b+.016,c+width*.25*math.sin(i*math.pi/2)) for i in range(4)]
+    for i in range(4):
+        mesh.polygon([cup[i],cup[(i+1)%4],(a,b+.035,c)],"poppyCenter")
 
 
 def leafy_base(mesh,x,y,z,scale,seed,count=10):
@@ -347,6 +350,12 @@ def drift(mesh,x,y,z,scale,kind,seed):
             a,b=x+math.cos(t)*offset,z+math.sin(t)*offset
             height=y+(.22+rng.random()*.075)*scale
             radius=(.066+rng.random()*.027)*scale
+            # Each daisy cup grows from a visible short stalk connected to
+            # its leaf rosette. Crossed narrow facets give the stalk depth.
+            w=.006*scale
+            for ox,oz in [(w,0),(0,w)]:
+                mesh.polygon([(x-ox,y+.06*scale,z-oz),(x+ox,y+.06*scale,z+oz),
+                              (a+ox,height,b+oz),(a-ox,height,b-oz)],"leaf")
             for j in range(4):
                 angle=j*math.tau/4+t
                 tip=(a+radius*math.cos(angle),height+.028*scale,b+radius*math.sin(angle))
@@ -358,10 +367,19 @@ def drift(mesh,x,y,z,scale,kind,seed):
         for i in range(5):
             t=i*2.399
             a,b=x+math.cos(t)*scale*.22,z+math.sin(t)*scale*.21
-            h=(.36+rng.random()*.29)*scale
+            h=(.31+rng.random()*.24)*scale
             mesh.rod((x,y+.12*scale,z),(a+.075*scale,y+h,b),.008,.005,"leaf",4)
-            mesh.organic((a+.075*scale,y+h,b),(.055*scale,.12*scale,.05*scale),
-                         "lavenderLight" if i%3==0 else "lavender",seed+i,4)
+            # Two staggered tiers of folded florets read as a tapered flower
+            # spike, not a disconnected purple pebble on a stick.
+            for tier in range(2):
+                cy=y+h+tier*.082*scale
+                radius=(.072-tier*.018)*scale
+                for j in range(4):
+                    angle=j*math.pi/2+tier*.65+t
+                    left=(a+.075*scale+radius*math.cos(angle-.52),cy,b+radius*math.sin(angle-.52))
+                    right=(a+.075*scale+radius*math.cos(angle+.52),cy,b+radius*math.sin(angle+.52))
+                    tip=(a+.075*scale,cy+.105*scale,b)
+                    mesh.polygon([left,right,tip],"lavenderLight" if (i+j)%3==0 else "lavender")
     elif kind=="grass":
         for i in range(6):
             t=i*2.399
@@ -415,11 +433,15 @@ def cypress(mesh,x,z,height,lean,seed):
         mesh.rod(source,end,.024*m,.008*m,"bark",6)
         # Three overlapping, uneven pads retain the windswept crown but break
         # its silhouette into leaves rather than a stack of smooth pillows.
+        fork=(lerp(source[0],end[0],.65),lerp(source[1],end[1],.65)-.1,lerp(source[2],end[2],.65))
         for j in range(3):
             turn=seed*.7+j*2.399
-            offset=(math.cos(turn)*sx*m*.31,math.sin(turn*1.7)*sy*m*.2,math.sin(turn)*sz*m*.33)
+            offset=(math.cos(turn)*sx*m*.44,math.sin(turn*1.7)*sy*m*.12,math.sin(turn)*sz*m*.42)
             q=tuple(c[k]+offset[k] for k in range(3))
-            mesh.organic(q,(sx*m*.76,sy*m*.9,sz*m*.78),
+            # Visible branching terminates inside every crown shelf; the
+            # large irregular shelves overlap into a windswept silhouette.
+            mesh.rod(fork,(q[0],q[1]-.3*sy*m,q[2]),.012*m,.004*m,"bark",5)
+            mesh.organic(q,(sx*m*.94,sy*m*.72,sz*m*.91),
                          ["cypress","cypressLight","cypressDeep"][(i+j)%3],seed+i*17+j,7,True)
 
 
@@ -463,55 +485,74 @@ def build_plants(layout):
             if abs(x-terrace["x"]) < terrace["width"]/2+margin and abs(z-terrace["z"]) < terrace["depth"]/2+margin:
                 return False
         return inside(x,z)
-    for run_no,run in enumerate(runs):
-        for a,b in zip(run,run[1:]):
-            n=math.ceil(math.dist(a,b)/.61)
-            for k in range(n):
-                t=(k+.3)/n
-                x,z=lerp(a[0],b[0],t),lerp(a[1],b[1],t)
-                for j in range(3):
-                    px,pz=x+rng.uniform(-1.6,1.6),z+rng.uniform(-1.6,1.6)
-                    size=rng.uniform(.78,1.28)
-                    if not free(px,pz,.59*size):
+    # Broad interlocking beds are a composition rather than scattered points.
+    # Their spines follow contours; irregular planted edges blend into the
+    # bluff and come right up to the human-scale central garden approaches.
+    runs.extend([
+        [(-11,-9),(-9,-5),(-9.7,0),(-10,4)],
+        [(7.4,-7.3),(8.8,-3),(8.5,1.5),(8.4,5.5)],
+        [(-9,8),(-5.4,10.2),(-3.5,14.8)],
+        [(3.2,8.7),(5,10.2),(6.5,13)],
+        [(-25,-3),(-22,0),(-19,-1.5),(-14,-4)],
+        [(13,-5),(18,-3),(23,0),(25,4)],
+    ])
+    kinds=["lavender","ice","poppy","ice","lavender","poppy",
+           "poppy","lavender","ice","lavender","ice","poppy"]
+    widths=[4.5,4.1,3.2,4.6,4.2,2.7,2.35,2.5,2.8,2.4,4.5,4.4]
+    plant_records=[]
+    # Staggered planting with small jitter avoids both naked gaps and an
+    # artificial grid. Individual plants retain real stems/folded foliage.
+    spacing=.86
+    for row in range(48):
+        for col in range(79):
+            x=-33+col*spacing+(row%2)*spacing*.5+rng.uniform(-.16,.16)
+            z=-19+row*spacing*.866+rng.uniform(-.15,.15)
+            distances=[min(segment_distance(x,z,a,b) for a,b in zip(run,run[1:])) for run in runs]
+            nearest=min(range(len(runs)),key=lambda i:distances[i]/widths[i])
+            edge=distances[nearest]/widths[nearest]
+            scallop=.88+.10*math.sin(x*1.1+z*.65)+.07*math.cos(z*1.4-x*.45)
+            if edge>scallop or not inside(x,z):
+                continue
+            scale=rng.uniform(.94,1.22)
+            # Real footprint is .57m*scale. Never reduce it merely to fit a
+            # plant into a path, terrace, or building approach.
+            radius=.59*scale
+            if not free(x,z,radius):
+                continue
+            if min(segment_distance(x,z,a,OUTLINE[(i+1)%len(OUTLINE)]) for i,a in enumerate(OUTLINE))<radius:
+                continue
+            # Preserve camera body and sightlines through garden vegetation,
+            # including portrait poses, with room for a camera near plane.
+            ground=planted_y(x,z)
+            hidden=False
+            for camera in layout["cameras"]:
+                for pose in [camera,camera.get("portrait")]:
+                    if not pose:
                         continue
-                    # Species grow as connected drifts, with quieter foliage between.
-                    kind=(["lavender","ice","poppy","ice","lavender","poppy"][run_no]
-                          if j<2 else ["ice","grass","poppy"][idx%3])
-                    drift(flowers,px,planted_y(px,pz)-.018,pz,size,kind,idx+300)
-                    idx+=1
-    # The shore-side garden sweeps continue as low succulent rosettes. These
-    # are deliberately not placed on a grid: a deterministic blue-noise-like
-    # spacing produces connected patches, preserving paths and open landings.
-    low_sites=[]
-    for attempt in range(900):
-        x,z=rng.uniform(-31,29),rng.uniform(-16,18)
-        if abs(x)<8.3 or not free(x,z,.68):
-            continue
-        if min(segment_distance(x,z,a,OUTLINE[(i+1)%len(OUTLINE)]) for i,a in enumerate(OUTLINE)) < 1.1:
-            continue
-        # Concentrate at the feet of the cypresses and along the western slope.
-        field=math.sin(x*.3+z*.17)+math.cos(z*.35-x*.11)
-        if field<-.3 or any(math.hypot(x-a,z-b)<1.22 for a,b in low_sites):
-            continue
-        low_sites.append((x,z))
-        y=planted_y(x,z)-.02
-        scale=rng.uniform(.7,1.35)
-        for j in range(7):
-            angle=j*2.399+attempt
-            length=(.28+rng.random()*.3)*scale
-            wide=.1*scale
-            direction=Vector((math.cos(angle),math.sin(angle)))
-            side=Vector((-direction.y,direction.x))
-            center=(x,y+.04,z)
-            left=(x+direction.x*length*.55+side.x*wide,y+.18*scale,z+direction.y*length*.55+side.y*wide)
-            right=(x+direction.x*length*.55-side.x*wide,y+.18*scale,z+direction.y*length*.55-side.y*wide)
-            tip=(x+direction.x*length,y+.1*scale,z+direction.y*length)
-            mesh=flowers
-            mesh.polygon([center,tip,left],"leaf")
-            mesh.polygon([center,right,tip],"cypressLight")
-        idx+=1
-        if len(low_sites)>=180:
-            break
+                    a,b=pose["position"],pose["target"]
+                    dx,dz=b[0]-a[0],b[2]-a[2]
+                    length2=dx*dx+dz*dz
+                    t=max(0,min(1,((x-a[0])*dx+(z-a[2])*dz)/max(.01,length2)))
+                    if math.hypot(x-a[0]-t*dx,z-a[2]-t*dz)<radius+.24 and lerp(a[1],b[1],t)<ground+.95:
+                        hidden=True
+            if hidden:
+                continue
+            kind=kinds[nearest]
+            # The middle of each band is one readable hue; interlocking
+            # boundary plants soften the meeting of pink, purple and orange.
+            if edge>.66 and (row+col)%7==0:
+                kind=["ice","lavender","poppy"][(nearest+1)%3]
+            if edge>.82 and (row+col)%3==0:
+                kind="grass"
+            drift(flowers,x,ground-.018,z,scale,kind,idx+300)
+            # A second low leaf rosette fills the soil between flower stalks.
+            if kind in ["poppy","lavender"]:
+                leafy_base(flowers,x,ground-.016,z,scale*.93,idx+900,6)
+            plant_records.append({"x":round(x,4),"z":round(z,4),"groundY":round(ground,4),
+                                  "radius":round(radius,4),"kind":kind,"heightMax":round(.74*scale,4)})
+            idx+=1
+    layout["plantingAudit"]={"spacingMetres":spacing,"driftWidthsMetres":widths,
+                              "coastalPlants":len(plant_records),"plants":plant_records}
     # Low replacement planting inside the authored stone bed rectangles.
     for bed in layout["beds"]:
         for i in range(3):

@@ -11,7 +11,6 @@ import {
   fieldnotesCanopyY,
   fieldnotesChair,
   fieldnotesWalkEntries,
-  fieldnotesLoungeScale,
   fieldnotesTerraces,
   fieldnotesColumnPoints,
   fieldnotesDeckHeight,
@@ -25,6 +24,7 @@ import {
   fieldnotesStreet,
   onFieldnotesPath,
 } from "../app/lib/fieldnotes-layout.mjs";
+import { makeFieldnotesChair } from "../app/lib/fieldnotes-lounge.mjs";
 import {
   buildFieldnotesGeometry,
   fieldnotesMeshBudget,
@@ -317,8 +317,17 @@ test("furniture pads have front-facing tops and lounge seat height is human scal
     assert.ok(hit);
     assert.ok(Math.abs(hit.point.y - 0.022) < 0.002);
   }
-  const seatHeight = 0.022 + (0.59 + 0.31 / 2) * fieldnotesLoungeScale;
-  assert.ok(seatHeight > 0.42 && seatHeight < 0.51, seatHeight);
+  const chairGeometry = makeFieldnotesChair();
+  const chair = new Mesh(chairGeometry, m);
+  chair.position.y = .031; // Same placement as buildFieldnotesLounge.
+  chair.updateMatrixWorld();
+  for (const x of [-.15, 0, .15]) for (const z of [.042, .136]) {
+    const hit = rayDown(x, z, [chair])[0];
+    assert.ok(hit, "actual timber seat supports the sitter");
+    const seatHeight = hit.point.y - .022;
+    assert.ok(seatHeight > .40 && seatHeight < .46, seatHeight);
+  }
+  chairGeometry.dispose();
   m.dispose();
 });
 
