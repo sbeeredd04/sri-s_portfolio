@@ -45,13 +45,14 @@ import {
   streetStop,
   streetRange,
 } from "../../lib/street-view.mjs";
-import { placeStops } from "../../lib/place-stops.mjs";
+import { placeStops, visiblePlaceStopGroups } from "../../lib/place-stops.mjs";
 import { roomWorldDestination } from "../../lib/reading-rooms.mjs";
 import { allProjects, shows } from "../../json/personal";
 import WorldLoader from "./WorldLoader";
 import {
   worldReturnState,
   withWorldReturn,
+  replaceWorldHistory,
   hasEnteredWorld,
   rememberWorldEntry,
 } from "../../lib/world-return.mjs";
@@ -59,7 +60,8 @@ import {
   PHONE_LAYOUT_QUERY,
   navigationStop,
 } from "../../lib/mobile-navigation.mjs";
-import { initialTier } from "../../lib/device-tier.mjs";
+import { initialTier, chooseTier, readDevice } from "../../lib/device-tier.mjs";
+import { graphicsMode as validGraphicsMode, graphicsModes, requestedTier } from "../../lib/graphics-quality.mjs";
 import { worldLoading } from "../../lib/world-loading.mjs";
 import {
   createAssetPreloader,
@@ -108,11 +110,7 @@ const WorldScene = dynamic(
 );
 function clearProjectLink() {
   if (linkedProjectId(window.location.hash))
-    window.history.replaceState(
-      window.history.state,
-      "",
-      window.location.pathname + window.location.search,
-    );
+    replaceWorldHistory(window.history, window.location.pathname + window.location.search);
 }
 
 class WorldBoundary extends Component {
@@ -154,14 +152,36 @@ export default function ExperienceShell() {
     [hover, setHover] = useState(emptyHover),
     [introBottom, setIntroBottom] = useState(0),
     [tierCeiling, setTierCeiling] = useState(null),
+    [graphicsMode, setGraphicsMode] = useState("auto"),
     [sceneReady, setSceneReady] = useState(false),
     [prepareWorld, setPrepareWorld] = useState(false),
     [entered, setEntered] = useState(null),
     [returning, setReturning] = useState(false);
   useEffect(() => {
-    setTierCeiling(initialTier());
+    try { setTierCeiling(chooseTier(readDevice())); }
+    catch { setTierCeiling("medium"); }
+    try {
+      const requested = new URLSearchParams(location.search).get("quality");
+      setGraphicsMode(validGraphicsMode(requested ?? localStorage.getItem("sri-graphics-quality")));
+    } catch { /* Auto remains available when browser storage is disabled. */ }
     const light = new URLSearchParams(location.search).get("light");
     if (lightModes.includes(light)) setLightMode(light);
+  }, []);
+  const chooseLight = useCallback((mode) => {
+    setLightMode(mode);
+    const url = new URL(window.location.href);
+    if (mode === "live") url.searchParams.delete("light");
+    else url.searchParams.set("light", mode);
+    replaceWorldHistory(window.history, url.pathname + url.search + url.hash);
+  }, []);
+  const chooseGraphics = useCallback((mode) => {
+    const next = validGraphicsMode(mode);
+    setGraphicsMode(next);
+    try { localStorage.setItem("sri-graphics-quality", next); } catch {}
+    const url = new URL(window.location.href);
+    if (next === "auto") url.searchParams.delete("quality");
+    else url.searchParams.set("quality", next);
+    replaceWorldHistory(window.history, url.pathname + url.search + url.hash);
   }, []);
   const mobileTools = useRef(null);
   const restoredTools = useRef(null);
@@ -379,9 +399,9 @@ export default function ExperienceShell() {
     setHint("");
   }, []);
   const preloadScene = useCallback(() => {
-    preloadAssets(tierCeiling || initialTier());
+    preloadAssets(requestedTier(graphicsMode, tierCeiling || initialTier()));
     prepareWorldTerrain().catch(graphicsUnavailable);
-  }, [graphicsUnavailable, tierCeiling]);
+  }, [graphicsUnavailable, tierCeiling, graphicsMode]);
   useEffect(() => {
     const mq = matchMedia("(prefers-reduced-motion: reduce)");
     const update = () =>
@@ -531,8 +551,9 @@ export default function ExperienceShell() {
       setPreviewsExpanded(saved.previewsExpanded !== false);
       setPlaying(saved.playing === true);
       setStill(saved.still === true);
-      if (lightModes.includes(saved.lightMode))
-        setLightMode(saved.lightMode);
+      // A time preview is explicit in the address, never a hidden old visit.
+      const requestedLight = new URLSearchParams(window.location.search).get("light");
+      setLightMode(lightModes.includes(requestedLight) ? requestedLight : "live");
       // Do not replay an old ?room= link over the restored camera or sheet.
       window.addEventListener("hashchange", follow);
       return () => window.removeEventListener("hashchange", follow);
@@ -583,11 +604,8 @@ export default function ExperienceShell() {
           window.location.pathname +
           window.location.search +
           window.location.hash;
-        window.history.replaceState(
-          withWorldReturn(window.history.state, snapshot, url),
-          "",
-          url,
-        );
+        replaceWorldHistory(window.history, url,
+          withWorldReturn(window.history.state, snapshot, url));
       } catch {
         /* Navigation must work even when the browser denies storage. */
       }
@@ -654,9 +672,14 @@ export default function ExperienceShell() {
           <time dateTime={liveTime?.iso}>
             {liveTime?.label || "Connecting to local time"}
           </time>
-          <span className="world-weather" aria-live="polite">
-            {weatherLabel(weather)}
-          </span>
+          {lightMode === "live" ? (
+            <span className="world-weather" aria-live="polite">{weatherLabel(weather)}</span>
+          ) : (
+            <button className="light-preview-reset" onClick={() => chooseLight("live")}
+              aria-label={`End ${lightMode} preview and return to live San Francisco lighting`}>
+              {lightMode[0].toUpperCase() + lightMode.slice(1)} preview · Live
+            </button>
+          )}
         </div>
         <nav className="header-links" aria-label="Main navigation">
           <button onClick={() => show("work")}>Work</button>
@@ -672,6 +695,7 @@ export default function ExperienceShell() {
             <WorldBoundary onFailure={graphicsUnavailable}>
               <WorldScene
                 tier={tierCeiling}
+                graphicsMode={graphicsMode}
                 onReady={markReady}
                 introBottom={introBottom}
                 world={biome}
@@ -1099,14 +1123,16 @@ export default function ExperienceShell() {
                             </button>
                           )}
                           {!(biome === "projects" && stop === "keynote") &&
-                            placeStops[biome]?.map((s) => (
-                              <button
-                                key={s.id}
-                                aria-pressed={stop === s.id}
-                                onClick={() => explore(s.id)}
-                              >
-                                {s.label}
-                              </button>
+                            visiblePlaceStopGroups(biome).map((group, i) => (
+                              <div key={group.label || i} style={{ display: "contents" }}
+                                role={group.label ? "group" : undefined} aria-label={group.label || undefined}>
+                                {group.label && <span className="eyebrow"
+                                  style={{ flexBasis: "100%", gridColumn: "1 / -1", marginTop: 8 }}>{group.label}</span>}
+                                {group.stops.map((s) => (
+                                  <button key={s.id} aria-pressed={stop === s.id}
+                                    onClick={() => explore(s.id)}>{s.label}</button>
+                                ))}
+                              </div>
                             ))}
                         </div>
                       </>
@@ -1226,7 +1252,7 @@ export default function ExperienceShell() {
                       <button
                         key={id}
                         aria-pressed={lightMode === id}
-                        onClick={() => setLightMode(id)}
+                        onClick={() => chooseLight(id)}
                       >
                         {label}
                       </button>
@@ -1237,7 +1263,22 @@ export default function ExperienceShell() {
                     (stop === "bay" || street?.group === "bay")
                       ? "Open air above the water"
                       : biomeMoods[biome].label}
+                    <br />San Francisco · {weatherLabel(weather)}
                   </small>
+                </div>
+                <div className="light-mode-control graphics-mode-control">
+                  <span>Graphics</span>
+                  <div role="group" aria-label="Graphics quality">
+                    {graphicsModes.map((mode) => (
+                      <button key={mode} aria-pressed={graphicsMode === mode}
+                        onClick={() => chooseGraphics(mode)}>
+                        {mode[0].toUpperCase() + mode.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                  <small>{graphicsMode === "auto"
+                    ? "Adjusts to keep the world running smoothly."
+                    : "Your selected quality stays fixed. High uses more power."}</small>
                 </div>
                 <button
                   className="wanderer-choice"

@@ -1,96 +1,53 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
-import { useAnimations, useGLTF } from "@react-three/drei";
-import * as THREE from "three";
-import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
+import { useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import { MathUtils } from "three";
+import SoftHuman from "./SoftHuman";
+import { discover } from "../../lib/discoveries.mjs";
+import { typingWrists } from "../../lib/character-motion.mjs";
+import { studioCharacter, studioSri, studioSurfaces } from "../../lib/studio-layout.mjs";
 
-const SRC = "/models/characters/sri.glb";
-
-// The rigged character built in scripts/blender/character. Clips: idle, walk,
-// typing, wave (one-shot) and sit. `clip` picks the loop; an interactive
-// character waves when tapped and eases back into its loop.
+// Sri uses the same metre-scale, softly faceted adult as everyone in the bay.
+// Preserve the typing and hello interactions without loading a second body style.
 export default function SriCharacter({
-  position = [0, 0, 0],
-  rotation = 0,
-  clip = "idle",
-  animate = false,
-  interactive = false,
-  onHover,
-  shirt = "#2c3a4f",
+  position = [0, 0, 0], rotation = 0, clip = "idle", animate = false,
+  interactive = false, onHover, shirt = "#2c3a4f",
 }) {
-  const { scene, animations } = useGLTF(SRC);
-  const model = useMemo(() => {
-    const copy = cloneSkinned(scene);
-    copy.traverse((node) => {
-      if (!node.isMesh) return;
-      node.castShadow = true;
-      node.receiveShadow = true;
-      // Skinned bounds follow the bind pose; the seated clip leaves them.
-      node.frustumCulled = false;
-      node.material = node.material.clone();
-      if (node.material.name === "shirt") node.material.color.set(shirt);
-      // Anisotropic specular under close practical lights produced invalid
-      // highlights that bloom into a glowing disc (as on the old rig's hair).
-      if (node.material.anisotropy) node.material.anisotropy = 0;
-    });
-    return copy;
-  }, [scene, shirt]);
-  const group = useRef();
-  const { actions, mixer } = useAnimations(animations, group);
-  useEffect(() => {
-    const loop = actions[clip] || actions.idle;
-    loop?.reset().fadeIn(0.3).play();
-    return () => loop?.fadeOut(0.3);
-  }, [actions, clip]);
-  useEffect(() => {
-    const done = (event) => {
-      if (event.action !== actions.wave) return;
-      actions.wave.fadeOut(0.35);
-      (actions[clip] || actions.idle)?.reset().fadeIn(0.35).play();
-    };
-    mixer.addEventListener("finished", done);
-    return () => mixer.removeEventListener("finished", done);
-  }, [actions, mixer, clip]);
-  // useAnimations advances the mixer on rendered frames; with motion off the
-  // loop holds its first pose instead of drifting on camera-driven frames.
-  useEffect(() => {
-    mixer.timeScale = animate ? 1 : 0;
-  }, [mixer, animate]);
-  const wave = (event) => {
-    event.stopPropagation();
-    const action = actions.wave;
-    if (!action || action.isRunning()) return;
-    action.reset();
-    action.setLoop(THREE.LoopOnce, 1);
-    action.clampWhenFinished = false;
-    (actions[clip] || actions.idle)?.fadeOut(0.25);
-    action.fadeIn(0.25).play();
-  };
+  const elapsed = useRef(0), waveAt = useRef(-100);
+  const seated = clip === "typing" || clip === "sit";
+  const pose = useRef({});
+  useFrame((_, delta) => {
+    if (animate) elapsed.current += Math.min(delta, 0.05);
+    const t = elapsed.current;
+    if (clip === "typing") {
+      const wrists = typingWrists(t);
+      pose.current = Object.fromEntries(Object.entries(wrists).map(([side, p]) => [side, [
+        p[0], p[1] + studioCharacter.position[1] - studioSri.position[1],
+        studioSri.position[2] - studioSurfaces.keyboard.position[2],
+      ]]));
+    } else pose.current = {};
+    const age = t - waveAt.current;
+    const weight = MathUtils.smoothstep(age, 0, .3) * (1 - MathUtils.smoothstep(age, 1.7, 2.3));
+    if (weight > 0) {
+      const rest = pose.current.right || [.35, seated ? .8 : .96, .08];
+      const hello = [.57 + Math.sin(age * 15) * .045, seated ? 1.28 : 1.7, .12];
+      pose.current.right = rest.map((n, i) => MathUtils.lerp(n, hello[i], weight));
+    }
+  }, -1);
   return (
-    <group
-      ref={group}
-      position={position}
-      rotation={[0, rotation, 0]}
-      onClick={interactive ? wave : undefined}
-      onPointerMove={
-        interactive
-          ? (event) => {
-              event.stopPropagation();
-              onHover?.("Say hi to Sri", event);
-            }
-          : undefined
-      }
-      onPointerOut={
-        interactive
-          ? (event) => {
-              onHover?.("", event);
-            }
-          : undefined
-      }
+    <group position={position} rotation={[0, rotation, 0]}
+      onClick={interactive ? (event) => {
+        if (!animate || event.delta > 4) return;
+        event.stopPropagation(); waveAt.current = elapsed.current; discover("hello-world");
+      } : undefined}
+      onPointerMove={interactive ? (event) => {
+        event.stopPropagation(); onHover?.("Say hi to Sri", event);
+      } : undefined}
+      onPointerOut={interactive ? (event) => onHover?.("", event) : undefined}
     >
-      <primitive object={model} />
+      <SoftHuman animate={animate} color={shirt} variation={1} seated={seated}
+        seatHeight={studioSurfaces.chairSeat.position[1] + studioSurfaces.chairSeat.size[1] / 2}
+        pose={pose} />
     </group>
   );
 }
-
-useGLTF.preload(SRC);

@@ -91,8 +91,32 @@ export const studioDeskLight = {
 
 // The same apartment level is used by the model, lights, cameras and physics.
 export const APARTMENT_LEVEL = homeSite.anchors.Summit_EntryAnchor[1] + 3.45;
+// The desk looks south through the summit glazing toward Made and Fieldnotes.
+// Keep the complete furnished room, its physics and all close cameras in this
+// frame; rotating screens alone would put the keyboard behind their displays.
+export const APARTMENT_YAW = Math.PI;
+export const apartmentOrigin = [-4.3, APARTMENT_LEVEL, -23.4];
 export const apartmentPoint = ([x, y, z]) => [
-  x - 3.5,
-  y + APARTMENT_LEVEL,
-  z - 23.4,
+  apartmentOrigin[0] + Math.cos(APARTMENT_YAW) * x + Math.sin(APARTMENT_YAW) * z,
+  apartmentOrigin[1] + y,
+  apartmentOrigin[2] - Math.sin(APARTMENT_YAW) * x + Math.cos(APARTMENT_YAW) * z,
 ];
+export const studioDeskView = {
+  position: [-0.65, 2.5, 2.5],
+  target: [-0.4, 1.45, -1.1],
+  fov: 56,
+  portrait: {
+    position: [-0.65, 2.65, 3.1],
+    target: [-0.45, 1.45, -1.1],
+    fov: 60,
+  },
+};
+export const studioBookView = {
+  position: [-2.2, 1.8, 0.25],
+  target: [-1.45, 1, -0.65],
+  portrait: {
+    position: [-2.05, 2.1, 0.65],
+    target: [-1.43, 1, -0.65],
+    fov: 53,
+  },
+};

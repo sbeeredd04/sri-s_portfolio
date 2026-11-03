@@ -25,7 +25,7 @@ import {
 
 const practicals = {
   studio: [
-    [[1.98, 2.78, -2.2], "#ffd19b", 8, 7],
+    [[1.98, 2.45, -2.2], "#ffc181", 4.2, 6],
     [[-0.48, 1.32, -0.98], "#b5d1f6", 1.4, 3],
     // The clamp lamp over the keyboard, brighter once the room is dark.
     [
@@ -48,7 +48,12 @@ const practicals = {
     [[3.7, 1.1, -1], "#ff9f61", 9, 6],
     [[9, 2, -0.5], "#b5bddd", 5, 7],
   ],
-  court: courtLamps.map((position) => [position, "#dce7ff", 110, 24]),
+  court: [
+    ...courtLamps.map((position) => [position, "#f6dfbd", 92, 24]),
+    // Pavilion is part of this island even when the courts own the camera.
+    [[-1.55, 3.15, 42.55], "#ffbb72", 55, 19],
+    [[9, 2.4, 42], "#ffd09a", 34, 15],
+  ],
   // The campfire only burns at night, and flickers.
   trail: [
     [
@@ -135,6 +140,18 @@ export default function WorldLighting({
     [],
   );
   const lights = useMemo(() => {
+    if (world === "planet") {
+      // Keep the same six-light budget in overview. Each light remains at an
+      // actual room, court lamp or campfire, rather than vanishing on exit.
+      return [
+        [apartmentPoint([1.98, 2.45, -2.2]), "#ffc181", 18, 12, "", "studio"],
+        [[0, 5.85, -6.5], "#ffcf9d", 60, 26, "", "projects"],
+        [[-1.55, 3.15, 42.55], "#ffbb72", 65, 24, "", "court"],
+        [courtLamps[1], "#f6dfbd", 92, 26, "", "court"],
+        [[outThereCamp.x, outThereCamp.y + .7, outThereCamp.z], "#ffa04a", 8, 12, "fire", "trail"],
+        [fieldnotesDeskLamp.bulb, "#ffc181", 12, 12, "", "future"],
+      ];
+    }
     if (world === "projects") {
       const site = madeSites.find((s) => s.id === stop);
       return [
@@ -245,13 +262,14 @@ export default function WorldLighting({
               20,
             ]
           : lights[i];
-      if (item && close) {
+      if (item) {
+        const lampWorld = item[5] || world;
         lamp.position.lerp(
           worldPoint(
-            world,
+            lampWorld,
             world === "studio"
               ? apartmentPoint(item[0])
-              : raisedContentPoint(world, item[0]),
+              : raisedContentPoint(lampWorld, item[0]),
           ),
           blend,
         );

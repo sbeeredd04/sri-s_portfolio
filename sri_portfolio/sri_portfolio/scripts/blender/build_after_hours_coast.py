@@ -20,9 +20,9 @@ loader.loader.exec_module(kit)
 Mesh, empty = kit.Mesh, kit.empty
 kit.PALETTE.update(
     {
-        "soilOlive": "868E58",
-        "coastGreen": "87965F",
-        "dryGrass": "A4A675",
+        "soilOlive": "657249",
+        "coastGreen": "7D8D50",
+        "dryGrass": "A1A16B",
         "softRock": "A79784",
         "shadeRock": "998B7A",
         "wetRock": "918B79",
@@ -34,12 +34,14 @@ kit.PALETTE.update(
         "trunk": "9C805F",
         "trunkDark": "8D7659",
         "trunkLight": "AF9570",
-        "palm": "72834E",
-        "palmLight": "8C995D",
-        "palmDark": "657749",
+        "palm": "647E42",
+        "palmLight": "91A65E",
+        "palmDark": "4D653B",
         "agave": "7E9375",
         "agaveShade": "687F67",
-        "pink": "BB9A93",
+        "pink": "C393AD", "pinkLight": "D9B2C1",
+        "leaf": "587044", "leafLight": "819755", "sage": "91A17A",
+        "poppy": "C98A41", "poppyLight": "E2B55D", "gardenSoil": "536344",
         "vinyl": "343136",
         "vinylShade": "302E33",
         "vinylEdge": "474043",
@@ -404,7 +406,7 @@ def palm(name, x, z, h, lean, seed):
     import random
 
     r = random.Random(seed)
-    m, f = Mesh(), Mesh()
+    m, f = PALM_TRUNKS, PALM_CROWNS
     ground = ground_at(x, z)
     root = vec(x, ground - 0.025, z)
     levels = []
@@ -435,61 +437,24 @@ def palm(name, x, z, h, lean, seed):
     m.rod(
         crown - Vector((0, 0, 0.25)), crown + Vector((0, 0, 0.42)), 0.24, "trunkDark", 8
     )
-    for j in range(11):
-        a = j * math.tau / 11 + r.uniform(-0.18, 0.18)
-        axis = Vector((math.cos(a), math.sin(a), 0))
+    # Twelve broad, folded leaves read as authored polygon palms at both
+    # street and aerial distances. No alpha cards or hair-thin fern leaflets.
+    for j in range(12):
+        angle = j * math.tau / 12 + r.uniform(-0.10, 0.10)
+        axis = Vector((math.cos(angle), math.sin(angle), 0))
         wing = Vector((-axis.y, axis.x, 0))
-        length = r.uniform(2.65, 3.65) * (h / 9.7) ** 0.24
-        lo = j % 4 == 0
-
-        def mid(t):
-            return (
-                crown
-                + axis * length * t
-                + Vector(
-                    (
-                        0,
-                        0,
-                        (0.82 if not lo else 0.38) * math.sin(t * math.pi)
-                        - t * t * (1.37 if lo else 0.65),
-                    )
-                )
-            )
-
-        for k in range(7):
-            t = 0.11 + k * 0.121
-            p = mid(t)
-            q = mid(min(1, t + 0.1))
-            base = 0.16 * (1 - t) + 0.02
-            f.face(
-                (
-                    p + wing * base,
-                    p - wing * base,
-                    q - wing * base * 0.72,
-                    q + wing * base * 0.72,
-                ),
-                "palm",
-            )
-            for side in (-1, 1):
-                reach = (0.65 + 0.31 * math.sin(math.pi * t)) * math.sin(
-                    math.pi * (t * 0.87 + 0.06)
-                )
-                tip = (
-                    p
-                    + wing * (side * reach)
-                    + axis * (0.27 + 0.12 * t)
-                    + Vector((0, 0, -0.13 - 0.26 * t))
-                )
-                joint = p + axis * 0.125
-                f.face((p, joint, tip), "palmLight" if (j + k + side) % 4 else "palm")
-                f.face(
-                    (p, tip, p + wing * (side * reach * 0.42) + Vector((0, 0, 0.065))),
-                    "palmDark" if j % 4 == 0 else "palm",
-                )
-        f.face((mid(0.91) + wing * 0.04, mid(0.91) - wing * 0.04, mid(1)), "palmLight")
-    g = empty(name, ROOT, kind="matureCanaryDatePalm")
-    obj(m, name + "_TaperedTrunk", parent=g)
-    obj(f, name + "_FeatherFronds", parent=g)
+        length = r.uniform(2.8, 3.7) * (h / 9.7) ** 0.24
+        droop = 0.9 if j % 3 else 1.42
+        rows = []
+        for t in (0, 0.34, 0.69, 1):
+            mid = crown + axis * length * t + Vector((0, 0, 1.0 * math.sin(t * math.pi) - droop * t * t))
+            width = (0.61 + 0.1 * (j % 3)) * math.sin(math.pi * t) + 0.018
+            ridge = mid + Vector((0, 0, width * 0.23))
+            rows.append((mid - wing * width, ridge, mid + wing * width))
+        for a, b in zip(rows, rows[1:]):
+            f.face((a[0], b[0], b[1], a[1]), "palmDark" if j % 4 == 0 else "palm")
+            f.face((a[1], b[1], b[2], a[2]), "palmLight" if j % 3 == 1 else "palm")
+    empty(name, ROOT, xyz(x, ground, z), kind="foldedPolygonPalm")
     obstacle(name, ring(x, z, 0.44, 8), [ground, ground + h], "palmTrunk")
 
 
@@ -508,6 +473,8 @@ def agave(mesh, x, z, s, angle):
 
 
 def plantings():
+    global PALM_TRUNKS, PALM_CROWNS
+    PALM_TRUNKS, PALM_CROWNS = Mesh(), Mesh()
     # Shore, backdrop and pavilion groups; no fronds over the playing surfaces.
     palms = [
         (-38, -8, 9.2),
@@ -543,6 +510,8 @@ def plantings():
             (math.sin(i * 1.37) * 0.87, math.cos(i * 2.05) * 0.55),
             i + 501,
         )
+    obj(PALM_TRUNKS, "AfterHours_Palm_Trunks")
+    obj(PALM_CROWNS, "AfterHours_Palm_FoldedCrowns")
     m = Mesh()
     for i, (x, z, s) in enumerate(
         [
@@ -574,6 +543,96 @@ def plantings():
         y = ground_at(x, z)
         obstacle(f"Agave_{i:02}", ring(x, z, 0.69 * s, 8), [y, y + 0.50 * s], "agave")
     obj(m, "AfterHours_AgaveBeds")
+
+
+
+def polygon_distance(x, z, poly):
+    within = False
+    distance = 1e9
+    for a, b in zip(poly, poly[1:] + poly[:1]):
+        if (a[1] > z) != (b[1] > z) and x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]:
+            within = not within
+        dx, dz = b[0] - a[0], b[1] - a[1]
+        t = min(1, max(0, ((x-a[0])*dx+(z-a[1])*dz) / max(1e-10,dx*dx+dz*dz)))
+        distance = min(distance, math.hypot(x-a[0]-t*dx,z-a[1]-t*dz))
+    return 0 if within else distance
+
+
+def coastal_garden():
+    import random
+    r = random.Random(2763)
+    leaves, flowers, grasses, stems, lamps = Mesh(), Mesh(), Mesh(), Mesh(), Mesh()
+    # Reserve the complete exported ribbons and all real legacy paving cells,
+    # furniture, cinema seating, court aprons and the open pavilion approaches.
+    reserve = [x["polygon"] for x in LAYOUT["obstacles"] + LAYOUT["paving"]]
+    reserve += [p for path in MESH_PATHS for p in path["segments"]]
+    reserve += [ring(-1.55,42.55,7.65), rect(0,49,4.2,4), rect(9,43,8.3,9.5)]
+    reserve += [x["polygon"] for x in NEW_OBSTACLES]
+    def clear(x,z,radius):
+        return inside(x,z) and shore_distance(x,z)>radius+.5 and all(polygon_distance(x,z,p)>radius+.20 for p in reserve)
+    # Cohesive wind-shaped beds: perimeter of courts, middle garden border,
+    # pavilion backdrop and the rocky tail. The central lawn stays usable.
+    beds = [(-33,-7,3.4,6),(-18,-19,7,1.7),(5,-19,10,1.5),(31,-3,3.2,9),
+            (-33,19,2.5,6),(-23,29,3.2,7),(-12,27,6.2,3.0),(5,28,7.4,3.2),
+            (17,30,2.8,4.7),(-17,43,4.0,5.0),(-10,53,6,2), (7,53,6,2),
+            (30,32,3.4,5),(35,44,3.5,7),(43,53,2.1,6),(34,65,5,3)]
+    lanterns=[(-7.0,49.4),(3.0,51.8),(14.4,45.9)]
+    planted=[]
+    def leaf(mesh,x,y,z,a,length,width,h,tone):
+        root=vec(x,y,z);axis=Vector((math.cos(a),math.sin(a),0));wing=Vector((-axis.y,axis.x,0))
+        mid=root+axis*length*.51+Vector((0,0,h*.76));tip=root+axis*length+Vector((0,0,h*.60))
+        ridge=mid+Vector((0,0,width*.38))
+        mesh.face((root,mid-wing*width,ridge),tone)
+        mesh.face((root,ridge,mid+wing*width),"leafLight")
+        mesh.face((ridge,mid-wing*width,tip),tone)
+        mesh.face((ridge,tip,mid+wing*width),"sage" if tone=="sage" else "leafLight")
+    for kind,limit,rad in [("shrub",220,.68),("flower",100,.32),("grass",200,.22)]:
+        count=0
+        for attempt in range(7000):
+            if count>=limit:break
+            bx,bz,rx,rz=beds[attempt%len(beds)]
+            a=r.random()*math.tau;d=math.sqrt(r.random())
+            x,z=bx+math.cos(a)*rx*d,bz+math.sin(a)*rz*d
+            scale=r.uniform(.8,1.18);radius=rad*scale
+            if not clear(x,z,radius):continue
+            if any(math.hypot(x-lx,z-lz)<radius+.5 for lx,lz in lanterns):continue
+            if any(math.hypot(x-p[0],z-p[1]) < radius*.52+p[2]*.45 for p in planted):continue
+            y=ground_at(x,z)-.012
+            if kind=="shrub":
+                for j in range(6):
+                    leaf(leaves,x,y,z,j*2.399+a,.66*scale,.19*scale,(.32+j%3*.12)*scale,"sage" if count%5==0 else "leaf")
+            elif kind=="flower":
+                for j in range(2):
+                    angle=a+j*2.399;dx,dz=math.cos(angle)*.12*scale,math.sin(angle)*.12*scale
+                    top=y+(.34+j*.13)*scale;center=vec(x+dx,top,z+dz)
+                    for k in range(4):
+                        a0=k*math.tau/4+angle;axis=Vector((math.cos(a0),math.sin(a0),0));n=Vector((-axis.y,axis.x,0))
+                        flowers.face((center,center+axis*.14*scale-n*.06*scale+Vector((0,0,.055*scale)),center+axis*.21*scale+Vector((0,0,.07*scale)),center+axis*.14*scale+n*.06*scale+Vector((0,0,.055*scale))),"pink" if count%3 else "poppy")
+                    # One folded leaf supports each stem visually, no floating flowers.
+                    leaf(leaves,x,y,z,angle,.22*scale,.055*scale,.24*scale,"leaf")
+                    stems.face((vec(x-.008,y,z),vec(x+.008,y,z),center),"leaf")
+            else:
+                for j in range(2):
+                    a0=a+j*2.399;h=(.18+j*.12)*scale
+                    grasses.face((vec(x-.035,y,z),vec(x+.035,y,z),vec(x+math.cos(a0)*.16*scale,y+h,z+math.sin(a0)*.16*scale)),"leafLight" if count%3 else "dryGrass")
+            planted.append((x,z,radius));count+=1
+    for mesh,name in [(leaves,"AfterHours_Garden_FoldedLeaves"),(flowers,"AfterHours_Garden_Flowers"),(grasses,"AfterHours_Garden_Grasses"),(stems,"AfterHours_Garden_Stems")]:
+        obj(mesh,name)
+    # Low lanterns mark the two open entrances and cinema garden, within the
+    # real warm pavilion/cinema light pools. Their soles use the terrain BVH.
+    for i,(x,z) in enumerate(lanterns):
+        if not clear(x,z,.22):continue
+        y=ground_at(x,z)
+        rod(lamps,(x,y-.015,z),(x,y+.82,z),.042,"timberDark",6)
+        atbox(lamps,(x,y+.79,z),(.23,.06,.23),"copper")
+        atbox(lamps,(x,y+1.07,z),(.29,.065,.29),"timberDark")
+        for dx,dz in [(-.1,-.1),(-.1,.1),(.1,-.1),(.1,.1)]:
+            rod(lamps,(x+dx,y+.82,z+dz),(x+dx,y+1.04,z+dz),.013,"timberDark",4)
+        glow=Mesh();atbox(glow,(x,y+.93,z),(.145,.20,.145),"amber")
+        obj(glow,f"AfterHours_Garden_LanternGlow_{i}",GLOW)
+        obstacle(f"GardenLantern{i}",ring(x,z,.23,8),[y,y+1.11],"lamp")
+    obj(lamps,"AfterHours_Garden_LanternFrames")
+    return {"plants":len(planted),"bedCentres":beds,"actualGeometryPrefix":"AfterHours_Garden_","pavingMargin":.20}
 
 
 def pavilion():
@@ -988,6 +1047,7 @@ def build():
     pav = pavilion()
     plantings()
     cove()
+    garden = coastal_garden()
     last = tail[-1]
     tipx, tipz = 32.5, 67.0
     tipy = max(height(tipx, tipz), sum(p[1] for p in last) / len(last)) + 0.13
@@ -1036,6 +1096,7 @@ def build():
         obstacles=NEW_OBSTACLES,
         legacyReservation=LAYOUT,
         pavilion=pav,
+        garden=garden,
         knownLimitations=[
             "Sports gameplay, seats, music and cinema are provided by existing runtime content, not baked here.",
             "The existing rectangular listening structure is replaced by a smaller dome so the actual cinema remains clear.",

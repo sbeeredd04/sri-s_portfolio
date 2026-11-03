@@ -113,7 +113,13 @@ for name in ['bridges_paths_p8','dock_boats','lake_rocks']:
   obsolete_east_arch = name=='bridges_paths_p8' and (2868<=first<2904 or 3134<=first<4726)
   if obsolete_east_arch:
    assert lo[0]>58 and 38<lo[2]<51 and hi[0]<96 and hi[2]<52, 'East arch component provenance changed'
-  remove=(name=='bridges_paths_p8' and (first<2724 or obsolete_east_arch)) or (name=='dock_boats' and (516<=first<7276 or 8910<=first<11814 or 11922<=first<12082 or (first>=12328 and hi[1]<5 and inside((lo[0]+hi[0])/2,(lo[2]+hi[2])/2,LAKE)))) or (name=='lake_rocks' and hi[1]<12)
+  # Four source hikers consist of complete connected limb/head/backpack parts.
+  # Runtime replaces their exact foot anchors with the shared adult rig.
+  source_hiker = name=='dock_boats' and (7358<=first<8034 or 8234<=first<8910)
+  if source_hiker:
+   assert len(ps) in [6,10,20,80], 'Unexpected hiker component topology'
+   assert hi[1]<6.9 and lo[1]>4.5 and max(hi[0]-lo[0],hi[2]-lo[2])<1, 'Hiker component bounds changed'
+  remove=source_hiker or (name=='bridges_paths_p8' and (first<2724 or obsolete_east_arch)) or (name=='dock_boats' and (516<=first<7276 or 8910<=first<11814 or 11922<=first<12082 or (first>=12328 and hi[1]<5 and inside((lo[0]+hi[0])/2,(lo[2]+hi[2])/2,LAKE)))) or (name=='lake_rocks' and hi[1]<12)
   audit.append({'firstFace':first,'faces':len(ps),'boundsMetres':[lo,hi],'removed':remove})
   if remove:reject.extend(p.index for p in ps)
  component_audit[name]=audit;removed_faces[name]=len(reject)
@@ -439,7 +445,7 @@ for face in rock_indices:
  band = .5 + .5 * math.sin(center.y*.73 + center.x*.17)
  wet = max(0, 1-abs(center.x+.4)/4.7) * max(0, min(1, (center.z-4)/4))
  shade = (.84 + .15*band + .10*max(0,n.y)) * (1-.27*wet)
- rock_colors.append(tuple(c*shade for c in (.36,.316,.269)))
+ rock_colors.append(tuple(c*shade for c in (.235,.253,.250)))
 bpy.data.objects.remove(original_rock,do_unlink=True)
 mesh('rock',rock_vertices,rock_indices,rock_colors)
 
@@ -487,21 +493,26 @@ for row in range(6):
   a=row*9+col;feeder_faces.extend([(a,a+9,a+1),(a+1,a+9,a+10)])
 mesh('falls_lip',feeder_vertices,feeder_faces,(.55,.72,.76),falls_material)
 # Impact is at the lake surface, not white facets half way up the cliff.
-# Broken radial fans leave open blue water between outward-moving foam wisps.
+# Short broken arcs describe local turbulence. No spoke reaches from the
+# impact centre to a remote ring; exposed water separates every fragment.
 foam_vertices,foam_faces,foam_colors=[],[],[]
 foam_rng=random.Random(307)
-for wedge in range(23):
- angle=math.pi*.03+wedge*math.pi*.94/22
- start=.45+foam_rng.random()*.18
- length=1.0+foam_rng.random()*1.15
- spread=.035+foam_rng.random()*.035
+for patch in range(54):
+ radius=foam_rng.uniform(.18,2.35)
+ angle=foam_rng.uniform(.08,math.pi-.08)
+ arc=foam_rng.uniform(.055,.18)/max(.5,radius)
+ thickness=foam_rng.uniform(.018,.065)
  base=len(foam_vertices)
- for radius,halfangle in [(start,spread*.55),(start+length,spread)]:
+ for j in range(5):
+  theta=angle+(j/4-.5)*arc*3
+  ripple=.045*math.sin(theta*9+patch)
+  taper=math.sin(math.pi*(j+.3)/4.6)**.6
   for side in [-1,1]:
-   a=angle+side*halfangle
-   foam_vertices.append((-.45+math.cos(a)*radius*1.25,WATER+.045,10.35+math.sin(a)*radius))
- foam_faces.extend([(base,base+2,base+1),(base+1,base+2,base+3)])
- foam_colors.extend([(.56,.69,.68),(.46,.62,.63)])
+   r=radius+ripple+side*thickness*taper
+   foam_vertices.append((-.45+math.cos(theta)*r*1.2,WATER+.031+patch*.00012,10.35+math.sin(theta)*r))
+ for j in range(4):
+  q=base+j*2;foam_faces.extend([(q,q+2,q+1),(q+1,q+2,q+3)])
+  tone=.48+.12*foam_rng.random();foam_colors.extend([(tone*.82,tone*.95,tone)]*2)
 mesh('falls_foam',foam_vertices,foam_faces,foam_colors,falls_material)
 fall_contract={'profile':fall_profile,'fallRows':fall_rows,'fallColumns':fall_columns,
  'lakeHeight':WATER,'impactCentre':[-.45,WATER+.035,10.35],
@@ -515,8 +526,13 @@ shore_bvh = BVHTree.FromPolygons([Vector(v) for v in terrain_vertices],terrain_f
 def shore_support(x,z):
  hit, _, _, _ = shore_bvh.ray_cast(Vector((x,80,z)),Vector((0,-1,0)))
  return hit.y if hit else None
+# Sampled by the JS build from the same curves and full curb width rendered
+# in world-paths.mjs. This shared approach extends beyond the authored graph.
+world_approaches=json.loads((OUT/'world-approaches.json').read_text())
+assert world_approaches['sampleSpacingMaximum']<=.2
+external_path_points=world_approaches['samples']
 def clear_plant(x,z,radius):
- return all(math.hypot(x-p[0],z-p[2]) > p[3]+radius+.24 for p in all_path_points)
+ return all(math.hypot(x-p[0],z-p[2]) > p[3]+radius+.24 for p in all_path_points+external_path_points)
 stone_vertices, stone_faces, stone_colors = [], [], []
 fern_vertices, fern_faces, fern_colors = [], [], []
 settled = []
@@ -577,6 +593,149 @@ for i in range(900):
 mesh('lake_shore_stones',stone_vertices,stone_faces,stone_colors)
 mesh('lake_shore_ferns',fern_vertices,fern_faces,fern_colors)
 
+# Forest composition uses the shipped polygon redwood/pine meshes, reused at
+# juvenile and mature scales. Terrain and all path widths remain authoritative.
+from mathutils import Matrix
+forest_rng=random.Random(31103)
+forest_trees=[];forest_plants=[]
+rock_bvh=BVHTree.FromPolygons([Vector(v) for v in rock_vertices],rock_indices)
+forest_views=[((-16,12.5,36),(-11.8,7.4,13)),((-17,15,46),(-9.5,7.8,14)),((25,8.6,41),(32,5.25,34)),((23,9,44),(32,5.25,34)),((28.85,8.46,28.2),(2.56,10.9,4.49))]
+def camera_clear(x,y,z,r,h):
+ for eye,target in forest_views:
+  a=Vector(eye);b=Vector(target);d=b-a
+  # Test several heights of the crown, not just the trunk point.
+  for t in [.36,.62,.85]:
+   p=Vector((x,y+h*t,z));u=max(0,min(1,(p-a).dot(d)/d.length_squared))
+   if (p-(a+d*u)).length<r+2.0:return False
+ return True
+
+def forest_site(x,z,r,tree=False):
+ if not inside(x,z,COAST) or inside(x,z,LAKE):return None
+ if nearest(x,z,COAST)[0]<r+.5 or nearest(x,z,LAKE)[0]<r+.22:return None
+ if math.hypot(x-32,z-34)<r+5.3 or not clear_plant(x,z,r):return None
+ y=shore_support(x,z)
+ if y is None or y<WATER-.05:return None
+ hit,_,_,_=rock_bvh.ray_cast(Vector((x,80,z)),Vector((0,-1,0)))
+ if hit and hit.y>y+.1:return None
+ heights=[shore_support(x+math.cos(j*math.tau/8)*r,z+math.sin(j*math.tau/8)*r) for j in range(8)]
+ if any(v is None for v in heights) or max(heights)-min(heights)>(1.6 if tree else .6):return None
+ return y
+
+# Three planted groves frame the waterfall and camp, leaving the middle lake
+# approach open. Irregular nested clusters avoid an evenly scattered lawn.
+groves=[(-29,-8,14,22),(27,-19,17,23),(42,17,13,18),(-34,30,9,9),(24,47,19,9)]
+templates=[]
+for name in ['redwood3','redwood4','pine3','pine6']:
+ o=bpy.data.objects[name];vs=[point(o,v) for v in o.data.vertices];low=min(v.y for v in vs);roots=[v for v in vs if v.y<low+.3];cx=sum(v.x for v in roots)/len(roots);cz=sum(v.z for v in roots)/len(roots)
+ templates.append((o,vs,cx,cz,low,max(v.y for v in vs)-low,max(math.hypot(v.x-cx,v.z-cz) for v in vs)))
+for attempt in range(1200):
+ gx,gz,rx,rz=groves[attempt%len(groves)]
+ angle=forest_rng.random()*math.tau;rr=math.sqrt(forest_rng.random());x=gx+math.cos(angle)*rx*rr;z=gz+math.sin(angle)*rz*rr
+ template=templates[0 if attempt%5<2 else 1 if attempt%5<4 else 2+attempt%2]
+ original,vs,cx,cz,low,height,radius=template
+ h=forest_rng.uniform(12,23) if attempt%5<4 else forest_rng.uniform(6,11)
+ scale=h/height;r=radius*scale
+ y=forest_site(x,z,r,True)
+ if y is None or not camera_clear(x,y,z,r,h):continue
+ if any(math.hypot(x-t['x'],z-t['z'])<r+t['radius']+.8 for t in forest_trees):continue
+ if any(math.hypot(x-a,z-b)<r+.65 for a,b,_ in protected_roots):continue
+ yaw=forest_rng.random()*math.tau;co=math.cos(yaw);si=math.sin(yaw)
+ clone=original.copy();clone.data=original.data.copy();clone.name=('redwood' if attempt%5<4 else 'pine')+'_grove_'+str(len(forest_trees));clone.animation_data_clear();clone.matrix_world=Matrix.Identity(4);bpy.context.collection.objects.link(clone)
+ for vertex,p in zip(clone.data.vertices,vs):
+  xx=(p.x-cx)*scale;zz=(p.z-cz)*scale
+  vertex.co=source((x+xx*co+zz*si,y+(p.y-low)*scale-.045,z-xx*si+zz*co))
+ changed.append(clone);forest_trees.append({'node':clone.name,'source':original.name,'x':x,'z':z,'ground':y,'height':h,'radius':r})
+ if len(forest_trees)>=42:break
+
+# Folded leaves and broad tuft blades have actual silhouettes; no alpha-card
+# photographs or microscopic noise. Both populations are merged into two draws.
+under_v=[];under_f=[];under_c=[];grass_v=[];grass_f=[];grass_c=[]
+leaf_palette=[(.105,.185,.049),(.165,.253,.072),(.235,.310,.105),(.19,.285,.084)]
+for attempt in range(12000):
+ gx,gz,rx,rz=groves[attempt%len(groves)];a=forest_rng.random()*math.tau;rr=math.sqrt(forest_rng.random());x=gx+math.cos(a)*(rx+6)*rr;z=gz+math.sin(a)*(rz+6)*rr
+ fern=attempt%4==0;r=forest_rng.uniform(.65,1.22) if fern else forest_rng.uniform(.22,.45)
+ y=forest_site(x,z,r)
+ if y is None:continue
+ if any(math.hypot(x-a,z-b)<r+rr*.65 for a,b,rr in forest_plants):continue
+ if any(math.hypot(x-t['x'],z-t['z'])<t['radius']*.12+.2 for t in forest_trees):continue
+ forest_plants.append((x,z,r))
+ turn=forest_rng.random()*math.tau
+ if fern:
+  for branch in range(5):
+   angle=turn+branch*math.tau/5;dx,dz=math.cos(angle),math.sin(angle);span=r*forest_rng.uniform(.78,1)
+   for j in range(1,5):
+    t=j/5;stem=Vector((x+dx*span*t,y+.035+span*(1.16*t-.88*t*t),z+dz*span*t))
+    for side in [-1,1]:
+     tip=stem+Vector((span*(dx*.20-dz*side*.30)*(1-t*.6),span*.035,span*(dz*.20+dx*side*.30)*(1-t*.6)))
+     ridge=stem.lerp(tip,.5)+Vector((0,span*.075,0));edge=Vector((dx,0,dz))*span*.085
+     base=len(under_v);under_v.extend([tuple(stem),tuple(ridge-edge),tuple(tip),tuple(ridge+edge),tuple(ridge)])
+     under_f.extend([(base,base+4,base+1),(base+1,base+4,base+2),(base+2,base+4,base+3),(base+3,base+4,base)])
+     under_c.extend([leaf_palette[(branch+j+k)%4] for k in range(4)])
+ else:
+  for blade in range(5):
+   angle=turn+blade*2.4;dx,dz=math.cos(angle),math.sin(angle);h=forest_rng.uniform(.25,.62);w=forest_rng.uniform(.045,.09);bend=r*forest_rng.uniform(.5,1)
+   base=len(grass_v);grass_v.extend([(x-dz*w,y-.015,z+dx*w),(x+dz*w,y-.015,z-dx*w),(x+dx*bend*.4-dz*w*.45,y+h*.65,z+dz*bend*.4+dx*w*.45),(x+dx*bend*.4+dz*w*.45,y+h*.65,z+dz*bend*.4-dx*w*.45),(x+dx*bend,y+h,z+dz*bend)])
+   grass_f.extend([(base,base+2,base+1),(base+1,base+2,base+3),(base+2,base+4,base+3)])
+   grass_c.extend([leaf_palette[(blade+attempt)%4]]*3)
+ if len(forest_plants)>=1200:break
+mesh('ferns_grove_understory',under_v,under_f,under_c)
+mesh('grass_grove_tufts',grass_v,grass_f,grass_c)
+# Staggered granite shoulders at the cliff foot. Their back halves overlap
+# the source rock; the foreground edge stops well short of the falling water.
+# They are individually faceted, irregular forms, never vertical columns.
+shoulder_rng=random.Random(3146)
+shoulder_v=[];shoulder_f=[];shoulder_c=[];shoulder_sites=[]
+for x,y,r,h in [(-12.0,3.7,1.8,2.1),(-10.2,4.0,2.0,2.9),(-8.0,3.75,1.8,1.7),(-6.4,4.1,1.4,2.3),(-12.0,4.2,2.6,1.9),(-9.1,4.5,2.3,2.0),(5.0,3.8,1.25,1.6),(7.1,4.0,1.8,2.4),(9.5,3.9,1.45,1.65),(8.2,4.2,1.9,1.65)]:
+ hit,_,_,_=rock_bvh.ray_cast(Vector((x,y+.7,60)),Vector((0,0,-1)))
+ if hit is None:continue
+ z=hit.z-.72
+ if not clear_plant(x,z,r+.25):continue
+ base=len(shoulder_v);turn=shoulder_rng.random()*math.tau
+ radii=[shoulder_rng.uniform(.80,1.08) for _ in range(9)]
+ for ring,(scale,rise) in enumerate([(1,-.35),(.94,.27),(.76,.73),(.52,.91)]):
+  for j in range(9):
+   a=turn+j*math.tau/9;xx=x+math.cos(a)*r*radii[j]*scale+ring*r*.085;zz=z+math.sin(a)*r*radii[j]*scale*.76-ring*r*.10
+   yy=y+h*(rise+(.06*math.sin(a*2+.8) if ring else 0))
+   shoulder_v.append((xx,yy,zz))
+ for ring in range(3):
+  for j in range(9):
+   a=base+ring*9+j;b=base+ring*9+(j+1)%9
+   shoulder_f.extend([(a,a+9,b),(b,a+9,b+9)])
+   shade=shoulder_rng.uniform(.86,1.13)*(1 if ring else .77)
+   shoulder_c.extend([tuple(v*shade for v in (.205,.225,.223)),tuple(v*shade*1.035 for v in (.205,.225,.223))])
+ shoulder_f.append(tuple(reversed(range(base+27,base+36))));shoulder_c.append((.225,.252,.222))
+ shoulder_sites.append({'x':x,'z':z,'base':y,'height':h,'radius':r})
+mesh('cliff_foot_shoulders',shoulder_v,shoulder_f,shoulder_c)
+# Ferns root onto actual exported ledge polygons; low shelf plants break the
+# mineral/ground transition without covering the lake or source dock.
+shoulder_bvh=BVHTree.FromPolygons([Vector(v) for v in shoulder_v],shoulder_f)
+ledge_v=[];ledge_f=[];ledge_c=[];ledge_sites=[]
+for attempt in range(950):
+ if not shoulder_sites:break
+ site=shoulder_sites[attempt%len(shoulder_sites)];x=site['x']+shoulder_rng.uniform(-.85,.85)*site['radius'];z=site['z']+shoulder_rng.uniform(-.3,.9)*site['radius']
+ r=shoulder_rng.uniform(.38,.80)
+ if not clear_plant(x,z,r) or (-3.0<x<2.4 and z>7):continue
+ hit,normal,_,_=shoulder_bvh.ray_cast(Vector((x,40,z)),Vector((0,-1,0)))
+ if hit is None or normal.y<.50:continue
+ # The visible upper support must be the new ledge, not a hidden rock interior.
+ original,_,_,_=rock_bvh.ray_cast(Vector((x,40,z)),Vector((0,-1,0)))
+ if original and original.y>hit.y+.08:continue
+ if any(math.hypot(x-a,z-b)<(r+rr)*.66 for a,b,rr in ledge_sites):continue
+ ledge_sites.append((x,z,r));y=hit.y-.012;turn=shoulder_rng.random()*math.tau
+ for branch in range(6):
+  a=turn+branch*math.tau/6;dx,dz=math.cos(a),math.sin(a);span=r*shoulder_rng.uniform(.8,1)
+  for j in range(1,5):
+   t=j/5;stem=Vector((x+dx*span*t,y+.04+span*(1.3*t-.95*t*t),z+dz*span*t))
+   for side in [-1,1]:
+    tip=stem+Vector((span*(dx*.17-dz*side*.27)*(1-t*.55),span*.04,span*(dz*.17+dx*side*.27)*(1-t*.55)))
+    ridge=stem.lerp(tip,.5)+Vector((0,span*.055,0));edge=Vector((dx,0,dz))*span*.07
+    base=len(ledge_v);ledge_v.extend([tuple(stem),tuple(ridge-edge),tuple(tip),tuple(ridge+edge),tuple(ridge)])
+    ledge_f.extend([(base,base+4,base+1),(base+1,base+4,base+2),(base+2,base+4,base+3),(base+3,base+4,base)])
+    ledge_c.extend([leaf_palette[(branch+j+k)%4] for k in range(4)])
+ if len(ledge_sites)>=65:break
+mesh('ferns_cliff_ledge',ledge_v,ledge_f,ledge_c)
+forest_contract={'trees':forest_trees,'cliffShoulders':shoulder_sites,'cliffLedgeFerns':len(ledge_sites),'groundPlants':len(forest_plants),'fernTriangles':len(under_f),'grassTriangles':len(grass_f),'pathMarginMetres':.24,'worldApproachSamples':len(external_path_points),'cameraCorridorMarginMetres':2,'source':'Existing shipped polygon redwood/pine meshes; sampled exported terrain and full authored path widths'}
+
 # Export ONLY changed meshes. Main merger preserves every unrelated official
 # mesh/animation, including shared instancing and authored transforms.
 bpy.ops.object.select_all(action='DESELECT')
@@ -589,7 +748,7 @@ opts=dict(filepath=str(OUT/'landscape-raw.glb'),export_format='GLB',use_selectio
 bpy.ops.export_scene.gltf(**{k:v for k,v in opts.items() if k in props})
 replace=[o.name for o in changed]
 remove=fall_nodes+['rock','terrain','pool','bridges_paths_p8','dock_boats','lake_rocks','ferns','coast_shrubs','coast_flowers','coast_ledges','coast_foam','lake_rim','lake_rocks_layered','bushes','grass','grass_island','ground','hills','sky_card','sky_ridge','lake_ripples','lake_outflow','outflow_rapids']+trees_remove
-manifest={'schema':'out-there-refinement/v1','sourceSha256':SOURCE_SHA,'units':'Three metres [Blender.x, Blender.z+6,-Blender.y]/1.56','replaceOrRemoveOfficialNodes':remove,'replacementNodes':replace,'coastBoundary':COAST,'originalLakeBoundary':[{'sourceVertex':i,'point':list(v)} for i,v in zip(ordered,source_shore)],'lakeBoundary':LAKE,'waterHeight':WATER,'originalLakeArea':abs(signed_area([(v.x,v.z) for v in source_shore])),'lakeArea':abs(signed_area(LAKE)),'sourceComponentAudit':component_audit,'removedSourceFaces':removed_faces,'plantFacesRemoved':plant_removed,'removedTreeNodes':trees_remove,'retainedTreeContacts':tree_contacts,'adjustedHooks':adjusted,'nodes':nodes,'profiles':path_profiles,'boats':boat_anchors,'waterfall':fall_contract,'camp':{'centre':[32,4.34,34],'radius':3.766,'terraceOwnedByRuntime':True,'connectorStart':camppts[0],'connectorEnd':camppts[-1],'width':1.2,'foundationBottom':3.68},'limitations':['New paths require exported full-width collision audit before enabling walking.','The current source humanoids remain unchanged; root runtime owns literal 1.75m reference person.','Original upper timber bridge, dock and stairs remain. The unsupported east arch and gate are removed: the main-world crossing now joins certified ENTRY. Obsolete southwest small bridge removed because expanded basin replaces its crossing.']}
+manifest={'schema':'out-there-refinement/v1','sourceSha256':SOURCE_SHA,'units':'Three metres [Blender.x, Blender.z+6,-Blender.y]/1.56','replaceOrRemoveOfficialNodes':remove,'replacementNodes':replace,'coastBoundary':COAST,'originalLakeBoundary':[{'sourceVertex':i,'point':list(v)} for i,v in zip(ordered,source_shore)],'lakeBoundary':LAKE,'waterHeight':WATER,'originalLakeArea':abs(signed_area([(v.x,v.z) for v in source_shore])),'lakeArea':abs(signed_area(LAKE)),'sourceComponentAudit':component_audit,'removedSourceFaces':removed_faces,'plantFacesRemoved':plant_removed,'removedTreeNodes':trees_remove,'retainedTreeContacts':tree_contacts,'adjustedHooks':adjusted,'nodes':nodes,'profiles':path_profiles,'boats':boat_anchors,'waterfall':fall_contract,'forest':forest_contract,'camp':{'centre':[32,4.34,34],'radius':3.766,'terraceOwnedByRuntime':True,'connectorStart':camppts[0],'connectorEnd':camppts[-1],'width':1.2,'foundationBottom':3.68},'limitations':['New paths require exported full-width collision audit before enabling walking.','Four baked source hikers removed by audited connected topology; runtime supplies shared 1.75m adult rigs at those anchors.','Original upper timber bridge, dock and stairs remain. The unsupported east arch and gate are removed: the main-world crossing now joins certified ENTRY. Obsolete southwest small bridge removed because expanded basin replaces its crossing.']}
 (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 assert hashlib.sha256(SOURCE.read_bytes()).hexdigest()==SOURCE_SHA
 print('REFINEMENT_STATIC_EXPORTED',json.dumps({'nodes':replace,'removedTrees':len(trees_remove),'lakeAreaRatio':manifest['lakeArea']/manifest['originalLakeArea'],'newPathProfiles':len(path_profiles)}))

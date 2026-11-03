@@ -98,7 +98,7 @@ export default function BadmintonRally({ animate }) {
     shuttle.current.quaternion.setFromUnitVectors(up, velocity.normalize());
     for (let i = 0; i < 2; i++) {
       const stroke = racketPose(elapsed.current - i * RALLY_DURATION);
-      poses[i].current = { right: stroke.wrist, left: [-0.4, 0.48, 0.12] };
+      poses[i].current = { right: stroke.wrist, left: [-0.27, 0.86, 0.12] };
       if (rackets.current[i]) rackets.current[i].rotation.x = stroke.angle;
     }
   }, -2);

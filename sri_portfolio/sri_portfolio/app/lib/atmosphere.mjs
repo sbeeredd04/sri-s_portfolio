@@ -14,7 +14,7 @@ const dusk = {
 };
 const night = {
   zenith: new THREE.Color("#142541"),
-  horizon: new THREE.Color("#50617b"),
+  horizon: new THREE.Color("#283b58"),
   glow: new THREE.Color(0, 0, 0),
 };
 
@@ -38,8 +38,8 @@ export function fogDensity(world, focusDistance) {
 }
 // City light pollution warms the night horizon at home only.
 const nightTint = {
-  studio: new THREE.Color("#67627c"),
-  trail: new THREE.Color("#425c6b"),
+  studio: new THREE.Color("#393b58"),
+  trail: new THREE.Color("#263f4d"),
 };
 
 const cloudDeck = {

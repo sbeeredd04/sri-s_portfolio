@@ -1,4 +1,5 @@
 "use client";
+import { replaceWorldHistory } from "../../lib/world-return.mjs";
 import UiIcon from "./UiIcon";
 import FoundryDesk from "./FoundryDesk";
 import WorkCaseFile from "./WorkCaseFile";
@@ -78,7 +79,7 @@ export default function ProjectLibrary({
   }, [filter, query, requested, openRow, openCase, onLocationChange]);
   function setAnchor(id) {
     const base = `${window.location.pathname}${window.location.search}`;
-    window.history.replaceState(null, "", id ? `${base}#project-${id}` : base);
+    replaceWorldHistory(window.history, id ? `${base}#project-${id}` : base);
   }
   function clearProjectAnchor() {
     if (linkedProjectId(window.location.hash)) setAnchor(null);

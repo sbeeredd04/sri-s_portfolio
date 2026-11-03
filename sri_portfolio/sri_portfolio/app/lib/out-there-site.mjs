@@ -1,6 +1,6 @@
 import { outThereViews, outThereNode } from "./out-there-p11.mjs";
 // Asset revision is independent of the retained, separately audited walk graph.
-export const outThereLiveSource = "/models/islands/out-there-refined.glb?v=fc67d387f6707a2c";
+export const outThereLiveSource = "/models/islands/out-there-refined.glb?v=d7630eafc6d6917a";
 
 // One metre frame for the actual portfolio region, camp, cameras and paths.
 export const outThereCamp = {

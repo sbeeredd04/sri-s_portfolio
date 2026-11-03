@@ -296,7 +296,6 @@ function DistrictCrowd({ animate }) {
   );
   return (
     <Crowd
-      src="/models/characters/crowd.glb"
       agents={agents}
       ground={ground}
       animate={animate}

@@ -196,6 +196,7 @@ export const techViews = [
   },
   {
     id: "demos",
+    scenic: true,
     label: "Demo row",
     position: [booths[1].x, 2.5, DEMO_Z - 3.5],
     target: [booths[3].x, 1.4, booths[0].z],

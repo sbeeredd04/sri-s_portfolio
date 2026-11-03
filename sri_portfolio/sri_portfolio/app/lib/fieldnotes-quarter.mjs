@@ -130,11 +130,12 @@ export const quarterViews = [
       fov: 70,
     },
     content: "writing",
-    prompt: "Fresh off the press",
+    prompt: "Latest writing",
     hint: "One rack per shelf: things I make, details I notice, and life away from the desk.",
   },
   {
     id: "lookout",
+    scenic: true,
     label: "The lookout",
     // Look past the seat to the offshore beacon; keep the wall below the
     // horizon and the focal point in the clear center of the interface.

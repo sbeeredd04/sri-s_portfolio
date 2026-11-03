@@ -109,7 +109,7 @@ export const readingSections = [
   {
     id: "writing",
     name: "The writing room",
-    caption: "A home for future posts. The first page is still ahead.",
+    caption: "Notes on AI engineering, agents, and the work around models.",
   },
   {
     id: "socials",

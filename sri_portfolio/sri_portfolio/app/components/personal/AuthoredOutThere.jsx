@@ -7,6 +7,8 @@ import { outThereFrame } from "../../lib/out-there-p11.mjs";
 import { outThereModelSource } from "../../lib/out-there-p11-build.mjs";
 import { prepareOutThereWater } from "../../lib/out-there-water.mjs";
 import LakeMist from "./LakeMist";
+import SoftHuman from "./SoftHuman";
+import { outThereResidents } from "../../lib/out-there-residents.mjs";
 import useLakeReflection from "./useLakeReflection";
 import { outThereCamp, outThereLiveSource } from "../../lib/out-there-site.mjs";
 
@@ -30,7 +32,7 @@ export default function AuthoredOutThere({
   focus = null,
   embedded = false,
   wind = 4,
-  reflectLake=false,
+  reflectLake = false,
 }) {
   const camera = useThree((s) => s.camera);
   const invalidate = useThree((s) => s.invalidate);
@@ -170,7 +172,7 @@ export default function AuthoredOutThere({
       materials: [...materials.values(), ...trees.map((t) => t.material)],
     };
   }, [scene, water, embedded]);
-  useLakeReflection(model,islandRoot,reflectLake,night);
+  useLakeReflection(model, islandRoot, reflectLake, night);
   useLayoutEffect(() => {
     islandRoot.current?.updateWorldMatrix(true, false);
     if (islandRoot.current)
@@ -286,34 +288,50 @@ export default function AuthoredOutThere({
     }
   });
   return (
-    <group
-      ref={islandRoot}
-      scale={1 / outThereFrame.unitsPerMetre}
-      position={[0, -outThereFrame.seaLevel / outThereFrame.unitsPerMetre, 0]}
-    >
-      {night && !embedded && (
-        <pointLight
-          position={[3, 32, 0]}
-          color="#f2b866"
-          intensity={9}
-          distance={14}
-          decay={2}
+    <>
+      <group
+        ref={islandRoot}
+        scale={1 / outThereFrame.unitsPerMetre}
+        position={[0, -outThereFrame.seaLevel / outThereFrame.unitsPerMetre, 0]}
+      >
+        {night && !embedded && (
+          <pointLight
+            position={[3, 32, 0]}
+            color="#f2b866"
+            intensity={9}
+            distance={14}
+            decay={2}
+          />
+        )}
+        <primitive
+          object={model.scene}
+          onClick={(event) => {
+            if (
+              /lookout|dock_boats/.test(
+                event.object.userData.p11Node || event.object.name,
+              )
+            ) {
+              event.stopPropagation();
+              onJournalOpen?.();
+            }
+          }}
         />
-      )}
-      <primitive
-        object={model.scene}
-        onClick={(event) => {
-          if (
-            /lookout|dock_boats/.test(
-              event.object.userData.p11Node || event.object.name,
-            )
-          ) {
-            event.stopPropagation();
-            onJournalOpen?.();
-          }
-        }}
-      />
-      {focus && <LakeMist water={water} night={night} />}
-    </group>
+        {focus && <LakeMist water={water} night={night} />}
+      </group>
+      {embedded &&
+        outThereResidents.map((resident, index) => (
+          <group
+            key={index}
+            position={resident.position}
+            rotation={[0, resident.rotation, 0]}
+          >
+            <SoftHuman
+              animate={animate}
+              variation={resident.variation}
+              phase={index * 0.73}
+            />
+          </group>
+        ))}
+    </>
   );
 }

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { AnimationMixer, MathUtils } from "three";
-import { clone } from "three/addons/utils/SkeletonUtils.js";
+import { createAdultModel, applyAdultPose } from "../../lib/soft-human-rig.mjs";
 
 export const softHumanSource =
   "/models/characters/soft-human.glb?v=bbc320a5d6381c76";
@@ -13,25 +13,19 @@ export default function SoftHuman({
   motion,
   color,
   phase = 0,
+  variation = 0,
+  seated = false,
+  seatHeight = 0.44,
+  pose,
+  rightHand,
 }) {
   const { scene, animations } = useGLTF(softHumanSource);
-  const actions = useRef(null);
+  const actions = useRef(null),
+    attachment = useRef();
   const person = useMemo(() => {
-    const root = clone(scene);
-    const materials = [];
-    root.traverse((o) => {
-      if (!o.isMesh) return;
-      o.castShadow = true;
-      o.receiveShadow = true;
-      if (color && o.name === "Human_Shirt") {
-        o.material = o.material.clone();
-        o.material.color.set(color);
-        materials.push(o.material);
-      }
-    });
-    const mixer = new AnimationMixer(root);
-    return { root, materials, mixer };
-  }, [scene, animations, color]);
+    const model = createAdultModel(scene, variation, color);
+    return { ...model, mixer: new AnimationMixer(model.root) };
+  }, [scene, variation, color]);
   useEffect(() => {
     const idle = person.mixer.clipAction(
       animations.find((a) => a.name === "Idle"),
@@ -44,18 +38,24 @@ export default function SoftHuman({
     walk.reset().setEffectiveWeight(0).play();
     actions.current = { idle, walk, blend: 0 };
     person.mixer.update(0);
+    applyAdultPose(person.root, person.bones, {
+      seated,
+      seatHeight,
+      pose: pose?.current,
+    });
     return () => {
       person.mixer.stopAllAction();
       person.mixer.uncacheRoot(person.root);
       actions.current = null;
-      person.materials.forEach((m) => m.dispose());
     };
-  }, [person, phase, animations]);
+  }, [person, phase, animations, seated, seatHeight, pose]);
+  useEffect(() => () => person.dispose(), [person]);
   useFrame((_, delta) => {
-    if (!animate || motion?.current?.paused || !actions.current) return;
-    const action = actions.current;
-    const dt = Math.min(0.05, delta);
-    const speed = motion?.current?.speed || 0;
+    if (!actions.current) return;
+    const action = actions.current,
+      paused = !animate || motion?.current?.paused;
+    const dt = paused ? 0 : Math.min(0.05, delta),
+      speed = seated ? 0 : motion?.current?.speed || 0;
     action.blend = MathUtils.damp(
       action.blend,
       MathUtils.smoothstep(speed, 0.05, 0.28),
@@ -67,6 +67,19 @@ export default function SoftHuman({
       .setEffectiveWeight(action.blend)
       .setEffectiveTimeScale(Math.min(3.6, speed / 0.875));
     person.mixer.update(dt);
-  });
-  return <primitive object={person.root} />;
+    applyAdultPose(person.root, person.bones, {
+      seated,
+      seatHeight,
+      pose: pose?.current,
+      waveAge: motion?.current?.waveAge,
+    });
+    if (attachment.current && pose?.current?.right)
+      attachment.current.position.set(...pose.current.right);
+  }, -0.5);
+  return (
+    <group>
+      <primitive object={person.root} />
+      {rightHand && <group ref={attachment}>{rightHand}</group>}
+    </group>
+  );
 }

@@ -38,3 +38,14 @@ export function rememberWorldEntry(storage) {
     /* History still restores Back when session storage is unavailable. */
   }
 }
+
+// Next's patched native History API synchronizes its canonical URL only for
+// external calls. Passing its __NA/_N markers back falsely identifies our
+// update as a router-internal write, so a later render restores the old URL.
+// Keep application metadata; let Next copy its own current internals back in.
+export function replaceWorldHistory(history, url, state = history.state) {
+  const custom = { ...(state || {}) };
+  for (const key of ["__NA", "_N", "__N", "__PRIVATE_NEXTJS_INTERNALS_TREE"])
+    delete custom[key];
+  history.replaceState(custom, "", url);
+}

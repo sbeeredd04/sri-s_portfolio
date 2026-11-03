@@ -1,20 +1,56 @@
 "use client";
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
 import SharedIslandAsset from "./SharedIslandAsset";
 import { Workspace } from "./BiomeScenes";
-import { apartmentPoint } from "../../lib/studio-layout.mjs";
+import { apartmentPoint, APARTMENT_YAW } from "../../lib/studio-layout.mjs";
 import { homeSite } from "../../lib/home-site.mjs";
 import PreparedGroup from "./PreparedGroup";
 import SoftHuman from "./SoftHuman";
+import { useHomeCameraOcclusion } from "./CameraOcclusion";
 
-function tuneHouseGlazing(mesh) {
+// Clone per house: an occupied window must not illuminate every mesh that
+// happens to share the export's glass palette. Balcony glass remains unlit.
+function tuneHouseGlazing(mesh, night) {
   if (!/glazing/i.test(mesh.name)) return;
-  for (const material of [mesh.material].flat()) {
-    material.color.set("#627e7f");
-    material.envMapIntensity = 0.3;
-    material.opacity = 0.52;
-  }
+  const number = Number(mesh.name.match(/Rowhouse_(\d+)/)?.[1] || 0);
+  const summit = mesh.name.startsWith("Summit_");
+  const occupied = summit || number % 5 !== 3;
+  mesh.updateMatrix();
+  mesh.material = [mesh.material].flat().map((source) => {
+    const material = source.clone();
+    material.color.set(night ? "#657d83" : "#627e7f");
+    // Thin clear summit glazing preserves the real bay view from the desk.
+    // Warm rooms are supplied by interior practicals, not a glowing glass veil.
+    material.envMapIntensity = summit ? .035 : .12;
+    material.opacity = summit ? (night ? .065 : .09) : night && occupied ? .42 : .28;
+    material.emissive.set(number % 3 === 0 ? "#efa05c" : "#ffc284");
+    material.emissiveIntensity = night && occupied && !summit ? .46 : 0;
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms.uHomePaneMatrix = { value: mesh.matrix.clone() };
+      shader.vertexShader = "uniform mat4 uHomePaneMatrix; varying vec3 vHomePane;\n" +
+        shader.vertexShader.replace("#include <begin_vertex>", `
+          #include <begin_vertex>
+          vHomePane = (uHomePaneMatrix * vec4(position, 1.)).xyz;
+        `);
+      shader.fragmentShader = "varying vec3 vHomePane;\n" +
+        shader.fragmentShader.replace("#include <emissivemap_fragment>", `
+          #include <emissivemap_fragment>
+          ${summit ? `
+            float facade = min(abs(vHomePane.z-4.8), min(abs(vHomePane.z-3.),abs(vHomePane.z-2.1)));
+            float pane = 1.-step(.035,facade);
+          ` : `
+            float pane = 1.-step(6.85,vHomePane.z);
+            float storey = floor(max(0.,vHomePane.y-1.02)/2.66);
+            pane *= step(.5,mod(storey+${(number * 3) % 4}.0,4.));
+          `}
+          totalEmissiveRadiance *= pane;
+        `);
+    };
+    material.customProgramCacheKey = () => `home-windows-${summit ? "summit" : number}-v1`;
+    return material;
+  });
+  if (mesh.material.length === 1) mesh.material = mesh.material[0];
 }
 
 function dressHomeSurface(mesh) {
@@ -88,13 +124,18 @@ export default function HomeRegion({
   onCue,
   onHover,
 }) {
+  const configureOcclusion = useHomeCameraOcclusion(visited && detailed);
+  const configureHouse = useCallback((mesh) => {
+    tuneHouseGlazing(mesh, night);
+    configureOcclusion(mesh);
+  }, [night, configureOcclusion]);
   return (
     <group>
       <Suspense fallback={null}>
         <SharedIslandAsset source={homeSite.landform} configure={dressHomeSurface} />
         <SharedIslandAsset
           source={homeSite.architecture}
-          configure={tuneHouseGlazing}
+          configure={configureHouse}
           onClick={(event) => {
             if (event.delta > 4) return;
             for (let n = event.object; n; n = n.parent) {
@@ -114,7 +155,7 @@ export default function HomeRegion({
         <Beacon {...{ animate, night }} />
       </Suspense>
       {visited && (
-        <group position={apartmentPoint([0, 0, 0])}>
+        <group position={apartmentPoint([0, 0, 0])} rotation={[0, APARTMENT_YAW, 0]}>
           <PreparedGroup visible={detailed}>
             <Workspace
               summit

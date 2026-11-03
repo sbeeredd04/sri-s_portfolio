@@ -76,3 +76,11 @@ test("eggs reports progress and completions suggest", () => {
   assert.ok(completions("go key").some((c) => c.startsWith("go keynote")));
   assert.ok(completions("").length > 0);
 });
+
+test("scenic stops keep explicit legacy access without being suggested", () => {
+  assert.deepEqual(completions("go harbor"), []);
+  assert.deepEqual(completions("go red span"), []);
+  assert.deepEqual(runCommand("go harbor").action, { type: "stop", biome: "studio", stop: "harbor" });
+  assert.deepEqual(runCommand("go bay").action, { type: "stop", biome: "projects", stop: "bay" });
+  assert.ok(completions("go life in").includes("go life in san francisco"));
+});

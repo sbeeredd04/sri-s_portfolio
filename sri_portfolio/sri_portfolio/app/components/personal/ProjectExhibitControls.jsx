@@ -12,7 +12,7 @@ export default function ProjectExhibitControls({
   return (
     <div className="exhibit-controls">
       <button className="exhibit-back" onClick={onBack}>
-        <span aria-hidden="true">←</span> Project Town
+        <span aria-hidden="true">←</span> Made
       </button>
       <p className="exhibit-invitation">{exhibit.title}</p>
       <div

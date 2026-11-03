@@ -1,7 +1,7 @@
 // Generated from decoded landing + full-width ribbon support audit.
 export const afterHoursLandingWalk = {
-  "source": "/models/islands/after-hours-coast.glb?v=ee19a01d9a5362ea4",
-  "sha256": "ee19a01d9a5362ea48604cecf72365a56e685ee3b13b75e72b91413ca6302acb",
+  "source": "/models/islands/after-hours-coast.glb?v=ab8b040291c803e7",
+  "sha256": "ab8b040291c803e7ea97f20a6a2fea58a5f821e114924656cf3ddf7085ece596",
   "width": 2,
   "points": [
     [

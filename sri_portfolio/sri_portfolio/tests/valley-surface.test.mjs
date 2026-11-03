@@ -195,7 +195,11 @@ test("authored trail feet and full paving widths agree with the current decoded 
       if (reachable.has(p.from) || reachable.has(p.to))
         for (const node of [p.from, p.to]) if (!reachable.has(node)) { reachable.add(node); changed = true; }
   }
-  assert.deepEqual(outThereWalks.map((w) => w.id).sort(), audit.profiles.filter((p) => p.usable && reachable.has(p.from)).map((p) => p.id).sort());
+  // Static support can certify additional branches after baked people are
+  // replaced by runtime actors. Enable only the reviewed navigation subset;
+  // every enabled branch must still belong to the supported entry component.
+  const certified = new Set(audit.profiles.filter((p) => p.usable && reachable.has(p.from)).map((p) => p.id));
+  for (const walk of outThereWalks) assert.ok(certified.has(walk.id), `${walk.id} is not entry-connected and certified`);
   let probes = 0;
   for (const walk of outThereWalks) {
     const profile = audit.profiles.find((p) => p.id === walk.id);

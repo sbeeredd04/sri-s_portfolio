@@ -303,7 +303,7 @@ function ConnectedWorld({
           ) : region.id === "court" ? (
             <>
               <Suspense fallback={null}>
-                <SharedIslandAsset source={afterHoursCoastSource} />
+                <SharedIslandAsset source={afterHoursCoastSource} night={night} />
               </Suspense>
               <group position={[0, legacyContentLift.court, 0]}>
                 <Court
@@ -510,6 +510,7 @@ export default function WorldScene(props) {
         />
         <QualityProvider
           ceiling={props.tier}
+          preference={props.graphicsMode}
           onTier={reportTier}
           active={props.animate}
         >

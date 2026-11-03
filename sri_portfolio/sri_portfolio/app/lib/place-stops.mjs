@@ -11,7 +11,7 @@ export const placeStops = {
   studio: [
     {
       id: "promenade",
-      label: "Painted Ladies",
+      label: "Life in San Francisco",
       ...homePromenade,
       content: "about",
       prompt: "Meet Sri",
@@ -21,6 +21,7 @@ export const placeStops = {
       label: "The harbor",
       ...homeHarbor,
       hint: "A sheltered landing for the boats crossing the bay.",
+      scenic: true,
     },
     {
       id: "desk",
@@ -38,7 +39,7 @@ export const placeStops = {
     },
     {
       id: "bookshelf",
-      label: "On my desk",
+      label: "Currently reading",
       position: [-2.2, 1.8, 0.25],
       target: [-1.45, 1, -0.65],
       portrait: {
@@ -62,6 +63,7 @@ export const placeStops = {
     {
       id: "bay",
       label: "The red span",
+      scenic: true,
       hint: "Across the water from Made to After hours.",
     },
     {
@@ -307,3 +309,22 @@ export const placeStops = {
     },
   ],
 };
+
+// Public navigation promotes authored portfolio subjects. Scenic camera IDs
+// remain in placeStops for saved addresses and explicit legacy commands.
+export function visiblePlaceStops(biome) {
+  const stops = (placeStops[biome] || []).filter((stop) => !stop.scenic);
+  return biome === "projects"
+    ? [...stops.filter((stop) => stop.project), ...stops.filter((stop) => !stop.project)]
+    : stops;
+}
+
+export function visiblePlaceStopGroups(biome) {
+  const stops = visiblePlaceStops(biome);
+  return biome === "projects"
+    ? [
+        { label: "Selected projects", stops: stops.filter((stop) => stop.project) },
+        { label: "Collections & tools", stops: stops.filter((stop) => !stop.project) },
+      ]
+    : [{ label: null, stops }];
+}

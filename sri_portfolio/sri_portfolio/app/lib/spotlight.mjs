@@ -1,6 +1,6 @@
 import { chapters, readingSections } from "./world-story.mjs";
-import { placeStops } from "./place-stops.mjs";
-import { biomeRooms } from "./reading-rooms.mjs";
+import { placeStops, visiblePlaceStops } from "./place-stops.mjs";
+import { biomeRooms, roomPageHref } from "./reading-rooms.mjs";
 
 export const spotlightEntries = [
   ...readingSections.map((room) => ({
@@ -40,10 +40,18 @@ export const spotlightEntries = [
     biome: c.id,
     action: { type: "travel", biome: c.id },
   })),
-  ...Object.entries(placeStops).flatMap(([biome, stops]) =>
-    stops.map((s) => ({
+  ...visiblePlaceStops("projects").filter((stop) => stop.project).map((stop) => ({
+    id: `project-${stop.project}`,
+    label: stop.label,
+    description: stop.hint || stop.prompt,
+    kind: "Page",
+    project: stop.project,
+    href: roomPageHref("work", "all", `#project-${stop.project}`),
+  })),
+  ...Object.keys(placeStops).flatMap((biome) =>
+    visiblePlaceStops(biome).map((s) => ({
       id: `stop-${biome}-${s.id}`,
-      label: s.label,
+      label: s.project ? `${s.label} studio` : s.label,
       description: s.hint || "Look a little closer.",
       kind: "View",
       biome,
@@ -67,6 +75,8 @@ export function searchSpotlight(query, biome) {
       const rank = (e) =>
         e.room === "work"
           ? 0
+          : e.project && words.length
+            ? 0.5
           : local.includes(e.room)
             ? 1
             : e.kind === "Page"

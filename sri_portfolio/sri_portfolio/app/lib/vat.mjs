@@ -24,6 +24,13 @@ export const VAT_PARTS = [
 ];
 // Small face and accessory parts borrow a dark tint; anything else is cloth.
 const PART_ALIASES = {
+  Human_HeadAndNeck: "skin",
+  Human_Hands: "skin",
+  Human_Hair: "hair",
+  Human_Shirt: "shirt",
+  Human_Trousers: "trousers",
+  Human_Shoe_L: "shoe_upper",
+  Human_Shoe_R: "shoe_upper",
   eye: "hair",
   lash: "hair",
   brow: "hair",
@@ -145,7 +152,11 @@ function vatGeometry(meshes, vertexCount) {
       );
     }
     for (const group of groups) {
-      const part = partIndex(materials[group.materialIndex || 0]?.name);
+      const part = partIndex(
+        PART_ALIASES[mesh.name]
+          ? mesh.name
+          : materials[group.materialIndex || 0]?.name,
+      );
       for (let k = group.start; k < group.start + group.count; k++) {
         const vi = g.index ? g.index.getX(k) : k;
         parts[offset + vi] = part;

@@ -1,7 +1,7 @@
 {
   "schema": "out-there-walk-profiles/v2",
-  "geometryRevision": "refined-coast-lake-paths-fc67d387f6707a2c",
-  "modelSha256": "fc67d387f6707a2cff3ed9d77a8f55ca7c4724a116a4b6c7cdc57ab3c5b080e2",
+  "geometryRevision": "refined-coast-lake-paths-d7630eafc6d6917a",
+  "modelSha256": "d7630eafc6d6917ad76bee56bc35eea84dc43951cebae52b5742afd43219accb",
   "units": "Three metres [Blender.x, Blender.z+6,-Blender.y]/1.56",
   "assumptions": {
     "bodyDiameter": 0.6,
@@ -4411,14 +4411,10 @@
         }
       ],
       "builtContinuous": true,
-      "usable": false,
-      "status": "blocked",
-      "problems": [
-        "full_width_head_or_body_collision"
-      ],
-      "obstacles": [
-        "dock_boats"
-      ],
+      "usable": true,
+      "status": "walkable",
+      "problems": [],
+      "obstacles": [],
       "maxGradeDegrees": 2.083786,
       "maxSampleSpacing": 0.21972,
       "maxSampleRise": 0.006179,
@@ -42152,6 +42148,7 @@
     "walkable": [
       "ENTRY__J1",
       "J1__T1",
+      "T1__T2",
       "T2__T3",
       "T3__J2",
       "J1__L1",
@@ -42164,15 +42161,6 @@
       "CAMP__T1"
     ],
     "blocked": [
-      {
-        "id": "T1__T2",
-        "problems": [
-          "full_width_head_or_body_collision"
-        ],
-        "obstacles": [
-          "dock_boats"
-        ]
-      },
       {
         "id": "J2__S1",
         "problems": [
@@ -42359,10 +42347,10 @@
       "FB_W__FB_E",
       "J3__STAIR_TOP"
     ],
-    "interactionTransition": "STAIR_TOP__DOOR",
     "removed": [
       "EAST_HEAD__CENTRE_LINK"
-    ]
+    ],
+    "interactionTransition": "STAIR_TOP__DOOR"
   },
   "adjustedHooks": {
     "L2": {

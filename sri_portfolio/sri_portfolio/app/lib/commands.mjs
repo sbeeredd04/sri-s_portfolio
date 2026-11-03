@@ -4,7 +4,7 @@
 // where action is { type: "travel", biome } | { type: "stop", biome, stop }
 // | { type: "open", content }. The shell performs actions; nothing here
 // touches the DOM, so it runs the same in tests.
-import { placeStops } from "./place-stops.mjs";
+import { placeStops, visiblePlaceStops } from "./place-stops.mjs";
 import { discoveries } from "./discoveries.mjs";
 
 export const FALLBACK = "That one isn’t in this little console yet. Try help.";
@@ -191,8 +191,8 @@ export function completions(input, limit = 5) {
   const pool = [
     ...commandHelp.map(([c]) => c.split(" ")[0]),
     ...places.map((p) => `cd ${p.names[0]}`),
-    ...Object.values(placeStops)
-      .flat()
+    ...Object.keys(placeStops)
+      .flatMap(visiblePlaceStops)
       .filter((s) => s.label)
       .map((s) => `go ${normalise(s.label).replace(/^the /, "")}`),
     ...Object.keys(sections).map((s) => `open ${s}`),

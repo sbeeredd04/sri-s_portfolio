@@ -9,8 +9,23 @@ import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
+import {walkingRoutes,pathSample,pathHalfWidth} from '../app/lib/world-paths.mjs';
+import {regions,WORLD_RADIUS} from '../app/lib/world-layout.mjs';
 const app=fileURLToPath(new URL('../',import.meta.url)),dir=app+'asset-src/authored/out-there/refinement/';
-if(process.argv.includes('--build-source')){const run=spawnSync('blender',['-b','--disable-autoexec','--python','scripts/blender/build_outthere_refinement.py'],{cwd:app,stdio:'inherit'});assert.equal(run.status,0);}
+if(process.argv.includes('--build-source')){
+ const region=regions.find(r=>r.id==='trail');const samples=[];
+ for(const route of walkingRoutes.filter(r=>r.from==='trail'||r.to==='trail')){
+  const steps=Math.ceil(route.length/.2);
+  for(let i=0;i<=steps;i++){
+   const t=i/steps,p=pathSample(route,t,0,.115).position;
+   const x=p.x-region.offset[0],z=p.z-region.offset[2];
+   if(x < -55 || x > 75 || z < -55 || z > 72)continue;
+   // Includes the bevel and the full outside curb, not only the walk centre.
+   samples.push([x,p.y-WORLD_RADIUS,z,pathHalfWidth(route,t)+.15]);
+  }
+ }
+ await writeFile(dir+'world-approaches.json',JSON.stringify({schema:'out-there-world-approaches/v1',sampleSpacingMaximum:.2,margin: .24,samples},null,2)+'\n');
+ const run=spawnSync('blender',['-b','--disable-autoexec','--python','scripts/blender/build_outthere_refinement.py'],{cwd:app,stdio:'inherit'});assert.equal(run.status,0);}
 const original=app+'asset-src/reference/world-pack/models/out-there/glb/poly_dome11_web.glb',target=app+'public/models/islands/out-there-refined.glb';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const before=hash(await readFile(original)),manifest=JSON.parse(await readFile(dir+'manifest.json','utf8'));
@@ -124,6 +139,6 @@ const animalAnchorContacts=Object.entries(hooksForContacts.animals).filter(([nam
 const bytes=await readFile(target),sha256=hash(bytes),revision='refined-coast-lake-paths-'+sha256.slice(0,16);
 const output={schema:'out-there-walk-profiles/v2',geometryRevision:revision,modelSha256:sha256,units:manifest.units,assumptions:{bodyDiameter:.6,headHeight:2.1,fullPavingWidths:[1.2,2],widthMeaning:'halfWidth is body-centre displacement inside the actual rendered width, with .3m body radius already subtracted',maxGradeDegrees:20,source:'Actual decoded final GLB triangles; all visible solid nodes included; animals checked at frame zero'},profiles,summary:{walkable:profiles.filter(p=>p.usable).map(p=>p.id),blocked:profiles.filter(p=>!p.usable).map(p=>({id:p.id,problems:p.problems,obstacles:p.obstacles})),unmodified:['FB_W__FB_E','J3__STAIR_TOP'],removed:['EAST_HEAD__CENTRE_LINK'],interactionTransition:'STAIR_TOP__DOOR'},adjustedHooks:manifest.adjustedHooks,camp:manifest.camp,limitations:['Offline certificate candidate; full main-world browser journey acceptance is required.','Unmodified timber bridges/stair not re-certified by this revision.','Body obstacles include authored people and frame-zero animals.','Finite 0.1m transverse support probes accompany exact full-width swept triangle obstacle clipping.']};
 await writeFile(app+'app/lib/out-there-refined-walk-profiles.json',JSON.stringify(output,(_,v)=>typeof v==='number'?+v.toFixed(6):v,2)+'\n');
-const stats={revision,sourceSha256:before,sha256,asset:'/models/islands/out-there-refined.glb?v='+sha256.slice(0,16),bytes:bytes.length,triangles:tris.length,animationClips:expectedClips.map(c=>c.name),animationDataExactlyRetained:true,retainedMeshTransformsAndAttributesExactlyRetained:true,paletteRetained:true,removedSemanticNodes:removed,sourceFacesRemoved:manifest.removedSourceFaces,terrainBounds:bounds('terrain'),lakeBounds:bounds('pool'),lakeAreaRatio:manifest.lakeArea/manifest.originalLakeArea,boats:manifest.boats,waterfall:waterfallValidation,animalAnchorContacts,treeContacts:exportedTreeContacts,clearance:output.summary,limits:output.limitations};
+const stats={revision,sourceSha256:before,sha256,asset:'/models/islands/out-there-refined.glb?v='+sha256.slice(0,16),bytes:bytes.length,triangles:tris.length,animationClips:expectedClips.map(c=>c.name),animationDataExactlyRetained:true,retainedMeshTransformsAndAttributesExactlyRetained:true,paletteRetained:true,removedSemanticNodes:removed,sourceFacesRemoved:manifest.removedSourceFaces,terrainBounds:bounds('terrain'),lakeBounds:bounds('pool'),lakeAreaRatio:manifest.lakeArea/manifest.originalLakeArea,boats:manifest.boats,waterfall:waterfallValidation,forest:manifest.forest,animalAnchorContacts,treeContacts:exportedTreeContacts,clearance:output.summary,limits:output.limitations};
 await writeFile(app+'asset-src/stats/out-there-refined.json',JSON.stringify(stats,null,2)+'\n');
 console.log(JSON.stringify({asset:stats.asset,bytes:stats.bytes,triangles:stats.triangles,clips:stats.animationClips.length,terrain:stats.terrainBounds,lake:stats.lakeBounds,walkable:output.summary.walkable,blocked:output.summary.blocked},null,2));

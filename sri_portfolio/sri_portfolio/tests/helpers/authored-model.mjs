@@ -35,7 +35,7 @@ export async function shippedModel(path) {
   const bytes = await readFile(new URL(`../../public${path}`, import.meta.url));
   await MeshoptDecoder.ready;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
-  const { scene } = await new Promise((resolve, reject) =>
+  const { scene, animations } = await new Promise((resolve, reject) =>
     loader.parse(
       bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
       "",
@@ -44,5 +44,5 @@ export async function shippedModel(path) {
     ),
   );
   scene.updateMatrixWorld(true);
-  return { scene, bytes };
+  return { scene, bytes, animations };
 }

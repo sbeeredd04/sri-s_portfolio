@@ -29,7 +29,6 @@ function CourtCrowd({ animate }) {
   return (
     <Suspense fallback={null}>
       <Crowd
-        src="/models/characters/crowd.glb"
         agents={agents}
         ground={courtGround}
         animate={animate}

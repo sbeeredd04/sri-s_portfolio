@@ -1,5 +1,5 @@
 export const afterHoursCoastSource =
-  "/models/islands/after-hours-coast.glb?v=ee19a01d9a5362ea4";
+  "/models/islands/after-hours-coast.glb?v=ab8b040291c803e7";
 export const legacyContentLift = { court: 2.8, entertainment: 2.8 };
 export const afterHoursArrival = {
   position: [-53, 44, -52],

@@ -42,8 +42,8 @@ export function Workspace({
   return (
     <group position={[0, 0.15, 0]}>
       <group
-        position={summit ? [-3.7, 2.2, -4.58] : [-6.19, 2.2, -1.6]}
-        rotation={[0, summit ? 0 : Math.PI / 2, 0]}
+        position={summit ? [3.7, 2.2, 4.58] : [-6.19, 2.2, -1.6]}
+        rotation={[0, summit ? Math.PI : Math.PI / 2, 0]}
       >
         <Box size={[1.7, 1.18, 0.055]} color="#313b49" radius={0.012} />
         <Box size={[1.58, 1.06, 0.059]} color="#e7e0d6" radius={0.006} />

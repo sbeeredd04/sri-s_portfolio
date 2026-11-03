@@ -364,6 +364,69 @@ for (const a of [...layout.obstacles, ...layout.paving])
         overlap: +p.toFixed(3),
       });
   }
+// Inspect the actual exported garden triangles against all real local paving
+// cells, court aprons, furniture and every new connecting ribbon triangle.
+// A centre-only planting check cannot certify leaf or lantern clearance.
+const gardenReservations = [...layout.obstacles, ...layout.paving].map((p) => ({
+  name: p.name,
+  polygon: p.polygon,
+}));
+for (const path of stats.newPaths)
+  for (const t of meshTriangles(node(path.name)))
+    gardenReservations.push({
+      name: path.name,
+      polygon: t.map((p) => [p.x, p.z]),
+    });
+const grid = new Map(),
+  gridSize = 3;
+const extents = (p) => [
+  Math.min(...p.map((v) => v[0])),
+  Math.max(...p.map((v) => v[0])),
+  Math.min(...p.map((v) => v[1])),
+  Math.max(...p.map((v) => v[1])),
+];
+for (const p of gardenReservations) {
+  const [x0, x1, z0, z1] = extents(p.polygon);
+  for (let x = Math.floor(x0 / gridSize); x <= Math.floor(x1 / gridSize); x++)
+    for (
+      let z = Math.floor(z0 / gridSize);
+      z <= Math.floor(z1 / gridSize);
+      z++
+    ) {
+      const key = x + "," + z;
+      if (!grid.has(key)) grid.set(key, []);
+      grid.get(key).push(p);
+    }
+}
+const gardenDefects = [],
+  gardenNodes = [];
+let gardenTriangles = 0;
+gltf.scene.traverse((o) => {
+  if (o.isMesh && o.name.startsWith("AfterHours_Garden_")) gardenNodes.push(o);
+});
+for (const o of gardenNodes)
+  for (const t of meshTriangles(o)) {
+    gardenTriangles++;
+    const p = t.map((v) => [v.x, v.z]),
+      [x0, x1, z0, z1] = extents(p),
+      candidates = new Set();
+    for (let x = Math.floor(x0 / gridSize); x <= Math.floor(x1 / gridSize); x++)
+      for (
+        let z = Math.floor(z0 / gridSize);
+        z <= Math.floor(z1 / gridSize);
+        z++
+      )
+        for (const q of grid.get(x + "," + z) ?? []) candidates.add(q);
+    for (const q of candidates)
+      if (sat(p, q.polygon) > 0.021) {
+        gardenDefects.push({ mesh: o.name, reservation: q.name });
+        break;
+      }
+  }
+assert(
+  gardenTriangles > 6000,
+  "The authored planted borders must be present in the shipped mesh",
+);
 const ground = node("AfterHours_ContinuousCoast"),
   ray = new Raycaster();
 const at = (x, z) => {
@@ -422,7 +485,8 @@ const passed =
   !defects.length &&
   !legacyObstructions.length &&
   !supportDefects.length &&
-  !cameraObstructions.length;
+  !cameraObstructions.length &&
+  !gardenDefects.length;
 Object.assign(stats, {
   triangles,
   primitives,
@@ -439,6 +503,8 @@ Object.assign(stats, {
     legacyObstructions,
     supportDefects,
     cameraObstructions,
+    gardenTriangles,
+    gardenDefects,
   },
 });
 await writeFile(statsFile, JSON.stringify(stats, null, 2) + "\n");

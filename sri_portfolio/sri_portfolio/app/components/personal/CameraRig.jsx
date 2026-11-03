@@ -9,6 +9,8 @@ import {
   studioArrival,
   APARTMENT_LEVEL,
   apartmentPoint,
+  studioDeskView,
+  studioBookView,
 } from "../../lib/studio-layout.mjs";
 import { cameraLimits } from "../../lib/camera-limits.mjs";
 import { courtViews } from "../../lib/court-layout.mjs";
@@ -148,8 +150,13 @@ export default function CameraRig({
   const homeShot = world === "studio"
     ? { arrival: homeArrival, promenade: homePromenade, harbor: homeHarbor }[stop]
     : null;
+  const interiorShot = world === "studio"
+    ? { desk: studioDeskView, bookshelf: studioBookView }[stop]
+    : null;
   const fieldOfView =
-    homeShot
+    interiorShot
+      ? (portraitFrame ? interiorShot.portrait : interiorShot).fov || 45
+      : homeShot
       ? (portraitFrame ? homeShot.portrait : homeShot).fov
       : world === "court" && stop === "arrival"
         ? portraitFrame
@@ -243,7 +250,11 @@ export default function CameraRig({
     }
     const region = regions.find((r) => r.id === id);
     const closeStop =
-      id === "projects"
+      id === "studio" && stop === "desk"
+        ? studioDeskView
+        : id === "studio" && stop === "bookshelf"
+          ? studioBookView
+          : id === "projects"
         ? madeStop(stop)
         : id === "trail"
           ? outThereStop(stop)

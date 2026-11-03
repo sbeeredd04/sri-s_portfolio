@@ -2232,3 +2232,25 @@
   opacity: 0.45;
   cursor: default;
 }
+
+/* Make an explicit art-review time impossible to mistake for live SF time. */
+.world-clock .light-preview-reset {
+  font: inherit;
+  font-size: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .experience-shell .world-clock:has(.light-preview-reset) { flex-wrap: nowrap; }
+  .world-clock .light-preview-reset { margin: 0; font-size: 10px; }
+}
+.world-clock .light-preview-reset:hover { text-decoration: underline; }
+.world-clock .light-preview-reset:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}

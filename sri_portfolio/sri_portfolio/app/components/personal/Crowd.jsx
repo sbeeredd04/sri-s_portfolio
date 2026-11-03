@@ -3,14 +3,16 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { clone } from "three/addons/utils/SkeletonUtils.js";
+import { softHumanSource } from "./SoftHuman";
 import { bakeVat } from "../../lib/vat.mjs";
 
 const CLIPS = [
-  { name: "walk", frames: 18 },
-  { name: "idle", frames: 24 },
+  { name: "Walk", frames: 18 },
+  { name: "Idle", frames: 24 },
 ];
-// Metres covered by one walk cycle at scale 1 (1.2 m/s over 0.6 s).
-const STRIDE = 0.72;
+// Authored adult travels0.875m/s through its32-frame/30fps gait.
+const STRIDE = 0.875 * (32 / 30);
 
 const skins = ["#8d5a3f", "#c89878", "#6e4630", "#e0b394", "#a8704f"];
 const hairs = ["#1d1510", "#3b2618", "#6b4a2a", "#141414", "#8a8a88"];
@@ -101,10 +103,10 @@ function legAt(a) {
 
 // A crowd walking the given routes (polylines in the parent's frame), in one
 // instanced draw. `ground(x, z)` places feet; idle agents stand and chat.
-export default function Crowd({ src, agents, ground, scale = 1.25, animate }) {
-  const { scene, animations } = useGLTF(src);
+export default function Crowd({ agents, ground, scale = 1, animate }) {
+  const { scene, animations } = useGLTF(softHumanSource);
   const vat = useMemo(
-    () => bakeVat(scene, animations, CLIPS),
+    () => bakeVat(clone(scene), animations, CLIPS),
     [scene, animations],
   );
   const uniforms = useMemo(
@@ -143,7 +145,7 @@ export default function Crowd({ src, agents, ground, scale = 1.25, animate }) {
       shirt = attr(3),
       legs = attr(3);
     agents.forEach((agent, i) => {
-      const c = vat.layout[agent.path ? "walk" : "idle"];
+      const c = vat.layout[agent.path ? "Walk" : "Idle"];
       const cps = agent.path
         ? agent.speed / (STRIDE * scale)
         : 1 / (c?.seconds || 4);
